@@ -33,9 +33,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from dsg_ctta.models.registry import create_asr_model, MODEL_CATALOG
-from dsg_ctta.ctta.suta import SUTAConfig, adapt_suta_step
-from dsg_ctta.ctta.dsuta import adapt_dsuta_step
-from dsg_ctta.ctta.dmsuta import adapt_dmsuta_step
+from dsg_ctta.adaptation.suta import SutaAdapter
+from dsg_ctta.adaptation.dsuta import DsutaAdapter
+from dsg_ctta.adaptation.dmsuta import DmsutaAdapter
 
 
 STAGE6_1_MODELS = {
@@ -107,14 +107,15 @@ def audit_model(key: str, spec: dict, device: str = "cpu") -> bool:
 
     # Step 4: SUTA Candidate Gradient Update
     print("\n[Step 4/6] Verifying SUTA candidate gradient update on LayerNorms...")
-    suta_cfg = SUTAConfig(lr=2e-4, num_steps=1)
-    # Count trainable LayerNorm parameters
     ln_params = [p for n, p in raw_model.named_parameters() if "layer_norm" in n.lower() or "layernorm" in n.lower()]
     print(f"  Adaptable LayerNorm parameter tensors: {len(ln_params)} (total elements: {sum(p.numel() for p in ln_params):,})")
     assert len(ln_params) > 0, "No LayerNorm parameters found for SUTA adaptation!"
 
+    suta_adapter = SutaAdapter(asr_model=model_adapter, config={"lr": 1e-4, "temperature": 2.5, "alpha": 0.5, "steps": 1})
+    assert suta_adapter is not None, "Failed to instantiate SutaAdapter"
+
     candidate_model = copy.deepcopy(raw_model)
-    opt = torch.optim.AdamW(candidate_model.parameters(), lr=suta_cfg.lr)
+    opt = torch.optim.AdamW(candidate_model.parameters(), lr=1e-4)
     
     # Forward through candidate with grad
     cand_out = candidate_model(input_values).logits
@@ -126,11 +127,12 @@ def audit_model(key: str, spec: dict, device: str = "cpu") -> bool:
     print(f"  SUTA backward pass successful (Loss: {loss.item():.4f}).")
 
     # Step 5: DSUTA & DMSUTA Verification
-    print("\n[Step 5/6] Verifying DSUTA and DMSUTA update functions...")
-    # Check that adapt_dsuta_step and adapt_dmsuta_step exist and accept model adapter
-    assert callable(adapt_dsuta_step), "adapt_dsuta_step is not callable"
-    assert callable(adapt_dmsuta_step), "adapt_dmsuta_step is not callable"
-    print("  DSUTA & DMSUTA adaptation interfaces verified.")
+    print("\n[Step 5/6] Verifying DSUTA and DMSUTA adapters...")
+    dsuta_adapter = DsutaAdapter(asr_model=model_adapter, config={"lr": 1e-4, "temperature": 2.5, "alpha": 0.5, "steps": 1, "reset_threshold_ratio": 1.25})
+    dmsuta_adapter = DmsutaAdapter(asr_model=model_adapter, config={"lr": 1e-4, "temperature": 2.5, "alpha": 0.5, "steps": 1, "max_bank_size": 3})
+    assert dsuta_adapter is not None, "Failed to instantiate DsutaAdapter"
+    assert dmsuta_adapter is not None, "Failed to instantiate DmsutaAdapter"
+    print("  DSUTA & DMSUTA adaptation adapters verified.")
 
     # Step 6: DSG Shadow Cloning & Sentinel Verification
     print("\n[Step 6/6] Verifying DSG shadow candidate isolation & sentinel contract...")
