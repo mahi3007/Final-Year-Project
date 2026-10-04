@@ -3,8 +3,8 @@
 Stage 6.1: Two-Model Scale & Robustness CTC Extension Runner.
 ============================================================
 Evaluates two additional CTC ASR models on the frozen prequential stream:
-1. facebook/wav2vec2-large-960h-lv60 (Wav2Vec2 Large, 317.4M params)
-2. facebook/wav2vec2-large-robust-ft-libri-960h (Multi-Domain Robust, 317.4M params)
+1. facebook/wav2vec2-large-960h-lv60 (Wav2Vec2 Large, 315.5M params)
+2. facebook/wav2vec2-large-robust-ft-libri-960h (Multi-Domain Robust, 315.5M params)
 
 Methodological Invariants:
 - Preserves all Stage 5E and Stage 6 artifacts untouched.
@@ -58,7 +58,7 @@ STAGE6_1_MODEL_SPEC: Dict[str, Dict[str, Any]] = {
         "family": "CTC",
         "role": "Larger Pretrained Wav2Vec2 (Libri-Light 60k + LibriSpeech 960h FT)",
         "expected_commit": "8e7d14742e8f98c6bbb24e5231406af321a8f9ce",
-        "params": 317377056,
+        "params": 315471520,
         "is_frozen_baseline": False,
         "ctta_status": "COMPATIBLE",
         "notes": "Large 24-layer Wav2Vec2 pretrained on Libri-Light (60k hours) and fine-tuned on LibriSpeech 960h. Full CTC frame logits + LayerNorms."
@@ -68,7 +68,7 @@ STAGE6_1_MODEL_SPEC: Dict[str, Dict[str, Any]] = {
         "family": "CTC",
         "role": "Multi-Domain Robust Pretrained Wav2Vec2 (LibriSpeech 960h FT)",
         "expected_commit": "5d28473cc25ef7b338c9f731fe55626c4b082f58",
-        "params": 317377056,
+        "params": 315471520,
         "is_frozen_baseline": False,
         "ctta_status": "COMPATIBLE",
         "notes": "Large 24-layer Wav2Vec2 with multi-domain robust pretraining (CommonVoice, Switchboard, Fisher) fine-tuned on LibriSpeech 960h. Full CTC frame logits + LayerNorms."

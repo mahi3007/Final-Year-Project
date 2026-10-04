@@ -3,8 +3,8 @@
 Stage 6.1: Cloud Virtual GPU Extension Runner (Kaggle / Colab).
 ==============================================================
 Runs the two new CTC models:
-1. facebook/wav2vec2-large-960h-lv60 (Wav2Vec2 Large, 317.4M params)
-2. facebook/wav2vec2-large-robust-ft-libri-960h (Multi-Domain Robust, 317.4M params)
+1. facebook/wav2vec2-large-960h-lv60 (Wav2Vec2 Large, 315.5M params)
+2. facebook/wav2vec2-large-robust-ft-libri-960h (Multi-Domain Robust, 315.5M params)
 
 Steps:
 1. Audio dataset & preflight verification.

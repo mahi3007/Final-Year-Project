@@ -3,8 +3,8 @@
 Stage 6.1: Preflight Audit & Compatibility Verification
 ========================================================
 Audits the two new CTC models for Stage 6.1 Extension:
-1. facebook/wav2vec2-large-960h-lv60 (Wav2Vec2 Large, 317.4M params)
-2. facebook/wav2vec2-large-robust-ft-libri-960h (Wav2Vec2 Large Robust, 317.4M params)
+1. facebook/wav2vec2-large-960h-lv60 (Wav2Vec2 Large, 315.5M params)
+2. facebook/wav2vec2-large-robust-ft-libri-960h (Wav2Vec2 Large Robust, 315.5M params)
 
 Verifies the 6 required audit invariants:
 1. Model loads cleanly via create_asr_model (AutoModelForCTC / Wav2Vec2ForCTC)
@@ -42,7 +42,7 @@ STAGE6_1_MODELS = {
     "wav2vec2_large_lv60": {
         "model_id": "facebook/wav2vec2-large-960h-lv60",
         "expected_commit": "8e7d14742e8f98c6bbb24e5231406af321a8f9ce",
-        "params": 317377056,
+        "params": 315471520,
         "layers": 24,
         "hidden_size": 1024,
         "vocab_size": 32,
@@ -51,7 +51,7 @@ STAGE6_1_MODELS = {
     "wav2vec2_large_robust": {
         "model_id": "facebook/wav2vec2-large-robust-ft-libri-960h",
         "expected_commit": "5d28473cc25ef7b338c9f731fe55626c4b082f58",
-        "params": 317377056,
+        "params": 315471520,
         "layers": 24,
         "hidden_size": 1024,
         "vocab_size": 32,

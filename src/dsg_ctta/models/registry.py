@@ -86,14 +86,14 @@ MODEL_CATALOG: Dict[str, Dict[str, Any]] = {
     "wav2vec2_large_lv60": {
         "model_id": "facebook/wav2vec2-large-960h-lv60",
         "family": "CTC",
-        "role": "Larger Pretrained Wav2Vec2 (Libri-Light 60k + LibriSpeech 960h FT, 317.4M params)",
+        "role": "Larger Pretrained Wav2Vec2 (Libri-Light 60k + LibriSpeech 960h FT, 315.5M params)",
         "adapter_cls": GenericCTCModel,
         "default_device": "cpu"
     },
     "wav2vec2_large_robust": {
         "model_id": "facebook/wav2vec2-large-robust-ft-libri-960h",
         "family": "CTC",
-        "role": "Multi-Domain Robust Pretrained Wav2Vec2 (LibriSpeech 960h FT, 317.4M params)",
+        "role": "Multi-Domain Robust Pretrained Wav2Vec2 (LibriSpeech 960h FT, 315.5M params)",
         "adapter_cls": GenericCTCModel,
         "default_device": "cpu"
     },
