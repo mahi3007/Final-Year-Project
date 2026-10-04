@@ -22,6 +22,13 @@ class BaseASRModel(ABC):
         self.processor: Any = None
         self._initial_state_dict: Optional[Dict[str, torch.Tensor]] = None
 
+    @property
+    def tokenizer(self) -> Any:
+        """Expose tokenizer from processor if available."""
+        if self.processor is not None:
+            return getattr(self.processor, "tokenizer", self.processor)
+        return None
+
     @abstractmethod
     def load_model(self) -> None:
         """Load weights and processor from HuggingFace / disk."""

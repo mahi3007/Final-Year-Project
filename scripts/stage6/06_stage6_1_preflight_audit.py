@@ -68,10 +68,12 @@ def audit_model(key: str, spec: dict, device: str = "cpu") -> bool:
     # Step 1: Loading
     print("\n[Step 1/6] Loading model via framework factory...")
     model_adapter = create_asr_model(key, device=device)
+    model_adapter.load_model()
     raw_model = model_adapter.model
-    tokenizer = model_adapter.tokenizer
+    processor = model_adapter.processor
     print(f"  Loaded model adapter class: {type(model_adapter).__name__}")
     print(f"  PyTorch model class: {type(raw_model).__name__}")
+    print(f"  Processor class: {type(processor).__name__}")
     
     # Verify parameter count
     total_params = sum(p.numel() for p in raw_model.parameters())
@@ -81,7 +83,7 @@ def audit_model(key: str, spec: dict, device: str = "cpu") -> bool:
     # Step 2: Dummy Audio & CTC Logits
     print("\n[Step 2/6] Verifying CTC logits shape and greedy decoding...")
     dummy_wav = np.sin(np.linspace(0, 440 * 2 * np.pi, 16000 * 2)).astype(np.float32)  # 2 seconds of 440Hz tone
-    inputs = tokenizer(dummy_wav, return_tensors="pt", sampling_rate=16000)
+    inputs = processor(dummy_wav, sampling_rate=16000, return_tensors="pt", padding=True)
     input_values = inputs.input_values.to(device)
 
     with torch.no_grad():
@@ -94,7 +96,7 @@ def audit_model(key: str, spec: dict, device: str = "cpu") -> bool:
     
     # Decoding test
     predicted_ids = torch.argmax(logits, dim=-1)
-    transcription = tokenizer.batch_decode(predicted_ids)[0]
+    transcription = processor.batch_decode(predicted_ids)[0]
     print(f"  Sample decoding output on dummy waveform: '{transcription}'")
 
     # Step 3: Frame-Level Entropy & MCC
@@ -144,6 +146,13 @@ def audit_model(key: str, spec: dict, device: str = "cpu") -> bool:
     diff = sum((p1 - p2).abs().sum().item() for p1, p2 in zip(raw_model.parameters(), shadow_copy.parameters()))
     print(f"  Shadow parameter perturbation isolation: {diff:.2f} > 0.0 (clean isolation verified).")
     assert diff > 0, "Shadow cloning failed to isolate parameters!"
+
+    # Memory cleanup for next model
+    del model_adapter, raw_model, candidate_model, shadow_copy, opt, suta_adapter, dsuta_adapter, dmsuta_adapter
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    import gc
+    gc.collect()
 
     print(f"\nMODEL [{key}] PASSED ALL 6 AUDIT STEPS SUCCESSFULLY.")
     return True
