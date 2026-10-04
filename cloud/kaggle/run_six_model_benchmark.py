@@ -39,10 +39,20 @@ def main():
     print("=" * 80)
     t_start = time.time()
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Device: {device}")
-    if device == "cuda":
-        print(f"GPU   : {torch.cuda.get_device_name(0)} ({torch.cuda.get_device_properties(0).total_memory / (1024**3):.2f} GB VRAM)")
+    # Detect Accelerator (TPU or GPU)
+    device = "cpu"
+    accelerator_type = "CPU"
+    try:
+        import torch_xla.core.xla_model as xm
+        device = str(xm.xla_device())
+        accelerator_type = f"TPU ({device})"
+    except Exception:
+        if torch.cuda.is_available():
+            device = "cuda"
+            vram = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
+            accelerator_type = f"GPU ({torch.cuda.get_device_name(0)}, {vram:.2f} GB VRAM)"
+
+    print(f"Accelerator Device: {device} [{accelerator_type}]")
 
     # Step 1: Preflight Verification
     print("\n>>> STEP 1/5: RUNNING PREFLIGHT INTEGRITY AUDIT...")

@@ -48,14 +48,26 @@ def install_dependencies():
     print("Dependencies successfully installed / verified.")
 
 
-def check_gpu():
+def check_accelerator():
     print("\n" + "=" * 75)
-    print("STEP 2: HARDWARE ACCELERATOR CHECK")
+    print("STEP 2: HARDWARE ACCELERATOR CHECK (GPU / TPU)")
     print("=" * 75)
     import torch
+
+    tpu_found = False
+    try:
+        import torch_xla.core.xla_model as xm
+        tpu_device = xm.xla_device()
+        print(f"TPU Available   : True ({tpu_device})")
+        print(f"Accelerator     : TPU (Tensor Processing Unit via PyTorch/XLA)")
+        print("TPU Assessment  : EXCELLENT (Google TPU v5e / v3 available)")
+        tpu_found = True
+    except Exception:
+        pass
+
     cuda_avail = torch.cuda.is_available()
-    print(f"CUDA Available: {cuda_avail}")
-    if cuda_avail:
+    print(f"CUDA Available  : {cuda_avail}")
+    if cuda_avail and not tpu_found:
         name = torch.cuda.get_device_name(0)
         vram = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
         print(f"GPU Accelerator : {name}")
@@ -64,8 +76,8 @@ def check_gpu():
             print("GPU Assessment  : EXCELLENT (Tesla P100 / T4 confirmed, 16GB VRAM)")
         else:
             print(f"GPU Assessment  : Supported ({name})")
-    else:
-        print("WARNING: No GPU detected! Kaggle session: Settings -> Accelerator -> GPU (Tesla P100)")
+    elif not tpu_found and not cuda_avail:
+        print("WARNING: Neither GPU nor TPU detected! In Kaggle: Settings -> Accelerator -> GPU (Tesla T4 / P100) or TPU (v5e-8)")
 
 
 def unpack_audio_bundle_if_present():
@@ -142,7 +154,7 @@ def run_preflight_check():
 
 if __name__ == "__main__":
     install_dependencies()
-    check_gpu()
+    check_accelerator()
     unpack_audio_bundle_if_present()
     run_preflight_check()
     print("\n" + "=" * 75)

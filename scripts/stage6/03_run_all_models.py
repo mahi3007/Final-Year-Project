@@ -231,8 +231,16 @@ def run_all_models_benchmark(
 
 
 if __name__ == "__main__":
+    default_dev = "cpu"
+    try:
+        import torch_xla.core.xla_model as xm
+        default_dev = str(xm.xla_device())
+    except Exception:
+        if torch.cuda.is_available():
+            default_dev = "cuda"
+
     parser = argparse.ArgumentParser(description="Stage 6 Master Cross-Architecture Benchmark.")
-    parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
+    parser.add_argument("--device", type=str, default=default_dev)
     parser.add_argument("--force_rerun", action="store_true", help="Force rerun ignoring checkpoints")
     parser.add_argument("--models", type=str, default="", help="Comma-separated model keys to run (e.g. wav2vec2_base,whisper_base)")
     args = parser.parse_args()

@@ -48,13 +48,24 @@ def run_preflight() -> bool:
     checks_passed = 0
     total_checks = 10
 
-    # 1. PyTorch & CUDA hardware check
+    # 1. PyTorch & Hardware Acceleration (GPU or TPU)
     import torch
     print(f"\n[Check 1/{total_checks}] PyTorch & Hardware Acceleration:")
     print(f"  PyTorch Version : {torch.__version__}")
+
+    tpu_detected = False
+    try:
+        import torch_xla.core.xla_model as xm
+        tpu_device = xm.xla_device()
+        print(f"  TPU Available   : True ({tpu_device})")
+        print(f"  Accelerator     : TPU (Tensor Processing Unit via PyTorch/XLA)")
+        tpu_detected = True
+    except Exception:
+        pass
+
     cuda_avail = torch.cuda.is_available()
     print(f"  CUDA Available  : {cuda_avail}")
-    if cuda_avail:
+    if cuda_avail and not tpu_detected:
         dev_name = torch.cuda.get_device_name(0)
         vram_gb = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
         print(f"  GPU Device      : {dev_name}")
@@ -63,7 +74,7 @@ def run_preflight() -> bool:
             print("  VRAM Assessment : OPTIMAL (>= 14 GB, e.g. Tesla P100 / T4)")
         else:
             print("  VRAM Assessment : MODERATE (< 14 GB; strict sequential cleanup required)")
-    else:
+    elif not tpu_detected and not cuda_avail:
         print("  WARNING: Running on CPU. Sequential CTTA will execute correctly but slower.")
     checks_passed += 1
 
