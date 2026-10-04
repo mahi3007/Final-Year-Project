@@ -67,10 +67,9 @@ desktop.ini
 
 # Large external datasets and archives (GitHub limit is 100MB per file)
 datasets/external/
-stage6_audio_bundle.tar.gz
-*.tar.gz
 *.zip
 *.tar
+!stage6_audio_bundle.tar.gz
 tmp_voices/
 test_festvox.wav
 

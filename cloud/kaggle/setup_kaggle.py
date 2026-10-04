@@ -70,30 +70,66 @@ def check_gpu():
 
 def unpack_audio_bundle_if_present():
     print("\n" + "=" * 75)
-    print("STEP 3: AUDIO DATASET VERIFICATION")
+    print("STEP 3: AUDIO DATASET VERIFICATION & EXTRACTION")
     print("=" * 75)
     audio_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "audio"
     sentinel_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "sentinel_audio"
 
-    # Check if bundle archive exists
-    bundle_tar = PROJECT_ROOT / "stage6_audio_bundle.tar.gz"
-    bundle_zip = PROJECT_ROOT / "stage6_audio_bundle.zip"
+    eval_clips = list(audio_dir.glob("*.mp3")) if audio_dir.exists() else []
+    sent_clips = list(sentinel_dir.glob("*.mp3")) if sentinel_dir.exists() else []
 
-    if not (audio_dir.exists() and len(list(audio_dir.glob("*.mp3"))) == 900):
-        if bundle_tar.exists():
-            print(f"Extracting {bundle_tar}...")
-            with tarfile.open(bundle_tar, "r:gz") as tar:
+    if len(eval_clips) >= 900 and len(sent_clips) >= 300:
+        print(f"Verified {len(eval_clips)} external eval clips and {len(sent_clips)} sentinel clips present on disk.")
+        return
+
+    print(f"Audio clips incomplete on disk: eval={len(eval_clips)}/900, sentinel={len(sent_clips)}/300.")
+    print("Searching for stage6_audio_bundle archive...")
+
+    candidate_paths = [
+        PROJECT_ROOT / "stage6_audio_bundle.tar.gz",
+        PROJECT_ROOT / "stage6_audio_bundle.zip",
+        PROJECT_ROOT.parent / "stage6_audio_bundle.tar.gz",
+        Path("/kaggle/working/stage6_audio_bundle.tar.gz"),
+        Path("/kaggle/working/project/stage6_audio_bundle.tar.gz"),
+    ]
+
+    # Search /kaggle/input/ recursively for Kaggle Dataset uploads
+    kaggle_input = Path("/kaggle/input")
+    if kaggle_input.exists():
+        for p in kaggle_input.glob("**/*audio*bundle*.*"):
+            candidate_paths.append(p)
+        for p in kaggle_input.glob("**/*.tar.gz"):
+            candidate_paths.append(p)
+
+    archive_found = None
+    for p in candidate_paths:
+        if p.exists() and p.is_file():
+            archive_found = p
+            break
+
+    if archive_found:
+        print(f"Found archive: {archive_found} ({archive_found.stat().st_size / (1024*1024):.2f} MB)")
+        print(f"Extracting into {PROJECT_ROOT}...")
+        if str(archive_found).endswith(".tar.gz") or str(archive_found).endswith(".tgz"):
+            with tarfile.open(archive_found, "r:gz") as tar:
                 tar.extractall(path=PROJECT_ROOT)
-            print("Extracted audio bundle.")
-        elif bundle_zip.exists():
-            print(f"Extracting {bundle_zip}...")
-            with zipfile.ZipFile(bundle_zip, "r") as zf:
+        elif str(archive_found).endswith(".zip"):
+            with zipfile.ZipFile(archive_found, "r") as zf:
                 zf.extractall(path=PROJECT_ROOT)
-            print("Extracted audio bundle.")
-        else:
-            print("Audio directory verified locally.")
+        print("Extraction complete.")
     else:
-        print(f"Verified 900 external eval clips and 300 sentinel clips present on disk.")
+        print("\nERROR: stage6_audio_bundle.tar.gz not found!")
+        print("To provide the required 40MB audio bundle on Kaggle, use one of these two options:")
+        print("  Option 1 (Git): Commit and push stage6_audio_bundle.tar.gz to your GitHub repo, then run `!git pull` in Kaggle.")
+        print("  Option 2 (Kaggle Dataset): Click '+ Add Input' in the right sidebar of Kaggle -> Upload `stage6_audio_bundle.tar.gz` from your local machine.")
+        raise FileNotFoundError("Missing stage6_audio_bundle.tar.gz (40.39 MB audio archive required).")
+
+    # Verify post-extraction
+    eval_clips = list(audio_dir.glob("*.mp3")) if audio_dir.exists() else []
+    sent_clips = list(sentinel_dir.glob("*.mp3")) if sentinel_dir.exists() else []
+    print(f"Post-extraction verification: eval={len(eval_clips)}/900, sentinel={len(sent_clips)}/300.")
+    assert len(eval_clips) >= 900, f"Extraction failed: only found {len(eval_clips)}/900 eval clips!"
+    assert len(sent_clips) >= 300, f"Extraction failed: only found {len(sent_clips)}/300 sentinel clips!"
 
 
 def run_preflight_check():
