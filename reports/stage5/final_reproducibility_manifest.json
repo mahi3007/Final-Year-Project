@@ -1,0 +1,1112 @@
+{
+  "evaluation_phase": "Stage 5B Final External Evaluation",
+  "dataset_release": "cv-corpus-27.0-2026-09-11",
+  "mdc_id": "cmu5jplf300nwmh07iqvk9leo",
+  "eval_csv_path": "datasets/splits/stage5_external_eval.csv",
+  "eval_csv_sha256": "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32",
+  "total_records": 900,
+  "total_speakers": 60,
+  "total_strata": 6,
+  "speakers_per_stratum": 10,
+  "clips_per_speaker": 15,
+  "primary_model": "facebook/wav2vec2-base-960h",
+  "methods_evaluated": [
+    "no_adapt",
+    "suta",
+    "dsuta",
+    "dmsuta",
+    "dsg"
+  ],
+  "window_size_k": 4,
+  "total_windows": 225,
+  "gate_config": {
+    "protocol_version": "v1.0-cv27-amended",
+    "adr_reference": "ADR-005",
+    "config_version": "1.0.0",
+    "created_at": "2026-10-02T20:56:00Z",
+    "sentinel_binding": {
+      "panel_id": "stage5_sentinel_v2_expanded",
+      "csv_path": "datasets/splits/stage5_sentinel_panel.csv",
+      "manifest_path": "datasets/splits/stage5_sentinel_panel_manifest.json",
+      "lock_path": "datasets/splits/stage5_sentinel_panel.lock.json",
+      "total_speakers": 30,
+      "speakers_per_group": 5,
+      "clips_per_speaker": 10,
+      "total_clips": 300,
+      "num_strata": 6,
+      "strata": [
+        "Australian English",
+        "Canadian English",
+        "England English",
+        "Irish English",
+        "South Asian English",
+        "US English"
+      ]
+    },
+    "gate_tolerances": {
+      "epsilon_R": 0.0,
+      "epsilon_G": 0.02,
+      "epsilon_D": 0.02
+    },
+    "bootstrap": {
+      "B": 1000,
+      "confidence": 0.95,
+      "resampling_unit": "speaker",
+      "paired": true,
+      "stratified_by_group": true,
+      "statistic_for_group_constraint": "max_group_regression",
+      "seed": 20261002
+    },
+    "fail_closed_policy": {
+      "enabled": true,
+      "on_nan_action": "REJECT",
+      "on_inf_action": "REJECT",
+      "on_missing_group_action": "REJECT",
+      "on_empty_sentinel_action": "REJECT",
+      "on_exception_action": "REJECT"
+    }
+  },
+  "runtime_environment": {
+    "os": "Windows-10-10.0.26200-SP0",
+    "python_version": "3.11.9",
+    "torch_version": "2.11.0+cpu",
+    "cuda_available": false
+  },
+  "timestamp": "2026-10-02T21:37:26Z",
+  "statistical_summary": {
+    "bootstrap": {
+      "suta": {
+        "corpus_wer": {
+          "metric_name": "corpus_wer",
+          "point_estimate": 0.2251828441247621,
+          "bootstrap_mean": 0.2251828441247621,
+          "bootstrap_std": 0.022231475966676656,
+          "ci_lower_95": 0.1853371668689686,
+          "ci_upper_95": 0.27126027117880114,
+          "ucb_95": 0.2634618291291077
+        },
+        "group_wer_Australian English": {
+          "metric_name": "group_wer_Australian English",
+          "point_estimate": 0.23127674621953834,
+          "bootstrap_mean": 0.23127674621953834,
+          "bootstrap_std": 0.0488991640093994,
+          "ci_lower_95": 0.1431333271733084,
+          "ci_upper_95": 0.3333549783549783,
+          "ucb_95": 0.315432328131315
+        },
+        "group_wer_Canadian English": {
+          "metric_name": "group_wer_Canadian English",
+          "point_estimate": 0.12138548126942643,
+          "bootstrap_mean": 0.12138548126942643,
+          "bootstrap_std": 0.018802600436592442,
+          "ci_lower_95": 0.08886616341544902,
+          "ci_upper_95": 0.16161899216342773,
+          "ucb_95": 0.15499146330693825
+        },
+        "group_wer_England English": {
+          "metric_name": "group_wer_England English",
+          "point_estimate": 0.20306358128898747,
+          "bootstrap_mean": 0.20306358128898747,
+          "bootstrap_std": 0.033557304755349404,
+          "ci_lower_95": 0.13983817405332935,
+          "ci_upper_95": 0.27451246081088265,
+          "ucb_95": 0.25889180901276704
+        },
+        "group_wer_Irish English": {
+          "metric_name": "group_wer_Irish English",
+          "point_estimate": 0.15685988288558822,
+          "bootstrap_mean": 0.15685988288558822,
+          "bootstrap_std": 0.030900561015082907,
+          "ci_lower_95": 0.10159006949228556,
+          "ci_upper_95": 0.22612788533651842,
+          "ucb_95": 0.2128683592327736
+        },
+        "group_wer_South Asian English": {
+          "metric_name": "group_wer_South Asian English",
+          "point_estimate": 0.4263939744858919,
+          "bootstrap_mean": 0.4263939744858919,
+          "bootstrap_std": 0.0695830366971609,
+          "ci_lower_95": 0.29794999361643754,
+          "ci_upper_95": 0.5619176382836166,
+          "ucb_95": 0.5413039021164021
+        },
+        "group_wer_US English": {
+          "metric_name": "group_wer_US English",
+          "point_estimate": 0.21258624887572214,
+          "bootstrap_mean": 0.21258624887572214,
+          "bootstrap_std": 0.055090565562061315,
+          "ci_lower_95": 0.10730633338606761,
+          "ci_upper_95": 0.3226868089233753,
+          "ucb_95": 0.30312079879919057
+        },
+        "disparity_d": {
+          "metric_name": "disparity_d",
+          "point_estimate": 0.30952211432114907,
+          "bootstrap_mean": 0.30952211432114907,
+          "bootstrap_std": 0.07084643393578244,
+          "ci_lower_95": 0.17755577220632018,
+          "ci_upper_95": 0.44597171825625836,
+          "ucb_95": 0.42575613402891876
+        },
+        "delta_r": {
+          "metric_name": "delta_r",
+          "point_estimate": 0.010940735908950958,
+          "bootstrap_mean": 0.010940735908950958,
+          "bootstrap_std": 0.0029734614223268863,
+          "ci_lower_95": 0.005048282009163664,
+          "ci_upper_95": 0.016896498305820122,
+          "ucb_95": 0.015633585077672957
+        },
+        "delta_g_Australian English": {
+          "metric_name": "delta_g_Australian English",
+          "point_estimate": 0.011040809101666887,
+          "bootstrap_mean": 0.011040809101666887,
+          "bootstrap_std": 0.006530460932859876,
+          "ci_lower_95": -0.001924253986812959,
+          "ci_upper_95": 0.023717093561916255,
+          "ucb_95": 0.021565204623504163
+        },
+        "delta_g_Canadian English": {
+          "metric_name": "delta_g_Canadian English",
+          "point_estimate": 0.015493983172030568,
+          "bootstrap_mean": 0.015493983172030568,
+          "bootstrap_std": 0.004289831137847498,
+          "ci_lower_95": 0.0067878726749996945,
+          "ci_upper_95": 0.023657987807846257,
+          "ucb_95": 0.022422399650005462
+        },
+        "delta_g_England English": {
+          "metric_name": "delta_g_England English",
+          "point_estimate": 0.015175271392417975,
+          "bootstrap_mean": 0.015175271392417975,
+          "bootstrap_std": 0.006199655258211471,
+          "ci_lower_95": 0.0022611920874544703,
+          "ci_upper_95": 0.027008076646678716,
+          "ucb_95": 0.024775562588769853
+        },
+        "delta_g_Irish English": {
+          "metric_name": "delta_g_Irish English",
+          "point_estimate": 0.02392067639939806,
+          "bootstrap_mean": 0.02392067639939806,
+          "bootstrap_std": 0.011856190335618832,
+          "ci_lower_95": 0.0031322988664310306,
+          "ci_upper_95": 0.05038533499130715,
+          "ucb_95": 0.0451744850250882
+        },
+        "delta_g_South Asian English": {
+          "metric_name": "delta_g_South Asian English",
+          "point_estimate": 0.0017767791878088208,
+          "bootstrap_mean": 0.0017767791878088208,
+          "bootstrap_std": 0.009084396849046016,
+          "ci_lower_95": -0.017810972980248148,
+          "ci_upper_95": 0.017260027635724966,
+          "ucb_95": 0.014665832005463226
+        },
+        "delta_g_US English": {
+          "metric_name": "delta_g_US English",
+          "point_estimate": -0.0014368320621644833,
+          "bootstrap_mean": -0.0014368320621644833,
+          "bootstrap_std": 0.0022500396966640647,
+          "ci_lower_95": -0.005902686770759754,
+          "ci_upper_95": 0.002626079246796562,
+          "ucb_95": 0.002146617970133192
+        },
+        "max_delta_g": {
+          "metric_name": "max_delta_g",
+          "point_estimate": 0.026851534794903195,
+          "bootstrap_mean": 0.026851534794903195,
+          "bootstrap_std": 0.008895690521284742,
+          "ci_lower_95": 0.014727437593343284,
+          "ci_upper_95": 0.05038533499130715,
+          "ucb_95": 0.0451744850250882
+        },
+        "delta_d": {
+          "metric_name": "delta_d",
+          "point_estimate": -0.01263735279755139,
+          "bootstrap_mean": -0.01263735279755139,
+          "bootstrap_std": 0.011139716309302446,
+          "ci_lower_95": -0.0351704725082104,
+          "ci_upper_95": 0.009108074605590134,
+          "ucb_95": 0.005480247779336139
+        }
+      },
+      "dsuta": {
+        "corpus_wer": {
+          "metric_name": "corpus_wer",
+          "point_estimate": 0.2251828441247621,
+          "bootstrap_mean": 0.2251828441247621,
+          "bootstrap_std": 0.022231475966676656,
+          "ci_lower_95": 0.1853371668689686,
+          "ci_upper_95": 0.27126027117880114,
+          "ucb_95": 0.2634618291291077
+        },
+        "group_wer_Australian English": {
+          "metric_name": "group_wer_Australian English",
+          "point_estimate": 0.23127674621953834,
+          "bootstrap_mean": 0.23127674621953834,
+          "bootstrap_std": 0.0488991640093994,
+          "ci_lower_95": 0.1431333271733084,
+          "ci_upper_95": 0.3333549783549783,
+          "ucb_95": 0.315432328131315
+        },
+        "group_wer_Canadian English": {
+          "metric_name": "group_wer_Canadian English",
+          "point_estimate": 0.12138548126942643,
+          "bootstrap_mean": 0.12138548126942643,
+          "bootstrap_std": 0.018802600436592442,
+          "ci_lower_95": 0.08886616341544902,
+          "ci_upper_95": 0.16161899216342773,
+          "ucb_95": 0.15499146330693825
+        },
+        "group_wer_England English": {
+          "metric_name": "group_wer_England English",
+          "point_estimate": 0.20306358128898747,
+          "bootstrap_mean": 0.20306358128898747,
+          "bootstrap_std": 0.033557304755349404,
+          "ci_lower_95": 0.13983817405332935,
+          "ci_upper_95": 0.27451246081088265,
+          "ucb_95": 0.25889180901276704
+        },
+        "group_wer_Irish English": {
+          "metric_name": "group_wer_Irish English",
+          "point_estimate": 0.15685988288558822,
+          "bootstrap_mean": 0.15685988288558822,
+          "bootstrap_std": 0.030900561015082907,
+          "ci_lower_95": 0.10159006949228556,
+          "ci_upper_95": 0.22612788533651842,
+          "ucb_95": 0.2128683592327736
+        },
+        "group_wer_South Asian English": {
+          "metric_name": "group_wer_South Asian English",
+          "point_estimate": 0.4263939744858919,
+          "bootstrap_mean": 0.4263939744858919,
+          "bootstrap_std": 0.0695830366971609,
+          "ci_lower_95": 0.29794999361643754,
+          "ci_upper_95": 0.5619176382836166,
+          "ucb_95": 0.5413039021164021
+        },
+        "group_wer_US English": {
+          "metric_name": "group_wer_US English",
+          "point_estimate": 0.21258624887572214,
+          "bootstrap_mean": 0.21258624887572214,
+          "bootstrap_std": 0.055090565562061315,
+          "ci_lower_95": 0.10730633338606761,
+          "ci_upper_95": 0.3226868089233753,
+          "ucb_95": 0.30312079879919057
+        },
+        "disparity_d": {
+          "metric_name": "disparity_d",
+          "point_estimate": 0.30952211432114907,
+          "bootstrap_mean": 0.30952211432114907,
+          "bootstrap_std": 0.07084643393578244,
+          "ci_lower_95": 0.17755577220632018,
+          "ci_upper_95": 0.44597171825625836,
+          "ucb_95": 0.42575613402891876
+        },
+        "delta_r": {
+          "metric_name": "delta_r",
+          "point_estimate": 0.0009049792468557164,
+          "bootstrap_mean": 0.0009049792468557164,
+          "bootstrap_std": 0.001293506504951382,
+          "ci_lower_95": -0.0016296324011889803,
+          "ci_upper_95": 0.003470468863300038,
+          "ucb_95": 0.003109898078817015
+        },
+        "delta_g_Australian English": {
+          "metric_name": "delta_g_Australian English",
+          "point_estimate": 0.00048327516546463876,
+          "bootstrap_mean": 0.00048327516546463876,
+          "bootstrap_std": 0.003841614875473369,
+          "ci_lower_95": -0.005444992827649636,
+          "ci_upper_95": 0.0082680614498796,
+          "ucb_95": 0.0070331866217450386
+        },
+        "delta_g_Canadian English": {
+          "metric_name": "delta_g_Canadian English",
+          "point_estimate": 0.010096127500211941,
+          "bootstrap_mean": 0.010096127500211941,
+          "bootstrap_std": 0.0036994166885421396,
+          "ci_lower_95": 0.0038167029304535553,
+          "ci_upper_95": 0.018328702781020362,
+          "ucb_95": 0.016777624216274527
+        },
+        "delta_g_England English": {
+          "metric_name": "delta_g_England English",
+          "point_estimate": -0.0014248070389475363,
+          "bootstrap_mean": -0.0014248070389475363,
+          "bootstrap_std": 0.0017680409724269877,
+          "ci_lower_95": -0.004827055945476989,
+          "ci_upper_95": 0.0023260585075928933,
+          "ucb_95": 0.0015045015728386922
+        },
+        "delta_g_Irish English": {
+          "metric_name": "delta_g_Irish English",
+          "point_estimate": -0.0008272831118857252,
+          "bootstrap_mean": -0.0008272831118857252,
+          "bootstrap_std": 0.002015058810573545,
+          "ci_lower_95": -0.005176184680377004,
+          "ci_upper_95": 0.002805147580251194,
+          "ucb_95": 0.0022242002199068227
+        },
+        "delta_g_South Asian English": {
+          "metric_name": "delta_g_South Asian English",
+          "point_estimate": -0.004953647335532971,
+          "bootstrap_mean": -0.004953647335532971,
+          "bootstrap_std": 0.002992695744446854,
+          "ci_lower_95": -0.010951588130003215,
+          "ci_upper_95": 0.0009623880039820765,
+          "ucb_95": 0.0
+        },
+        "delta_g_US English": {
+          "metric_name": "delta_g_US English",
+          "point_estimate": 0.0013743019809880884,
+          "bootstrap_mean": 0.0013743019809880884,
+          "bootstrap_std": 0.0021313282210355237,
+          "ci_lower_95": -0.0026092244804619457,
+          "ci_upper_95": 0.005758573041034947,
+          "ucb_95": 0.0050690744908034645
+        },
+        "max_delta_g": {
+          "metric_name": "max_delta_g",
+          "point_estimate": 0.010173811144732885,
+          "bootstrap_mean": 0.010173811144732885,
+          "bootstrap_std": 0.0036418284694459094,
+          "ci_lower_95": 0.0040534505658251984,
+          "ci_upper_95": 0.018328702781020362,
+          "ucb_95": 0.016777624216274527
+        },
+        "delta_d": {
+          "metric_name": "delta_d",
+          "point_estimate": -0.0125038531920673,
+          "bootstrap_mean": -0.0125038531920673,
+          "bootstrap_std": 0.006160605185010159,
+          "ci_lower_95": -0.023697560573594498,
+          "ci_upper_95": -0.0003512286966516517,
+          "ucb_95": -0.002103754640649214
+        }
+      },
+      "dmsuta": {
+        "corpus_wer": {
+          "metric_name": "corpus_wer",
+          "point_estimate": 0.2251828441247621,
+          "bootstrap_mean": 0.2251828441247621,
+          "bootstrap_std": 0.022231475966676656,
+          "ci_lower_95": 0.1853371668689686,
+          "ci_upper_95": 0.27126027117880114,
+          "ucb_95": 0.2634618291291077
+        },
+        "group_wer_Australian English": {
+          "metric_name": "group_wer_Australian English",
+          "point_estimate": 0.23127674621953834,
+          "bootstrap_mean": 0.23127674621953834,
+          "bootstrap_std": 0.0488991640093994,
+          "ci_lower_95": 0.1431333271733084,
+          "ci_upper_95": 0.3333549783549783,
+          "ucb_95": 0.315432328131315
+        },
+        "group_wer_Canadian English": {
+          "metric_name": "group_wer_Canadian English",
+          "point_estimate": 0.12138548126942643,
+          "bootstrap_mean": 0.12138548126942643,
+          "bootstrap_std": 0.018802600436592442,
+          "ci_lower_95": 0.08886616341544902,
+          "ci_upper_95": 0.16161899216342773,
+          "ucb_95": 0.15499146330693825
+        },
+        "group_wer_England English": {
+          "metric_name": "group_wer_England English",
+          "point_estimate": 0.20306358128898747,
+          "bootstrap_mean": 0.20306358128898747,
+          "bootstrap_std": 0.033557304755349404,
+          "ci_lower_95": 0.13983817405332935,
+          "ci_upper_95": 0.27451246081088265,
+          "ucb_95": 0.25889180901276704
+        },
+        "group_wer_Irish English": {
+          "metric_name": "group_wer_Irish English",
+          "point_estimate": 0.15685988288558822,
+          "bootstrap_mean": 0.15685988288558822,
+          "bootstrap_std": 0.030900561015082907,
+          "ci_lower_95": 0.10159006949228556,
+          "ci_upper_95": 0.22612788533651842,
+          "ucb_95": 0.2128683592327736
+        },
+        "group_wer_South Asian English": {
+          "metric_name": "group_wer_South Asian English",
+          "point_estimate": 0.4263939744858919,
+          "bootstrap_mean": 0.4263939744858919,
+          "bootstrap_std": 0.0695830366971609,
+          "ci_lower_95": 0.29794999361643754,
+          "ci_upper_95": 0.5619176382836166,
+          "ucb_95": 0.5413039021164021
+        },
+        "group_wer_US English": {
+          "metric_name": "group_wer_US English",
+          "point_estimate": 0.21258624887572214,
+          "bootstrap_mean": 0.21258624887572214,
+          "bootstrap_std": 0.055090565562061315,
+          "ci_lower_95": 0.10730633338606761,
+          "ci_upper_95": 0.3226868089233753,
+          "ucb_95": 0.30312079879919057
+        },
+        "disparity_d": {
+          "metric_name": "disparity_d",
+          "point_estimate": 0.30952211432114907,
+          "bootstrap_mean": 0.30952211432114907,
+          "bootstrap_std": 0.07084643393578244,
+          "ci_lower_95": 0.17755577220632018,
+          "ci_upper_95": 0.44597171825625836,
+          "ucb_95": 0.42575613402891876
+        },
+        "delta_r": {
+          "metric_name": "delta_r",
+          "point_estimate": 0.0010461781530708017,
+          "bootstrap_mean": 0.0010461781530708017,
+          "bootstrap_std": 0.0013061441745227749,
+          "ci_lower_95": -0.0015230601841296466,
+          "ci_upper_95": 0.0035308379287795713,
+          "ucb_95": 0.0031676385414650316
+        },
+        "delta_g_Australian English": {
+          "metric_name": "delta_g_Australian English",
+          "point_estimate": -0.004660610438555491,
+          "bootstrap_mean": -0.004660610438555491,
+          "bootstrap_std": 0.004041973218763566,
+          "ci_lower_95": -0.011548012359934997,
+          "ci_upper_95": 0.004402091573921675,
+          "ucb_95": 0.0022446361341112112
+        },
+        "delta_g_Canadian English": {
+          "metric_name": "delta_g_Canadian English",
+          "point_estimate": 0.006683134908510897,
+          "bootstrap_mean": 0.006683134908510897,
+          "bootstrap_std": 0.0027663968069689725,
+          "ci_lower_95": 0.0017652225653812142,
+          "ci_upper_95": 0.01275412603150786,
+          "ucb_95": 0.011571006683094723
+        },
+        "delta_g_England English": {
+          "metric_name": "delta_g_England English",
+          "point_estimate": 0.002961909708025962,
+          "bootstrap_mean": 0.002961909708025962,
+          "bootstrap_std": 0.0033616813083024344,
+          "ci_lower_95": -0.002301102799880419,
+          "ci_upper_95": 0.010405321556317973,
+          "ucb_95": 0.009336354586143465
+        },
+        "delta_g_Irish English": {
+          "metric_name": "delta_g_Irish English",
+          "point_estimate": 0.0007831415291484527,
+          "bootstrap_mean": 0.0007831415291484527,
+          "bootstrap_std": 0.0024656651808595484,
+          "ci_lower_95": -0.003965284247381744,
+          "ci_upper_95": 0.005490927153536219,
+          "ucb_95": 0.004826750480494414
+        },
+        "delta_g_South Asian English": {
+          "metric_name": "delta_g_South Asian English",
+          "point_estimate": -0.0014449959477544254,
+          "bootstrap_mean": -0.0014449959477544254,
+          "bootstrap_std": 0.003200225635930069,
+          "ci_lower_95": -0.007314945899484277,
+          "ci_upper_95": 0.00465930515653998,
+          "ucb_95": 0.00394247780067937
+        },
+        "delta_g_US English": {
+          "metric_name": "delta_g_US English",
+          "point_estimate": 0.0020691864681268634,
+          "bootstrap_mean": 0.0020691864681268634,
+          "bootstrap_std": 0.002234739526711383,
+          "ci_lower_95": -0.0014245522269773375,
+          "ci_upper_95": 0.006758195589115506,
+          "ucb_95": 0.006056731514335813
+        },
+        "max_delta_g": {
+          "metric_name": "max_delta_g",
+          "point_estimate": 0.007337970471118929,
+          "bootstrap_mean": 0.007337970471118929,
+          "bootstrap_std": 0.002637470299934925,
+          "ci_lower_95": 0.003169969293486335,
+          "ci_upper_95": 0.013333333333333336,
+          "ucb_95": 0.012240913373332666
+        },
+        "delta_d": {
+          "metric_name": "delta_d",
+          "point_estimate": -0.006699544690097999,
+          "bootstrap_mean": -0.006699544690097999,
+          "bootstrap_std": 0.00472747774157328,
+          "ci_lower_95": -0.015213893595083652,
+          "ci_upper_95": 0.003052242085028976,
+          "ucb_95": 0.0011261886986349415
+        }
+      },
+      "dsg": {
+        "corpus_wer": {
+          "metric_name": "corpus_wer",
+          "point_estimate": 0.2251828441247621,
+          "bootstrap_mean": 0.2251828441247621,
+          "bootstrap_std": 0.022231475966676656,
+          "ci_lower_95": 0.1853371668689686,
+          "ci_upper_95": 0.27126027117880114,
+          "ucb_95": 0.2634618291291077
+        },
+        "group_wer_Australian English": {
+          "metric_name": "group_wer_Australian English",
+          "point_estimate": 0.23127674621953834,
+          "bootstrap_mean": 0.23127674621953834,
+          "bootstrap_std": 0.0488991640093994,
+          "ci_lower_95": 0.1431333271733084,
+          "ci_upper_95": 0.3333549783549783,
+          "ucb_95": 0.315432328131315
+        },
+        "group_wer_Canadian English": {
+          "metric_name": "group_wer_Canadian English",
+          "point_estimate": 0.12138548126942643,
+          "bootstrap_mean": 0.12138548126942643,
+          "bootstrap_std": 0.018802600436592442,
+          "ci_lower_95": 0.08886616341544902,
+          "ci_upper_95": 0.16161899216342773,
+          "ucb_95": 0.15499146330693825
+        },
+        "group_wer_England English": {
+          "metric_name": "group_wer_England English",
+          "point_estimate": 0.20306358128898747,
+          "bootstrap_mean": 0.20306358128898747,
+          "bootstrap_std": 0.033557304755349404,
+          "ci_lower_95": 0.13983817405332935,
+          "ci_upper_95": 0.27451246081088265,
+          "ucb_95": 0.25889180901276704
+        },
+        "group_wer_Irish English": {
+          "metric_name": "group_wer_Irish English",
+          "point_estimate": 0.15685988288558822,
+          "bootstrap_mean": 0.15685988288558822,
+          "bootstrap_std": 0.030900561015082907,
+          "ci_lower_95": 0.10159006949228556,
+          "ci_upper_95": 0.22612788533651842,
+          "ucb_95": 0.2128683592327736
+        },
+        "group_wer_South Asian English": {
+          "metric_name": "group_wer_South Asian English",
+          "point_estimate": 0.4263939744858919,
+          "bootstrap_mean": 0.4263939744858919,
+          "bootstrap_std": 0.0695830366971609,
+          "ci_lower_95": 0.29794999361643754,
+          "ci_upper_95": 0.5619176382836166,
+          "ucb_95": 0.5413039021164021
+        },
+        "group_wer_US English": {
+          "metric_name": "group_wer_US English",
+          "point_estimate": 0.21258624887572214,
+          "bootstrap_mean": 0.21258624887572214,
+          "bootstrap_std": 0.055090565562061315,
+          "ci_lower_95": 0.10730633338606761,
+          "ci_upper_95": 0.3226868089233753,
+          "ucb_95": 0.30312079879919057
+        },
+        "disparity_d": {
+          "metric_name": "disparity_d",
+          "point_estimate": 0.30952211432114907,
+          "bootstrap_mean": 0.30952211432114907,
+          "bootstrap_std": 0.07084643393578244,
+          "ci_lower_95": 0.17755577220632018,
+          "ci_upper_95": 0.44597171825625836,
+          "ucb_95": 0.42575613402891876
+        },
+        "delta_r": {
+          "metric_name": "delta_r",
+          "point_estimate": 0.0,
+          "bootstrap_mean": 0.0,
+          "bootstrap_std": 0.0,
+          "ci_lower_95": 0.0,
+          "ci_upper_95": 0.0,
+          "ucb_95": 0.0
+        },
+        "delta_g_Australian English": {
+          "metric_name": "delta_g_Australian English",
+          "point_estimate": 0.0,
+          "bootstrap_mean": 0.0,
+          "bootstrap_std": 0.0,
+          "ci_lower_95": 0.0,
+          "ci_upper_95": 0.0,
+          "ucb_95": 0.0
+        },
+        "delta_g_Canadian English": {
+          "metric_name": "delta_g_Canadian English",
+          "point_estimate": 0.0,
+          "bootstrap_mean": 0.0,
+          "bootstrap_std": 0.0,
+          "ci_lower_95": 0.0,
+          "ci_upper_95": 0.0,
+          "ucb_95": 0.0
+        },
+        "delta_g_England English": {
+          "metric_name": "delta_g_England English",
+          "point_estimate": 0.0,
+          "bootstrap_mean": 0.0,
+          "bootstrap_std": 0.0,
+          "ci_lower_95": 0.0,
+          "ci_upper_95": 0.0,
+          "ucb_95": 0.0
+        },
+        "delta_g_Irish English": {
+          "metric_name": "delta_g_Irish English",
+          "point_estimate": 0.0,
+          "bootstrap_mean": 0.0,
+          "bootstrap_std": 0.0,
+          "ci_lower_95": 0.0,
+          "ci_upper_95": 0.0,
+          "ucb_95": 0.0
+        },
+        "delta_g_South Asian English": {
+          "metric_name": "delta_g_South Asian English",
+          "point_estimate": 0.0,
+          "bootstrap_mean": 0.0,
+          "bootstrap_std": 0.0,
+          "ci_lower_95": 0.0,
+          "ci_upper_95": 0.0,
+          "ucb_95": 0.0
+        },
+        "delta_g_US English": {
+          "metric_name": "delta_g_US English",
+          "point_estimate": 0.0,
+          "bootstrap_mean": 0.0,
+          "bootstrap_std": 0.0,
+          "ci_lower_95": 0.0,
+          "ci_upper_95": 0.0,
+          "ucb_95": 0.0
+        },
+        "max_delta_g": {
+          "metric_name": "max_delta_g",
+          "point_estimate": 0.0,
+          "bootstrap_mean": 0.0,
+          "bootstrap_std": 0.0,
+          "ci_lower_95": 0.0,
+          "ci_upper_95": 0.0,
+          "ucb_95": 0.0
+        },
+        "delta_d": {
+          "metric_name": "delta_d",
+          "point_estimate": 0.0,
+          "bootstrap_mean": 0.0,
+          "bootstrap_std": 0.0,
+          "ci_lower_95": 0.0,
+          "ci_upper_95": 0.0,
+          "ucb_95": 0.0
+        }
+      }
+    },
+    "glmm": {
+      "no_adapt": {
+        "model_family": "NegativeBinomial",
+        "formula": "total_errors ~ C(group_id, Treatment(reference='US English'))",
+        "num_observations": 900,
+        "num_speakers": 60,
+        "dispersion_statistic": 2.0739669854011513,
+        "is_overdispersed": true,
+        "log_likelihood": -1697.9357280964732,
+        "aic": 3407.8714561929464,
+        "bic": 3436.6858247728924,
+        "coefficients": [
+          {
+            "variable": "Intercept",
+            "beta": -1.5556801196592174,
+            "std_err": 0.23974072664255308,
+            "z_stat": -6.489010613447811,
+            "p_value": 8.640188062444688e-11,
+            "p_value_adjusted": 8.640188062444688e-11,
+            "rate_ratio": 0.21104579742311852,
+            "rr_ci_lower_95": 0.13191951073927105,
+            "rr_ci_upper_95": 0.33763260915961546
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Australian English]",
+            "beta": 0.14959020870479156,
+            "std_err": 0.3199805202869551,
+            "z_stat": 0.46749786071552313,
+            "p_value": 0.6401437222956725,
+            "p_value_adjusted": 1.0,
+            "rate_ratio": 1.1613582307085903,
+            "rr_ci_lower_95": 0.6202950129265477,
+            "rr_ci_upper_95": 2.174373341599476
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Canadian English]",
+            "beta": -0.5478808527703531,
+            "std_err": 0.2828106351803464,
+            "z_stat": -1.9372710379896898,
+            "p_value": 0.0527122206070827,
+            "p_value_adjusted": 0.2108488824283308,
+            "rate_ratio": 0.5781737483671598,
+            "rr_ci_lower_95": 0.33214637716077966,
+            "rr_ci_upper_95": 1.0064384448761186
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.England English]",
+            "beta": -0.03270956026033865,
+            "std_err": 0.29014851394331637,
+            "z_stat": -0.1127338541762403,
+            "p_value": 0.9102415605755149,
+            "p_value_adjusted": 1.0,
+            "rate_ratio": 0.9678196120488173,
+            "rr_ci_lower_95": 0.5480492094731632,
+            "rr_ci_upper_95": 1.7091071116893752
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Irish English]",
+            "beta": -0.30308549781517935,
+            "std_err": 0.29950011572637436,
+            "z_stat": -1.011971221046474,
+            "p_value": 0.3115518138334593,
+            "p_value_adjusted": 0.9346554415003779,
+            "rate_ratio": 0.7385359504609066,
+            "rr_ci_lower_95": 0.4106167677652704,
+            "rr_ci_upper_95": 1.3283318971401417
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.South Asian English]",
+            "beta": 0.7067948531089838,
+            "std_err": 0.29000563279804853,
+            "z_stat": 2.437176293059022,
+            "p_value": 0.014802460791774568,
+            "p_value_adjusted": 0.07401230395887284,
+            "rate_ratio": 2.027482454296818,
+            "rr_ci_lower_95": 1.148428237489192,
+            "rr_ci_upper_95": 3.579400931022592
+          }
+        ],
+        "raw_group_disparity_rr": 3.4793075776682336,
+        "adjusted_group_disparity_rr": 3.5067009874154613,
+        "summary_text": "                 Generalized Linear Model Regression Results                  \n==============================================================================\nDep. Variable:           total_errors   No. Observations:                  900\nModel:                            GLM   Df Residuals:                      894\nModel Family:        NegativeBinomial   Df Model:                            5\nLink Function:                    Log   Scale:                          1.0000\nMethod:                          IRLS   Log-Likelihood:                -1697.9\nDate:                Sat, 03 Oct 2026   Deviance:                       792.38\nTime:                        03:07:26   Pearson chi2:                     633.\nNo. Iterations:                     5   Pseudo R-squ. (CS):             0.1019\nCovariance Type:              cluster                                         \n=========================================================================================================================================\n                                                                            coef    std err          z      P>|z|      [0.025      0.975]\n-----------------------------------------------------------------------------------------------------------------------------------------\nIntercept                                                                -1.5557      0.240     -6.489      0.000      -2.026      -1.086\nC(group_id, Treatment(reference='US English'))[T.Australian English]      0.1496      0.320      0.467      0.640      -0.478       0.777\nC(group_id, Treatment(reference='US English'))[T.Canadian English]       -0.5479      0.283     -1.937      0.053      -1.102       0.006\nC(group_id, Treatment(reference='US English'))[T.England English]        -0.0327      0.290     -0.113      0.910      -0.601       0.536\nC(group_id, Treatment(reference='US English'))[T.Irish English]          -0.3031      0.300     -1.012      0.312      -0.890       0.284\nC(group_id, Treatment(reference='US English'))[T.South Asian English]     0.7068      0.290      2.437      0.015       0.138       1.275\n========================================================================================================================================="
+      },
+      "suta": {
+        "model_family": "NegativeBinomial",
+        "formula": "total_errors ~ C(group_id, Treatment(reference='US English'))",
+        "num_observations": 900,
+        "num_speakers": 60,
+        "dispersion_statistic": 2.031581432480957,
+        "is_overdispersed": true,
+        "log_likelihood": -1740.8013321002186,
+        "aic": 3493.602664200437,
+        "bic": 3522.417032780383,
+        "coefficients": [
+          {
+            "variable": "Intercept",
+            "beta": -1.5648957081805395,
+            "std_err": 0.24181810308599438,
+            "z_stat": -6.4713753362958,
+            "p_value": 9.711486402824295e-11,
+            "p_value_adjusted": 9.711486402824295e-11,
+            "rate_ratio": 0.20910982047974622,
+            "rr_ci_lower_95": 0.13017826728956694,
+            "rr_ci_upper_95": 0.3359002845214254
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Australian English]",
+            "beta": 0.1970025909461034,
+            "std_err": 0.3106397606914525,
+            "z_stat": 0.6341834364911809,
+            "p_value": 0.5259611158417679,
+            "p_value_adjusted": 1.0,
+            "rate_ratio": 1.217747195819173,
+            "rr_ci_lower_95": 0.6624301556089883,
+            "rr_ci_upper_95": 2.2385880539544356
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Canadian English]",
+            "beta": -0.4212987121499773,
+            "std_err": 0.2732752729494643,
+            "z_stat": -1.5416642259758582,
+            "p_value": 0.12315520947984886,
+            "p_value_adjusted": 0.4926208379193954,
+            "rate_ratio": 0.6561940589923391,
+            "rr_ci_lower_95": 0.38407846743289675,
+            "rr_ci_upper_95": 1.121100711359381
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.England English]",
+            "beta": 0.05458694376560791,
+            "std_err": 0.28754231179627204,
+            "z_stat": 0.18983969150350144,
+            "p_value": 0.8494347520953095,
+            "p_value_adjusted": 1.0,
+            "rate_ratio": 1.0561042941063834,
+            "rr_ci_lower_95": 0.6011050117225275,
+            "rr_ci_upper_95": 1.8555098664603966
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Irish English]",
+            "beta": -0.14020914155120157,
+            "std_err": 0.3150904205286287,
+            "z_stat": -0.44498065449267554,
+            "p_value": 0.6563337345855074,
+            "p_value_adjusted": 1.0,
+            "rate_ratio": 0.8691764354805258,
+            "rr_ci_lower_95": 0.4687081350118006,
+            "rr_ci_upper_95": 1.6118083292401408
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.South Asian English]",
+            "beta": 0.7148176654843788,
+            "std_err": 0.2916710854619183,
+            "z_stat": 2.450766295028268,
+            "p_value": 0.01425524746277732,
+            "p_value_adjusted": 0.0712762373138866,
+            "rate_ratio": 2.0438139904483306,
+            "rr_ci_lower_95": 1.1539061542599383,
+            "rr_ci_upper_95": 3.6200306343208433
+          }
+        ],
+        "raw_group_disparity_rr": 3.1061171837870867,
+        "adjusted_group_disparity_rr": 3.1146487269129506,
+        "summary_text": "                 Generalized Linear Model Regression Results                  \n==============================================================================\nDep. Variable:           total_errors   No. Observations:                  900\nModel:                            GLM   Df Residuals:                      894\nModel Family:        NegativeBinomial   Df Model:                            5\nLink Function:                    Log   Scale:                          1.0000\nMethod:                          IRLS   Log-Likelihood:                -1740.8\nDate:                Sat, 03 Oct 2026   Deviance:                       764.21\nTime:                        03:07:26   Pearson chi2:                     605.\nNo. Iterations:                     5   Pseudo R-squ. (CS):            0.08357\nCovariance Type:              cluster                                         \n=========================================================================================================================================\n                                                                            coef    std err          z      P>|z|      [0.025      0.975]\n-----------------------------------------------------------------------------------------------------------------------------------------\nIntercept                                                                -1.5649      0.242     -6.471      0.000      -2.039      -1.091\nC(group_id, Treatment(reference='US English'))[T.Australian English]      0.1970      0.311      0.634      0.526      -0.412       0.806\nC(group_id, Treatment(reference='US English'))[T.Canadian English]       -0.4213      0.273     -1.542      0.123      -0.957       0.114\nC(group_id, Treatment(reference='US English'))[T.England English]         0.0546      0.288      0.190      0.849      -0.509       0.618\nC(group_id, Treatment(reference='US English'))[T.Irish English]          -0.1402      0.315     -0.445      0.656      -0.758       0.477\nC(group_id, Treatment(reference='US English'))[T.South Asian English]     0.7148      0.292      2.451      0.014       0.143       1.286\n========================================================================================================================================="
+      },
+      "dsuta": {
+        "model_family": "NegativeBinomial",
+        "formula": "total_errors ~ C(group_id, Treatment(reference='US English'))",
+        "num_observations": 900,
+        "num_speakers": 60,
+        "dispersion_statistic": 2.072859552844228,
+        "is_overdispersed": true,
+        "log_likelihood": -1704.5384633592284,
+        "aic": 3421.076926718457,
+        "bic": 3449.891295298403,
+        "coefficients": [
+          {
+            "variable": "Intercept",
+            "beta": -1.547338567266833,
+            "std_err": 0.24183327492098067,
+            "z_stat": -6.398369156487782,
+            "p_value": 1.5704523412962752e-10,
+            "p_value_adjusted": 1.5704523412962752e-10,
+            "rate_ratio": 0.21281360989913578,
+            "rr_ci_lower_95": 0.13248006782578428,
+            "rr_ci_upper_95": 0.34185997411972135
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Australian English]",
+            "beta": 0.14083643837113052,
+            "std_err": 0.32021790342094897,
+            "z_stat": 0.4398143791041912,
+            "p_value": 0.6600715524131748,
+            "p_value_adjusted": 1.0,
+            "rate_ratio": 1.1512363344946497,
+            "rr_ci_lower_95": 0.6146027716966933,
+            "rr_ci_upper_95": 2.1564255139980646
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Canadian English]",
+            "beta": -0.4704778808965856,
+            "std_err": 0.2768652190097555,
+            "z_stat": -1.6993029409013922,
+            "p_value": 0.0892621187533385,
+            "p_value_adjusted": 0.357048475013354,
+            "rate_ratio": 0.6247036629929303,
+            "rr_ci_lower_95": 0.36308302976863294,
+            "rr_ci_upper_95": 1.0748358765361914
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.England English]",
+            "beta": -0.049574268193965196,
+            "std_err": 0.29370068663913496,
+            "z_stat": -0.1687918021617575,
+            "p_value": 0.8659604067319796,
+            "p_value_adjusted": 1.0,
+            "rate_ratio": 0.9516344793378059,
+            "rr_ci_lower_95": 0.5351452699961633,
+            "rr_ci_upper_95": 1.692266068746211
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Irish English]",
+            "beta": -0.31670770469690024,
+            "std_err": 0.2970804445702562,
+            "z_stat": -1.0660671561705652,
+            "p_value": 0.2863932852546055,
+            "p_value_adjusted": 0.8591798557638165,
+            "rate_ratio": 0.728543673900591,
+            "rr_ci_lower_95": 0.4069867389243775,
+            "rr_ci_upper_95": 1.3041601458154504
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.South Asian English]",
+            "beta": 0.6826576207245262,
+            "std_err": 0.29362907773484725,
+            "z_stat": 2.324897881336464,
+            "p_value": 0.020077421301265417,
+            "p_value_adjusted": 0.10038710650632708,
+            "rate_ratio": 1.979130527476373,
+            "rr_ci_lower_95": 1.1131069992320617,
+            "rr_ci_upper_95": 3.5189408093662475
+          }
+        ],
+        "raw_group_disparity_rr": 3.178639542275906,
+        "adjusted_group_disparity_rr": 3.16811096959867,
+        "summary_text": "                 Generalized Linear Model Regression Results                  \n==============================================================================\nDep. Variable:           total_errors   No. Observations:                  900\nModel:                            GLM   Df Residuals:                      894\nModel Family:        NegativeBinomial   Df Model:                            5\nLink Function:                    Log   Scale:                          1.0000\nMethod:                          IRLS   Log-Likelihood:                -1704.5\nDate:                Sat, 03 Oct 2026   Deviance:                       792.62\nTime:                        03:07:26   Pearson chi2:                     630.\nNo. Iterations:                     5   Pseudo R-squ. (CS):            0.09248\nCovariance Type:              cluster                                         \n=========================================================================================================================================\n                                                                            coef    std err          z      P>|z|      [0.025      0.975]\n-----------------------------------------------------------------------------------------------------------------------------------------\nIntercept                                                                -1.5473      0.242     -6.398      0.000      -2.021      -1.073\nC(group_id, Treatment(reference='US English'))[T.Australian English]      0.1408      0.320      0.440      0.660      -0.487       0.768\nC(group_id, Treatment(reference='US English'))[T.Canadian English]       -0.4705      0.277     -1.699      0.089      -1.013       0.072\nC(group_id, Treatment(reference='US English'))[T.England English]        -0.0496      0.294     -0.169      0.866      -0.625       0.526\nC(group_id, Treatment(reference='US English'))[T.Irish English]          -0.3167      0.297     -1.066      0.286      -0.899       0.266\nC(group_id, Treatment(reference='US English'))[T.South Asian English]     0.6827      0.294      2.325      0.020       0.107       1.258\n========================================================================================================================================="
+      },
+      "dmsuta": {
+        "model_family": "NegativeBinomial",
+        "formula": "total_errors ~ C(group_id, Treatment(reference='US English'))",
+        "num_observations": 900,
+        "num_speakers": 60,
+        "dispersion_statistic": 2.0767142391083944,
+        "is_overdispersed": true,
+        "log_likelihood": -1703.8196841440854,
+        "aic": 3419.6393682881708,
+        "bic": 3448.4537368681167,
+        "coefficients": [
+          {
+            "variable": "Intercept",
+            "beta": -1.5448712010330237,
+            "std_err": 0.24041780470306137,
+            "z_stat": -6.425777004914778,
+            "p_value": 1.311976145787376e-10,
+            "p_value_adjusted": 1.311976145787376e-10,
+            "rate_ratio": 0.21333934734098234,
+            "rr_ci_lower_95": 0.1331763033482679,
+            "rr_ci_upper_95": 0.3417550718828258
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Australian English]",
+            "beta": 0.11780664251262177,
+            "std_err": 0.32990284765119304,
+            "z_stat": 0.3570949549280004,
+            "p_value": 0.7210207212190858,
+            "p_value_adjusted": 1.0,
+            "rate_ratio": 1.1250265580267427,
+            "rr_ci_lower_95": 0.5893169896798393,
+            "rr_ci_upper_95": 2.1477146907865556
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Canadian English]",
+            "beta": -0.49893773590437607,
+            "std_err": 0.2820617932339197,
+            "z_stat": -1.7688951423867485,
+            "p_value": 0.07691137499513681,
+            "p_value_adjusted": 0.30764549998054724,
+            "rate_ratio": 0.6071752977826618,
+            "rr_ci_lower_95": 0.34931936402123814,
+            "rr_ci_upper_95": 1.0553719037890203
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.England English]",
+            "beta": -0.031286447754812804,
+            "std_err": 0.2895520210250704,
+            "z_stat": -0.10805121526713128,
+            "p_value": 0.9139550660765284,
+            "p_value_adjusted": 1.0,
+            "rate_ratio": 0.9691979087448331,
+            "rr_ci_lower_95": 0.5494717149537867,
+            "rr_ci_upper_95": 1.7095412934847094
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Irish English]",
+            "beta": -0.3130669344644944,
+            "std_err": 0.29744460307392184,
+            "z_stat": -1.0525218182785117,
+            "p_value": 0.292560205704246,
+            "p_value_adjusted": 0.877680617112738,
+            "rate_ratio": 0.7312009683856172,
+            "rr_ci_lower_95": 0.40817974754561337,
+            "rr_ci_upper_95": 1.3098515038606064
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.South Asian English]",
+            "beta": 0.689975944343282,
+            "std_err": 0.28985565259392887,
+            "z_stat": 2.3804122437104884,
+            "p_value": 0.017293279527911272,
+            "p_value_adjusted": 0.08646639763955635,
+            "rate_ratio": 1.993667573683473,
+            "rr_ci_lower_95": 1.129606457701039,
+            "rr_ci_upper_95": 3.5186682647390555
+          }
+        ],
+        "raw_group_disparity_rr": 3.2881626145874847,
+        "adjusted_group_disparity_rr": 3.2835123249646854,
+        "summary_text": "                 Generalized Linear Model Regression Results                  \n==============================================================================\nDep. Variable:           total_errors   No. Observations:                  900\nModel:                            GLM   Df Residuals:                      894\nModel Family:        NegativeBinomial   Df Model:                            5\nLink Function:                    Log   Scale:                          1.0000\nMethod:                          IRLS   Log-Likelihood:                -1703.8\nDate:                Sat, 03 Oct 2026   Deviance:                       791.77\nTime:                        03:07:26   Pearson chi2:                     634.\nNo. Iterations:                     5   Pseudo R-squ. (CS):            0.09524\nCovariance Type:              cluster                                         \n=========================================================================================================================================\n                                                                            coef    std err          z      P>|z|      [0.025      0.975]\n-----------------------------------------------------------------------------------------------------------------------------------------\nIntercept                                                                -1.5449      0.240     -6.426      0.000      -2.016      -1.074\nC(group_id, Treatment(reference='US English'))[T.Australian English]      0.1178      0.330      0.357      0.721      -0.529       0.764\nC(group_id, Treatment(reference='US English'))[T.Canadian English]       -0.4989      0.282     -1.769      0.077      -1.052       0.054\nC(group_id, Treatment(reference='US English'))[T.England English]        -0.0313      0.290     -0.108      0.914      -0.599       0.536\nC(group_id, Treatment(reference='US English'))[T.Irish English]          -0.3131      0.297     -1.053      0.293      -0.896       0.270\nC(group_id, Treatment(reference='US English'))[T.South Asian English]     0.6900      0.290      2.380      0.017       0.122       1.258\n========================================================================================================================================="
+      },
+      "dsg": {
+        "model_family": "NegativeBinomial",
+        "formula": "total_errors ~ C(group_id, Treatment(reference='US English'))",
+        "num_observations": 900,
+        "num_speakers": 60,
+        "dispersion_statistic": 2.0739669854011513,
+        "is_overdispersed": true,
+        "log_likelihood": -1697.9357280964732,
+        "aic": 3407.8714561929464,
+        "bic": 3436.6858247728924,
+        "coefficients": [
+          {
+            "variable": "Intercept",
+            "beta": -1.5556801196592174,
+            "std_err": 0.23974072664255308,
+            "z_stat": -6.489010613447811,
+            "p_value": 8.640188062444688e-11,
+            "p_value_adjusted": 8.640188062444688e-11,
+            "rate_ratio": 0.21104579742311852,
+            "rr_ci_lower_95": 0.13191951073927105,
+            "rr_ci_upper_95": 0.33763260915961546
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Australian English]",
+            "beta": 0.14959020870479156,
+            "std_err": 0.3199805202869551,
+            "z_stat": 0.46749786071552313,
+            "p_value": 0.6401437222956725,
+            "p_value_adjusted": 1.0,
+            "rate_ratio": 1.1613582307085903,
+            "rr_ci_lower_95": 0.6202950129265477,
+            "rr_ci_upper_95": 2.174373341599476
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Canadian English]",
+            "beta": -0.5478808527703531,
+            "std_err": 0.2828106351803464,
+            "z_stat": -1.9372710379896898,
+            "p_value": 0.0527122206070827,
+            "p_value_adjusted": 0.2108488824283308,
+            "rate_ratio": 0.5781737483671598,
+            "rr_ci_lower_95": 0.33214637716077966,
+            "rr_ci_upper_95": 1.0064384448761186
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.England English]",
+            "beta": -0.03270956026033865,
+            "std_err": 0.29014851394331637,
+            "z_stat": -0.1127338541762403,
+            "p_value": 0.9102415605755149,
+            "p_value_adjusted": 1.0,
+            "rate_ratio": 0.9678196120488173,
+            "rr_ci_lower_95": 0.5480492094731632,
+            "rr_ci_upper_95": 1.7091071116893752
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.Irish English]",
+            "beta": -0.30308549781517935,
+            "std_err": 0.29950011572637436,
+            "z_stat": -1.011971221046474,
+            "p_value": 0.3115518138334593,
+            "p_value_adjusted": 0.9346554415003779,
+            "rate_ratio": 0.7385359504609066,
+            "rr_ci_lower_95": 0.4106167677652704,
+            "rr_ci_upper_95": 1.3283318971401417
+          },
+          {
+            "variable": "C(group_id, Treatment(reference='US English'))[T.South Asian English]",
+            "beta": 0.7067948531089838,
+            "std_err": 0.29000563279804853,
+            "z_stat": 2.437176293059022,
+            "p_value": 0.014802460791774568,
+            "p_value_adjusted": 0.07401230395887284,
+            "rate_ratio": 2.027482454296818,
+            "rr_ci_lower_95": 1.148428237489192,
+            "rr_ci_upper_95": 3.579400931022592
+          }
+        ],
+        "raw_group_disparity_rr": 3.4793075776682336,
+        "adjusted_group_disparity_rr": 3.5067009874154613,
+        "summary_text": "                 Generalized Linear Model Regression Results                  \n==============================================================================\nDep. Variable:           total_errors   No. Observations:                  900\nModel:                            GLM   Df Residuals:                      894\nModel Family:        NegativeBinomial   Df Model:                            5\nLink Function:                    Log   Scale:                          1.0000\nMethod:                          IRLS   Log-Likelihood:                -1697.9\nDate:                Sat, 03 Oct 2026   Deviance:                       792.38\nTime:                        03:07:26   Pearson chi2:                     633.\nNo. Iterations:                     5   Pseudo R-squ. (CS):             0.1019\nCovariance Type:              cluster                                         \n=========================================================================================================================================\n                                                                            coef    std err          z      P>|z|      [0.025      0.975]\n-----------------------------------------------------------------------------------------------------------------------------------------\nIntercept                                                                -1.5557      0.240     -6.489      0.000      -2.026      -1.086\nC(group_id, Treatment(reference='US English'))[T.Australian English]      0.1496      0.320      0.467      0.640      -0.478       0.777\nC(group_id, Treatment(reference='US English'))[T.Canadian English]       -0.5479      0.283     -1.937      0.053      -1.102       0.006\nC(group_id, Treatment(reference='US English'))[T.England English]        -0.0327      0.290     -0.113      0.910      -0.601       0.536\nC(group_id, Treatment(reference='US English'))[T.Irish English]          -0.3031      0.300     -1.012      0.312      -0.890       0.284\nC(group_id, Treatment(reference='US English'))[T.South Asian English]     0.7068      0.290      2.437      0.015       0.138       1.275\n========================================================================================================================================="
+      }
+    }
+  }
+}

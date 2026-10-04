@@ -1,0 +1,28 @@
+{
+  "experiment_id": "stress_noise_severe_dsuta",
+  "method_id": "dsuta",
+  "model_id": "wav2vec2_base",
+  "stream_id": "stream_order_a_k4_s42",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9855,
+  "speaker_macro_wer": 0.9855,
+  "disparity_d": 0.0543,
+  "disparity_ratio_r": 1.057,
+  "best_group_id": "Korean",
+  "worst_group_id": "Vietnamese",
+  "total_adaptation_time_seconds": 135.2697,
+  "total_inference_time_seconds": 31.1941,
+  "num_updates": 30,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.9946,
+    "Hindi": 0.9891,
+    "Korean": 0.9457,
+    "Mandarin": 0.9891,
+    "Spanish": 0.9946,
+    "Vietnamese": 1.0
+  }
+}

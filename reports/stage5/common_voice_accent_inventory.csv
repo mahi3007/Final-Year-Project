@@ -1,0 +1,17 @@
+﻿accent_code,accent_label,est_validated_clips,est_unique_speakers,median_clips_per_speaker,est_hours,stage5_relevance,l2_arctic_analogue,evidence_quality,risk_flags
+us,United States English,~249000,~12000-15000,18,~367,Native-English control or majority baseline group,None (native English),High (CommonAccent Interspeech 2023),Self-reported; does not guarantee L1=English; large pool reduces sampling concerns
+england,England English,~75000,~3500-5000,18,~111,Native-English; external variety not in L2-ARCTIC,None (native English),High (CommonAccent Interspeech 2023),Self-reported; England is a broad geographic category spanning many regional sub-varieties
+indian,India and South Asia (India/Pakistan/Sri Lanka),~79000,~4000-6000,16,~117,Best partial proxy for South Asian-L1 English (Hindi/Urdu/Tamil/etc.); NOT exclusively Hindi-L1,Hindi (partial proxy only),High (CommonAccent Interspeech 2023),Self-reported country-of-origin label not L1-specific; conflates multiple South Asian L1 backgrounds
+australia,Australian English,~33000,~1500-2500,16,~49,Native-English variety not in L2-ARCTIC,None (native English),High (CommonAccent Interspeech 2023),Self-reported; pool smaller than us/england/indian but sufficient for 10-20 speakers/group
+canada,Canadian English,~20000,~1000-1800,15,~29,Native-English variety not in L2-ARCTIC; marginal for 20 speakers/group,None (native English),Moderate,Smaller pool; viable at 10 speakers/group
+ireland,Irish English,~10000,~500-900,14,~15,Native-English variety not in L2-ARCTIC,None (native English),Moderate,Pool sufficient for 5-10 speakers/group; marginal for 15+
+scotland,Scottish English,~7000,~350-600,14,~10,Native-English variety,None (native English),Moderate,Viable at 5 speakers/group; borderline at 10
+wales,Welsh English,~3000,~150-300,14,~4,Native-English variety; small pool,None (native English),Low-Moderate,Pool only marginally sufficient for 5 speakers/group
+newzealand,New Zealand English,~5000,~250-500,14,~7,Native-English variety,None (native English),Moderate,Viable at 5 speakers/group; marginal at 10
+philippines,Filipino English,~8000,~400-700,14,~12,L2-English variety; no L2-ARCTIC equivalent,None,Moderate,L2 English variety; group definition distinct from L2-ARCTIC L1 groups
+hongkong,Hong Kong English,~4000,~200-400,14,~6,Cantonese-inflected English; no L2-ARCTIC equivalent,Mandarin (very partial proxy only),Low-Moderate,Geographic label not L1-specific; Cantonese and Mandarin are distinct L1 backgrounds
+malaysia,Malaysian English,~3500,~150-300,13,~5,L2/L1-adjacent English; no L2-ARCTIC equivalent,None,Low-Moderate,Small pool; feasible only at 5 speakers/group
+singapore,Singaporean English,~3000,~150-300,13,~4,Singlish-influenced; no L2-ARCTIC equivalent,None,Low,Small pool; may not support even 5 speakers/group reliably
+african,Southern African English (SA/Zimbabwe/Namibia),~6000,~300-600,14,~9,L1/L2-adjacent; no L2-ARCTIC equivalent,None,Moderate,Geographic label spans multiple L1 backgrounds; viable at 5 speakers/group
+southatlantic,South Atlantic (Falkland Islands/Saint Helena),<200,<30,8,<0.3,NOT VIABLE - insufficient speakers,None,Very Low,Insufficient for any target; exclude
+bermuda,West Indies and Bermuda (Bahamas/Bermuda/Jamaica/Trinidad),<500,<50,10,<0.7,MARGINAL - barely sufficient at 5 speakers/group,None,Low,Small pool; Caribbean varieties; feasible only at lowest target

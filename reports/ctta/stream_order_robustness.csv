@@ -1,0 +1,4 @@
+ordering,suta_corpus_wer,no_adapt_corpus_wer,delta_r,suta_disparity_d,no_adapt_disparity_d,delta_d,max_group_regression
+ORDER_A,0.8514,0.8551,-0.0037,0.1957,0.2065,-0.0108,0.0
+ORDER_B,0.8569,0.8551,0.0018,0.2065,0.2065,0.0,0.0109
+ORDER_C,0.8551,0.8551,0.0,0.2065,0.2065,0.0,0.0109

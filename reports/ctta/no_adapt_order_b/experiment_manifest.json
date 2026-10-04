@@ -1,0 +1,22 @@
+{
+  "experiment_id": "stage3_no_adapt_wav2vec2_order_b",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_b_k4_s42",
+  "ordering_id": "ORDER_B",
+  "seed": 42,
+  "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74",
+  "model_id": "wav2vec2_base",
+  "method_id": "no_adapt",
+  "window_size_k": 4,
+  "total_windows": 15,
+  "total_utterances": 60,
+  "total_reference_words": 552,
+  "adapter_config": {},
+  "timestamp": "2026-09-29T14:35:02Z",
+  "output_files": {
+    "predictions_csv": "reports/ctta\\no_adapt_order_b\\predictions.csv",
+    "window_metrics_csv": "reports/ctta\\no_adapt_order_b\\window_metrics.csv",
+    "group_metrics_csv": "reports/ctta\\no_adapt_order_b\\group_metrics.csv",
+    "adaptation_trajectory_csv": "reports/ctta\\no_adapt_order_b\\adaptation_trajectory.csv"
+  }
+}

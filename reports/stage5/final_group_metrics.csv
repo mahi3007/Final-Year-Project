@@ -1,0 +1,31 @@
+method,group_id,stratum_code,num_clips,num_speakers,wer,cer,substitutions,deletions,insertions,reference_words,delta_g_vs_no_adapt
+no_adapt,Australian English,australia,150,10,0.229069,0.094906,271,32,39,1493,0.0
+no_adapt,Canadian English,canada,150,10,0.122,0.038429,153,13,17,1500,0.0
+no_adapt,England English,england,150,10,0.203159,0.090954,227,27,29,1393,0.0
+no_adapt,Irish English,ireland,150,10,0.156182,0.070381,179,23,14,1383,0.0
+no_adapt,South Asian English,south_asian,150,10,0.424476,0.223285,500,53,54,1430,0.0
+no_adapt,US English,us,150,10,0.214578,0.095116,253,30,32,1468,0.0
+suta,Australian English,australia,150,10,0.240455,0.093768,293,40,26,1493,0.011386
+suta,Canadian English,canada,150,10,0.137333,0.041714,170,20,16,1500,0.015333
+suta,England English,england,150,10,0.218234,0.093914,241,34,29,1393,0.015075
+suta,Irish English,ireland,150,10,0.180043,0.079611,198,40,11,1383,0.023861
+suta,South Asian English,south_asian,150,10,0.426573,0.227171,490,75,45,1430,0.002098
+suta,US English,us,150,10,0.213215,0.093692,253,31,29,1468,-0.001362
+dsuta,Australian English,australia,150,10,0.229739,0.095333,274,33,36,1493,0.00067
+dsuta,Canadian English,canada,150,10,0.132,0.039857,164,17,17,1500,0.01
+dsuta,England English,england,150,10,0.201723,0.090296,227,26,28,1393,-0.001436
+dsuta,Irish English,ireland,150,10,0.155459,0.070546,177,26,12,1383,-0.000723
+dsuta,South Asian English,south_asian,150,10,0.41958,0.218054,495,50,55,1430,-0.004895
+dsuta,US English,us,150,10,0.21594,0.095116,255,31,31,1468,0.001362
+dmsuta,Australian English,australia,150,10,0.22438,0.095618,268,32,35,1493,-0.004689
+dmsuta,Canadian English,canada,150,10,0.128667,0.039286,160,16,17,1500,0.006667
+dmsuta,England English,england,150,10,0.20603,0.089474,230,30,27,1393,0.002872
+dmsuta,Irish English,ireland,150,10,0.156905,0.069392,176,29,12,1383,0.000723
+dmsuta,South Asian English,south_asian,150,10,0.423077,0.21925,498,50,57,1430,-0.001399
+dmsuta,US English,us,150,10,0.216621,0.094974,258,29,31,1468,0.002044
+dsg,Australian English,australia,150,10,0.231748,0.091029,276,32,38,1493,0.002679
+dsg,Canadian English,canada,150,10,0.126667,0.036647,157,15,18,1500,0.004667
+dsg,England English,england,150,10,0.204594,0.084801,230,28,27,1393,0.001435
+dsg,Irish English,ireland,150,10,0.15329,0.063973,177,22,13,1383,-0.002892
+dsg,South Asian English,south_asian,150,10,0.421678,0.207,496,54,53,1430,-0.002798
+dsg,US English,us,150,10,0.215259,0.089198,254,30,32,1468,0.000681

@@ -1,0 +1,12 @@
+{
+  "protocol_version": "v1.0-cv27-amended",
+  "component": "stage5_sentinel_panel",
+  "panel_id": "stage5_sentinel_v2_expanded",
+  "csv_path": "datasets/splits/stage5_sentinel_panel.csv",
+  "csv_sha256": "665009a00660f7e9bbdf8de8a53473fc1249362ca2a5bc0038518313d18f0543",
+  "total_rows": 300,
+  "total_speakers": 30,
+  "speakers_per_group": 5,
+  "clips_per_speaker": 10,
+  "frozen_timestamp": "2026-10-02T20:55:00Z"
+}

@@ -1,0 +1,20 @@
+{
+  "experiment_id": "exp_mock_asr_final_test_1790606647",
+  "protocol_version": "v1.0.0-canonical",
+  "timestamp": "2026-09-28T14:44:07.519625Z",
+  "model_name": "mock_asr",
+  "model_catalog_entry": {
+    "model_id": "mock-asr-v1",
+    "family": "Mock",
+    "role": "Deterministic Test / CI Backbone",
+    "adapter_cls": "MockASRModel",
+    "default_device": "cpu"
+  },
+  "partition_name": "final_test",
+  "num_utterances": 60,
+  "num_speakers": 6,
+  "device": "cpu",
+  "random_seed": 42,
+  "normalization_version": "v1.0.0-canonical",
+  "metric_version": "v1.0.0-exact-levenshtein"
+}

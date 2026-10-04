@@ -1,0 +1,2 @@
+model_name,disparity_d,min_group_wer,max_group_wer,ratio_worst_to_best,best_group_id,worst_group_id
+mock_asr,0.0,0.9130434782608695,0.9130434782608695,1.0,Arabic,Arabic

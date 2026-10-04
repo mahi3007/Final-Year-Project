@@ -1,0 +1,13 @@
+ordering,method,corpus_wer,delta_r,disparity_d,delta_d,max_group_regression,worst_regressed_group,num_updates,num_resets,best_group,worst_group,delta_g_Arabic,wer_Arabic,delta_g_Hindi,wer_Hindi,delta_g_Korean,wer_Korean,delta_g_Mandarin,wer_Mandarin,delta_g_Spanish,wer_Spanish,delta_g_Vietnamese,wer_Vietnamese
+ORDER_A,no_adapt,0.8551,0.0,0.2065,0.0,0.0,none,0,0,Mandarin,Hindi,0.0,0.8913,0.0,0.9783,0.0,0.8261,0.0,0.7717,0.0,0.8587,0.0,0.8043
+ORDER_A,suta,0.8514,-0.0037,0.1957,-0.0108,0.0,none,15,0,Mandarin,Hindi,0.0,0.8913,-0.0109,0.9674,0.0,0.8261,0.0,0.7717,0.0,0.8587,-0.0108,0.7935
+ORDER_A,dsuta,0.8533,-0.0018,0.1957,-0.0108,0.0,none,15,1,Mandarin,Hindi,0.0,0.8913,-0.0109,0.9674,0.0,0.8261,0.0,0.7717,0.0,0.8587,0.0,0.8043
+ORDER_A,dmsuta,0.8551,0.0,0.2065,0.0,0.0,none,15,0,Mandarin,Hindi,0.0,0.8913,0.0,0.9783,0.0,0.8261,0.0,0.7717,0.0,0.8587,0.0,0.8043
+ORDER_B,no_adapt,0.8551,0.0,0.2065,0.0,0.0,none,0,0,Mandarin,Hindi,0.0,0.8913,0.0,0.9783,0.0,0.8261,0.0,0.7717,0.0,0.8587,0.0,0.8043
+ORDER_B,suta,0.8569,0.0018,0.2065,0.0,0.0109,Arabic,15,0,Mandarin,Hindi,0.0109,0.9022,0.0,0.9783,0.0,0.8261,0.0,0.7717,0.0,0.8587,0.0,0.8043
+ORDER_B,dsuta,0.8514,-0.0037,0.1957,-0.0108,0.0109,Vietnamese,15,1,Mandarin,Hindi,-0.0109,0.8804,-0.0109,0.9674,0.0,0.8261,0.0,0.7717,-0.0109,0.8478,0.0109,0.8152
+ORDER_B,dmsuta,0.8551,0.0,0.1957,-0.0108,0.0109,Arabic,15,0,Mandarin,Hindi,0.0109,0.9022,-0.0109,0.9674,0.0,0.8261,0.0,0.7717,0.0,0.8587,0.0,0.8043
+ORDER_C,no_adapt,0.8551,0.0,0.2065,0.0,0.0,none,0,0,Mandarin,Hindi,0.0,0.8913,0.0,0.9783,0.0,0.8261,0.0,0.7717,0.0,0.8587,0.0,0.8043
+ORDER_C,suta,0.8551,0.0,0.2065,0.0,0.0109,Spanish,15,0,Mandarin,Hindi,-0.0109,0.8804,0.0,0.9783,0.0,0.8261,0.0,0.7717,0.0109,0.8696,0.0,0.8043
+ORDER_C,dsuta,0.8514,-0.0037,0.2065,0.0,0.0,none,15,0,Mandarin,Hindi,-0.0109,0.8804,0.0,0.9783,0.0,0.8261,0.0,0.7717,-0.0109,0.8478,0.0,0.8043
+ORDER_C,dmsuta,0.8533,-0.0018,0.2065,0.0,0.0109,Vietnamese,15,0,Mandarin,Hindi,-0.0217,0.8696,0.0,0.9783,0.0,0.8261,0.0,0.7717,0.0,0.8587,0.0109,0.8152

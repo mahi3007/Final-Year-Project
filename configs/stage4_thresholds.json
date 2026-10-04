@@ -1,0 +1,31 @@
+{
+  "protocol_version": "v1.0.0-canonical",
+  "stage": "Stage 4B",
+  "dataset_used": "datasets/splits/calibration.csv",
+  "calibration_date": "2026-09-29T16:32:32Z",
+  "random_seed": 42,
+  "bootstrap_replicates": 1000,
+  "word_sensitivity": {
+    "mean_words_per_group": 92.0,
+    "one_word_shift_ratio": 0.0109,
+    "two_word_shift_ratio": 0.0217
+  },
+  "empirical_variability": {
+    "delta_r_std": 0.0416,
+    "delta_d_std": 0.0216,
+    "max_delta_g_std": 0.0504
+  },
+  "candidate_thresholds": {
+    "delta_G_1_word": 0.0109,
+    "delta_G_2_words": 0.0217,
+    "delta_G_2_sigma": 0.1009,
+    "delta_D_1_word": 0.0109,
+    "delta_D_2_words": 0.0217,
+    "delta_D_2_sigma": 0.0433
+  },
+  "primary_frozen_thresholds": {
+    "delta_G": 0.02,
+    "delta_D": 0.02,
+    "rationale": "Frozen at 2.00 percentage points (0.0200). On a ~92-word subgroup, 1 word alteration equals 1.09%, which represents the discrete granularity limit. A practically meaningful regression must exceed 1 word (>= 2 words = 2.17% ~ 2.00%) and exceed calibration sampling variability. Selected strictly on calibration.csv without test-set exposure."
+  }
+}

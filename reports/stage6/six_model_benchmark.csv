@@ -1,0 +1,2 @@
+model_key,model_name,model_id,architecture_family,ctta_status,no_adapt_wer,suta_wer,dsuta_wer,dmsuta_wer,dsg_wer,dsg_delta_r,dsg_delta_d,dsg_max_delta_g,dsg_accepted,dsg_rejected
+wav2vec2_base,Primary baseline,facebook/wav2vec2-base-960h,CTC,COMPATIBLE,22.45%,23.55%,22.55%,22.56%,22.52%,+0.07 pp,-0.75 pp,+0.47 pp,9,216

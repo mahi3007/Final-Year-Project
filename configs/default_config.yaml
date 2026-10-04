@@ -1,0 +1,44 @@
+# DSG-CTTA Canonical Experiment Configuration
+# Stage 0 -> Stage 1 Protocol
+
+protocol_version: "v1.0.0-canonical"
+seed: 42
+
+dataset:
+  name: "L2-ARCTIC"
+  primary_dir: "datasets/primary"
+  splits_dir: "datasets/splits"
+  fixture_dir: "datasets/fixture"
+  external_dir: "datasets/external"
+  audio_sampling_rate: 16000
+  split_ratios:
+    development: 0.25
+    calibration: 0.25
+    sentinel_candidates: 0.25
+    final_test: 0.25
+
+models:
+  primary_track_a: "wav2vec2_base"
+  secondary_track_b: "whisper_base"
+  laptop_suite:
+    - "wav2vec2_base"       # facebook/wav2vec2-base-960h (CTC SSL)
+    - "whisper_base"        # openai/whisper-base (Encoder-Decoder)
+    - "hubert_base"         # facebook/hubert-base-ls960 (Acoustic cluster SSL)
+    - "data2vec_base"       # facebook/data2vec-audio-base-960h (Multimodal SSL)
+    - "distil_whisper_small"# distil-whisper/distil-small.en (High-throughput student)
+    - "xlsr_english"        # jonatasgrosman/wav2vec2-large-xlsr-53-english (Cross-lingual)
+
+prequential_streaming:
+  window_size_k: 4
+  stream_id: "stream_canonical_order_01"
+
+safety_gate_tolerances:
+  epsilon_r: 0.01  # Overall WER regression tolerance UCB(Delta_R) <= 1.0%
+  epsilon_g: 0.02  # Worst-group regression tolerance UCB(max_g Delta_g) <= 2.0%
+  epsilon_d: 0.02  # Disparity amplification tolerance UCB(Delta_D) <= 2.0%
+  bootstrap_replicates: 500
+  alpha: 0.05      # 95% Upper Confidence Bound
+
+hardware:
+  device: "cpu"
+  batch_size: 1

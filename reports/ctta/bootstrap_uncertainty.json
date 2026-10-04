@@ -1,0 +1,1619 @@
+{
+  "no_adapt_order_a": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    }
+  },
+  "suta_order_a": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "delta_r": {
+      "metric_name": "delta_r",
+      "point_estimate": -0.003528985507246376,
+      "bootstrap_mean": -0.003528985507246376,
+      "bootstrap_std": 0.0020387982198007758,
+      "ci_lower_95": -0.007246376811594235,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Arabic": {
+      "metric_name": "delta_g_Arabic",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Hindi": {
+      "metric_name": "delta_g_Hindi",
+      "point_estimate": -0.0071304347826087276,
+      "bootstrap_mean": -0.0071304347826087276,
+      "bootstrap_std": 0.005166073366001283,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Korean": {
+      "metric_name": "delta_g_Korean",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Mandarin": {
+      "metric_name": "delta_g_Mandarin",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Spanish": {
+      "metric_name": "delta_g_Spanish",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Vietnamese": {
+      "metric_name": "delta_g_Vietnamese",
+      "point_estimate": -0.007282608695652205,
+      "bootstrap_mean": -0.007282608695652205,
+      "bootstrap_std": 0.005113565224522843,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "max_delta_g": {
+      "metric_name": "max_delta_g",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_d": {
+      "metric_name": "delta_d",
+      "point_estimate": -0.007152173913043509,
+      "bootstrap_mean": -0.007152173913043509,
+      "bootstrap_std": 0.005158880029103809,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    }
+  },
+  "dsuta_order_a": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "delta_r": {
+      "metric_name": "delta_r",
+      "point_estimate": -0.0017481884057971003,
+      "bootstrap_mean": -0.0017481884057971003,
+      "bootstrap_std": 0.001598472495640217,
+      "ci_lower_95": -0.005434782608695676,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Arabic": {
+      "metric_name": "delta_g_Arabic",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Hindi": {
+      "metric_name": "delta_g_Hindi",
+      "point_estimate": -0.0071304347826087276,
+      "bootstrap_mean": -0.0071304347826087276,
+      "bootstrap_std": 0.005166073366001283,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Korean": {
+      "metric_name": "delta_g_Korean",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Mandarin": {
+      "metric_name": "delta_g_Mandarin",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Spanish": {
+      "metric_name": "delta_g_Spanish",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Vietnamese": {
+      "metric_name": "delta_g_Vietnamese",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "max_delta_g": {
+      "metric_name": "max_delta_g",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_d": {
+      "metric_name": "delta_d",
+      "point_estimate": -0.0071304347826087276,
+      "bootstrap_mean": -0.0071304347826087276,
+      "bootstrap_std": 0.005166073366001283,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    }
+  },
+  "dmsuta_order_a": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "delta_r": {
+      "metric_name": "delta_r",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Arabic": {
+      "metric_name": "delta_g_Arabic",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Hindi": {
+      "metric_name": "delta_g_Hindi",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Korean": {
+      "metric_name": "delta_g_Korean",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Mandarin": {
+      "metric_name": "delta_g_Mandarin",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Spanish": {
+      "metric_name": "delta_g_Spanish",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Vietnamese": {
+      "metric_name": "delta_g_Vietnamese",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "max_delta_g": {
+      "metric_name": "max_delta_g",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_d": {
+      "metric_name": "delta_d",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    }
+  },
+  "no_adapt_order_b": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    }
+  },
+  "suta_order_b": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "delta_r": {
+      "metric_name": "delta_r",
+      "point_estimate": 0.0018460144927536244,
+      "bootstrap_mean": 0.0018460144927536244,
+      "bootstrap_std": 0.001637922076170289,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.005434782608695676,
+      "ucb_95": 0.005434782608695565
+    },
+    "delta_g_Arabic": {
+      "metric_name": "delta_g_Arabic",
+      "point_estimate": 0.0073695652173913365,
+      "bootstrap_mean": 0.0073695652173913365,
+      "bootstrap_std": 0.005081269286155598,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.010869565217391353,
+      "ucb_95": 0.010869565217391353
+    },
+    "delta_g_Hindi": {
+      "metric_name": "delta_g_Hindi",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Korean": {
+      "metric_name": "delta_g_Korean",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Mandarin": {
+      "metric_name": "delta_g_Mandarin",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Spanish": {
+      "metric_name": "delta_g_Spanish",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Vietnamese": {
+      "metric_name": "delta_g_Vietnamese",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "max_delta_g": {
+      "metric_name": "max_delta_g",
+      "point_estimate": 0.0073695652173913365,
+      "bootstrap_mean": 0.0073695652173913365,
+      "bootstrap_std": 0.005081269286155598,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.010869565217391353,
+      "ucb_95": 0.010869565217391353
+    },
+    "delta_d": {
+      "metric_name": "delta_d",
+      "point_estimate": 0.0029021739130434907,
+      "bootstrap_mean": 0.0029021739130434907,
+      "bootstrap_std": 0.004811018717443064,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.010869565217391353,
+      "ucb_95": 0.010869565217391353
+    }
+  },
+  "dsuta_order_b": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "delta_r": {
+      "metric_name": "delta_r",
+      "point_estimate": -0.0036684782608695636,
+      "bootstrap_mean": -0.0036684782608695636,
+      "bootstrap_std": 0.003240462804395119,
+      "ci_lower_95": -0.009057971014492794,
+      "ci_upper_95": 0.003623188405797009,
+      "ucb_95": 0.0018115942028985588
+    },
+    "delta_g_Arabic": {
+      "metric_name": "delta_g_Arabic",
+      "point_estimate": -0.007369565217391262,
+      "bootstrap_mean": -0.007369565217391262,
+      "bootstrap_std": 0.0050812692861555465,
+      "ci_lower_95": -0.010869565217391242,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Hindi": {
+      "metric_name": "delta_g_Hindi",
+      "point_estimate": -0.0071304347826087276,
+      "bootstrap_mean": -0.0071304347826087276,
+      "bootstrap_std": 0.005166073366001283,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Korean": {
+      "metric_name": "delta_g_Korean",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Mandarin": {
+      "metric_name": "delta_g_Mandarin",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Spanish": {
+      "metric_name": "delta_g_Spanish",
+      "point_estimate": -0.007445652173913077,
+      "bootstrap_mean": -0.007445652173913077,
+      "bootstrap_std": 0.00505161205753601,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Vietnamese": {
+      "metric_name": "delta_g_Vietnamese",
+      "point_estimate": 0.007282608695652131,
+      "bootstrap_mean": 0.007282608695652131,
+      "bootstrap_std": 0.005113565224522791,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.010869565217391242,
+      "ucb_95": 0.010869565217391242
+    },
+    "max_delta_g": {
+      "metric_name": "max_delta_g",
+      "point_estimate": 0.007282608695652131,
+      "bootstrap_mean": 0.007282608695652131,
+      "bootstrap_std": 0.005113565224522791,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.010869565217391242,
+      "ucb_95": 0.010869565217391242
+    },
+    "delta_d": {
+      "metric_name": "delta_d",
+      "point_estimate": -0.01068478260869567,
+      "bootstrap_mean": -0.01068478260869567,
+      "bootstrap_std": 0.0015650562919710745,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": -0.010869565217391242,
+      "ucb_95": -0.010869565217391242
+    }
+  },
+  "dmsuta_order_b": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "delta_r": {
+      "metric_name": "delta_r",
+      "point_estimate": 9.782608695652218e-05,
+      "bootstrap_mean": 9.782608695652218e-05,
+      "bootstrap_std": 0.00251610349479911,
+      "ci_lower_95": -0.005434782608695565,
+      "ci_upper_95": 0.005434782608695676,
+      "ucb_95": 0.0036231884057971175
+    },
+    "delta_g_Arabic": {
+      "metric_name": "delta_g_Arabic",
+      "point_estimate": 0.0073695652173913365,
+      "bootstrap_mean": 0.0073695652173913365,
+      "bootstrap_std": 0.005081269286155598,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.010869565217391353,
+      "ucb_95": 0.010869565217391353
+    },
+    "delta_g_Hindi": {
+      "metric_name": "delta_g_Hindi",
+      "point_estimate": -0.0071304347826087276,
+      "bootstrap_mean": -0.0071304347826087276,
+      "bootstrap_std": 0.005166073366001283,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Korean": {
+      "metric_name": "delta_g_Korean",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Mandarin": {
+      "metric_name": "delta_g_Mandarin",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Spanish": {
+      "metric_name": "delta_g_Spanish",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Vietnamese": {
+      "metric_name": "delta_g_Vietnamese",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "max_delta_g": {
+      "metric_name": "max_delta_g",
+      "point_estimate": 0.0073695652173913365,
+      "bootstrap_mean": 0.0073695652173913365,
+      "bootstrap_std": 0.005081269286155598,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.010869565217391353,
+      "ucb_95": 0.010869565217391353
+    },
+    "delta_d": {
+      "metric_name": "delta_d",
+      "point_estimate": -0.004228260869565236,
+      "bootstrap_mean": -0.004228260869565236,
+      "bootstrap_std": 0.009553175791566247,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": 0.010869565217391353,
+      "ucb_95": 0.010869565217391353
+    }
+  },
+  "no_adapt_order_c": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    }
+  },
+  "suta_order_c": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "delta_r": {
+      "metric_name": "delta_r",
+      "point_estimate": 9.05797101449335e-06,
+      "bootstrap_mean": 9.05797101449335e-06,
+      "bootstrap_std": 0.002504253552932686,
+      "ci_lower_95": -0.005434782608695676,
+      "ci_upper_95": 0.005434782608695568,
+      "ucb_95": 0.0036231884057971175
+    },
+    "delta_g_Arabic": {
+      "metric_name": "delta_g_Arabic",
+      "point_estimate": -0.007369565217391262,
+      "bootstrap_mean": -0.007369565217391262,
+      "bootstrap_std": 0.0050812692861555465,
+      "ci_lower_95": -0.010869565217391242,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Hindi": {
+      "metric_name": "delta_g_Hindi",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Korean": {
+      "metric_name": "delta_g_Korean",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Mandarin": {
+      "metric_name": "delta_g_Mandarin",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Spanish": {
+      "metric_name": "delta_g_Spanish",
+      "point_estimate": 0.007445652173913,
+      "bootstrap_mean": 0.007445652173913,
+      "bootstrap_std": 0.005051612057535959,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.010869565217391242,
+      "ucb_95": 0.010869565217391242
+    },
+    "delta_g_Vietnamese": {
+      "metric_name": "delta_g_Vietnamese",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "max_delta_g": {
+      "metric_name": "max_delta_g",
+      "point_estimate": 0.007445652173913,
+      "bootstrap_mean": 0.007445652173913,
+      "bootstrap_std": 0.005051612057535959,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.010869565217391242,
+      "ucb_95": 0.010869565217391242
+    },
+    "delta_d": {
+      "metric_name": "delta_d",
+      "point_estimate": -0.0022282608695652043,
+      "bootstrap_mean": -0.0022282608695652043,
+      "bootstrap_std": 0.005825744862018661,
+      "ci_lower_95": -0.010869565217391242,
+      "ci_upper_95": 0.010869565217391242,
+      "ucb_95": 0.010869565217391242
+    }
+  },
+  "dsuta_order_c": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "delta_r": {
+      "metric_name": "delta_r",
+      "point_estimate": -0.0037010869565217387,
+      "bootstrap_mean": -0.0037010869565217387,
+      "bootstrap_std": 0.0020974564543599613,
+      "ci_lower_95": -0.007246376811594235,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Arabic": {
+      "metric_name": "delta_g_Arabic",
+      "point_estimate": -0.007369565217391262,
+      "bootstrap_mean": -0.007369565217391262,
+      "bootstrap_std": 0.0050812692861555465,
+      "ci_lower_95": -0.010869565217391242,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Hindi": {
+      "metric_name": "delta_g_Hindi",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Korean": {
+      "metric_name": "delta_g_Korean",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Mandarin": {
+      "metric_name": "delta_g_Mandarin",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Spanish": {
+      "metric_name": "delta_g_Spanish",
+      "point_estimate": -0.007445652173913077,
+      "bootstrap_mean": -0.007445652173913077,
+      "bootstrap_std": 0.00505161205753601,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Vietnamese": {
+      "metric_name": "delta_g_Vietnamese",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "max_delta_g": {
+      "metric_name": "max_delta_g",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_d": {
+      "metric_name": "delta_d",
+      "point_estimate": -0.003576086956521725,
+      "bootstrap_mean": -0.003576086956521725,
+      "bootstrap_std": 0.0051096204063577335,
+      "ci_lower_95": -0.010869565217391353,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    }
+  },
+  "dmsuta_order_c": {
+    "corpus_wer": {
+      "metric_name": "corpus_wer",
+      "point_estimate": 0.8545833333333334,
+      "bootstrap_mean": 0.8545833333333334,
+      "bootstrap_std": 0.02635734350712757,
+      "ci_lower_95": 0.8061594202898551,
+      "ci_upper_95": 0.9094202898550725,
+      "ucb_95": 0.9003623188405797
+    },
+    "group_wer_Arabic": {
+      "metric_name": "group_wer_Arabic",
+      "point_estimate": 0.6043043478260868,
+      "bootstrap_mean": 0.6043043478260868,
+      "bootstrap_std": 0.4166640814647572,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8913043478260869,
+      "ucb_95": 0.8913043478260869
+    },
+    "group_wer_Hindi": {
+      "metric_name": "group_wer_Hindi",
+      "point_estimate": 0.6417391304347825,
+      "bootstrap_mean": 0.6417391304347825,
+      "bootstrap_std": 0.46494660294011353,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "group_wer_Korean": {
+      "metric_name": "group_wer_Korean",
+      "point_estimate": 0.5617391304347825,
+      "bootstrap_mean": 0.5617391304347825,
+      "bootstrap_std": 0.3855426839138977,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8260869565217391,
+      "ucb_95": 0.8260869565217391
+    },
+    "group_wer_Mandarin": {
+      "metric_name": "group_wer_Mandarin",
+      "point_estimate": 0.524782608695652,
+      "bootstrap_mean": 0.524782608695652,
+      "bootstrap_std": 0.36017803365640444,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.7717391304347826,
+      "ucb_95": 0.7717391304347826
+    },
+    "group_wer_Spanish": {
+      "metric_name": "group_wer_Spanish",
+      "point_estimate": 0.5882065217391305,
+      "bootstrap_mean": 0.5882065217391305,
+      "bootstrap_std": 0.3990773525453431,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8586956521739131,
+      "ucb_95": 0.8586956521739131
+    },
+    "group_wer_Vietnamese": {
+      "metric_name": "group_wer_Vietnamese",
+      "point_estimate": 0.5389130434782611,
+      "bootstrap_mean": 0.5389130434782611,
+      "bootstrap_std": 0.3784038266146887,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.8043478260869565,
+      "ucb_95": 0.8043478260869565
+    },
+    "disparity_d": {
+      "metric_name": "disparity_d",
+      "point_estimate": 0.9314130434782608,
+      "bootstrap_mean": 0.9314130434782608,
+      "bootstrap_std": 0.10864771323931662,
+      "ci_lower_95": 0.8260869565217391,
+      "ci_upper_95": 0.9782608695652174,
+      "ucb_95": 0.9782608695652174
+    },
+    "delta_r": {
+      "metric_name": "delta_r",
+      "point_estimate": -0.0019112318840579698,
+      "bootstrap_mean": -0.0019112318840579698,
+      "bootstrap_std": 0.003921865751554002,
+      "ci_lower_95": -0.010869565217391242,
+      "ci_upper_95": 0.005434782608695676,
+      "ucb_95": 0.0036231884057971175
+    },
+    "delta_g_Arabic": {
+      "metric_name": "delta_g_Arabic",
+      "point_estimate": -0.014739130434782598,
+      "bootstrap_mean": -0.014739130434782598,
+      "bootstrap_std": 0.010162538572311145,
+      "ci_lower_95": -0.021739130434782594,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Hindi": {
+      "metric_name": "delta_g_Hindi",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Korean": {
+      "metric_name": "delta_g_Korean",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Mandarin": {
+      "metric_name": "delta_g_Mandarin",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Spanish": {
+      "metric_name": "delta_g_Spanish",
+      "point_estimate": 0.0,
+      "bootstrap_mean": 0.0,
+      "bootstrap_std": 0.0,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    },
+    "delta_g_Vietnamese": {
+      "metric_name": "delta_g_Vietnamese",
+      "point_estimate": 0.007282608695652131,
+      "bootstrap_mean": 0.007282608695652131,
+      "bootstrap_std": 0.005113565224522791,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.010869565217391242,
+      "ucb_95": 0.010869565217391242
+    },
+    "max_delta_g": {
+      "metric_name": "max_delta_g",
+      "point_estimate": 0.007282608695652131,
+      "bootstrap_mean": 0.007282608695652131,
+      "bootstrap_std": 0.005113565224522791,
+      "ci_lower_95": 0.0,
+      "ci_upper_95": 0.010869565217391242,
+      "ucb_95": 0.010869565217391242
+    },
+    "delta_d": {
+      "metric_name": "delta_d",
+      "point_estimate": -0.00578260869565217,
+      "bootstrap_mean": -0.00578260869565217,
+      "bootstrap_std": 0.009647397489866202,
+      "ci_lower_95": -0.021739130434782594,
+      "ci_upper_95": 0.0,
+      "ucb_95": 0.0
+    }
+  }
+}

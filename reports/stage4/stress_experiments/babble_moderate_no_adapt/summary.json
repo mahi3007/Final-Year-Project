@@ -1,0 +1,28 @@
+{
+  "experiment_id": "stress_babble_moderate_no_adapt",
+  "method_id": "no_adapt",
+  "model_id": "wav2vec2_base",
+  "stream_id": "stream_order_a_k4_s42",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9402,
+  "speaker_macro_wer": 0.9402,
+  "disparity_d": 0.0761,
+  "disparity_ratio_r": 1.085,
+  "best_group_id": "Arabic",
+  "worst_group_id": "Spanish",
+  "total_adaptation_time_seconds": 12.7537,
+  "total_inference_time_seconds": 44.2172,
+  "num_updates": 0,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.8967,
+    "Hindi": 0.9185,
+    "Korean": 0.9293,
+    "Mandarin": 0.9674,
+    "Spanish": 0.9728,
+    "Vietnamese": 0.9565
+  }
+}

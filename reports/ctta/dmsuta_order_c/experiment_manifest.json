@@ -1,0 +1,28 @@
+{
+  "experiment_id": "stage3_dmsuta_wav2vec2_order_c",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_c_k4_s42",
+  "ordering_id": "ORDER_C",
+  "seed": 42,
+  "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f",
+  "model_id": "wav2vec2_base",
+  "method_id": "dmsuta",
+  "window_size_k": 4,
+  "total_windows": 15,
+  "total_utterances": 60,
+  "total_reference_words": 552,
+  "adapter_config": {
+    "lr": 0.0001,
+    "temperature": 2.5,
+    "alpha": 0.5,
+    "steps": 1,
+    "max_bank_size": 3
+  },
+  "timestamp": "2026-09-29T15:51:20Z",
+  "output_files": {
+    "predictions_csv": "reports/ctta/dmsuta_order_c\\predictions.csv",
+    "window_metrics_csv": "reports/ctta/dmsuta_order_c\\window_metrics.csv",
+    "group_metrics_csv": "reports/ctta/dmsuta_order_c\\group_metrics.csv",
+    "adaptation_trajectory_csv": "reports/ctta/dmsuta_order_c\\adaptation_trajectory.csv"
+  }
+}

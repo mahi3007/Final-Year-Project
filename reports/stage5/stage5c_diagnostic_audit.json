@@ -1,0 +1,45 @@
+{
+  "diagnostic_phase": "Stage 5C Diagnostic Audit",
+  "dsg_decisions": {
+    "total": 225,
+    "accepted": 0,
+    "rejected": 225,
+    "fail_closed_rejections": 225,
+    "primary_driver": "Evaluator exception due to missing local sentinel audio materialized files; fail-closed contract enforced REJECT on 100% of candidate updates."
+  },
+  "reconciliation": {
+    "pooled_max_delta_g": 0.023861,
+    "pooled_max_delta_g_stratum": "Irish English",
+    "bootstrap_mean_of_replicate_maxima": 0.026851534794903195,
+    "bootstrap_ucb_95": 0.0451744850250882,
+    "jensen_inequality_bias_note": "E[max_g Delta_g^(b)] = 0.02685 > max_g E[Delta_g^(b)] = 0.02386"
+  },
+  "p_value_clarification": {
+    "suta_bootstrap_delta_r_ci_95": [
+      0.005048282009163664,
+      0.016896498305820122
+    ],
+    "suta_bootstrap_empirical_tail_p": 0.0,
+    "formal_reporting_standard": "Report pre-registered 95% UCB and bootstrap CI, avoiding conflation of UCB with frequentist p-values."
+  },
+  "window_level_outcome_audit": {
+    "suta": {
+      "harmful_windows": 88,
+      "neutral_windows": 90,
+      "beneficial_windows": 47,
+      "net_errors_added": 95
+    },
+    "dsuta": {
+      "harmful_windows": 27,
+      "neutral_windows": 169,
+      "beneficial_windows": 29,
+      "net_errors_added": 8
+    },
+    "dmsuta": {
+      "harmful_windows": 41,
+      "neutral_windows": 146,
+      "beneficial_windows": 38,
+      "net_errors_added": 9
+    }
+  }
+}

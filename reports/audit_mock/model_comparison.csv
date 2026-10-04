@@ -1,0 +1,2 @@
+model_name,model_id,architecture_family,role,corpus_wer,speaker_macro_wer,mean_cer,min_group_wer,max_group_wer,disparity_d,best_group_id,worst_group_id,total_speakers,total_utterances,total_reference_words
+mock_asr,mock-asr-v1,Mock,Deterministic Test / CI Backbone,0.9130434782608695,0.9130434782608695,0.7856936657364311,0.9130434782608695,0.9130434782608695,0.0,Arabic,Arabic,6,60,552

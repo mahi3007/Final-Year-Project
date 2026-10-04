@@ -1,0 +1,2 @@
+model_key,model_id,architecture_family,candidate_updates,accepted_updates,rejected_updates,acceptance_rate,statistical_rejections,fail_closed_errors,delta_R_pp,delta_D_pp,max_delta_g_pp
+wav2vec2_base,facebook/wav2vec2-base-960h,CTC,225,9,216,4.0%,216,0,0.0692,-0.7464000000000001,0.4667

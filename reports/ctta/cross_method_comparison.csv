@@ -1,0 +1,5 @@
+method,ordering,corpus_wer,delta_r,speaker_macro_wer,disparity_d,delta_d,max_group_regression,worst_regressed_group,best_group,worst_group,adaptation_time_sec,num_updates,num_resets,delta_g_Arabic,wer_Arabic,delta_g_Hindi,wer_Hindi,delta_g_Korean,wer_Korean,delta_g_Mandarin,wer_Mandarin,delta_g_Spanish,wer_Spanish,delta_g_Vietnamese,wer_Vietnamese
+no_adapt,ORDER_A,0.8551,0.0,0.8551,0.2065,0.0,0.0,Arabic,Mandarin,Hindi,7.25,0,0,0.0,0.8913,0.0,0.9783,0.0,0.8261,0.0,0.7717,0.0,0.8587,0.0,0.8043
+suta,ORDER_A,0.8514,-0.0037,0.8514,0.1957,-0.0108,0.0,Arabic,Mandarin,Hindi,72.71,15,0,0.0,0.8913,-0.0109,0.9674,0.0,0.8261,0.0,0.7717,0.0,0.8587,-0.0108,0.7935
+dsuta,ORDER_A,0.8533,-0.0018,0.8533,0.1957,-0.0108,0.0,Arabic,Mandarin,Hindi,92.28,15,1,0.0,0.8913,-0.0109,0.9674,0.0,0.8261,0.0,0.7717,0.0,0.8587,0.0,0.8043
+dmsuta,ORDER_A,0.8551,0.0,0.8551,0.2065,0.0,0.0,Arabic,Mandarin,Hindi,124.95,15,0,0.0,0.8913,0.0,0.9783,0.0,0.8261,0.0,0.7717,0.0,0.8587,0.0,0.8043

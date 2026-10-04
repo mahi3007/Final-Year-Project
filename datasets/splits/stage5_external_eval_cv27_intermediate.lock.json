@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "immutability_note": "This file is frozen. To change the evaluation set, create stage5_external_eval_v2.csv with a new protocol identity.",
+  "csv_hash": "b82db8d1f3b3522867d4d0c63057bb8973b7f9fdcc0d6ef9e508f9dfb9f78204",
+  "manifest_hash": "db8458659364ea858e98c4fd9609c570e0f4610f6e1a32ba3eeb248e51decc85",
+  "selection_seed": "20261001",
+  "selection_rule": "v1.0-phase3",
+  "dataset_release": "cv-corpus-11.0-2022-09-21",
+  "protocol_version": "v1.0.0-canonical",
+  "group_definition_version": "common_voice_11_enumerated_accent_v1",
+  "frozen_at": "2026-10-01T12:44:43.967381+00:00"
+}

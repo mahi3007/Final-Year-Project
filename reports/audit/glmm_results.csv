@@ -1,0 +1,49 @@
+model_name,model_family,variable,beta,std_err,z_stat,p_value,p_value_adjusted,rate_ratio,rr_ci_lower_95,rr_ci_upper_95
+wav2vec2_base,Poisson,Intercept,-0.0683,0.0876,-0.779,0.435714,0.435714,0.934,0.7867,1.1089
+wav2vec2_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Hindi]",-0.0056,0.1882,-0.03,0.976381,0.976494,0.9944,0.6876,1.4381
+wav2vec2_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Korean]",-0.1019,0.05,-2.04,0.041372,0.124115,0.9031,0.8189,0.996
+wav2vec2_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Mandarin]",-0.174,0.0575,-3.026,0.002481,0.009924,0.8403,0.7508,0.9406
+wav2vec2_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Spanish]",-0.1537,0.2218,-0.693,0.488247,0.976494,0.8575,0.5552,1.3244
+wav2vec2_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Vietnamese]",-0.1154,0.0249,-4.638,4e-06,1.8e-05,0.891,0.8486,0.9355
+wav2vec2_base,Poisson,snr_z,-0.0537,0.1025,-0.524,0.600043,0.600043,0.9477,0.7752,1.1585
+wav2vec2_base,Poisson,rate_z,-0.1852,0.043,-4.304,1.7e-05,1.7e-05,0.831,0.7638,0.9041
+whisper_base,Poisson,Intercept,-0.1117,0.1123,-0.994,0.320058,0.320058,0.8943,0.7176,1.1146
+whisper_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Hindi]",0.1347,0.234,0.576,0.564832,1.0,1.1442,0.7233,1.81
+whisper_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Korean]",-0.0282,0.0599,-0.47,0.638057,1.0,0.9722,0.8645,1.0933
+whisper_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Mandarin]",-0.1167,0.0664,-1.758,0.078814,0.39407,0.8899,0.7813,1.0135
+whisper_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Spanish]",0.0915,0.2766,0.331,0.740838,1.0,1.0958,0.6372,1.8843
+whisper_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Vietnamese]",-0.0037,0.0249,-0.147,0.883139,1.0,0.9964,0.949,1.0461
+whisper_base,Poisson,snr_z,0.0428,0.1288,0.332,0.73992,0.73992,1.0437,0.8108,1.3435
+whisper_base,Poisson,rate_z,-0.1148,0.0388,-2.961,0.00307,0.00307,0.8916,0.8263,0.962
+data2vec_base,Poisson,Intercept,-0.2157,0.0701,-3.079,0.002075,0.002075,0.806,0.7025,0.9246
+data2vec_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Hindi]",0.1063,0.1508,0.705,0.481117,1.0,1.1121,0.8275,1.4946
+data2vec_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Korean]",0.0344,0.0392,0.878,0.380118,1.0,1.035,0.9584,1.1177
+data2vec_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Mandarin]",-0.0479,0.0482,-0.994,0.320135,1.0,0.9532,0.8673,1.0477
+data2vec_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Spanish]",0.0024,0.1786,0.013,0.989319,1.0,1.0024,0.7063,1.4226
+data2vec_base,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Vietnamese]",0.0997,0.022,4.537,6e-06,2.8e-05,1.1048,1.0583,1.1534
+data2vec_base,Poisson,snr_z,-0.011,0.081,-0.136,0.891898,0.891898,0.989,0.8438,1.1593
+data2vec_base,Poisson,rate_z,-0.2523,0.0299,-8.438,0.0,0.0,0.777,0.7328,0.8239
+distil_whisper_small,NegativeBinomial,Intercept,-0.0402,0.1501,-0.268,0.788612,0.788612,0.9606,0.7157,1.2891
+distil_whisper_small,NegativeBinomial,"C(group_id, Treatment(reference='Arabic'))[T.Hindi]",-0.124,0.3127,-0.397,0.691681,0.691681,0.8834,0.4786,1.6304
+distil_whisper_small,NegativeBinomial,"C(group_id, Treatment(reference='Arabic'))[T.Korean]",-0.1564,0.0674,-2.32,0.020363,0.061088,0.8553,0.7494,0.976
+distil_whisper_small,NegativeBinomial,"C(group_id, Treatment(reference='Arabic'))[T.Mandarin]",-0.2201,0.0749,-2.94,0.00328,0.013121,0.8024,0.6929,0.9293
+distil_whisper_small,NegativeBinomial,"C(group_id, Treatment(reference='Arabic'))[T.Spanish]",-0.4606,0.3945,-1.168,0.243008,0.486017,0.6309,0.2912,1.367
+distil_whisper_small,NegativeBinomial,"C(group_id, Treatment(reference='Arabic'))[T.Vietnamese]",-0.1951,0.0577,-3.382,0.000719,0.003595,0.8228,0.7348,0.9212
+distil_whisper_small,NegativeBinomial,snr_z,-0.1273,0.1955,-0.651,0.515035,0.515035,0.8805,0.6002,1.2917
+distil_whisper_small,NegativeBinomial,rate_z,-0.3965,0.0431,-9.196,0.0,0.0,0.6726,0.6181,0.732
+whisper_tiny,NegativeBinomial,Intercept,-0.1482,0.1569,-0.945,0.344717,0.344717,0.8622,0.634,1.1726
+whisper_tiny,NegativeBinomial,"C(group_id, Treatment(reference='Arabic'))[T.Hindi]",0.1742,0.3385,0.515,0.606768,1.0,1.1903,0.6131,2.311
+whisper_tiny,NegativeBinomial,"C(group_id, Treatment(reference='Arabic'))[T.Korean]",0.4228,0.0508,8.325,0.0,0.0,1.5262,1.3816,1.686
+whisper_tiny,NegativeBinomial,"C(group_id, Treatment(reference='Arabic'))[T.Mandarin]",-0.0154,0.0823,-0.187,0.851821,1.0,0.9847,0.838,1.1572
+whisper_tiny,NegativeBinomial,"C(group_id, Treatment(reference='Arabic'))[T.Spanish]",0.0458,0.4091,0.112,0.910843,1.0,1.0469,0.4695,2.3341
+whisper_tiny,NegativeBinomial,"C(group_id, Treatment(reference='Arabic'))[T.Vietnamese]",-0.0241,0.06,-0.401,0.68818,1.0,0.9762,0.8678,1.0981
+whisper_tiny,NegativeBinomial,snr_z,0.0368,0.2013,0.183,0.854733,0.854733,1.0375,0.6994,1.5392
+whisper_tiny,NegativeBinomial,rate_z,-0.158,0.0352,-4.489,7e-06,7e-06,0.8539,0.797,0.9148
+wav2vec2_100h,Poisson,Intercept,-0.0374,0.0723,-0.517,0.605158,0.605158,0.9633,0.836,1.11
+wav2vec2_100h,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Hindi]",-0.0342,0.1542,-0.222,0.824444,0.824444,0.9664,0.7143,1.3073
+wav2vec2_100h,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Korean]",-0.0914,0.0411,-2.227,0.02597,0.077911,0.9126,0.8421,0.9891
+wav2vec2_100h,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Mandarin]",-0.203,0.0472,-4.302,1.7e-05,8.5e-05,0.8163,0.7442,0.8954
+wav2vec2_100h,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Spanish]",-0.1836,0.1816,-1.011,0.31186,0.623719,0.8323,0.5831,1.188
+wav2vec2_100h,Poisson,"C(group_id, Treatment(reference='Arabic'))[T.Vietnamese]",-0.0513,0.0205,-2.503,0.012326,0.049303,0.95,0.9125,0.9889
+wav2vec2_100h,Poisson,snr_z,-0.0622,0.0839,-0.74,0.459039,0.459039,0.9397,0.7972,1.1078
+wav2vec2_100h,Poisson,rate_z,-0.1909,0.0443,-4.307,1.7e-05,1.7e-05,0.8262,0.7575,0.9012

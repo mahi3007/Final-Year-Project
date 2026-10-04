@@ -1,0 +1,16 @@
+window_id,cumulative_utterances,cumulative_words,cumulative_wer,cumulative_disparity,theta_after_hash,adaptation_updated,adaptation_reset,adaptation_time_seconds,inference_time_seconds,wer_group_Arabic,wer_group_Hindi,wer_group_Korean,wer_group_Mandarin,wer_group_Spanish,wer_group_Vietnamese
+0,4,39,0.641,0.0,374e056a749fb93c,True,False,4.0447,0.8742,0.641,,,,,
+1,8,74,0.8108,0.0,5d87bb910fa8b6ce,True,False,2.1724,0.6735,0.8108,,,,,
+2,12,110,0.8727,0.1522,5d87bb910fa8b6ce,True,False,2.1847,0.7966,0.8478,1.0,,,,
+3,16,148,0.9054,0.1522,5d87bb910fa8b6ce,True,False,2.3349,0.6219,0.8478,1.0,,,,
+4,20,184,0.9239,0.1522,5d87bb910fa8b6ce,True,False,1.8064,0.6741,0.8478,1.0,,,,
+5,24,223,0.9372,0.1522,5d87bb910fa8b6ce,True,False,3.6218,0.9218,0.8478,1.0,1.0,,,
+6,28,258,0.9457,0.1522,5d87bb910fa8b6ce,True,False,2.7023,0.755,0.8478,1.0,1.0,,,
+7,32,294,0.9524,0.1522,5d87bb910fa8b6ce,True,False,2.6212,0.9373,0.8478,1.0,1.0,1.0,,
+8,36,332,0.9578,0.1522,5d87bb910fa8b6ce,True,False,2.7377,0.7132,0.8478,1.0,1.0,1.0,,
+9,40,368,0.962,0.1522,5d87bb910fa8b6ce,True,False,2.7879,0.8231,0.8478,1.0,1.0,1.0,,
+10,44,407,0.9656,0.1522,5d87bb910fa8b6ce,True,False,2.3085,0.772,0.8478,1.0,1.0,1.0,1.0,
+11,48,442,0.9683,0.1522,5d87bb910fa8b6ce,True,False,2.246,0.6437,0.8478,1.0,1.0,1.0,1.0,
+12,52,478,0.9707,0.1522,5d87bb910fa8b6ce,True,False,4.091,0.9753,0.8478,1.0,1.0,1.0,1.0,1.0
+13,56,516,0.9729,0.1522,5d87bb910fa8b6ce,True,False,3.187,0.9201,0.8478,1.0,1.0,1.0,1.0,1.0
+14,60,552,0.9746,0.1522,5d87bb910fa8b6ce,True,False,3.7396,1.018,0.8478,1.0,1.0,1.0,1.0,1.0

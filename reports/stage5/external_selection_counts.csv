@@ -1,0 +1,7 @@
+group_code,group_label,total_speakers_found,eligible_speakers,target_speakers,feasible,selected_speakers,target_clips,selected_clips
+US English,United States English,8969,3913,10,True,10,150,150
+England English,England English,2695,1223,10,True,10,150,150
+South Asian English,"India and South Asia (India, Pakistan, Sri Lanka)",2413,764,10,True,10,150,150
+Australian English,Australian English,800,400,10,True,10,150,150
+Canadian English,Canadian English,1024,511,10,True,10,150,150
+Irish English,Irish English,218,94,10,True,10,150,150

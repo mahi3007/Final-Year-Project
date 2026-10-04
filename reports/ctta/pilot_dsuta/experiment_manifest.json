@@ -1,0 +1,28 @@
+{
+  "experiment_id": "pilot_dsuta_wav2vec2",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_a_k4_s42",
+  "ordering_id": "ORDER_A",
+  "seed": 42,
+  "stream_hash": "d37e34d8424bbfb468d7f33f17e17fbfac5b777445c55c9e460f3c11942c2738",
+  "model_id": "wav2vec2_base",
+  "method_id": "dsuta",
+  "window_size_k": 4,
+  "total_windows": 3,
+  "total_utterances": 12,
+  "total_reference_words": 108,
+  "adapter_config": {
+    "lr": 0.0001,
+    "temperature": 2.5,
+    "alpha": 0.5,
+    "steps": 1,
+    "reset_threshold_ratio": 1.25
+  },
+  "timestamp": "2026-09-29T14:24:02Z",
+  "output_files": {
+    "predictions_csv": "reports/ctta/pilot_dsuta\\predictions.csv",
+    "window_metrics_csv": "reports/ctta/pilot_dsuta\\window_metrics.csv",
+    "group_metrics_csv": "reports/ctta/pilot_dsuta\\group_metrics.csv",
+    "adaptation_trajectory_csv": "reports/ctta/pilot_dsuta\\adaptation_trajectory.csv"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "experiment_id": "pilot_dsuta_wav2vec2",
+  "method_id": "dsuta",
+  "model_id": "wav2vec2_base",
+  "stream_id": "stream_order_a_k4_s42",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 12,
+  "total_reference_words": 108,
+  "corpus_wer": 0.75,
+  "speaker_macro_wer": 0.75,
+  "disparity_d": 0.3333,
+  "disparity_ratio_r": 1.6,
+  "best_group_id": "Hindi",
+  "worst_group_id": "Vietnamese",
+  "total_adaptation_time_seconds": 12.0556,
+  "total_inference_time_seconds": 2.7629,
+  "num_updates": 3,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.6667,
+    "Hindi": 0.5556,
+    "Korean": 0.7778,
+    "Mandarin": 0.8333,
+    "Spanish": 0.7778,
+    "Vietnamese": 0.8889
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "experiment_id": "stress_babble_moderate_dmsuta",
+  "method_id": "dmsuta",
+  "model_id": "wav2vec2_base",
+  "stream_id": "stream_order_a_k4_s42",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9882,
+  "speaker_macro_wer": 0.9882,
+  "disparity_d": 0.0707,
+  "disparity_ratio_r": 1.076,
+  "best_group_id": "Arabic",
+  "worst_group_id": "Hindi",
+  "total_adaptation_time_seconds": 232.5061,
+  "total_inference_time_seconds": 35.2721,
+  "num_updates": 30,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.9293,
+    "Hindi": 1.0,
+    "Korean": 1.0,
+    "Mandarin": 1.0,
+    "Spanish": 1.0,
+    "Vietnamese": 1.0
+  }
+}

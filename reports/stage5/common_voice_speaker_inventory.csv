@@ -1,0 +1,17 @@
+﻿accent_group,est_unique_speakers,est_clips_per_speaker_median,est_total_validated_clips,est_speakers_with_accent_label,viable_at_5_per_group,viable_at_10_per_group,viable_at_15_per_group,viable_at_20_per_group,notes
+us,~12000-15000,18,~249000,~12000-15000,YES,YES,YES,YES,Largest group; highly viable at all targets
+england,~3500-5000,18,~75000,~3500-5000,YES,YES,YES,YES,Second largest L1-native group; viable at all targets
+indian,~4000-6000,16,~79000,~4000-6000,YES,YES,YES,YES,Largest L2-associated group; viable at all targets; partial Hindi proxy
+australia,~1500-2500,16,~33000,~1500-2500,YES,YES,YES,YES,Sufficient at all targets; smallest pool in top tier
+canada,~1000-1800,15,~20000,~1000-1800,YES,YES,MARGINAL,NO,Viable at 5 and 10; marginal at 15; insufficient at 20
+ireland,~500-900,14,~10000,~500-900,YES,YES,MARGINAL,NO,Viable at 5 and 10; borderline at 15
+scotland,~350-600,14,~7000,~350-600,YES,MARGINAL,NO,NO,Viable at 5; marginal at 10; insufficient at 15+
+wales,~150-300,14,~3000,~150-300,YES,MARGINAL,NO,NO,Pool only marginally supports 5/group; risky at 10
+newzealand,~250-500,14,~5000,~250-500,YES,MARGINAL,NO,NO,Viable at 5; borderline at 10
+philippines,~400-700,14,~8000,~400-700,YES,YES,MARGINAL,NO,Viable at 5 and 10
+hongkong,~200-400,14,~4000,~200-400,YES,MARGINAL,NO,NO,Viable at 5; borderline at 10
+african,~300-600,14,~6000,~300-600,YES,YES,MARGINAL,NO,Viable at 5 and 10; L1 heterogeneous
+malaysia,~150-300,13,~3500,~150-300,YES,MARGINAL,NO,NO,Borderline at 5; risky at 10
+singapore,~150-300,13,~3000,~150-300,YES,MARGINAL,NO,NO,Borderline at 5; risky at 10
+bermuda,<50,10,<500,<50,MARGINAL,NO,NO,NO,Insufficient at all meaningful targets
+southatlantic,<30,8,<200,<30,NO,NO,NO,NO,Exclude: insufficient speakers

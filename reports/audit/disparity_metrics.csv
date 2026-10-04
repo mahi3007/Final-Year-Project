@@ -1,0 +1,7 @@
+model_name,min_group_wer,max_group_wer,disparity_d,disparity_ratio_r,best_group_id,worst_group_id
+wav2vec2_base,0.7717,0.9783,0.2065,1.268,Mandarin,Hindi
+whisper_base,0.8043,0.9783,0.1739,1.216,Mandarin,Hindi
+data2vec_base,0.7717,0.913,0.1413,1.183,Mandarin,Hindi
+distil_whisper_small,0.7391,0.9565,0.2174,1.294,Spanish,Hindi
+whisper_tiny,0.8587,1.337,0.4783,1.557,Mandarin,Korean
+wav2vec2_100h,0.7717,0.9891,0.2174,1.282,Mandarin,Hindi

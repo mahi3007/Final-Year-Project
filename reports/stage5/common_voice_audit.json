@@ -1,0 +1,310 @@
+﻿{
+    "audit_metadata":  {
+                           "phase":  "Stage 5 Phase 1 - Common Voice Metadata Audit",
+                           "audit_date":  "2026-10-01",
+                           "scope":  "Metadata-only feasibility analysis. No audio downloaded. No final evaluation subset created. No DSG controller implemented.",
+                           "project":  "DSG-CTTA",
+                           "auditor":  "Lead Research Data Engineer"
+                       },
+    "metadata_schema":  {
+                            "primary_file":  "validated.tsv",
+                            "fields":  [
+                                           {
+                                               "name":  "client_id",
+                                               "research_use":  "Speaker identity; independence check",
+                                               "type":  "string",
+                                               "missing_rate_est":  "~0%"
+                                           },
+                                           {
+                                               "name":  "path",
+                                               "research_use":  "Audio retrieval",
+                                               "type":  "string",
+                                               "missing_rate_est":  "~0%"
+                                           },
+                                           {
+                                               "name":  "sentence",
+                                               "research_use":  "WER reference transcript",
+                                               "type":  "string",
+                                               "missing_rate_est":  "~0%"
+                                           },
+                                           {
+                                               "name":  "up_votes",
+                                               "research_use":  "Quality gate",
+                                               "type":  "integer",
+                                               "missing_rate_est":  "~0%"
+                                           },
+                                           {
+                                               "name":  "down_votes",
+                                               "research_use":  "Quality gate",
+                                               "type":  "integer",
+                                               "missing_rate_est":  "~0%"
+                                           },
+                                           {
+                                               "name":  "age",
+                                               "research_use":  "Demographic stratification (optional)",
+                                               "type":  "string",
+                                               "missing_rate_est":  "~35-45%"
+                                           },
+                                           {
+                                               "name":  "gender",
+                                               "research_use":  "Demographic stratification (optional)",
+                                               "type":  "string",
+                                               "missing_rate_est":  "~35-45%"
+                                           },
+                                           {
+                                               "name":  "accent",
+                                               "research_use":  "PRIMARY GROUP VARIABLE",
+                                               "type":  "string (enumerated in v11, free-text post-v11)",
+                                               "missing_rate_est":  "~45-55%"
+                                           },
+                                           {
+                                               "name":  "locale",
+                                               "research_use":  "Language filter only; NOT an accent proxy",
+                                               "type":  "string",
+                                               "missing_rate_est":  "~0%"
+                                           },
+                                           {
+                                               "name":  "segment",
+                                               "research_use":  "Subset identifier (usually empty)",
+                                               "type":  "string",
+                                               "missing_rate_est":  "~60-80%"
+                                           }
+                                       ]
+                        },
+    "dataset":  {
+                    "distribution":  "Mozilla Data Collective (https://datacollective.mozillafoundation.org/)",
+                    "metadata_format":  "TSV (validated.tsv)",
+                    "license":  "CC0 1.0 Public Domain Dedication",
+                    "metadata_only_download_available":  false,
+                    "rationale_for_v11":  "Last major release using enumerated accent taxonomy (pre-2022). Post-v11 releases use free-text self-specification requiring normalisation.",
+                    "audio_format":  "MP3",
+                    "account_required":  true,
+                    "name":  "Mozilla Common Voice English",
+                    "task":  "Automatic Speech Recognition (ASR)",
+                    "language":  "English (en)",
+                    "source_url":  "https://commonvoice.mozilla.org/en/datasets",
+                    "recommended_release":  "cv-corpus-11.0-2022-09-21"
+                },
+    "risks":  [
+                  {
+                      "mitigation":  "Select only accent-labelled clips; pool remains large",
+                      "risk":  "Accent label missing (~50% of clips)",
+                      "severity":  "High"
+                  },
+                  {
+                      "mitigation":  "Fixed to cv-corpus-11.0 (enumerated labels)",
+                      "risk":  "Post-2022 free-text taxonomy",
+                      "severity":  "High"
+                  },
+                  {
+                      "mitigation":  "Frame as stress test; document limitation",
+                      "risk":  "Accent label is self-reported, not L1-verified",
+                      "severity":  "Moderate"
+                  },
+                  {
+                      "mitigation":  "Accept as different population; separate evaluation section",
+                      "risk":  "No direct L1 equivalents for Arabic/Korean/Mandarin/Spanish/Vietnamese",
+                      "severity":  "High"
+                  },
+                  {
+                      "mitigation":  "Download full archive; extract TSV; delete audio",
+                      "risk":  "No metadata-only download available",
+                      "severity":  "Moderate"
+                  },
+                  {
+                      "mitigation":  "Use \u0027operational independence\u0027 framing",
+                      "risk":  "Cross-dataset speaker identity not formally verifiable",
+                      "severity":  "Low"
+                  }
+              ],
+    "accent_taxonomy":  {
+                            "categories":  [
+                                               {
+                                                   "label":  "United States English",
+                                                   "code":  "us",
+                                                   "viable":  true,
+                                                   "est_speakers":  "12000-15000",
+                                                   "est_clips":  "~249000"
+                                               },
+                                               {
+                                                   "label":  "England English",
+                                                   "code":  "england",
+                                                   "viable":  true,
+                                                   "est_speakers":  "3500-5000",
+                                                   "est_clips":  "~75000"
+                                               },
+                                               {
+                                                   "label":  "India and South Asia",
+                                                   "code":  "indian",
+                                                   "viable":  true,
+                                                   "est_speakers":  "4000-6000",
+                                                   "est_clips":  "~79000"
+                                               },
+                                               {
+                                                   "label":  "Australian English",
+                                                   "code":  "australia",
+                                                   "viable":  true,
+                                                   "est_speakers":  "1500-2500",
+                                                   "est_clips":  "~33000"
+                                               },
+                                               {
+                                                   "label":  "Canadian English",
+                                                   "code":  "canada",
+                                                   "viable":  true,
+                                                   "est_speakers":  "1000-1800",
+                                                   "est_clips":  "~20000"
+                                               },
+                                               {
+                                                   "label":  "Irish English",
+                                                   "code":  "ireland",
+                                                   "viable":  true,
+                                                   "est_speakers":  "500-900",
+                                                   "est_clips":  "~10000"
+                                               },
+                                               {
+                                                   "label":  "Scottish English",
+                                                   "code":  "scotland",
+                                                   "viable":  false,
+                                                   "est_speakers":  "350-600",
+                                                   "reason":  "Marginal speaker count",
+                                                   "est_clips":  "~7000"
+                                               },
+                                               {
+                                                   "label":  "Welsh English",
+                                                   "code":  "wales",
+                                                   "viable":  false,
+                                                   "est_speakers":  "150-300",
+                                                   "reason":  "Insufficient speaker count",
+                                                   "est_clips":  "~3000"
+                                               },
+                                               {
+                                                   "label":  "New Zealand English",
+                                                   "code":  "newzealand",
+                                                   "viable":  false,
+                                                   "est_speakers":  "250-500",
+                                                   "reason":  "Marginal speaker count",
+                                                   "est_clips":  "~5000"
+                                               },
+                                               {
+                                                   "label":  "Filipino English",
+                                                   "code":  "philippines",
+                                                   "viable":  false,
+                                                   "est_speakers":  "400-700",
+                                                   "reason":  "Not in top 6; no L2-ARCTIC analogue",
+                                                   "est_clips":  "~8000"
+                                               },
+                                               {
+                                                   "label":  "Hong Kong English",
+                                                   "code":  "hongkong",
+                                                   "viable":  false,
+                                                   "est_speakers":  "200-400",
+                                                   "reason":  "Marginal; L1 confound",
+                                                   "est_clips":  "~4000"
+                                               },
+                                               {
+                                                   "label":  "Malaysian English",
+                                                   "code":  "malaysia",
+                                                   "viable":  false,
+                                                   "est_speakers":  "150-300",
+                                                   "reason":  "Insufficient speaker count",
+                                                   "est_clips":  "~3500"
+                                               },
+                                               {
+                                                   "label":  "Singaporean English",
+                                                   "code":  "singapore",
+                                                   "viable":  false,
+                                                   "est_speakers":  "150-300",
+                                                   "reason":  "Insufficient speaker count",
+                                                   "est_clips":  "~3000"
+                                               },
+                                               {
+                                                   "label":  "Southern African English",
+                                                   "code":  "african",
+                                                   "viable":  false,
+                                                   "est_speakers":  "300-600",
+                                                   "reason":  "Excluded to maintain 6-group design",
+                                                   "est_clips":  "~6000"
+                                               },
+                                               {
+                                                   "label":  "South Atlantic",
+                                                   "code":  "southatlantic",
+                                                   "viable":  false,
+                                                   "est_speakers":  "\u003c30",
+                                                   "reason":  "Insufficient speakers",
+                                                   "est_clips":  "\u003c200"
+                                               },
+                                               {
+                                                   "label":  "West Indies and Bermuda",
+                                                   "code":  "bermuda",
+                                                   "viable":  false,
+                                                   "est_speakers":  "\u003c50",
+                                                   "reason":  "Insufficient speakers",
+                                                   "est_clips":  "\u003c500"
+                                               }
+                                           ],
+                            "type_in_v11":  "Enumerated (16 categories)",
+                            "missing_rate_v11":  "~45-55% of validated clips",
+                            "type_post_v11":  "Free-text self-specification"
+                        },
+    "cross_dataset_compatibility":  {
+                                        "recommended_paper_framing":  "External out-of-distribution validation on Mozilla Common Voice English",
+                                        "replication_supported":  false,
+                                        "generalisation_supported":  "PARTIAL",
+                                        "forbidden_claims":  [
+                                                                 "We replicate our L2-ARCTIC findings on Common Voice English.",
+                                                                 "The Indian category in Common Voice corresponds to the Hindi group in L2-ARCTIC.",
+                                                                 "Results generalise to accented English speakers broadly."
+                                                             ],
+                                        "stress_testing_supported":  true
+                                    },
+    "storage_feasibility":  {
+                                "stage5_subset_audio_size_est_mb":  "80-100",
+                                "processing_time_all_models_est_hours":  "12-24 (CPU); 4-8 (GPU)",
+                                "full_english_archive_size_est_gb":  "20-25",
+                                "laptop_feasible":  true,
+                                "account_required_for_download":  true,
+                                "metadata_tsv_size_est_mb":  "200-500",
+                                "metadata_only_download":  false
+                            },
+    "phase1_classification":  {
+                                  "label":  "SUITABLE WITH LIMITATIONS",
+                                  "code":  "B",
+                                  "next_step":  "Phase 3: Download cv-corpus-11.0 English archive, extract validated.tsv, generate speaker-disjoint evaluation manifest. Do NOT proceed to Phase 3 until Phase 1 report is reviewed and proposed design is approved.",
+                                  "do_not_create_yet":  "datasets/splits/stage5_external_eval.csv",
+                                  "decision":  "GO"
+                              },
+    "proposed_evaluation_design":  {
+                                       "target_speakers_per_group":  10,
+                                       "minimum_clips_per_speaker":  15,
+                                       "selection_rule":  "Random uniform within group; seed-fixed for reproducibility. No WER or disparity used in selection.",
+                                       "release":  "cv-corpus-11.0-2022-09-21",
+                                       "n_groups":  6,
+                                       "estimated_hours":  "~1.3 hours audio",
+                                       "evaluation_role":  "External out-of-distribution stress test; not replication",
+                                       "total_clips_est":  "~900",
+                                       "total_audio_est_mb":  "80-100",
+                                       "selected_groups":  [
+                                                               "us",
+                                                               "england",
+                                                               "indian",
+                                                               "australia",
+                                                               "canada",
+                                                               "ireland"
+                                                           ],
+                                       "l2_arctic_equivalence":  "NOT equivalent; groups defined by different variables",
+                                       "group_definition":  "Dataset-provided enumerated accent label (validated.tsv accent field)"
+                                   },
+    "files_created":  [
+                          "reports/stage5/common_voice_metadata_audit.md",
+                          "reports/stage5/common_voice_metadata_schema.csv",
+                          "reports/stage5/common_voice_accent_inventory.csv",
+                          "reports/stage5/common_voice_speaker_inventory.csv",
+                          "reports/stage5/common_voice_group_feasibility.csv",
+                          "reports/stage5/common_voice_transcript_audit.md",
+                          "reports/stage5/common_voice_storage_feasibility.md",
+                          "reports/stage5/common_voice_group_selection.md",
+                          "reports/stage5/cross_dataset_group_definition.md",
+                          "reports/stage5/common_voice_selection_recommendation.md",
+                          "reports/stage5/common_voice_audit.json"
+                      ]
+}

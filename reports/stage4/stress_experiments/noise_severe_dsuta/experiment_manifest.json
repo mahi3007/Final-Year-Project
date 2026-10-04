@@ -1,0 +1,28 @@
+{
+  "experiment_id": "stress_noise_severe_dsuta",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_a_k4_s42",
+  "ordering_id": "ORDER_A",
+  "seed": 42,
+  "stream_hash": "fa864c733068e6bc5832f7775f46b8b4b32c0b1afd594cb16369afaa4c4d57d0",
+  "model_id": "wav2vec2_base",
+  "method_id": "dsuta",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {
+    "lr": 0.0001,
+    "temperature": 2.5,
+    "alpha": 0.5,
+    "steps": 1,
+    "reset_threshold_ratio": 1.25
+  },
+  "timestamp": "2026-09-29T17:37:33Z",
+  "output_files": {
+    "predictions_csv": "reports/stage4\\stress_experiments\\noise_severe_dsuta\\predictions.csv",
+    "window_metrics_csv": "reports/stage4\\stress_experiments\\noise_severe_dsuta\\window_metrics.csv",
+    "group_metrics_csv": "reports/stage4\\stress_experiments\\noise_severe_dsuta\\group_metrics.csv",
+    "adaptation_trajectory_csv": "reports/stage4\\stress_experiments\\noise_severe_dsuta\\adaptation_trajectory.csv"
+  }
+}

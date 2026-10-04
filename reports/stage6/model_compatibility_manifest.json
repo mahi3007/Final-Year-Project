@@ -1,0 +1,69 @@
+{
+  "audit_timestamp": "2026-10-04T04:48:56Z",
+  "protocol_version": "v1.0-cv27-amended",
+  "total_models": 6,
+  "compatible_ctta_models": 4,
+  "incompatible_ctta_models": 2,
+  "models": {
+    "wav2vec2_base": {
+      "model_id": "facebook/wav2vec2-base-960h",
+      "family": "CTC",
+      "role": "Primary baseline",
+      "is_frozen_baseline": true,
+      "ctta_status": "COMPATIBLE",
+      "can_run_no_adapt": true,
+      "can_run_ctta": true,
+      "notes": "Frozen Stage 5E primary result. Retained verbatim."
+    },
+    "whisper_base": {
+      "model_id": "openai/whisper-base",
+      "family": "EncoderDecoder",
+      "role": "Autoregressive portability model",
+      "is_frozen_baseline": false,
+      "ctta_status": "INCOMPATIBLE_NON_CTC",
+      "can_run_no_adapt": true,
+      "can_run_ctta": false,
+      "notes": "Autoregressive seq2seq model without CTC frame emissions. Frame entropy SUTA mathematically undefined. Static No-Adapt evaluated."
+    },
+    "hubert_base": {
+      "model_id": "facebook/hubert-large-ls960-ft",
+      "family": "CTC",
+      "role": "Self-supervised encoder comparison (Acoustic Cluster SSL)",
+      "is_frozen_baseline": false,
+      "ctta_status": "COMPATIBLE",
+      "can_run_no_adapt": true,
+      "can_run_ctta": true,
+      "notes": "Official Fairseq CTC ASR release of the HuBERT family. Full CTC frame logits + LayerNorms."
+    },
+    "data2vec_base": {
+      "model_id": "facebook/data2vec-audio-base-960h",
+      "family": "CTC",
+      "role": "Self-supervised encoder comparison (Multimodal SSL)",
+      "is_frozen_baseline": false,
+      "ctta_status": "COMPATIBLE",
+      "can_run_no_adapt": true,
+      "can_run_ctta": true,
+      "notes": "Data2Vec Audio CTC model. Full CTC frame logits + LayerNorms."
+    },
+    "distil_whisper_small": {
+      "model_id": "distil-whisper/distil-small.en",
+      "family": "EncoderDecoder",
+      "role": "Lightweight autoregressive model",
+      "is_frozen_baseline": false,
+      "ctta_status": "INCOMPATIBLE_NON_CTC",
+      "can_run_no_adapt": true,
+      "can_run_ctta": false,
+      "notes": "Distilled seq2seq model without CTC frame emissions. Frame entropy SUTA mathematically undefined. Static No-Adapt evaluated."
+    },
+    "xlsr_english": {
+      "model_id": "jonatasgrosman/wav2vec2-large-xlsr-53-english",
+      "family": "CTC",
+      "role": "Larger multilingual/pretrained encoder",
+      "is_frozen_baseline": false,
+      "ctta_status": "COMPATIBLE",
+      "can_run_no_adapt": true,
+      "can_run_ctta": true,
+      "notes": "Cross-lingual 53-language pretrained encoder fine-tuned on English. Full CTC frame logits + LayerNorms."
+    }
+  }
+}

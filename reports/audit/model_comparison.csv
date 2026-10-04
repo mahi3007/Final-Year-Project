@@ -1,0 +1,7 @@
+model_name,family,role,corpus_wer,speaker_macro_wer,mean_cer,disparity_d,disparity_ratio_r,best_group_id,worst_group_id,total_reference_words,total_utterances
+wav2vec2_base,CTC,Primary Track A Backbone,0.8551,0.8551,0.6756,0.2065,1.268,Mandarin,Hindi,552,60
+whisper_base,EncoderDecoder,Secondary Track B Backbone,0.904,0.904,0.7033,0.1739,1.216,Mandarin,Hindi,552,60
+data2vec_base,CTC,Static Audit Model 1 (Multimodal SSL),0.8406,0.8406,0.6642,0.1413,1.183,Mandarin,Hindi,552,60
+distil_whisper_small,EncoderDecoder,Static Audit Model 2 (Distilled Transformer),0.8152,0.8152,0.6702,0.2174,1.294,Spanish,Hindi,552,60
+whisper_tiny,EncoderDecoder,Static Audit Model 3 (Lightweight Seq2Seq),0.9638,0.9638,0.7708,0.4783,1.557,Mandarin,Korean,552,60
+wav2vec2_100h,CTC,Static Audit Model 4 (Low-Resource CTC),0.8804,0.8804,0.6681,0.2174,1.282,Mandarin,Hindi,552,60

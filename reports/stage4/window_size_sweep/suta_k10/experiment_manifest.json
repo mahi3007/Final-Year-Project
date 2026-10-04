@@ -1,0 +1,27 @@
+{
+  "experiment_id": "calib_suta_k10",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_a_k10_s42",
+  "ordering_id": "ORDER_A",
+  "seed": 42,
+  "stream_hash": "2769743083b17d881f49fa9a9e27bf43436ee3838f4609bc494cf7b5642cab52",
+  "model_id": "wav2vec2_base",
+  "method_id": "suta",
+  "window_size_k": 10,
+  "total_windows": 6,
+  "total_utterances": 60,
+  "total_reference_words": 552,
+  "adapter_config": {
+    "lr": 0.0001,
+    "temperature": 2.5,
+    "alpha": 0.5,
+    "steps": 1
+  },
+  "timestamp": "2026-09-29T16:37:56Z",
+  "output_files": {
+    "predictions_csv": "reports/stage4/window_size_sweep\\suta_k10\\predictions.csv",
+    "window_metrics_csv": "reports/stage4/window_size_sweep\\suta_k10\\window_metrics.csv",
+    "group_metrics_csv": "reports/stage4/window_size_sweep\\suta_k10\\group_metrics.csv",
+    "adaptation_trajectory_csv": "reports/stage4/window_size_sweep\\suta_k10\\adaptation_trajectory.csv"
+  }
+}

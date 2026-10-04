@@ -1,0 +1,5 @@
+﻿target_speakers_per_group,feasible_groups,group_names,total_speakers_est,total_clips_est,audio_size_est_mb,processing_time_est,laptop_feasible,statistical_benefit,metadata_risk
+5,"8+","us,england,indian,australia,canada,ireland,philippines,african",40+,600+,~55,~30-60 min per model run,YES,Minimal (5 speakers is borderline for reliable WER per group),Lower per-group power; bootstrap CIs will be wide
+10,"6","us,england,indian,australia,canada,ireland",60+,900+,~80,~45-90 min per model run,YES,Moderate (10 speakers supports meaningful WER aggregation),Acceptable for preliminary external validation
+15,"4","us,england,indian,australia",60+,900+,~80,~45-90 min per model run,YES,Good (15 speakers approaches adequate group-level power),Limited generalization to only 4 groups
+20,"4 (marginal for canada/ireland)","us,england,indian,australia",80+,1200+,~110,~60-120 min per model run,YES,Good-to-strong (20 speakers gives robust WER estimates),Marginal groups may not reach target cleanly

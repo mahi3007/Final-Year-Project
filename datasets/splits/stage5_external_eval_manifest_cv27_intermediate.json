@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0",
+  "phase": "Stage 5 Phase 3 - External Evaluation Set Curation",
+  "project": "DSG-CTTA",
+  "protocol_version": "v1.0.0-canonical",
+  "creation_timestamp": "2026-10-01T12:44:43.948593+00:00",
+  "dataset": {
+    "name": "common_voice",
+    "release": "cv-corpus-11.0-2022-09-21",
+    "license": "CC0-1.0",
+    "source_url": "https://commonvoice.mozilla.org/en/datasets",
+    "language": "en",
+    "group_definition": "Dataset-provided enumerated accent label (validated.tsv accent field)",
+    "group_definition_version": "common_voice_11_enumerated_accent_v1",
+    "metadata_hash": "b5520260d8ad3c8593174d8e1d2242b2ef86bd4ac2451221c7f3d49cf6af8fbf"
+  },
+  "selection": {
+    "seed": 20261001,
+    "clip_seed_offset": 1,
+    "rule_version": "v1.0-phase3",
+    "min_clips_for_eligibility": 15,
+    "target_speakers_per_group": 10,
+    "target_clips_per_speaker": 15,
+    "target_total_speakers": 60,
+    "target_total_clips": 900,
+    "actual_total_speakers": 60,
+    "actual_total_clips": 900,
+    "targets_met": true
+  },
+  "groups": {
+    "us": {
+      "label": "United States English",
+      "speakers": 10,
+      "clips": 150,
+      "target_met": true
+    },
+    "indian": {
+      "label": "India and South Asia English",
+      "speakers": 10,
+      "clips": 150,
+      "target_met": true
+    },
+    "england": {
+      "label": "England English",
+      "speakers": 10,
+      "clips": 150,
+      "target_met": true
+    },
+    "australia": {
+      "label": "Australian English",
+      "speakers": 10,
+      "clips": 150,
+      "target_met": true
+    },
+    "canada": {
+      "label": "Canadian English",
+      "speakers": 10,
+      "clips": 150,
+      "target_met": true
+    },
+    "ireland": {
+      "label": "Irish English",
+      "speakers": 10,
+      "clips": 150,
+      "target_met": true
+    }
+  },
+  "evaluation_role": "External out-of-distribution stress test / final evaluation. NOT a replication of L2-ARCTIC primary evaluation. Common Voice accent groups are self-reported dataset categories, not verified L1 identities.",
+  "prohibited_uses": [
+    "DSG threshold tuning",
+    "epsilon tuning",
+    "K selection",
+    "model selection",
+    "CTTA hyperparameter selection",
+    "sentinel design",
+    "stream-order selection",
+    "adaptation learning-rate selection"
+  ],
+  "immutability_note": "This file is frozen after Phase 3G verification. Any modification requires a new version: stage5_external_eval_v2.csv",
+  "csv_hash": "b82db8d1f3b3522867d4d0c63057bb8973b7f9fdcc0d6ef9e508f9dfb9f78204"
+}

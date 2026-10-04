@@ -1,0 +1,92 @@
+{
+  "dataset_name": "L2-ARCTIC",
+  "protocol_version": "v1.0.0-canonical",
+  "manifest_hash": "6272a244b0ddc0b82932d3c419d6520615cd552eaeac46422fbf0d8f6f7fe5f4",
+  "split_seed": 42,
+  "partitions": {
+    "development": {
+      "num_speakers": 6,
+      "num_utterances": 60,
+      "speaker_ids": [
+        "DTW",
+        "ERMS",
+        "LDC",
+        "NJS",
+        "PRK",
+        "YBAA"
+      ],
+      "group_ids": [
+        "Arabic",
+        "Hindi",
+        "Korean",
+        "Mandarin",
+        "Spanish",
+        "Vietnamese"
+      ],
+      "csv_path": "datasets/splits\\development.csv"
+    },
+    "calibration": {
+      "num_speakers": 6,
+      "num_utterances": 60,
+      "speaker_ids": [
+        "HJK",
+        "HKK",
+        "MPXM",
+        "SKA",
+        "TNI",
+        "TNT"
+      ],
+      "group_ids": [
+        "Arabic",
+        "Hindi",
+        "Korean",
+        "Mandarin",
+        "Spanish",
+        "Vietnamese"
+      ],
+      "csv_path": "datasets/splits\\calibration.csv"
+    },
+    "sentinel_candidates": {
+      "num_speakers": 6,
+      "num_utterances": 60,
+      "speaker_ids": [
+        "ASI",
+        "BWC",
+        "HCC",
+        "LXC",
+        "YDCK",
+        "ZHAA"
+      ],
+      "group_ids": [
+        "Arabic",
+        "Hindi",
+        "Korean",
+        "Mandarin",
+        "Spanish",
+        "Vietnamese"
+      ],
+      "csv_path": "datasets/splits\\sentinel_candidates.csv"
+    },
+    "final_test": {
+      "num_speakers": 6,
+      "num_utterances": 60,
+      "speaker_ids": [
+        "ABA",
+        "BJM",
+        "BVT",
+        "EBVS",
+        "MBX",
+        "TLX"
+      ],
+      "group_ids": [
+        "Arabic",
+        "Hindi",
+        "Korean",
+        "Mandarin",
+        "Spanish",
+        "Vietnamese"
+      ],
+      "csv_path": "datasets/splits\\final_test.csv"
+    }
+  }
+}

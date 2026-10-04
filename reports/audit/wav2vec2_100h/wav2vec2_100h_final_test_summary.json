@@ -1,0 +1,88 @@
+{
+  "model_name": "wav2vec2_100h",
+  "partition_name": "final_test",
+  "total_speakers": 6,
+  "total_utterances": 60,
+  "total_reference_words": 552,
+  "corpus_wer": 0.8804347826086957,
+  "speaker_macro_wer": 0.8804347826086957,
+  "mean_cer": 0.6680962418231662,
+  "disparity_d": 0.21739130434782605,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Hindi",
+  "group_summaries": {
+    "Arabic": {
+      "group_id": "Arabic",
+      "num_speakers": 1,
+      "num_utterances": 10,
+      "total_reference_words": 92,
+      "total_substitutions": 72,
+      "total_deletions": 5,
+      "total_insertions": 7,
+      "corpus_wer": 0.9130434782608695,
+      "speaker_macro_wer": 0.9130434782608695,
+      "mean_cer": 0.65690794676219
+    },
+    "Hindi": {
+      "group_id": "Hindi",
+      "num_speakers": 1,
+      "num_utterances": 10,
+      "total_reference_words": 92,
+      "total_substitutions": 70,
+      "total_deletions": 19,
+      "total_insertions": 2,
+      "corpus_wer": 0.9891304347826086,
+      "speaker_macro_wer": 0.9891304347826086,
+      "mean_cer": 0.7449793426987487
+    },
+    "Korean": {
+      "group_id": "Korean",
+      "num_speakers": 1,
+      "num_utterances": 10,
+      "total_reference_words": 92,
+      "total_substitutions": 61,
+      "total_deletions": 11,
+      "total_insertions": 7,
+      "corpus_wer": 0.8586956521739131,
+      "speaker_macro_wer": 0.8586956521739131,
+      "mean_cer": 0.673377102939235
+    },
+    "Mandarin": {
+      "group_id": "Mandarin",
+      "num_speakers": 1,
+      "num_utterances": 10,
+      "total_reference_words": 92,
+      "total_substitutions": 57,
+      "total_deletions": 6,
+      "total_insertions": 8,
+      "corpus_wer": 0.7717391304347826,
+      "speaker_macro_wer": 0.7717391304347826,
+      "mean_cer": 0.6231405537745192
+    },
+    "Spanish": {
+      "group_id": "Spanish",
+      "num_speakers": 1,
+      "num_utterances": 10,
+      "total_reference_words": 92,
+      "total_substitutions": 65,
+      "total_deletions": 8,
+      "total_insertions": 7,
+      "corpus_wer": 0.8695652173913043,
+      "speaker_macro_wer": 0.8695652173913043,
+      "mean_cer": 0.6590241277778262
+    },
+    "Vietnamese": {
+      "group_id": "Vietnamese",
+      "num_speakers": 1,
+      "num_utterances": 10,
+      "total_reference_words": 92,
+      "total_substitutions": 65,
+      "total_deletions": 8,
+      "total_insertions": 8,
+      "corpus_wer": 0.8804347826086957,
+      "speaker_macro_wer": 0.8804347826086957,
+      "mean_cer": 0.6511483769864779
+    }
+  },
+  "total_time_seconds": 20.151898622512817
+}

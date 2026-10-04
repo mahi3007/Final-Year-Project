@@ -1,0 +1,47 @@
+{
+  "protocol_version": "v1.0-cv27-amended",
+  "adr_reference": "ADR-005",
+  "config_version": "1.0.0",
+  "created_at": "2026-10-02T20:56:00Z",
+  "sentinel_binding": {
+    "panel_id": "stage5_sentinel_v2_expanded",
+    "csv_path": "datasets/splits/stage5_sentinel_panel.csv",
+    "manifest_path": "datasets/splits/stage5_sentinel_panel_manifest.json",
+    "lock_path": "datasets/splits/stage5_sentinel_panel.lock.json",
+    "total_speakers": 30,
+    "speakers_per_group": 5,
+    "clips_per_speaker": 10,
+    "total_clips": 300,
+    "num_strata": 6,
+    "strata": [
+      "Australian English",
+      "Canadian English",
+      "England English",
+      "Irish English",
+      "South Asian English",
+      "US English"
+    ]
+  },
+  "gate_tolerances": {
+    "epsilon_R": 0.0000,
+    "epsilon_G": 0.0200,
+    "epsilon_D": 0.0200
+  },
+  "bootstrap": {
+    "B": 1000,
+    "confidence": 0.95,
+    "resampling_unit": "speaker",
+    "paired": true,
+    "stratified_by_group": true,
+    "statistic_for_group_constraint": "max_group_regression",
+    "seed": 20261002
+  },
+  "fail_closed_policy": {
+    "enabled": true,
+    "on_nan_action": "REJECT",
+    "on_inf_action": "REJECT",
+    "on_missing_group_action": "REJECT",
+    "on_empty_sentinel_action": "REJECT",
+    "on_exception_action": "REJECT"
+  }
+}

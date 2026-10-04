@@ -1,0 +1,68 @@
+{
+  "dataset_name": "common_voice",
+  "dataset_release": "cv-corpus-27.0-2026-09-11",
+  "dataset_mdc_id": "cmu5jplf300nwmh07iqvk9leo",
+  "evaluation_partition": "stage5_external_eval",
+  "availability_scope": "stage5_final_evaluation_only",
+  "group_definition_version": "stage5_cv27_normalized_strata_v1",
+  "selection": {
+    "seed": 20261001,
+    "rule_version": "v1.0-cv27-amended",
+    "speakers_per_group": 10,
+    "clips_per_speaker": 15,
+    "total_speakers": 60,
+    "total_clips": 900
+  },
+  "materialization": {
+    "status": "COMPLETED",
+    "total_clips": 900,
+    "total_audio_bytes": 32847472,
+    "total_duration_sec": 4343.052,
+    "avg_duration_sec": 4.826,
+    "audio_format": "MP3",
+    "channels": 1,
+    "sample_rate_common": 48000,
+    "zero_duplicate_hashes": true
+  },
+  "artifacts": {
+    "canonical_csv": "datasets/splits/stage5_external_eval.csv",
+    "canonical_csv_sha256": "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32",
+    "historical_pre_materialization_csv_sha256": "5818255605c46db3832033bdd6c818d7606251a1c2d96d36a6383e9a30443351",
+    "lock_file": "datasets/splits/stage5_external_eval.lock.json",
+    "audio_dir": "datasets/external/common_voice_27/audio",
+    "audio_inventory_csv": "datasets/external/common_voice_27/audio_inventory.csv",
+    "audio_inventory_json": "datasets/external/common_voice_27/audio_inventory.json"
+  },
+  "groups": {
+    "US English": {
+      "stratum_code": "us",
+      "speakers": 10,
+      "clips": 150
+    },
+    "England English": {
+      "stratum_code": "england",
+      "speakers": 10,
+      "clips": 150
+    },
+    "South Asian English": {
+      "stratum_code": "south_asian",
+      "speakers": 10,
+      "clips": 150
+    },
+    "Australian English": {
+      "stratum_code": "australia",
+      "speakers": 10,
+      "clips": 150
+    },
+    "Canadian English": {
+      "stratum_code": "canada",
+      "speakers": 10,
+      "clips": 150
+    },
+    "Irish English": {
+      "stratum_code": "ireland",
+      "speakers": 10,
+      "clips": 150
+    }
+  }
+}

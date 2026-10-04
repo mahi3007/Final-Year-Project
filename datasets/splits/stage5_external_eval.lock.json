@@ -1,0 +1,23 @@
+{
+  "dataset_name": "common_voice",
+  "dataset_release": "cv-corpus-27.0-2026-09-11",
+  "group_definition_version": "stage5_cv27_normalized_strata_v1",
+  "csv_path": "datasets/splits/stage5_external_eval.csv",
+  "csv_hash": "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32",
+  "csv_sha256": "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32",
+  "num_rows": 900,
+  "num_speakers": 60,
+  "num_groups": 6,
+  "clips_per_speaker": 15,
+  "selection_seed": 20261001,
+  "selection_rule_version": "v1.0-cv27-amended",
+  "audio_hashes_verified": true,
+  "audio_clip_count": 900,
+  "audio_unique_hashes": 900,
+  "provenance": {
+    "protocol_amendment": "reports/stage5/protocol_amendment_cv27.md",
+    "historical_pre_materialization_csv_hash": "5818255605c46db3832033bdd6c818d7606251a1c2d96d36a6383e9a30443351",
+    "materialization_timestamp": "2026-10-02T14:42:03Z",
+    "status": "FINALIZED_WITH_MATERIALIZED_AUDIO"
+  }
+}

@@ -1,0 +1,4 @@
+window_id,cumulative_utterances,cumulative_words,cumulative_wer,cumulative_disparity,theta_after_hash,adaptation_updated,adaptation_reset,adaptation_time_seconds,inference_time_seconds,wer_group_Arabic,wer_group_Hindi,wer_group_Korean,wer_group_Mandarin,wer_group_Spanish,wer_group_Vietnamese
+0,4,36,0.6111,0.1111,a8833b01a20046fe,True,False,3.5423,0.8656,0.6667,0.5556,,,,
+1,8,72,0.7083,0.2778,3253d670fb72b1b5,True,False,3.9304,1.0517,0.6667,0.5556,0.7778,0.8333,,
+2,12,108,0.75,0.3333,efd45fc34f719ed0,True,False,4.5828,0.8456,0.6667,0.5556,0.7778,0.8333,0.7778,0.8889

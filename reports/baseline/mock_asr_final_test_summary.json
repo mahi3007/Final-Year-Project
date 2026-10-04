@@ -1,0 +1,52 @@
+{
+  "model_name": "mock_asr",
+  "partition_name": "final_test",
+  "total_speakers": 3,
+  "total_utterances": 9,
+  "total_reference_words": 77,
+  "corpus_wer": 0.8441558441558441,
+  "speaker_macro_wer": 0.84,
+  "mean_cer": 0.6852457990669373,
+  "disparity_d": 0.24,
+  "best_group_id": "Region_East",
+  "worst_group_id": "Region_North",
+  "group_summaries": {
+    "Region_East": {
+      "group_id": "Region_East",
+      "num_speakers": 1,
+      "num_utterances": 3,
+      "total_reference_words": 25,
+      "total_substitutions": 18,
+      "total_deletions": 1,
+      "total_insertions": 0,
+      "corpus_wer": 0.76,
+      "speaker_macro_wer": 0.76,
+      "mean_cer": 0.5985449735449736
+    },
+    "Region_North": {
+      "group_id": "Region_North",
+      "num_speakers": 1,
+      "num_utterances": 3,
+      "total_reference_words": 27,
+      "total_substitutions": 24,
+      "total_deletions": 3,
+      "total_insertions": 0,
+      "corpus_wer": 1.0,
+      "speaker_macro_wer": 1.0,
+      "mean_cer": 0.8586474501108649
+    },
+    "Region_South": {
+      "group_id": "Region_South",
+      "num_speakers": 1,
+      "num_utterances": 3,
+      "total_reference_words": 25,
+      "total_substitutions": 18,
+      "total_deletions": 1,
+      "total_insertions": 0,
+      "corpus_wer": 0.76,
+      "speaker_macro_wer": 0.76,
+      "mean_cer": 0.5985449735449736
+    }
+  },
+  "total_time_seconds": 0.026519775390625
+}
