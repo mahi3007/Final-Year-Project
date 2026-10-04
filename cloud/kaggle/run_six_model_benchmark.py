@@ -43,14 +43,18 @@ def main():
     device = "cpu"
     accelerator_type = "CPU"
     try:
-        import torch_xla.core.xla_model as xm
-        device = str(xm.xla_device())
-        accelerator_type = f"TPU ({device})"
+        import importlib
+        if importlib.util.find_spec("torch_xla") is not None:
+            xm = importlib.import_module("torch_xla.core.xla_model")
+            device = str(xm.xla_device())
+            accelerator_type = f"TPU ({device})"
     except Exception:
-        if torch.cuda.is_available():
-            device = "cuda"
-            vram = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
-            accelerator_type = f"GPU ({torch.cuda.get_device_name(0)}, {vram:.2f} GB VRAM)"
+        pass
+
+    if device == "cpu" and torch.cuda.is_available():
+        device = "cuda"
+        vram = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
+        accelerator_type = f"GPU ({torch.cuda.get_device_name(0)}, {vram:.2f} GB VRAM)"
 
     print(f"Accelerator Device: {device} [{accelerator_type}]")
 
