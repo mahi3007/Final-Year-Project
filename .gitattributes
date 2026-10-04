@@ -1,0 +1,18 @@
+# Force LF line endings for cross-platform Linux/Kaggle and Windows compatibility
+* text=auto eol=lf
+*.csv text eol=lf
+*.json text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.txt text eol=lf
+
+# Binary files
+*.mp3 binary
+*.wav binary
+*.tar.gz binary
+*.zip binary
+*.png binary
+*.pdf binary

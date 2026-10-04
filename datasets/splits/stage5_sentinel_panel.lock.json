@@ -4,6 +4,8 @@
   "panel_id": "stage5_sentinel_v2_expanded",
   "csv_path": "datasets/splits/stage5_sentinel_panel.csv",
   "csv_sha256": "665009a00660f7e9bbdf8de8a53473fc1249362ca2a5bc0038518313d18f0543",
+  "crlf_sha256": "665009a00660f7e9bbdf8de8a53473fc1249362ca2a5bc0038518313d18f0543",
+  "lf_sha256": "612b7045e3e68326d00a963f9ade44b197a53e2c2640a13f8ee5162b2efc3691",
   "total_rows": 300,
   "total_speakers": 30,
   "speakers_per_group": 5,
