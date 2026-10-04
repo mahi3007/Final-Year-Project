@@ -61,10 +61,17 @@ MODEL_CATALOG: Dict[str, Dict[str, Any]] = {
         "default_device": "cpu"
     },
     # Additional benchmark models
+    "hubert_large": {
+        "model_id": "facebook/hubert-large-ls960-ft",
+        "family": "CTC",
+        "role": "Self-Supervised Acoustic Cluster Encoder (CTC Fine-Tuned, 316.8M params)",
+        "adapter_cls": GenericCTCModel,
+        "default_device": "cpu"
+    },
     "hubert_base": {
         "model_id": "facebook/hubert-large-ls960-ft",
         "family": "CTC",
-        "role": "Acoustic Cluster SSL CTC",
+        "role": "Self-Supervised Acoustic Cluster Encoder (CTC Fine-Tuned, 316.8M params) [Alias for hubert_large]",
         "adapter_cls": GenericCTCModel,
         "default_device": "cpu"
     },
@@ -72,6 +79,21 @@ MODEL_CATALOG: Dict[str, Dict[str, Any]] = {
         "model_id": "jonatasgrosman/wav2vec2-large-xlsr-53-english",
         "family": "CTC",
         "role": "Cross-Lingual SSL CTC",
+        "adapter_cls": GenericCTCModel,
+        "default_device": "cpu"
+    },
+    # Stage 6.1 Expanded CTC Backbones
+    "wav2vec2_large_lv60": {
+        "model_id": "facebook/wav2vec2-large-960h-lv60",
+        "family": "CTC",
+        "role": "Larger Pretrained Wav2Vec2 (Libri-Light 60k + LibriSpeech 960h FT, 317.4M params)",
+        "adapter_cls": GenericCTCModel,
+        "default_device": "cpu"
+    },
+    "wav2vec2_large_robust": {
+        "model_id": "facebook/wav2vec2-large-robust-ft-libri-960h",
+        "family": "CTC",
+        "role": "Multi-Domain Robust Pretrained Wav2Vec2 (LibriSpeech 960h FT, 317.4M params)",
         "adapter_cls": GenericCTCModel,
         "default_device": "cpu"
     },

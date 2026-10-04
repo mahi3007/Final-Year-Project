@@ -187,12 +187,12 @@ def run_all_models_benchmark(
                     "model_key": m_key,
                     "model_id": spec["model_id"],
                     "method": r.get("method"),
-                    "accent_stratum": r.get("stage5_accent_group"),
-                    "wer": r.get("wer"),
+                    "accent_stratum": r.get("group_id") or r.get("stage5_accent_group"),
+                    "wer": round(float(r.get("wer")) * 100.0, 4) if float(r.get("wer")) < 1.0 else round(float(r.get("wer")), 4),
                     "substitutions": r.get("substitutions"),
                     "deletions": r.get("deletions"),
                     "insertions": r.get("insertions"),
-                    "total_errors": r.get("total_errors"),
+                    "total_errors": int(r.get("substitutions", 0)) + int(r.get("deletions", 0)) + int(r.get("insertions", 0)),
                     "reference_words": r.get("reference_words"),
                 })
 

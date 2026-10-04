@@ -1,0 +1,389 @@
+{
+  "model_key": "data2vec_base",
+  "model_id": "facebook/data2vec-audio-base-960h",
+  "family": "CTC",
+  "status": "COMPLETED_FULL_CTTA",
+  "no_adapt_wer": 20.433829468097382,
+  "suta_wer": 20.653051805699782,
+  "dsuta_wer": 19.787700473058727,
+  "dmsuta_wer": 20.26075920156917,
+  "dsg_wer": 20.31844929041191,
+  "dsg_delta_r": -0.11538017768547348,
+  "dsg_delta_d": -0.6261072261072336,
+  "dsg_max_delta_g": 0.0723065798987701,
+  "dsg_accepted": 1,
+  "dsg_rejected": 224,
+  "all_method_metrics": {
+    "no_adapt": {
+      "wer": 20.433829468097382,
+      "cer": 8.48371663589055,
+      "substitutions": 1433,
+      "deletions": 178,
+      "insertions": 160,
+      "total_errors": 1771,
+      "reference_words": 8667,
+      "disparity_d": 27.128205128205135,
+      "group_wers": {
+        "US English": 20.367847411444142,
+        "England English": 20.244077530509692,
+        "South Asian English": 38.46153846153847,
+        "Australian English": 20.294708640321502,
+        "Canadian English": 11.333333333333332,
+        "Irish English": 12.075198843094721
+      },
+      "group_stats": {
+        "US English": {
+          "errors": 299,
+          "ref_words": 1468,
+          "sub": 231,
+          "del": 34,
+          "ins": 34,
+          "char_err": 714,
+          "ref_chars": 8341
+        },
+        "England English": {
+          "errors": 282,
+          "ref_words": 1393,
+          "sub": 235,
+          "del": 21,
+          "ins": 26,
+          "char_err": 600,
+          "ref_chars": 7323
+        },
+        "South Asian English": {
+          "errors": 550,
+          "ref_words": 1430,
+          "sub": 439,
+          "del": 65,
+          "ins": 46,
+          "char_err": 1471,
+          "ref_chars": 7971
+        },
+        "Australian English": {
+          "errors": 303,
+          "ref_words": 1493,
+          "sub": 245,
+          "del": 34,
+          "ins": 24,
+          "char_err": 623,
+          "ref_chars": 8371
+        },
+        "Canadian English": {
+          "errors": 170,
+          "ref_words": 1500,
+          "sub": 141,
+          "del": 12,
+          "ins": 17,
+          "char_err": 265,
+          "ref_chars": 8350
+        },
+        "Irish English": {
+          "errors": 167,
+          "ref_words": 1383,
+          "sub": 142,
+          "del": 12,
+          "ins": 13,
+          "char_err": 370,
+          "ref_chars": 7300
+        }
+      }
+    },
+    "suta": {
+      "wer": 20.653051805699782,
+      "cer": 8.515192210844384,
+      "substitutions": 1440,
+      "deletions": 195,
+      "insertions": 155,
+      "total_errors": 1790,
+      "reference_words": 8667,
+      "disparity_d": 24.453146853146855,
+      "group_wers": {
+        "US English": 20.29972752043597,
+        "England English": 19.885139985642496,
+        "South Asian English": 36.85314685314685,
+        "Australian English": 20.897521768251842,
+        "Canadian English": 12.4,
+        "Irish English": 13.738250180766451
+      },
+      "group_stats": {
+        "US English": {
+          "errors": 298,
+          "ref_words": 1468,
+          "sub": 230,
+          "del": 34,
+          "ins": 34,
+          "char_err": 725,
+          "ref_chars": 8341
+        },
+        "England English": {
+          "errors": 277,
+          "ref_words": 1393,
+          "sub": 227,
+          "del": 22,
+          "ins": 28,
+          "char_err": 581,
+          "ref_chars": 7323
+        },
+        "South Asian English": {
+          "errors": 527,
+          "ref_words": 1430,
+          "sub": 433,
+          "del": 48,
+          "ins": 46,
+          "char_err": 1406,
+          "ref_chars": 7971
+        },
+        "Australian English": {
+          "errors": 312,
+          "ref_words": 1493,
+          "sub": 244,
+          "del": 45,
+          "ins": 23,
+          "char_err": 635,
+          "ref_chars": 8371
+        },
+        "Canadian English": {
+          "errors": 186,
+          "ref_words": 1500,
+          "sub": 152,
+          "del": 20,
+          "ins": 14,
+          "char_err": 306,
+          "ref_chars": 8350
+        },
+        "Irish English": {
+          "errors": 190,
+          "ref_words": 1383,
+          "sub": 154,
+          "del": 26,
+          "ins": 10,
+          "char_err": 405,
+          "ref_chars": 7300
+        }
+      }
+    },
+    "dsuta": {
+      "wer": 19.787700473058727,
+      "cer": 8.38928991102904,
+      "substitutions": 1375,
+      "deletions": 192,
+      "insertions": 148,
+      "total_errors": 1715,
+      "reference_words": 8667,
+      "disparity_d": 25.370163170163167,
+      "group_wers": {
+        "US English": 19.82288828337875,
+        "England English": 19.956927494615936,
+        "South Asian English": 36.5034965034965,
+        "Australian English": 19.42397856664434,
+        "Canadian English": 11.133333333333335,
+        "Irish English": 12.075198843094721
+      },
+      "group_stats": {
+        "US English": {
+          "errors": 291,
+          "ref_words": 1468,
+          "sub": 207,
+          "del": 57,
+          "ins": 27,
+          "char_err": 776,
+          "ref_chars": 8341
+        },
+        "England English": {
+          "errors": 278,
+          "ref_words": 1393,
+          "sub": 232,
+          "del": 21,
+          "ins": 25,
+          "char_err": 590,
+          "ref_chars": 7323
+        },
+        "South Asian English": {
+          "errors": 522,
+          "ref_words": 1430,
+          "sub": 422,
+          "del": 58,
+          "ins": 42,
+          "char_err": 1403,
+          "ref_chars": 7971
+        },
+        "Australian English": {
+          "errors": 290,
+          "ref_words": 1493,
+          "sub": 236,
+          "del": 29,
+          "ins": 25,
+          "char_err": 599,
+          "ref_chars": 8371
+        },
+        "Canadian English": {
+          "errors": 167,
+          "ref_words": 1500,
+          "sub": 137,
+          "del": 15,
+          "ins": 15,
+          "char_err": 274,
+          "ref_chars": 8350
+        },
+        "Irish English": {
+          "errors": 167,
+          "ref_words": 1383,
+          "sub": 141,
+          "del": 12,
+          "ins": 14,
+          "char_err": 356,
+          "ref_chars": 7300
+        }
+      }
+    },
+    "dmsuta": {
+      "wer": 20.26075920156917,
+      "cer": 8.538274299143863,
+      "substitutions": 1416,
+      "deletions": 183,
+      "insertions": 157,
+      "total_errors": 1756,
+      "reference_words": 8667,
+      "disparity_d": 27.3981351981352,
+      "group_wers": {
+        "US English": 19.618528610354225,
+        "England English": 20.244077530509692,
+        "South Asian English": 38.53146853146853,
+        "Australian English": 20.026791694574683,
+        "Canadian English": 11.133333333333335,
+        "Irish English": 12.219812002892263
+      },
+      "group_stats": {
+        "US English": {
+          "errors": 288,
+          "ref_words": 1468,
+          "sub": 211,
+          "del": 51,
+          "ins": 26,
+          "char_err": 727,
+          "ref_chars": 8341
+        },
+        "England English": {
+          "errors": 282,
+          "ref_words": 1393,
+          "sub": 231,
+          "del": 23,
+          "ins": 28,
+          "char_err": 614,
+          "ref_chars": 7323
+        },
+        "South Asian English": {
+          "errors": 551,
+          "ref_words": 1430,
+          "sub": 446,
+          "del": 56,
+          "ins": 49,
+          "char_err": 1486,
+          "ref_chars": 7971
+        },
+        "Australian English": {
+          "errors": 299,
+          "ref_words": 1493,
+          "sub": 246,
+          "del": 29,
+          "ins": 24,
+          "char_err": 613,
+          "ref_chars": 8371
+        },
+        "Canadian English": {
+          "errors": 167,
+          "ref_words": 1500,
+          "sub": 139,
+          "del": 12,
+          "ins": 16,
+          "char_err": 262,
+          "ref_chars": 8350
+        },
+        "Irish English": {
+          "errors": 169,
+          "ref_words": 1383,
+          "sub": 143,
+          "del": 12,
+          "ins": 14,
+          "char_err": 367,
+          "ref_chars": 7300
+        }
+      }
+    },
+    "dsg": {
+      "wer": 20.31844929041191,
+      "cer": 8.473224777572604,
+      "substitutions": 1421,
+      "deletions": 180,
+      "insertions": 160,
+      "total_errors": 1761,
+      "reference_words": 8667,
+      "disparity_d": 26.5020979020979,
+      "group_wers": {
+        "US English": 20.367847411444142,
+        "England English": 20.172290021536252,
+        "South Asian English": 37.9020979020979,
+        "Australian English": 20.093770931011388,
+        "Canadian English": 11.4,
+        "Irish English": 12.147505422993492
+      },
+      "group_stats": {
+        "US English": {
+          "errors": 299,
+          "ref_words": 1468,
+          "sub": 231,
+          "del": 34,
+          "ins": 34,
+          "char_err": 714,
+          "ref_chars": 8341
+        },
+        "England English": {
+          "errors": 281,
+          "ref_words": 1393,
+          "sub": 234,
+          "del": 21,
+          "ins": 26,
+          "char_err": 599,
+          "ref_chars": 7323
+        },
+        "South Asian English": {
+          "errors": 542,
+          "ref_words": 1430,
+          "sub": 431,
+          "del": 65,
+          "ins": 46,
+          "char_err": 1464,
+          "ref_chars": 7971
+        },
+        "Australian English": {
+          "errors": 300,
+          "ref_words": 1493,
+          "sub": 242,
+          "del": 33,
+          "ins": 25,
+          "char_err": 625,
+          "ref_chars": 8371
+        },
+        "Canadian English": {
+          "errors": 171,
+          "ref_words": 1500,
+          "sub": 142,
+          "del": 12,
+          "ins": 17,
+          "char_err": 265,
+          "ref_chars": 8350
+        },
+        "Irish English": {
+          "errors": 168,
+          "ref_words": 1383,
+          "sub": 141,
+          "del": 15,
+          "ins": 12,
+          "char_err": 371,
+          "ref_chars": 7300
+        }
+      }
+    }
+  },
+  "execution_time_sec": 4597.16
+}

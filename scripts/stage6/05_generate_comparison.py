@@ -59,20 +59,31 @@ def generate_comparative_report() -> Path:
     lines.append("| Model Key | Role / Architecture | Family | No-Adapt WER | SUTA WER | DSUTA WER | DMSUTA WER | DSG WER | DSG $\\Delta R$ | DSG $\\Delta D$ | DSG $\\max_g \\Delta_g$ | Accepted | Rejected |\n")
     lines.append("| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n")
 
+    def _clean_val(v):
+        if pd.isna(v) or str(v).lower() in ["nan", "none"]:
+            return "N/A"
+        try:
+            f = float(v)
+            if f.is_integer():
+                return str(int(f))
+        except (ValueError, TypeError):
+            pass
+        return str(v)
+
     for _, row in b_df.iterrows():
         m_key = row["model_key"]
         role = row["model_name"]
         fam = row["architecture_family"]
-        no_a = row["no_adapt_wer"]
-        suta = row["suta_wer"]
-        dsuta = row["dsuta_wer"]
-        dmsuta = row["dmsuta_wer"]
-        dsg = row["dsg_wer"]
-        dr = row["dsg_delta_r"]
-        dd = row["dsg_delta_d"]
-        dmg = row["dsg_max_delta_g"]
-        acc = row["dsg_accepted"]
-        rej = row["dsg_rejected"]
+        no_a = _clean_val(row["no_adapt_wer"])
+        suta = _clean_val(row["suta_wer"])
+        dsuta = _clean_val(row["dsuta_wer"])
+        dmsuta = _clean_val(row["dmsuta_wer"])
+        dsg = _clean_val(row["dsg_wer"])
+        dr = _clean_val(row["dsg_delta_r"])
+        dd = _clean_val(row["dsg_delta_d"])
+        dmg = _clean_val(row["dsg_max_delta_g"])
+        acc = _clean_val(row["dsg_accepted"])
+        rej = _clean_val(row["dsg_rejected"])
         lines.append(f"| `{m_key}` | {role} | {fam} | {no_a} | {suta} | {dsuta} | {dmsuta} | {dsg} | {dr} | {dd} | {dmg} | {acc} | {rej} |\n")
 
     lines.append("\n---\n\n")
@@ -84,12 +95,15 @@ def generate_comparative_report() -> Path:
     for _, row in d_df.iterrows():
         m_id = row["model_id"]
         fam = row["architecture_family"]
-        cand = row["candidate_updates"]
-        acc = row["accepted_updates"]
-        acc_pct = row["acceptance_rate"]
-        rej = row["rejected_updates"]
-        fc = row["fail_closed_errors"]
-        lines.append(f"| `{m_id}` | {fam} | {cand} | {acc} ({acc_pct}) | {rej} | {fc} | Statistical bounding on sentinel panel |\n")
+        cand = _clean_val(row["candidate_updates"])
+        acc = _clean_val(row["accepted_updates"])
+        acc_pct = _clean_val(row["acceptance_rate"])
+        rej = _clean_val(row["rejected_updates"])
+        fc = _clean_val(row["fail_closed_errors"])
+        if fam == "CTC":
+            lines.append(f"| `{m_id}` | {fam} | {cand} | {acc} ({acc_pct}) | {rej} | {fc} | Statistical bounding on sentinel panel |\n")
+        else:
+            lines.append(f"| `{m_id}` | {fam} | INCOMPATIBLE | N/A | N/A | N/A | Non-CTC Seq2Seq (Frame-entropy SUTA undefined) |\n")
 
     lines.append("\n---\n\n")
 

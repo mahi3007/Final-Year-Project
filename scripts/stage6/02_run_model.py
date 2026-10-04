@@ -157,10 +157,13 @@ def execute_prequential_method(
     resolver: SentinelAudioResolver,
     device: str = "cpu",
     window_size_k: int = 4,
+    checkpoints_dir: Optional[Path] = None,
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """Runs a single prequential CTTA method on a target model."""
-    pred_ckpt = CHECKPOINTS_DIR / f"{model_name}_{method_name}_predictions.csv"
-    dec_ckpt = CHECKPOINTS_DIR / f"{model_name}_dsg_decisions.csv"
+    ckpt_dir = checkpoints_dir or CHECKPOINTS_DIR
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
+    pred_ckpt = ckpt_dir / f"{model_name}_{method_name}_predictions.csv"
+    dec_ckpt = ckpt_dir / f"{model_name}_dsg_decisions.csv"
 
     if pred_ckpt.exists():
         if method_name != "dsg" or dec_ckpt.exists():
@@ -408,7 +411,8 @@ def execute_prequential_method(
 def run_model_benchmark(
     model_name: str,
     device: str = "cpu",
-    use_frozen_wav2vec2: bool = True
+    use_frozen_wav2vec2: bool = True,
+    checkpoints_dir: Optional[Path] = None,
 ) -> Dict[str, Any]:
     print("\n" + "=" * 75)
     print(f"STAGE 6: BENCHMARKING MODEL [{model_name.upper()}]")
@@ -497,6 +501,7 @@ def run_model_benchmark(
             gate_cfg=gate_cfg,
             resolver=resolver,
             device=device,
+            checkpoints_dir=checkpoints_dir,
         )
         agg_no_adapt = compute_aggregate_metrics(preds_no_adapt)
 
@@ -537,6 +542,7 @@ def run_model_benchmark(
             gate_cfg=gate_cfg,
             resolver=resolver,
             device=device,
+            checkpoints_dir=checkpoints_dir,
         )
         method_metrics[m] = compute_aggregate_metrics(preds)
         if m == "dsg":

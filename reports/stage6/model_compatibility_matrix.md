@@ -30,10 +30,10 @@ Prior to cloud execution on virtual GPUs (Kaggle Tesla P100 / Google Colab), thi
 | :--- | :--- | :--- | :---: | :--- | :--- | :---: | :---: | :---: | :--- |
 | `wav2vec2_base` | `facebook/wav2vec2-base-960h` | CTC Acoustic Model | 94.4 M | Frame logits $(B, T, 32)$ $\to$ Greedy CTC | 24 Transformer LayerNorms | **COMPATIBLE** | **COMPATIBLE** | **COMPATIBLE** | **PRIMARY FROZEN BASELINE** (Stage 5E locked) |
 | `whisper_base` | `openai/whisper-base` | Seq2Seq Encoder-Decoder | 72.6 M | Log-Mel $(B, 80, T)$ $\to$ Autoregressive BPE | Encoder/Decoder LayerNorms | **INCOMPATIBLE** (No CTC frames) | **COMPATIBLE** | Incompatible for CTTA Gating | **STATIC NO-ADAPT ONLY** (CTTA Incompatible) |
-| `hubert_base` | `facebook/hubert-large-ls960-ft` *(Note 1)* | CTC Acoustic Model (Cluster SSL) | 316.0 M | Frame logits $(B, T, 32)$ $\to$ Greedy CTC | 48 Transformer LayerNorms | **COMPATIBLE** | **COMPATIBLE** | **COMPATIBLE** | **EXECUTION CANDIDATE** (Full CTTA + DSG) |
+| `hubert_large` | `facebook/hubert-large-ls960-ft` *(Note 1)* | CTC Acoustic Model (Cluster SSL) | 316.8 M | Frame logits $(B, T, 32)$ $\to$ Greedy CTC | 48 Transformer LayerNorms | **COMPATIBLE** | **COMPATIBLE** | **COMPATIBLE** | **EXECUTION CANDIDATE** (Full CTTA + DSG) |
 | `data2vec_base` | `facebook/data2vec-audio-base-960h` | CTC Acoustic Model (Multimodal SSL) | 94.4 M | Frame logits $(B, T, 32)$ $\to$ Greedy CTC | 24 Transformer LayerNorms | **COMPATIBLE** | **COMPATIBLE** | **COMPATIBLE** | **EXECUTION CANDIDATE** (Full CTTA + DSG) |
-| `distil_whisper_small` | `distil-whisper/distil-small.en` | Distilled Seq2Seq Encoder-Decoder | 166.0 M | Log-Mel $(B, 80, T)$ $\to$ Autoregressive BPE | Encoder/Decoder LayerNorms | **INCOMPATIBLE** (No CTC frames) | **COMPATIBLE** | Incompatible for CTTA Gating | **STATIC NO-ADAPT ONLY** (CTTA Incompatible) |
-| `xlsr_english` | `jonatasgrosman/wav2vec2-large-xlsr-53-english` | CTC Acoustic Model (Cross-Lingual SSL) | 317.0 M | Frame logits $(B, T, 32)$ $\to$ Greedy CTC | 48 Transformer LayerNorms | **COMPATIBLE** | **COMPATIBLE** | **COMPATIBLE** | **EXECUTION CANDIDATE** (Full CTTA + DSG) |
+| `distil_whisper_small` | `distil-whisper/distil-small.en` | Distilled Seq2Seq Encoder-Decoder | 166.1 M | Log-Mel $(B, 80, T)$ $\to$ Autoregressive BPE | Encoder/Decoder LayerNorms | **INCOMPATIBLE** (No CTC frames) | **COMPATIBLE** | Incompatible for CTTA Gating | **STATIC NO-ADAPT ONLY** (CTTA Incompatible) |
+| `xlsr_english` | `jonatasgrosman/wav2vec2-large-xlsr-53-english` | CTC Acoustic Model (Cross-Lingual SSL) | 315.5 M | Frame logits $(B, T, 32)$ $\to$ Greedy CTC | 48 Transformer LayerNorms | **COMPATIBLE** | **COMPATIBLE** | **COMPATIBLE** | **EXECUTION CANDIDATE** (Full CTTA + DSG) |
 
 *(Note 1: As documented below, Meta's raw `facebook/hubert-base-ls960` checkpoint is an un-fine-tuned SSL feature extractor without an ASR vocabulary head; the official Fairseq fine-tuned ASR model with CTC head is `facebook/hubert-large-ls960-ft`.)*
 
@@ -69,7 +69,7 @@ where $\tilde{C}$ is the cross-class correlation matrix computed over the tempor
 
 ### 3. Verification of Compatible CTC Architectures
 
-The four compatible architectures (`wav2vec2_base`, `hubert_base`, `data2vec_base`, `xlsr_english`) strictly satisfy all nine criteria:
+The four compatible architectures (`wav2vec2_base`, `hubert_large`, `data2vec_base`, `xlsr_english`) strictly satisfy all nine criteria:
 
 1. **Emission Interface:** All four models take raw 16 kHz audio waveforms and emit frame logits $\mathbb{R}^{B \times T \times |V|}$ through linear projection heads.
 2. **LayerNorm Affine Parameters:**
@@ -115,7 +115,7 @@ Upon completion of execution, the results will be reported in:
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | `wav2vec2_base` | Wav2Vec2-base-960h | CTC | **22.45%** | **23.55%** | **22.55%** | **22.56%** | **22.52%** | **+0.07 pp** | **−0.75 pp** | **+0.47 pp** | **9** | **216** |
 | `whisper_base` | Whisper-base | Seq2Seq | *Pending* | *Incompatible* | *Incompatible* | *Incompatible* | *Incompatible* | N/A | N/A | N/A | N/A | N/A |
-| `hubert_base` | HuBERT-large-ls960-ft | CTC | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* |
+| `hubert_large` | HuBERT-large-ls960-ft | CTC | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* |
 | `data2vec_base` | Data2Vec-audio-base | CTC | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* |
 | `distil_whisper` | Distil-Whisper-small.en | Seq2Seq | *Pending* | *Incompatible* | *Incompatible* | *Incompatible* | *Incompatible* | N/A | N/A | N/A | N/A | N/A |
 | `xlsr_english` | Wav2Vec2-large-XLSR-53 | CTC | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* |

@@ -1,0 +1,83 @@
+{
+  "model_key": "distil_whisper_small",
+  "model_id": "distil-whisper/distil-small.en",
+  "family": "EncoderDecoder",
+  "status": "COMPLETED_STATIC_ONLY",
+  "no_adapt_wer": 9.184262143763702,
+  "no_adapt_cer": 4.17366123887863,
+  "no_adapt_disparity": 7.0965034965034945,
+  "suta_wer": "INCOMPATIBLE",
+  "dsuta_wer": "INCOMPATIBLE",
+  "dmsuta_wer": "INCOMPATIBLE",
+  "dsg_wer": "INCOMPATIBLE",
+  "dsg_delta_r": "N/A",
+  "dsg_delta_d": "N/A",
+  "dsg_max_delta_g": "N/A",
+  "dsg_accepted": "N/A",
+  "dsg_rejected": "N/A",
+  "group_wers_no_adapt": {
+    "US English": 10.899182561307901,
+    "England English": 9.619526202440776,
+    "South Asian English": 13.496503496503495,
+    "Australian English": 8.238446081714669,
+    "Canadian English": 6.4,
+    "Irish English": 6.507592190889371
+  },
+  "group_stats_no_adapt": {
+    "US English": {
+      "errors": 160,
+      "ref_words": 1468,
+      "sub": 124,
+      "del": 16,
+      "ins": 20,
+      "char_err": 402,
+      "ref_chars": 8341
+    },
+    "England English": {
+      "errors": 134,
+      "ref_words": 1393,
+      "sub": 100,
+      "del": 11,
+      "ins": 23,
+      "char_err": 330,
+      "ref_chars": 7323
+    },
+    "South Asian English": {
+      "errors": 193,
+      "ref_words": 1430,
+      "sub": 149,
+      "del": 14,
+      "ins": 30,
+      "char_err": 522,
+      "ref_chars": 7971
+    },
+    "Australian English": {
+      "errors": 123,
+      "ref_words": 1493,
+      "sub": 88,
+      "del": 20,
+      "ins": 15,
+      "char_err": 304,
+      "ref_chars": 8371
+    },
+    "Canadian English": {
+      "errors": 96,
+      "ref_words": 1500,
+      "sub": 79,
+      "del": 10,
+      "ins": 7,
+      "char_err": 199,
+      "ref_chars": 8350
+    },
+    "Irish English": {
+      "errors": 90,
+      "ref_words": 1383,
+      "sub": 72,
+      "del": 12,
+      "ins": 6,
+      "char_err": 232,
+      "ref_chars": 7300
+    }
+  },
+  "execution_time_sec": 335.86
+}

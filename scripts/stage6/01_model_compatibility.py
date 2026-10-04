@@ -54,14 +54,14 @@ STAGE6_MODEL_SPEC: Dict[str, Dict[str, Any]] = {
         "ctta_status": "INCOMPATIBLE_NON_CTC",
         "notes": "Autoregressive seq2seq model without CTC frame emissions. Frame entropy SUTA mathematically undefined. Static No-Adapt evaluated."
     },
-    "hubert_base": {
+    "hubert_large": {
         "model_id": "facebook/hubert-large-ls960-ft",
         "family": "CTC",
-        "role": "Self-supervised encoder comparison (Acoustic Cluster SSL)",
+        "role": "Self-supervised encoder comparison (Acoustic Cluster SSL, Large-960h FT)",
         "is_frozen_baseline": False,
         "expected_ctta_compatible": True,
         "ctta_status": "COMPATIBLE",
-        "notes": "Official Fairseq CTC ASR release of the HuBERT family. Full CTC frame logits + LayerNorms."
+        "notes": "Official Fairseq CTC ASR release of the HuBERT family (HubertForCTC, 316.8M params). Full CTC frame logits + LayerNorms."
     },
     "data2vec_base": {
         "model_id": "facebook/data2vec-audio-base-960h",

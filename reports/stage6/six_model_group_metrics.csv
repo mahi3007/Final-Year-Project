@@ -1,31 +1,133 @@
 model_key,model_id,method,accent_stratum,wer,substitutions,deletions,insertions,total_errors,reference_words
-wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,,0.229069,271,32,39,,1493
-wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,,0.122,153,13,17,,1500
-wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,,0.203159,227,27,29,,1393
-wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,,0.156182,179,23,14,,1383
-wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,,0.424476,500,53,54,,1430
-wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,,0.214578,253,30,32,,1468
-wav2vec2_base,facebook/wav2vec2-base-960h,suta,,0.240455,293,40,26,,1493
-wav2vec2_base,facebook/wav2vec2-base-960h,suta,,0.137333,170,20,16,,1500
-wav2vec2_base,facebook/wav2vec2-base-960h,suta,,0.218234,241,34,29,,1393
-wav2vec2_base,facebook/wav2vec2-base-960h,suta,,0.180043,198,40,11,,1383
-wav2vec2_base,facebook/wav2vec2-base-960h,suta,,0.426573,490,75,45,,1430
-wav2vec2_base,facebook/wav2vec2-base-960h,suta,,0.213215,253,31,29,,1468
-wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,,0.229739,274,33,36,,1493
-wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,,0.132,164,17,17,,1500
-wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,,0.201723,227,26,28,,1393
-wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,,0.155459,177,26,12,,1383
-wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,,0.41958,495,50,55,,1430
-wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,,0.21594,255,31,31,,1468
-wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,,0.22438,268,32,35,,1493
-wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,,0.128667,160,16,17,,1500
-wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,,0.20603,230,30,27,,1393
-wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,,0.156905,176,29,12,,1383
-wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,,0.423077,498,50,57,,1430
-wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,,0.216621,258,29,31,,1468
-wav2vec2_base,facebook/wav2vec2-base-960h,dsg,,0.231748,276,32,38,,1493
-wav2vec2_base,facebook/wav2vec2-base-960h,dsg,,0.126667,157,15,18,,1500
-wav2vec2_base,facebook/wav2vec2-base-960h,dsg,,0.204594,230,28,27,,1393
-wav2vec2_base,facebook/wav2vec2-base-960h,dsg,,0.15329,177,22,13,,1383
-wav2vec2_base,facebook/wav2vec2-base-960h,dsg,,0.421678,496,54,53,,1430
-wav2vec2_base,facebook/wav2vec2-base-960h,dsg,,0.215259,254,30,32,,1468
+data2vec_base,facebook/data2vec-audio-base-960h,no_adapt,US English,20.3678,231,34,34,299,1468
+data2vec_base,facebook/data2vec-audio-base-960h,no_adapt,England English,20.2441,235,21,26,282,1393
+data2vec_base,facebook/data2vec-audio-base-960h,no_adapt,South Asian English,38.4615,439,65,46,550,1430
+data2vec_base,facebook/data2vec-audio-base-960h,no_adapt,Australian English,20.2947,245,34,24,303,1493
+data2vec_base,facebook/data2vec-audio-base-960h,no_adapt,Canadian English,11.3333,141,12,17,170,1500
+data2vec_base,facebook/data2vec-audio-base-960h,no_adapt,Irish English,12.0752,142,12,13,167,1383
+data2vec_base,facebook/data2vec-audio-base-960h,suta,US English,20.2997,230,34,34,298,1468
+data2vec_base,facebook/data2vec-audio-base-960h,suta,England English,19.8851,227,22,28,277,1393
+data2vec_base,facebook/data2vec-audio-base-960h,suta,South Asian English,36.8531,433,48,46,527,1430
+data2vec_base,facebook/data2vec-audio-base-960h,suta,Australian English,20.8975,244,45,23,312,1493
+data2vec_base,facebook/data2vec-audio-base-960h,suta,Canadian English,12.4,152,20,14,186,1500
+data2vec_base,facebook/data2vec-audio-base-960h,suta,Irish English,13.7383,154,26,10,190,1383
+data2vec_base,facebook/data2vec-audio-base-960h,dsuta,US English,19.8229,207,57,27,291,1468
+data2vec_base,facebook/data2vec-audio-base-960h,dsuta,England English,19.9569,232,21,25,278,1393
+data2vec_base,facebook/data2vec-audio-base-960h,dsuta,South Asian English,36.5035,422,58,42,522,1430
+data2vec_base,facebook/data2vec-audio-base-960h,dsuta,Australian English,19.424,236,29,25,290,1493
+data2vec_base,facebook/data2vec-audio-base-960h,dsuta,Canadian English,11.1333,137,15,15,167,1500
+data2vec_base,facebook/data2vec-audio-base-960h,dsuta,Irish English,12.0752,141,12,14,167,1383
+data2vec_base,facebook/data2vec-audio-base-960h,dmsuta,US English,19.6185,211,51,26,288,1468
+data2vec_base,facebook/data2vec-audio-base-960h,dmsuta,England English,20.2441,231,23,28,282,1393
+data2vec_base,facebook/data2vec-audio-base-960h,dmsuta,South Asian English,38.5315,446,56,49,551,1430
+data2vec_base,facebook/data2vec-audio-base-960h,dmsuta,Australian English,20.0268,246,29,24,299,1493
+data2vec_base,facebook/data2vec-audio-base-960h,dmsuta,Canadian English,11.1333,139,12,16,167,1500
+data2vec_base,facebook/data2vec-audio-base-960h,dmsuta,Irish English,12.2198,143,12,14,169,1383
+data2vec_base,facebook/data2vec-audio-base-960h,dsg,US English,20.3678,231,34,34,299,1468
+data2vec_base,facebook/data2vec-audio-base-960h,dsg,England English,20.1723,234,21,26,281,1393
+data2vec_base,facebook/data2vec-audio-base-960h,dsg,South Asian English,37.9021,431,65,46,542,1430
+data2vec_base,facebook/data2vec-audio-base-960h,dsg,Australian English,20.0938,242,33,25,300,1493
+data2vec_base,facebook/data2vec-audio-base-960h,dsg,Canadian English,11.4,142,12,17,171,1500
+data2vec_base,facebook/data2vec-audio-base-960h,dsg,Irish English,12.1475,141,15,12,168,1383
+distil_whisper_small,distil-whisper/distil-small.en,no_adapt,US English,10.8992,124,16,20,160,1468
+distil_whisper_small,distil-whisper/distil-small.en,no_adapt,England English,9.6195,100,11,23,134,1393
+distil_whisper_small,distil-whisper/distil-small.en,no_adapt,South Asian English,13.4965,149,14,30,193,1430
+distil_whisper_small,distil-whisper/distil-small.en,no_adapt,Australian English,8.2384,88,20,15,123,1493
+distil_whisper_small,distil-whisper/distil-small.en,no_adapt,Canadian English,6.4,79,10,7,96,1500
+distil_whisper_small,distil-whisper/distil-small.en,no_adapt,Irish English,6.5076,72,12,6,90,1383
+hubert_large,facebook/hubert-large-ls960-ft,no_adapt,US English,13.1471,163,8,22,193,1468
+hubert_large,facebook/hubert-large-ls960-ft,no_adapt,England English,11.2706,127,11,19,157,1393
+hubert_large,facebook/hubert-large-ls960-ft,no_adapt,South Asian English,22.3077,269,25,25,319,1430
+hubert_large,facebook/hubert-large-ls960-ft,no_adapt,Australian English,11.0516,135,10,20,165,1493
+hubert_large,facebook/hubert-large-ls960-ft,no_adapt,Canadian English,9.0667,109,12,15,136,1500
+hubert_large,facebook/hubert-large-ls960-ft,no_adapt,Irish English,7.3753,86,8,8,102,1383
+hubert_large,facebook/hubert-large-ls960-ft,suta,US English,13.2834,163,12,20,195,1468
+hubert_large,facebook/hubert-large-ls960-ft,suta,England English,11.4142,127,15,17,159,1393
+hubert_large,facebook/hubert-large-ls960-ft,suta,South Asian English,23.0769,273,35,22,330,1430
+hubert_large,facebook/hubert-large-ls960-ft,suta,Australian English,11.2525,136,16,16,168,1493
+hubert_large,facebook/hubert-large-ls960-ft,suta,Canadian English,9.4667,120,13,9,142,1500
+hubert_large,facebook/hubert-large-ls960-ft,suta,Irish English,8.1706,95,13,5,113,1383
+hubert_large,facebook/hubert-large-ls960-ft,dsuta,US English,13.079,163,9,20,192,1468
+hubert_large,facebook/hubert-large-ls960-ft,dsuta,England English,11.486,129,13,18,160,1393
+hubert_large,facebook/hubert-large-ls960-ft,dsuta,South Asian English,22.6573,276,25,23,324,1430
+hubert_large,facebook/hubert-large-ls960-ft,dsuta,Australian English,10.7167,131,9,20,160,1493
+hubert_large,facebook/hubert-large-ls960-ft,dsuta,Canadian English,9.2,111,12,15,138,1500
+hubert_large,facebook/hubert-large-ls960-ft,dsuta,Irish English,7.2307,84,8,8,100,1383
+hubert_large,facebook/hubert-large-ls960-ft,dmsuta,US English,13.079,162,9,21,192,1468
+hubert_large,facebook/hubert-large-ls960-ft,dmsuta,England English,11.2706,126,12,19,157,1393
+hubert_large,facebook/hubert-large-ls960-ft,dmsuta,South Asian English,22.3776,273,27,20,320,1430
+hubert_large,facebook/hubert-large-ls960-ft,dmsuta,Australian English,10.6497,129,11,19,159,1493
+hubert_large,facebook/hubert-large-ls960-ft,dmsuta,Canadian English,9.1333,110,12,15,137,1500
+hubert_large,facebook/hubert-large-ls960-ft,dmsuta,Irish English,7.086,83,8,7,98,1383
+hubert_large,facebook/hubert-large-ls960-ft,dsg,US English,12.9428,161,9,20,190,1468
+hubert_large,facebook/hubert-large-ls960-ft,dsg,England English,11.6296,132,11,19,162,1393
+hubert_large,facebook/hubert-large-ls960-ft,dsg,South Asian English,22.6573,277,25,22,324,1430
+hubert_large,facebook/hubert-large-ls960-ft,dsg,Australian English,10.7837,131,11,19,161,1493
+hubert_large,facebook/hubert-large-ls960-ft,dsg,Canadian English,9.0,108,12,15,135,1500
+hubert_large,facebook/hubert-large-ls960-ft,dsg,Irish English,7.303,84,8,9,101,1383
+wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,Australian English,22.9069,271,32,39,342,1493
+wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,Canadian English,12.2,153,13,17,183,1500
+wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,England English,20.3159,227,27,29,283,1393
+wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,Irish English,15.6182,179,23,14,216,1383
+wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,South Asian English,42.4476,500,53,54,607,1430
+wav2vec2_base,facebook/wav2vec2-base-960h,no_adapt,US English,21.4578,253,30,32,315,1468
+wav2vec2_base,facebook/wav2vec2-base-960h,suta,Australian English,24.0455,293,40,26,359,1493
+wav2vec2_base,facebook/wav2vec2-base-960h,suta,Canadian English,13.7333,170,20,16,206,1500
+wav2vec2_base,facebook/wav2vec2-base-960h,suta,England English,21.8234,241,34,29,304,1393
+wav2vec2_base,facebook/wav2vec2-base-960h,suta,Irish English,18.0043,198,40,11,249,1383
+wav2vec2_base,facebook/wav2vec2-base-960h,suta,South Asian English,42.6573,490,75,45,610,1430
+wav2vec2_base,facebook/wav2vec2-base-960h,suta,US English,21.3215,253,31,29,313,1468
+wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,Australian English,22.9739,274,33,36,343,1493
+wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,Canadian English,13.2,164,17,17,198,1500
+wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,England English,20.1723,227,26,28,281,1393
+wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,Irish English,15.5459,177,26,12,215,1383
+wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,South Asian English,41.958,495,50,55,600,1430
+wav2vec2_base,facebook/wav2vec2-base-960h,dsuta,US English,21.594,255,31,31,317,1468
+wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,Australian English,22.438,268,32,35,335,1493
+wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,Canadian English,12.8667,160,16,17,193,1500
+wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,England English,20.603,230,30,27,287,1393
+wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,Irish English,15.6905,176,29,12,217,1383
+wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,South Asian English,42.3077,498,50,57,605,1430
+wav2vec2_base,facebook/wav2vec2-base-960h,dmsuta,US English,21.6621,258,29,31,318,1468
+wav2vec2_base,facebook/wav2vec2-base-960h,dsg,Australian English,23.1748,276,32,38,346,1493
+wav2vec2_base,facebook/wav2vec2-base-960h,dsg,Canadian English,12.6667,157,15,18,190,1500
+wav2vec2_base,facebook/wav2vec2-base-960h,dsg,England English,20.4594,230,28,27,285,1393
+wav2vec2_base,facebook/wav2vec2-base-960h,dsg,Irish English,15.329,177,22,13,212,1383
+wav2vec2_base,facebook/wav2vec2-base-960h,dsg,South Asian English,42.1678,496,54,53,603,1430
+wav2vec2_base,facebook/wav2vec2-base-960h,dsg,US English,21.5259,254,30,32,316,1468
+whisper_base,openai/whisper-base,no_adapt,US English,16.5531,176,16,51,243,1468
+whisper_base,openai/whisper-base,no_adapt,England English,14.4293,151,12,38,201,1393
+whisper_base,openai/whisper-base,no_adapt,South Asian English,21.3986,229,19,58,306,1430
+whisper_base,openai/whisper-base,no_adapt,Australian English,13.5298,153,21,28,202,1493
+whisper_base,openai/whisper-base,no_adapt,Canadian English,7.8667,98,9,11,118,1500
+whisper_base,openai/whisper-base,no_adapt,Irish English,12.3644,134,10,27,171,1383
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,no_adapt,US English,13.7602,161,26,15,202,1468
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,no_adapt,England English,12.0603,136,18,14,168,1393
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,no_adapt,South Asian English,16.993,203,25,15,243,1430
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,no_adapt,Australian English,11.3195,136,21,12,169,1493
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,no_adapt,Canadian English,8.0667,104,12,5,121,1500
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,no_adapt,Irish English,8.7491,99,15,7,121,1383
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,suta,US English,13.4196,157,27,13,197,1468
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,suta,England English,12.9935,147,23,11,181,1393
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,suta,South Asian English,18.3916,214,40,9,263,1430
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,suta,Australian English,15.1373,170,49,7,226,1493
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,suta,Canadian English,12.5333,146,40,2,188,1500
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,suta,Irish English,14.8228,141,60,4,205,1383
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsuta,US English,13.4877,157,27,14,198,1468
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsuta,England English,12.2039,135,20,15,170,1393
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsuta,South Asian English,16.9231,204,25,13,242,1430
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsuta,Australian English,11.3865,138,22,10,170,1493
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsuta,Canadian English,8.2667,105,15,4,124,1500
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsuta,Irish English,9.1106,102,17,7,126,1383
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dmsuta,US English,13.7602,161,27,14,202,1468
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dmsuta,England English,12.2039,137,18,15,170,1393
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dmsuta,South Asian English,16.7832,202,26,12,240,1430
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dmsuta,Australian English,11.3865,138,22,10,170,1493
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dmsuta,Canadian English,8.0667,105,12,4,121,1500
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dmsuta,Irish English,8.7491,97,18,6,121,1383
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsg,US English,13.7602,161,26,15,202,1468
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsg,England English,12.0603,136,18,14,168,1393
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsg,South Asian English,16.993,203,25,15,243,1430
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsg,Australian English,11.3195,136,21,12,169,1493
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsg,Canadian English,8.0667,104,12,5,121,1500
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,dsg,Irish English,8.7491,99,15,7,121,1383

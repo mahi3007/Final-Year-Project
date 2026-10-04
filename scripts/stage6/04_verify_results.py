@@ -118,7 +118,7 @@ def verify_stage6_outputs() -> bool:
     passed_checks += 1
 
     # Check 6: No NaN / Null in critical identifier fields
-    print("\n[Check 6/6] Null & NaN Audit:")
+    print("\n[Check 6/7] Null & NaN Audit:")
     for df, name in [(b_df, "benchmark.csv"), (d_df, "dsg_summary.csv")]:
         for col in ["model_key", "model_id", "architecture_family"]:
             null_count = df[col].isnull().sum()
@@ -126,6 +126,18 @@ def verify_stage6_outputs() -> bool:
     print("  Zero null or corrupted identifiers across all summary tables.")
     passed_checks += 1
 
+    # Check 7: HuBERT Model Identity Verification
+    print("\n[Check 7/7] HuBERT Model Identity Consistency:")
+    assert "hubert_large" in b_df["model_key"].values, "Expected 'hubert_large' model_key in benchmark.csv"
+    assert "hubert_base" not in b_df["model_key"].values, "Found deprecated 'hubert_base' model_key in benchmark.csv"
+    hl_row = b_df[b_df["model_key"] == "hubert_large"].iloc[0]
+    assert hl_row["model_id"] == "facebook/hubert-large-ls960-ft", f"Unexpected HuBERT model_id: {hl_row['model_id']}"
+    assert "hubert_large" in d_df["model_key"].values, "Expected 'hubert_large' model_key in dsg_summary.csv"
+    assert "hubert_base" not in d_df["model_key"].values, "Found deprecated 'hubert_base' model_key in dsg_summary.csv"
+    print("  HuBERT model identity verified: 'hubert_large' -> 'facebook/hubert-large-ls960-ft' (316.8M params).")
+    passed_checks += 1
+
+    total_checks = 7
     print("\n" + "=" * 75)
     print(f"OUTPUT VERIFICATION COMPLETE: {passed_checks}/{total_checks} CHECKS PASSED.")
     print("=" * 75)

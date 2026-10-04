@@ -119,3 +119,30 @@ Once complete, the runner packages all results into `/kaggle/working/stage6_resu
 2. **Seq2Seq Non-CTC Honesty:** `openai/whisper-base` and `distil-whisper/distil-small.en` are evaluated for static No-Adapt and legitimately marked `INCOMPATIBLE` for CTTA adaptation rather than fabricating numbers.
 3. **Identical Datasets & Seeds:** Every model runs on the exact 900-clip external stream, 30-speaker sentinel panel, $B=1,000$ paired cluster bootstrap, $\epsilon_R=0.0000, \epsilon_G=0.0200, \epsilon_D=0.0200$, and seed $20261002$.
 4. **Resumption & Checkpointing:** If a cloud session times out or disconnects, re-running the script automatically resumes from the last completed model/method without re-computing past windows.
+
+---
+
+### Stage 6.1: Running the Two-Model CTC Extension on Kaggle
+
+To evaluate the two additional CTC models (`facebook/wav2vec2-large-960h-lv60` and `facebook/wav2vec2-large-robust-ft-libri-960h`):
+
+1. In Kaggle, open a notebook with **GPU enabled (Tesla P100 or T4)** and **Internet ON**.
+2. Run setup:
+   ```python
+   !python cloud/kaggle/setup_kaggle.py
+   ```
+3. Run Stage 6.1 Preflight Audit (verifies AutoModelForCTC, CTC logits, Shannon frame entropy, SUTA update, and DSG shadow isolation):
+   ```python
+   !python scripts/stage6/06_stage6_1_preflight_audit.py
+   ```
+4. Run the Stage 6.1 Extension across 225 prequential windows:
+   ```python
+   !python cloud/kaggle/run_stage6_1_extension.py
+   ```
+5. Download `stage6_1_results_bundle.zip` from `/kaggle/working/` (right panel Output).
+6. In your local project, extract the bundle and merge results into the unified 8-model suite:
+   ```bash
+   unzip -o ~/Downloads/stage6_1_results_bundle.zip -d .
+   python scripts/stage6/09_merge_stage6_1_into_stage6.py
+   ```
+

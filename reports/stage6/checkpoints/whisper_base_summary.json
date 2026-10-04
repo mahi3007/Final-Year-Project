@@ -1,0 +1,83 @@
+{
+  "model_key": "whisper_base",
+  "model_id": "openai/whisper-base",
+  "family": "EncoderDecoder",
+  "status": "COMPLETED_STATIC_ONLY",
+  "no_adapt_wer": 14.318680050767279,
+  "no_adapt_cer": 6.628756085277825,
+  "no_adapt_disparity": 13.531934731934733,
+  "suta_wer": "INCOMPATIBLE",
+  "dsuta_wer": "INCOMPATIBLE",
+  "dmsuta_wer": "INCOMPATIBLE",
+  "dsg_wer": "INCOMPATIBLE",
+  "dsg_delta_r": "N/A",
+  "dsg_delta_d": "N/A",
+  "dsg_max_delta_g": "N/A",
+  "dsg_accepted": "N/A",
+  "dsg_rejected": "N/A",
+  "group_wers_no_adapt": {
+    "US English": 16.553133514986378,
+    "England English": 14.429289303661164,
+    "South Asian English": 21.3986013986014,
+    "Australian English": 13.529805760214334,
+    "Canadian English": 7.866666666666666,
+    "Irish English": 12.364425162689804
+  },
+  "group_stats_no_adapt": {
+    "US English": {
+      "errors": 243,
+      "ref_words": 1468,
+      "sub": 176,
+      "del": 16,
+      "ins": 51,
+      "char_err": 616,
+      "ref_chars": 8341
+    },
+    "England English": {
+      "errors": 201,
+      "ref_words": 1393,
+      "sub": 151,
+      "del": 12,
+      "ins": 38,
+      "char_err": 479,
+      "ref_chars": 7323
+    },
+    "South Asian English": {
+      "errors": 306,
+      "ref_words": 1430,
+      "sub": 229,
+      "del": 19,
+      "ins": 58,
+      "char_err": 863,
+      "ref_chars": 7971
+    },
+    "Australian English": {
+      "errors": 202,
+      "ref_words": 1493,
+      "sub": 153,
+      "del": 21,
+      "ins": 28,
+      "char_err": 488,
+      "ref_chars": 8371
+    },
+    "Canadian English": {
+      "errors": 118,
+      "ref_words": 1500,
+      "sub": 98,
+      "del": 9,
+      "ins": 11,
+      "char_err": 284,
+      "ref_chars": 8350
+    },
+    "Irish English": {
+      "errors": 171,
+      "ref_words": 1383,
+      "sub": 134,
+      "del": 10,
+      "ins": 27,
+      "char_err": 429,
+      "ref_chars": 7300
+    }
+  },
+  "execution_time_sec": 245.75
+}

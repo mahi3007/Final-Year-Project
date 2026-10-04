@@ -1,5 +1,5 @@
 {
-  "audit_timestamp": "2026-10-04T04:48:56Z",
+  "audit_timestamp": "2026-10-04T05:40:51Z",
   "protocol_version": "v1.0-cv27-amended",
   "total_models": 6,
   "compatible_ctta_models": 4,
@@ -24,16 +24,6 @@
       "can_run_no_adapt": true,
       "can_run_ctta": false,
       "notes": "Autoregressive seq2seq model without CTC frame emissions. Frame entropy SUTA mathematically undefined. Static No-Adapt evaluated."
-    },
-    "hubert_base": {
-      "model_id": "facebook/hubert-large-ls960-ft",
-      "family": "CTC",
-      "role": "Self-supervised encoder comparison (Acoustic Cluster SSL)",
-      "is_frozen_baseline": false,
-      "ctta_status": "COMPATIBLE",
-      "can_run_no_adapt": true,
-      "can_run_ctta": true,
-      "notes": "Official Fairseq CTC ASR release of the HuBERT family. Full CTC frame logits + LayerNorms."
     },
     "data2vec_base": {
       "model_id": "facebook/data2vec-audio-base-960h",
@@ -64,6 +54,16 @@
       "can_run_no_adapt": true,
       "can_run_ctta": true,
       "notes": "Cross-lingual 53-language pretrained encoder fine-tuned on English. Full CTC frame logits + LayerNorms."
+    },
+    "hubert_large": {
+      "model_id": "facebook/hubert-large-ls960-ft",
+      "family": "CTC",
+      "role": "Self-supervised encoder comparison (Acoustic Cluster SSL, Large-960h FT)",
+      "is_frozen_baseline": false,
+      "ctta_status": "COMPATIBLE",
+      "can_run_no_adapt": true,
+      "can_run_ctta": true,
+      "notes": "Official Fairseq CTC ASR release of the HuBERT family (HubertForCTC, 316.8M params). Full CTC frame logits + LayerNorms."
     }
   }
 }

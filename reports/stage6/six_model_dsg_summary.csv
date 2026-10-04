@@ -1,2 +1,7 @@
 model_key,model_id,architecture_family,candidate_updates,accepted_updates,rejected_updates,acceptance_rate,statistical_rejections,fail_closed_errors,delta_R_pp,delta_D_pp,max_delta_g_pp
-wav2vec2_base,facebook/wav2vec2-base-960h,CTC,225,9,216,4.0%,216,0,0.0692,-0.7464000000000001,0.4667
+wav2vec2_base,facebook/wav2vec2-base-960h,CTC,225,9.0,216.0,4.0%,216.0,0.0,0.0692,-0.7464000000000001,0.4667
+whisper_base,openai/whisper-base,EncoderDecoder,INCOMPATIBLE,,,,,,,,
+hubert_large,facebook/hubert-large-ls960-ft,CTC,225,6.0,219.0,2.7%,219.0,0.0,0.0115380177685473,0.4219569295491183,0.3589375448671941
+data2vec_base,facebook/data2vec-audio-base-960h,CTC,225,1.0,224.0,0.4%,224.0,0.0,-0.1153801776854734,-0.6261072261072336,0.0723065798987701
+distil_whisper_small,distil-whisper/distil-small.en,EncoderDecoder,INCOMPATIBLE,,,,,,,,
+xlsr_english,jonatasgrosman/wav2vec2-large-xlsr-53-english,CTC,225,0.0,225.0,0.0%,225.0,0.0,0.0,0.0,0.0
