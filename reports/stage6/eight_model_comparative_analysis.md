@@ -17,16 +17,16 @@ Stage 6.1 expands the cross-architecture evaluation suite to a finalized, frozen
 - **2 Static Autoregressive Portability Baselines:** `whisper_base`, `distil_whisper_small`
 
 > **Frozen Final Core Claim:**  
-> *We show that continual test-time entropy minimization can produce overall and subgroup-specific ASR regression under accent-related distribution shift. We then evaluate a disparity-aware candidate-update safety controller using an independent speaker-stratified sentinel panel and paired speaker-cluster bootstrap bounds. Across six CTC ASR backbones spanning two parameter scales (94M to 316M parameters) and four pretraining paradigms, DSG consistently suppressed or prevented the degradation observed under unconstrained SUTA, while remaining conservative and imperfect as a predictor of external harm.*
+> *We show that continual test-time entropy minimization can produce overall and subgroup-specific ASR regression under accent-related distribution shift. We then evaluate a disparity-aware candidate-update safety controller using an independent speaker-stratified sentinel panel and paired speaker-cluster bootstrap bounds. Across six CTC ASR backbones spanning two parameter scales (94M to 316M parameters) and four pretraining paradigms, DSG consistently reduced or prevented the degradation observed under unconstrained SUTA, while remaining conservative and imperfect as a predictor of external harm.*
 
 #### Key Scientific Findings
 
 1. **Consistent Directional SUTA Regression Across All Six CTC Backbones:**  
-   Unconstrained continual test-time adaptation (SUTA) produced positive aggregate word error rate (WER) regression on all six evaluated CTC backbones under real-world accent shift. The severity of regression ranged from modest inflation ($+0.22$ pp on Data2Vec-base) to severe catastrophic collapse ($+2.73$ pp on XLSR-53). This confirms that continual adaptation vulnerability is not an idiosyncrasy of Wav2Vec2-base, but an inherent hazard of unregularized frame-entropy minimization across diverse SSL representations and parameter scales.
+   Positive aggregate word error rate (WER) regression was observed under unconstrained SUTA for all six evaluated CTC backbones under real-world accent shift. The severity of regression ranged from modest inflation ($+0.22$ pp on Data2Vec-base) to severe catastrophic collapse ($+2.73$ pp on XLSR-53). This confirms that continual adaptation vulnerability is not an idiosyncrasy of Wav2Vec2-base, but an inherent hazard of unregularized frame-entropy minimization across diverse SSL representations and parameter scales.
 2. **Consistent DSG Risk Screening Across All Six Evaluated CTC Backbones:**  
-   Across all six CTC backbones, DSG consistently reduced or prevented the degradation observed under unconstrained SUTA. On three models (`data2vec_base`, `wav2vec2_large_lv60`, and `wav2vec2_large_robust`), DSG finished slightly better than the unadapted baseline ($-0.12$ pp, $-0.02$ pp, and $-0.02$ pp, respectively), proving that DSG is not merely a static "never-adapt" gate.
+   Across all six CTC backbones, DSG reduced the observed SUTA regression across all six evaluated CTC backbones under the frozen external-stream protocol. On three models (`data2vec_base`, `wav2vec2_large_lv60`, and `wav2vec2_large_robust`), DSG finished slightly better than the unadapted baseline ($-0.12$ pp, $-0.02$ pp, and $-0.02$ pp, respectively), proving that DSG is not merely a static "never-adapt" gate.
 3. **The Dual Interpretation of XLSR-53 (Strongest Stress Case):**  
-   Under SUTA, XLSR-53 suffered the most severe divergence in the benchmark ($11.81\% \to 14.54\%$, $+2.73$ pp). DSG rejected all 225 XLSR candidate updates under the frozen sentinel risk criteria, thereby preserving the No-Adapt model state ($11.81\%$) and completely avoiding external degradation. This result simultaneously demonstrates **excellent safety screening** and **zero adaptation utilization** ($0/225$ accepted).
+   Under SUTA, XLSR-53 suffered the most severe divergence in the benchmark ($11.81\% \to 14.54\%$, $+2.73$ pp). DSG rejected all 225 candidate updates under the frozen sentinel criteria and therefore preserved the No-Adapt state ($11.81\%$), completely avoiding the external degradation. This result simultaneously demonstrates **excellent safety screening** and **zero adaptation utilization** ($0/225$ accepted).
 4. **Model-Dependent Adaptation Utilization:**  
    Under identical frozen risk thresholds ($\epsilon_R = 0.0000, \epsilon_G = 0.0200, \epsilon_D = 0.0200$), the controller produced substantially different adaptation acceptance rates across backbones:
    $$ 4.0\%,\quad 2.7\%,\quad 0.4\%,\quad 0.0\%,\quad 0.9\%,\quad 2.2\% $$
@@ -56,7 +56,7 @@ All models evaluated across 225 sequential prequential stream windows ($K=4$, 90
 Evaluated on the exact 900-clip holdout stream under static zero-shot inference (`No-Adapt`). Frame-entropy CTTA methods are mathematically non-applicable.
 
 | Model Key | Model Identifier | Architectural Family | Param Scale | Vocabulary Representation | Holdout WER | Holdout Disparity $D$ | CTTA Compatibility Status | Non-Applicability Rationale |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | `whisper_base` | `openai/whisper-base` | Encoder-Decoder Transformer | 72.6 M | 51,865 BPE Tokens | 14.32% | 13.06 pp | `INCOMPATIBLE` | Model generates text autoregressively via cross-attention; no frame-synchronous categorical emissions $\hat{y}_t \in \Delta^{\|V\|}$ exist. Frame-entropy SUTA is mathematically undefined. |
 | `distil_whisper_small` | `distil-whisper/distil-small.en` | Distilled Enc-Dec Transformer | 166.1 M | 51,865 BPE Tokens | 9.18% | 11.51 pp | `INCOMPATIBLE` | Distilled autoregressive architecture without frame-level linear projections. Adapting decoder on generated hypotheses would constitute pseudo-label self-training, confounding architecture with adaptation loss. |
 
@@ -67,26 +67,26 @@ Evaluated on the exact 900-clip holdout stream under static zero-shot inference 
 To rigorously determine whether DSG acts merely as a blunt rejection filter or whether it meaningfully discriminates update utility, we examine the fine-grained decision and outcome logs across all 1,350 candidate evaluations.
 
 #### Table 2: Multi-Backbone Safety Gate Outcome & Verification Matrix
-*Sentinel evaluations reflect immediate UCB non-inferiority decisions ($B=1,000$). External outcome reflects retrospective utterance-level word deltas across the 900-clip prequential stream.*
+*Sentinel evaluations reflect candidate-level point estimate changes $\Delta_R$ evaluated under paired bootstrap bounds ($B=1,000$). Cumulative downstream external word differences reflect retrospective utterance-level word deltas across the 900-clip prequential stream.*
 
-| Model Key | Candidate Updates | Accepted Updates | Rejected Updates | Acceptance Rate | Statistical Rejections | Fail-Closed Software Errors | Sentinel Beneficial ($\Delta_R < 0$) | Sentinel Neutral ($\Delta_R = 0$) | Sentinel Harmful ($\Delta_R > 0$) | Downstream External Word Delta | External Clips (Imp / Deg / Identical) |
+| Model Key | Candidate Updates | Accepted Updates | Rejected Updates | Acceptance Rate | Statistical Rejections | Fail-Closed Software Errors | Sentinel Lower Error ($\Delta_R < 0$) | Sentinel Neutral ($\Delta_R = 0$) | Sentinel Higher Error ($\Delta_R > 0$) | Cumulative Downstream External Word Difference | Downstream External Clips (Imp / Deg / Identical) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `wav2vec2_base` | 225 | 9 | 216 | 4.0% | 216 | 0 | 5 | 4 | 0 | $+6$ words ($+0.07$ pp) | 23 / 25 / 852 |
-| `hubert_large` | 225 | 6 | 219 | 2.7% | 219 | 0 | 6 | 0 | 0 | $+1$ word ($+0.01$ pp) | 24 / 26 / 850 |
-| `data2vec_base` | 225 | 1 | 224 | 0.4% | 224 | 0 | 1 | 0 | 0 | **$-10$ words ($-0.12$ pp)** | 26 / 18 / 856 |
-| `xlsr_english` | 225 | 0 | 225 | 0.0% | 225 | 0 | 0 | 0 | 0 | **$0$ words ($\pm 0.00$ pp)** | 0 / 0 / 900 |
-| `wav2vec2_large_lv60` | 225 | 2 | 223 | 0.9% | 223 | 0 | 1 | 1 | 0 | **$-2$ words ($-0.02$ pp)** | 2 / 0 / 898 |
-| `wav2vec2_large_robust` | 225 | 5 | 220 | 2.2% | 220 | 0 | 4 | 1 | 0 | **$-2$ words ($-0.02$ pp)** | 9 / 7 / 884 |
+| `wav2vec2_base` | 225 | 9 | 216 | 4.0% | 216 | 0 | 5 | 4 | **0** | $+6$ words ($+0.07$ pp) | 23 / 25 / 852 |
+| `hubert_large` | 225 | 6 | 219 | 2.7% | 219 | 0 | 6 | 0 | **0** | $+1$ word ($+0.01$ pp) | 24 / 26 / 850 |
+| `data2vec_base` | 225 | 1 | 224 | 0.4% | 224 | 0 | 1 | 0 | **0** | **$-10$ words ($-0.12$ pp)** | 26 / 18 / 856 |
+| `xlsr_english` | 225 | 0 | 225 | 0.0% | 225 | 0 | 0 | 0 | **0** | **$0$ words ($\pm 0.00$ pp)** | 0 / 0 / 900 |
+| `wav2vec2_large_lv60` | 225 | 2 | 223 | 0.9% | 223 | 0 | 1 | 1 | **0** | **$-2$ words ($-0.02$ pp)** | 2 / 0 / 898 |
+| `wav2vec2_large_robust` | 225 | 5 | 220 | 2.2% | 220 | 0 | 4 | 1 | **0** | **$-2$ words ($-0.02$ pp)** | 9 / 7 / 884 |
 | **Aggregate / Total** | **1,350** | **23** | **1,327** | **1.7%** | **1,327** | **0** | **17** | **6** | **0** | — | — |
 
 #### Critical Diagnostic Insights from the Outcome Matrix
 
-1. **Zero Sentinel Harm Accepted:**  
-   Across all 23 accepted candidate updates, **0 updates exhibited positive overall error inflation on the sentinel panel** ($\Delta_R \le 0.0$ in 100% of accepted cases; 17 strictly beneficial, 6 neutral). The configured empirical gate bound ($\text{UCB}_R \le \epsilon_R = 0.0000$) functioned strictly as designed.
+1. **Sentinel-Panel Risk Compliance:**  
+   **No accepted update produced a positive sentinel-panel overall regression under the frozen overall-risk criterion** ($\Delta_R \le 0.0$ in 100% of accepted cases; 17 candidate states exhibited lower overall sentinel WER ($\Delta_R < 0$), and 6 exhibited identical sentinel WER ($\Delta_R = 0$)). The configured empirical gate bound ($\text{UCB}_R \le \epsilon_R = 0.0000$) functioned strictly as configured across all six backbones.
 2. **Sentinel vs. Downstream Decoupling:**  
    While every accepted update was non-inferior on the sentinel panel, downstream generalization on the external stream showed subtle divergence:
-   - In `data2vec_base`, `wav2vec2_large_lv60`, and `wav2vec2_large_robust`, accepted updates produced **net-positive downstream generalization** (more clips improved than degraded, reducing total corpus errors).
-   - In `wav2vec2_base` and `hubert_large`, accepted updates were benign on the sentinel panel but induced a small net increase on the evolving external stream ($+6$ words and $+1$ word, respectively). This proves empirically that **sentinel non-inferiority is a conservative empirical risk screen, not a mathematical guarantee of downstream benefit**.
+   - In `data2vec_base`, `wav2vec2_large_lv60`, and `wav2vec2_large_robust`, accepted updates produced **net-positive downstream generalization** (more clips improved than degraded, reducing total corpus errors by $-10$, $-2$, and $-2$ words, respectively).
+   - In `wav2vec2_base` and `hubert_large`, accepted updates were non-inferior on the sentinel panel but induced a small net increase on the evolving external stream ($+6$ words and $+1$ word, respectively). This proves empirically that **sentinel non-inferiority is a conservative empirical risk screen, not a mathematical guarantee of downstream benefit**.
 3. **Flawless Software Reliability:**  
    Across all 1,350 evaluations, there were **0 fail-closed software errors**. Every single rejection was produced by the configured statistical hypothesis test.
 
@@ -115,7 +115,7 @@ Architecture Family             Model Scale                 Pretraining Regime
 
 #### Axis 2: Pretraining Regime & Multi-Domain Robustness
 - Comparing `wav2vec2_large_lv60` (pretrained solely on Libri-Light read audio) against `wav2vec2_large_robust` (pretrained on diverse multi-domain audio: LibriSpeech, Common Voice, Switchboard, and Fisher).
-- SUTA degradation on the robust checkpoint was lower ($+0.37$ pp vs. $+1.04$ pp), confirming that diverse acoustic pretraining provides partial resistance to entropy divergence.
+- The robustly fine-tuned checkpoint exhibited lower observed SUTA regression than the LV60 checkpoint ($+0.37$ pp vs. $+1.04$ pp). This pattern is consistent with greater robustness to distribution shift, but the experiment does not isolate pretraining diversity as a causal factor.
 - Under DSG, `wav2vec2_large_robust` achieved the highest acceptance rate among large models ($2.2\%$, $5/225$ updates), successfully reducing WER to **12.89%** and reducing accent disparity by **$-0.14$ pp**.
 
 #### Axis 3: Acoustic Representation Objective
@@ -130,13 +130,42 @@ Architecture Family             Model Scale                 Pretraining Regime
 
 This 8-model experimental suite establishes five cohesive scientific contributions for the thesis:
 
-1. **Contribution 1 — Vulnerability Characterization:**  
-   Empirically demonstrates that unconstrained continual test-time entropy minimization (SUTA) induces positive aggregate word error rate regression across all six evaluated CTC backbones under real-world accent shift, disproving the assumption that test-time entropy adaptation is universally benign.
-2. **Contribution 2 — Disparity-Aware Safety Gate (DSG) Controller:**  
-   Formulates a tripartite safety controller evaluating overall risk ($\Delta_R$), subgroup-specific risk ($\max_g \Delta_g$), and between-group disparity ($\Delta_D$) using an independent speaker-stratified sentinel panel and paired speaker-cluster bootstrap bounds.
-3. **Contribution 3 — Primary Benchmark Validation:**  
-   Rigorously validates on the primary Wav2Vec2 backbone that DSG substantially suppresses SUTA regression on the external prequential stream while completely eliminating software fail-closed errors.
-4. **Contribution 4 — Multi-Backbone Cross-Scale Generalization:**  
-   Generalizes the empirical evaluation across six distinct CTC backbones spanning two model scales (94M to 316M parameters) and four pretraining paradigms, confirming consistent risk screening across all six models and net-positive adaptation on three models.
-5. **Contribution 5 — Architectural Frontier & Demarcation:**  
-   Formally characterizes the algorithmic boundary of frame-entropy CTTA by demonstrating why autoregressive sequence-to-sequence models cannot accommodate frame-level entropy minimization, transparently benchmarking them as static zero-shot baselines.
+1. **Contribution 1 — CTTA Vulnerability Characterization:**  
+   Empirically demonstrates positive aggregate WER regression under unconstrained SUTA across all six evaluated CTC backbones under real-world accent shift, disproving the assumption that test-time entropy adaptation is uniformly safe.
+2. **Contribution 2 — Risk-Screening Controller:**  
+   Formulates a tripartite candidate-update safety controller evaluating overall risk ($\Delta_R$), subgroup-specific risk ($\max_g \Delta_g$), and between-group disparity ($\Delta_D$).
+3. **Contribution 3 — Independent Statistical Screening:**  
+   Introduces an independent, speaker-disjoint 30-speaker sentinel panel evaluated via paired speaker-cluster bootstrap bounds ($B=1,000$).
+4. **Contribution 4 — External Empirical Validation:**  
+   Rigorously validates that DSG substantially reduces the WER regression observed under unconstrained SUTA on the primary external benchmark stream.
+5. **Contribution 5 — Cross-Backbone Validation & Architectural Demarcation:**  
+   Generalizes the risk-screening behavior across six CTC checkpoints covering different scales (94M to 316M) and representation-learning/pretraining regimes, while formally establishing Seq2Seq autoregressive models as an architectural boundary and static portability comparison.
+
+---
+
+### 5. Final Research Narrative
+
+The complete, defensible narrative arc of the dissertation is summarized as follows:
+
+```
+Baseline ASR Accent Disparity
+              ↓
+Continual Test-Time Adaptation Vulnerability
+              ↓
+SUTA Regresses on All Six Evaluated CTC Backbones
+              ↓
+Some Regressions are Subgroup-Sensitive
+              ↓
+DSG Evaluates Candidate Updates on Independent Sentinel
+              ↓
+23 / 1,350 Updates Admitted | 1,327 / 1,350 Rejected (0 Fail-Closed Errors)
+              ↓
+DSG Lowers Observed SUTA Regression Across All 6 CTC Backbones
+              ↓
+BUT Acceptance Rate Varies Strongly by Model (0.0% to 4.0%)
+              ↓
+AND One Accepted Update Can Still Be Externally Harmful (Decoupling)
+              ↓
+Therefore:
+DSG = Conservative Empirical Risk Screening ≠ Universal Safety Guarantee
+```
