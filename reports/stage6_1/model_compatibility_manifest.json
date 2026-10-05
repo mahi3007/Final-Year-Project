@@ -1,0 +1,30 @@
+{
+  "audit_timestamp": "2026-10-05T03:44:43Z",
+  "stage": "6.1",
+  "protocol_version": "v1.0-cv27-amended",
+  "total_models": 2,
+  "compatible_ctta_models": 2,
+  "incompatible_ctta_models": 0,
+  "models": {
+    "wav2vec2_large_lv60": {
+      "model_id": "facebook/wav2vec2-large-960h-lv60",
+      "family": "CTC",
+      "role": "Larger Pretrained Wav2Vec2 (Libri-Light 60k + LibriSpeech 960h FT)",
+      "expected_commit": "8e7d14742e8f98c6bbb24e5231406af321a8f9ce",
+      "params": 315471520,
+      "is_frozen_baseline": false,
+      "ctta_status": "COMPATIBLE",
+      "notes": "Large 24-layer Wav2Vec2 pretrained on Libri-Light (60k hours) and fine-tuned on LibriSpeech 960h. Full CTC frame logits + LayerNorms."
+    },
+    "wav2vec2_large_robust": {
+      "model_id": "facebook/wav2vec2-large-robust-ft-libri-960h",
+      "family": "CTC",
+      "role": "Multi-Domain Robust Pretrained Wav2Vec2 (LibriSpeech 960h FT)",
+      "expected_commit": "5d28473cc25ef7b338c9f731fe55626c4b082f58",
+      "params": 315471520,
+      "is_frozen_baseline": false,
+      "ctta_status": "COMPATIBLE",
+      "notes": "Large 24-layer Wav2Vec2 with multi-domain robust pretraining (CommonVoice, Switchboard, Fisher) fine-tuned on LibriSpeech 960h. Full CTC frame logits + LayerNorms."
+    }
+  }
+}

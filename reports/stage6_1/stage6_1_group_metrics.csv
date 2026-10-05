@@ -1,0 +1,61 @@
+model_key,model_id,method,accent_stratum,wer,substitutions,deletions,insertions,total_errors,reference_words
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,no_adapt,US English,14.8501,178,15,25,218,1468
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,no_adapt,England English,12.3475,142,7,23,172,1393
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,no_adapt,South Asian English,20.1399,241,26,21,288,1430
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,no_adapt,Australian English,12.4581,152,15,19,186,1493
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,no_adapt,Canadian English,9.2667,110,12,17,139,1500
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,no_adapt,Irish English,8.5322,102,8,8,118,1383
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,suta,US English,15.0545,180,21,20,221,1468
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,suta,England English,12.2757,143,11,17,171,1393
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,suta,South Asian English,21.4685,259,32,16,307,1430
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,suta,Australian English,13.2619,165,18,15,198,1493
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,suta,Canadian English,10.3333,124,19,12,155,1500
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,suta,Irish English,11.4967,127,27,5,159,1383
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsuta,US English,14.9183,179,20,20,219,1468
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsuta,England English,12.3475,144,10,18,172,1393
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsuta,South Asian English,19.9301,238,26,21,285,1430
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsuta,Australian English,12.5251,153,13,21,187,1493
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsuta,Canadian English,9.7333,115,16,15,146,1500
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsuta,Irish English,8.5322,102,8,8,118,1383
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dmsuta,US English,14.782,180,17,20,217,1468
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dmsuta,England English,12.491,144,8,22,174,1393
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dmsuta,South Asian English,20.3497,245,27,19,291,1430
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dmsuta,Australian English,12.5251,154,14,19,187,1493
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dmsuta,Canadian English,9.3333,113,12,15,140,1500
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dmsuta,Irish English,8.8937,106,9,8,123,1383
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsg,US English,14.8501,178,15,25,218,1468
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsg,England English,12.3475,142,7,23,172,1393
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsg,South Asian English,20.1399,241,26,21,288,1430
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsg,Australian English,12.4581,152,15,19,186,1493
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsg,Canadian English,9.1333,109,11,17,137,1500
+wav2vec2_large_lv60,facebook/wav2vec2-large-960h-lv60,dsg,Irish English,8.5322,102,8,8,118,1383
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,no_adapt,US English,15.9401,197,17,20,234,1468
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,no_adapt,England English,12.85,148,8,23,179,1393
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,no_adapt,South Asian English,18.8112,229,21,19,269,1430
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,no_adapt,Australian English,11.6544,144,13,17,174,1493
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,no_adapt,Canadian English,9.2,117,9,12,138,1500
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,no_adapt,Irish English,9.0383,105,10,10,125,1383
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,suta,US English,15.4632,189,20,18,227,1468
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,suta,England English,12.4192,146,10,17,173,1393
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,suta,South Asian English,18.6014,226,29,11,266,1430
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,suta,Australian English,11.8553,144,26,7,177,1493
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,suta,Canadian English,9.9333,127,19,3,149,1500
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,suta,Irish English,11.4967,130,26,3,159,1383
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsuta,US English,15.6676,192,19,19,230,1468
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsuta,England English,12.5628,146,9,20,175,1393
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsuta,South Asian English,18.4615,227,22,15,264,1430
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsuta,Australian English,12.0563,148,15,17,180,1493
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsuta,Canadian English,9.4,120,11,10,141,1500
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsuta,Irish English,9.0383,105,13,7,125,1383
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dmsuta,US English,15.4632,191,18,18,227,1468
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dmsuta,England English,12.9935,150,10,21,181,1393
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dmsuta,South Asian English,18.3916,226,23,14,263,1430
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dmsuta,Australian English,12.1902,151,16,15,182,1493
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dmsuta,Canadian English,9.4667,121,10,11,142,1500
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dmsuta,Irish English,9.0383,104,12,9,125,1383
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsg,US English,15.8719,197,16,20,233,1468
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsg,England English,12.9935,149,9,23,181,1393
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsg,South Asian English,18.6014,229,22,15,266,1430
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsg,Australian English,11.7883,146,14,16,176,1493
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsg,Canadian English,9.1333,117,9,11,137,1500
+wav2vec2_large_robust,facebook/wav2vec2-large-robust-ft-libri-960h,dsg,Irish English,8.966,104,10,10,124,1383

@@ -1,0 +1,9 @@
+model_key,model_name,model_id,architecture_family,ctta_status,no_adapt_wer,suta_wer,dsuta_wer,dmsuta_wer,dsg_wer,dsg_delta_r,dsg_delta_d,dsg_max_delta_g,dsg_accepted,dsg_rejected
+wav2vec2_base,Primary baseline,facebook/wav2vec2-base-960h,CTC,COMPATIBLE,22.45%,23.55%,22.55%,22.56%,22.52%,+0.07 pp,-0.75 pp,+0.47 pp,9.0,216.0
+whisper_base,Autoregressive portability model,openai/whisper-base,EncoderDecoder,INCOMPATIBLE_NON_CTC,14.32%,INCOMPATIBLE,INCOMPATIBLE,INCOMPATIBLE,INCOMPATIBLE,,,,,
+hubert_large,"Self-supervised encoder comparison (Acoustic Cluster SSL, Large-960h FT)",facebook/hubert-large-ls960-ft,CTC,COMPATIBLE,12.37%,12.77%,12.39%,12.26%,12.38%,+0.01 pp,+0.42 pp,+0.36 pp,6.0,219.0
+data2vec_base,Self-supervised encoder comparison (Multimodal SSL),facebook/data2vec-audio-base-960h,CTC,COMPATIBLE,20.43%,20.65%,19.79%,20.26%,20.32%,-0.12 pp,-0.63 pp,+0.07 pp,1.0,224.0
+distil_whisper_small,Lightweight autoregressive model,distil-whisper/distil-small.en,EncoderDecoder,INCOMPATIBLE_NON_CTC,9.18%,INCOMPATIBLE,INCOMPATIBLE,INCOMPATIBLE,INCOMPATIBLE,,,,,
+xlsr_english,Larger multilingual/pretrained encoder,jonatasgrosman/wav2vec2-large-xlsr-53-english,CTC,COMPATIBLE,11.81%,14.54%,11.88%,11.81%,11.81%,+0.00 pp,+0.00 pp,+0.00 pp,0.0,225.0
+wav2vec2_large_lv60,Larger Pretrained Wav2Vec2 (Libri-Light 60k + LibriSpeech 960h FT),facebook/wav2vec2-large-960h-lv60,CTC,COMPATIBLE,12.93%,13.97%,13.00%,13.06%,12.91%,-0.02 pp,+0.00 pp,+0.00 pp,2.0,223.0
+wav2vec2_large_robust,Multi-Domain Robust Pretrained Wav2Vec2 (LibriSpeech 960h FT),facebook/wav2vec2-large-robust-ft-libri-960h,CTC,COMPATIBLE,12.91%,13.28%,12.86%,12.92%,12.89%,-0.02 pp,-0.14 pp,+0.14 pp,5.0,220.0
