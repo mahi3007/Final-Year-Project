@@ -28,6 +28,11 @@ class GenericCTCModel(BaseASRModel):
             self.processor = Wav2Vec2Processor.from_pretrained(self.model_id)
             self.model = Wav2Vec2ForCTC.from_pretrained(self.model_id)
 
+        # Sanitize uninitialized pretraining parameters (e.g. masked_spec_embed if missing from FT checkpoint)
+        for p in self.model.parameters():
+            if torch.isnan(p).any() or torch.isinf(p).any():
+                p.data.nan_to_num_(nan=0.0, posinf=0.0, neginf=0.0)
+
         self.model.to(self.device)
         self.model.eval()
         self.cache_initial_state()

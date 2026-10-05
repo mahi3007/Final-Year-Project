@@ -18,6 +18,7 @@ Verifies the 6 required audit invariants:
 from __future__ import annotations
 
 import copy
+import math
 import sys
 import torch
 import numpy as np
@@ -36,6 +37,7 @@ from dsg_ctta.models.registry import create_asr_model, MODEL_CATALOG
 from dsg_ctta.adaptation.suta import SutaAdapter
 from dsg_ctta.adaptation.dsuta import DsutaAdapter
 from dsg_ctta.adaptation.dmsuta import DmsutaAdapter
+from dsg_ctta.controller.shadow import ShadowCandidateManager, compute_model_parameter_hash
 
 
 STAGE6_1_MODELS = {
@@ -138,14 +140,28 @@ def audit_model(key: str, spec: dict, device: str = "cpu") -> bool:
 
     # Step 6: DSG Shadow Cloning & Sentinel Verification
     print("\n[Step 6/6] Verifying DSG shadow candidate isolation & sentinel contract...")
-    shadow_copy = copy.deepcopy(raw_model)
-    # Check that modifying shadow doesn't affect live model
-    for p in shadow_copy.parameters():
+    shadow_copy = ShadowCandidateManager.create_candidate_clone(raw_model)
+    initial_live_hash = compute_model_parameter_hash(raw_model)
+    initial_shadow_hash = compute_model_parameter_hash(shadow_copy)
+    assert initial_live_hash == initial_shadow_hash, "Shadow clone initial hash does not match live model!"
+
+    # Perturb adaptable LayerNorm parameters in shadow copy
+    ln_shadow = [p for n, p in shadow_copy.named_parameters() if "layer_norm" in n.lower() or "layernorm" in n.lower()]
+    for p in ln_shadow:
         p.data.add_(0.01)
-    
-    diff = sum((p1 - p2).abs().sum().item() for p1, p2 in zip(raw_model.parameters(), shadow_copy.parameters()))
-    print(f"  Shadow parameter perturbation isolation: {diff:.2f} > 0.0 (clean isolation verified).")
-    assert diff > 0, "Shadow cloning failed to isolate parameters!"
+
+    # Verify live model parameters remain strictly unchanged (immutability firewall)
+    post_live_hash = compute_model_parameter_hash(raw_model)
+    assert post_live_hash == initial_live_hash, "Live model parameter immutability breached!"
+
+    # Verify shadow copy has updated
+    post_shadow_hash = compute_model_parameter_hash(shadow_copy)
+    assert post_shadow_hash != initial_live_hash, "Shadow parameters did not update!"
+
+    ln_live = [p for n, p in raw_model.named_parameters() if "layer_norm" in n.lower() or "layernorm" in n.lower()]
+    diff = sum((p1 - p2).abs().sum().item() for p1, p2 in zip(ln_live, ln_shadow))
+    print(f"  Shadow LayerNorm parameter perturbation isolation: {diff:.2f} > 0.0 (clean isolation verified).")
+    assert not math.isnan(diff) and diff > 0, "Shadow cloning failed to isolate parameters!"
 
     # Memory cleanup for next model
     del model_adapter, raw_model, candidate_model, shadow_copy, opt, suta_adapter, dsuta_adapter, dmsuta_adapter
