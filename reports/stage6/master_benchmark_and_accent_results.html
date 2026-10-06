@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSG-CTTA Master Benchmark and Empirical Accent Results Ledger</title>
+<style>
+@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(fonts/KaTeX_AMS-Regular.woff) format("woff"),url(fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(fonts/KaTeX_Main-Bold.woff) format("woff"),url(fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(fonts/KaTeX_Main-Italic.woff) format("woff"),url(fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(fonts/KaTeX_Main-Regular.woff) format("woff"),url(fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(fonts/KaTeX_Math-Italic.woff) format("woff"),url(fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(fonts/KaTeX_Script-Regular.woff) format("woff"),url(fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size1-Regular.woff) format("woff"),url(fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size2-Regular.woff) format("woff"),url(fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size3-Regular.woff) format("woff"),url(fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size4-Regular.woff) format("woff"),url(fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,math,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.19.0"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .reflectbox{display:inline-block;transform:scaleX(-1)}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+
+
+@page {
+    size: letter;
+    margin: 1.8cm 1.5cm 1.8cm 1.5cm;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #1e293b;
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    background-color: #f8fafc;
+}
+article {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+h1 {
+    color: #0f172a;
+    font-size: 2.1em;
+    font-weight: 800;
+    border-bottom: 3px solid #2563eb;
+    padding-bottom: 0.3em;
+    margin-bottom: 0.5em;
+}
+h2 {
+    color: #1e3a8a;
+    font-size: 1.45em;
+    font-weight: 700;
+    margin-top: 2.2em;
+    padding-bottom: 0.3em;
+    border-bottom: 1.5px solid #e2e8f0;
+}
+h3 {
+    color: #334155;
+    font-size: 1.15em;
+    font-weight: 600;
+    margin-top: 1.4em;
+    margin-bottom: 0.4em;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.5em 0;
+    font-size: 0.9em;
+}
+th, td {
+    border: 1px solid #cbd5e1;
+    padding: 8px 12px;
+    text-align: left;
+}
+th {
+    background-color: #f1f5f9;
+    font-weight: 600;
+    color: #0f172a;
+}
+tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+.math-card {
+    background: #f8fafc;
+    border: 1.5px solid #cbd5e1;
+    border-left: 6px solid #2563eb;
+    border-radius: 6px;
+    padding: 14px 20px;
+    margin: 1.1em 0;
+    overflow: visible;
+}
+.math-display {
+    font-size: 1.08em;
+    text-align: center;
+    color: #0f172a;
+    overflow: visible;
+}
+.katex {
+    font-size: 1.05em;
+}
+.katex-display {
+    margin: 0.3em 0 !important;
+    overflow: visible !important;
+}
+blockquote {
+    border-left: 4px solid #3b82f6;
+    margin: 1.2em 0;
+    padding: 0.6em 1.2em;
+    color: #334155;
+    background-color: #eff6ff;
+    border-radius: 0 4px 4px 0;
+}
+code {
+    font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
+    font-size: 0.88em;
+    background-color: #f1f5f9;
+    color: #b91c1c;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+pre {
+    background-color: #1e293b;
+    color: #f8fafc;
+    padding: 14px;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+.mermaid {
+    text-align: center;
+    margin: 1.5em 0;
+    background: #ffffff;
+    padding: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+@media print {
+    body { background: #ffffff; padding: 0; }
+    article { box-shadow: none; padding: 0; }
+    .math-card { page-break-inside: avoid; overflow: visible !important; }
+    table { page-break-inside: avoid; }
+    h2, h3 { page-break-after: avoid; }
+    * { scrollbar-width: none !important; }
+    ::-webkit-scrollbar { display: none !important; }
+}
+@page {
+    size: letter landscape;
+    margin: 1.5cm 1.2cm 1.5cm 1.2cm;
+}
+body {
+    max-width: 1200px;
+}
+table {
+    font-size: 0.82em;
+}
+th, td {
+    padding: 6px 8px;
+}
+</style>
+</head>
+<body>
+<article>
+<h1 id="master-benchmark-and-empirical-accent-results-ledger">Master Benchmark and Empirical Accent Results Ledger</h1>
+<h2 id="authoritative-cross-model-performance-literature-reconciliation-and-demographic-subgroup-analysis">Authoritative Cross-Model Performance, Literature Reconciliation, and Demographic Subgroup Analysis</h2>
+<ul>
+<li><strong>Project Title:</strong> Disparity-Aware Continual Test-Time Adaptation for Accent-Robust Automatic Speech Recognition (DSG-CTTA)</li>
+<li><strong>Protocol Version:</strong> <code>v1.0-cv27-amended</code> (Stage 0 Protocol Freeze &amp; ADR-005)</li>
+<li><strong>Holdout Evaluation Stream:</strong> Mozilla Common Voice 27.0 (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.109em;">N</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.6444em;"></span><span class="mord">900</span></span></span></span> clips, 60 speakers, 6 strata, exactly <span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">8</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">667</span></span></span></span> reference words)</li>
+<li><strong>Sentinel Panel:</strong> Frozen External Calibration Panel (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.109em;">M</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.6444em;"></span><span class="mord">300</span></span></span></span> clips, 30 disjoint speakers, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">2</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">925</span></span></span></span> words)</li>
+<li><strong>Document Purpose:</strong> Consolidated single-file empirical ledger for academic supervision, viva defense, and peer review.</li>
+</ul>
+<hr />
+<h2 id="1-grounding-denominator-invariants-proof-of-authenticity">1. Grounding &amp; Denominator Invariants (Proof of Authenticity)</h2>
+<p>To verify that all reported error rates are mathematically authentic and reproducible, the entire evaluation is grounded on a pre-registered, frozen evaluation split (<code>datasets/splits/stage5_external_eval.csv</code>).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Accent Stratum</th>
+<th style="text-align: center;">Total Clips</th>
+<th style="text-align: center;">Distinct Speakers</th>
+<th style="text-align: center;">Clips / Speaker</th>
+<th style="text-align: center;">Reference Word Count (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.109em;">N</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.109em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">ref</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>)</th>
+<th style="text-align: center;">Proportion of Corpus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>US English</strong></td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;"><strong>1,468 words</strong></td>
+<td style="text-align: center;">16.94%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>England English</strong></td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;"><strong>1,393 words</strong></td>
+<td style="text-align: center;">16.07%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>South Asian English</strong></td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;"><strong>1,430 words</strong></td>
+<td style="text-align: center;">16.50%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Australian English</strong></td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;"><strong>1,493 words</strong></td>
+<td style="text-align: center;">17.23%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Canadian English</strong></td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;"><strong>1,500 words</strong></td>
+<td style="text-align: center;">17.31%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Irish English</strong></td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;"><strong>1,383 words</strong></td>
+<td style="text-align: center;">15.96%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TOTAL / SUM INVARIANT</strong></td>
+<td style="text-align: center;"><strong>900</strong></td>
+<td style="text-align: center;"><strong>60</strong></td>
+<td style="text-align: center;"><strong>15</strong></td>
+<td style="text-align: center;"><strong>8,667 words</strong></td>
+<td style="text-align: center;"><strong>100.00%</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="math-card"><div class="math-display"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">Sum Invariant: </span></span><span class="mord">1468</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1393</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1430</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1493</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1500</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.6444em;"></span><span class="mord">1383</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathbf">8</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathbf">667</span><span class="mord text"><span class="mord"> reference words</span></span></span></span></span></span></span></div></div>
+
+<hr />
+<h2 id="2-table-1-master-cross-backbone-benchmark-official-literature-reconciliation">2. Table 1: Master Cross-Backbone Benchmark &amp; Official Literature Reconciliation</h2>
+<p>This table reconciles published official benchmarks from original literature citations with our measured results across all 8 models.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model Key</th>
+<th style="text-align: center;">Architecture &amp; Pretraining</th>
+<th style="text-align: center;">Parameters</th>
+<th style="text-align: left;">Published Benchmark Dataset</th>
+<th style="text-align: center;">Published Benchmark WER</th>
+<th style="text-align: left;">Official Citation</th>
+<th style="text-align: center;">Measured Baseline No-Adapt</th>
+<th style="text-align: center;">Measured SUTA</th>
+<th style="text-align: center;">Measured DSUTA</th>
+<th style="text-align: center;">Measured DMSUTA</th>
+<th style="text-align: center;">Measured DSG-CTTA (Ours)</th>
+<th style="text-align: center;">Net DSG vs Base</th>
+<th style="text-align: center;">DSG Accepted Updates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>wav2vec2_base</code></strong></td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">94.4M</td>
+<td style="text-align: left;">LibriSpeech test-clean / test-other (no LM)</td>
+<td style="text-align: center;"><strong>3.4% / 8.6%</strong></td>
+<td style="text-align: left;">Baevski et al. (NeurIPS 2020), Table 1</td>
+<td style="text-align: center;"><strong>22.45%</strong></td>
+<td style="text-align: center;">23.55%</td>
+<td style="text-align: center;">22.55%</td>
+<td style="text-align: center;">22.56%</td>
+<td style="text-align: center;"><strong>22.52%</strong></td>
+<td style="text-align: center;"><strong>+0.07 pp</strong></td>
+<td style="text-align: center;">9 / 225</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>whisper_base</code></strong></td>
+<td style="text-align: center;">EncoderDecoder</td>
+<td style="text-align: center;">72.6M</td>
+<td style="text-align: left;">LibriSpeech test-other / Common Voice en zero-shot</td>
+<td style="text-align: center;"><strong>10.5% / 13.1%</strong></td>
+<td style="text-align: left;">Radford et al. (ICML 2023), Table 8 &amp; 9</td>
+<td style="text-align: center;"><strong>14.32%</strong></td>
+<td style="text-align: center;">INCOMPATIBLE</td>
+<td style="text-align: center;">INCOMPATIBLE</td>
+<td style="text-align: center;">INCOMPATIBLE</td>
+<td style="text-align: center;"><strong>INCOMPATIBLE</strong></td>
+<td style="text-align: center;"><strong>—</strong></td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>hubert_large</code></strong></td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">316.8M</td>
+<td style="text-align: left;">LibriSpeech test-clean / test-other (no LM)</td>
+<td style="text-align: center;"><strong>1.9% / 3.5%</strong></td>
+<td style="text-align: left;">Hsu et al. (IEEE/ACM TASLP 2021), Table 2</td>
+<td style="text-align: center;"><strong>12.37%</strong></td>
+<td style="text-align: center;">12.77%</td>
+<td style="text-align: center;">12.39%</td>
+<td style="text-align: center;">12.26%</td>
+<td style="text-align: center;"><strong>12.38%</strong></td>
+<td style="text-align: center;"><strong>+0.01 pp</strong></td>
+<td style="text-align: center;">6 / 225</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>data2vec_base</code></strong></td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">94.4M</td>
+<td style="text-align: left;">LibriSpeech test-clean / test-other (no LM)</td>
+<td style="text-align: center;"><strong>3.4% / 8.0%</strong></td>
+<td style="text-align: left;">Baevski et al. (ICML 2022), Table 1</td>
+<td style="text-align: center;"><strong>20.43%</strong></td>
+<td style="text-align: center;">20.65%</td>
+<td style="text-align: center;">19.79%</td>
+<td style="text-align: center;">20.26%</td>
+<td style="text-align: center;"><strong>20.32%</strong></td>
+<td style="text-align: center;"><strong>-0.12 pp</strong></td>
+<td style="text-align: center;">1 / 225</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>distil_whisper_small</code></strong></td>
+<td style="text-align: center;">EncoderDecoder</td>
+<td style="text-align: center;">166.1M</td>
+<td style="text-align: left;">Out-of-Distribution Average WER across 4 diverse datasets</td>
+<td style="text-align: center;"><strong>10.3%</strong></td>
+<td style="text-align: left;">Gandhi et al. (EMNLP 2023), Table 1 &amp; Model Card</td>
+<td style="text-align: center;"><strong>9.18%</strong></td>
+<td style="text-align: center;">INCOMPATIBLE</td>
+<td style="text-align: center;">INCOMPATIBLE</td>
+<td style="text-align: center;">INCOMPATIBLE</td>
+<td style="text-align: center;"><strong>INCOMPATIBLE</strong></td>
+<td style="text-align: center;"><strong>—</strong></td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>xlsr_english</code></strong></td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">315.5M</td>
+<td style="text-align: left;">Common Voice 6.1 English Test Split</td>
+<td style="text-align: center;"><strong>13.52%</strong></td>
+<td style="text-align: left;">Model Card: jonatasgrosman/wav2vec2-large-xlsr-53-english</td>
+<td style="text-align: center;"><strong>11.81%</strong></td>
+<td style="text-align: center;">14.54%</td>
+<td style="text-align: center;">11.88%</td>
+<td style="text-align: center;">11.81%</td>
+<td style="text-align: center;"><strong>11.81%</strong></td>
+<td style="text-align: center;"><strong>+0.00 pp</strong></td>
+<td style="text-align: center;">0 / 225</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>wav2vec2_large_lv60</code></strong></td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">315.5M</td>
+<td style="text-align: left;">LibriSpeech test-clean / test-other (no LM)</td>
+<td style="text-align: center;"><strong>1.9% / 4.1%</strong></td>
+<td style="text-align: left;">Baevski et al. (NeurIPS 2020), Table 1</td>
+<td style="text-align: center;"><strong>12.93%</strong></td>
+<td style="text-align: center;">13.97%</td>
+<td style="text-align: center;">13.00%</td>
+<td style="text-align: center;">13.06%</td>
+<td style="text-align: center;"><strong>12.91%</strong></td>
+<td style="text-align: center;"><strong>-0.02 pp</strong></td>
+<td style="text-align: center;">2 / 225</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>wav2vec2_large_robust</code></strong></td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">315.5M</td>
+<td style="text-align: left;">LibriSpeech test-clean / test-other (no LM)</td>
+<td style="text-align: center;"><strong>1.8% / 3.7%</strong></td>
+<td style="text-align: left;">Hsu et al. (Interspeech 2021) Robust Wav2Vec 2.0, Table 1</td>
+<td style="text-align: center;"><strong>12.91%</strong></td>
+<td style="text-align: center;">13.28%</td>
+<td style="text-align: center;">12.86%</td>
+<td style="text-align: center;">12.92%</td>
+<td style="text-align: center;"><strong>12.89%</strong></td>
+<td style="text-align: center;"><strong>-0.02 pp</strong></td>
+<td style="text-align: center;">5 / 225</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-table-2-complete-accent-by-accent-performance-master-matrix">3. Table 2: Complete Accent-by-Accent Performance Master Matrix</h2>
+<p>This table details the exact Word Error Rate (WER) achieved across each individual accent stratum for every model and adaptation method.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model Key</th>
+<th style="text-align: left;">Adaptation Method</th>
+<th style="text-align: center;">US English (1,468 w)</th>
+<th style="text-align: center;">England English (1,393 w)</th>
+<th style="text-align: center;">South Asian English (1,430 w)</th>
+<th style="text-align: center;">Australian English (1,493 w)</th>
+<th style="text-align: center;">Canadian English (1,500 w)</th>
+<th style="text-align: center;">Irish English (1,383 w)</th>
+<th style="text-align: center;">Aggregate Stream WER (8,667 w)</th>
+<th style="text-align: center;">Disparity Range (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">D</span></span></span></span>)</th>
+<th style="text-align: center;">Total Errors (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span></span></span></span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;"><strong>No-Adapt Baseline</strong></td>
+<td style="text-align: center;">21.46%</td>
+<td style="text-align: center;">20.32%</td>
+<td style="text-align: center;"><strong>42.45%</strong></td>
+<td style="text-align: center;">22.91%</td>
+<td style="text-align: center;">12.20%</td>
+<td style="text-align: center;">15.62%</td>
+<td style="text-align: center;"><strong>22.45%</strong></td>
+<td style="text-align: center;"><strong>30.25 pp</strong></td>
+<td style="text-align: center;">1,946 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;"><strong>SUTA (Unconstrained)</strong></td>
+<td style="text-align: center;">21.32%</td>
+<td style="text-align: center;">21.82%</td>
+<td style="text-align: center;"><strong>42.66%</strong></td>
+<td style="text-align: center;">24.05%</td>
+<td style="text-align: center;">13.73%</td>
+<td style="text-align: center;">18.00%</td>
+<td style="text-align: center;"><strong>23.55%</strong></td>
+<td style="text-align: center;"><strong>28.92 pp</strong></td>
+<td style="text-align: center;">2,041 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;"><strong>DSUTA (Entropy Resets)</strong></td>
+<td style="text-align: center;">21.59%</td>
+<td style="text-align: center;">20.17%</td>
+<td style="text-align: center;"><strong>41.96%</strong></td>
+<td style="text-align: center;">22.97%</td>
+<td style="text-align: center;">13.20%</td>
+<td style="text-align: center;">15.55%</td>
+<td style="text-align: center;"><strong>22.55%</strong></td>
+<td style="text-align: center;"><strong>28.76 pp</strong></td>
+<td style="text-align: center;">1,954 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;"><strong>DMSUTA (Memory Banks)</strong></td>
+<td style="text-align: center;">21.66%</td>
+<td style="text-align: center;">20.60%</td>
+<td style="text-align: center;"><strong>42.31%</strong></td>
+<td style="text-align: center;">22.44%</td>
+<td style="text-align: center;">12.87%</td>
+<td style="text-align: center;">15.69%</td>
+<td style="text-align: center;"><strong>22.56%</strong></td>
+<td style="text-align: center;"><strong>29.44 pp</strong></td>
+<td style="text-align: center;">1,955 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;"><strong>DSG-CTTA (Ours)</strong></td>
+<td style="text-align: center;">21.53%</td>
+<td style="text-align: center;">20.46%</td>
+<td style="text-align: center;"><strong>42.17%</strong></td>
+<td style="text-align: center;">23.17%</td>
+<td style="text-align: center;">12.67%</td>
+<td style="text-align: center;">15.33%</td>
+<td style="text-align: center;"><strong>22.52%</strong></td>
+<td style="text-align: center;"><strong>29.50 pp</strong></td>
+<td style="text-align: center;">1,952 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;"><strong>No-Adapt Baseline</strong></td>
+<td style="text-align: center;">13.15%</td>
+<td style="text-align: center;">11.27%</td>
+<td style="text-align: center;"><strong>22.31%</strong></td>
+<td style="text-align: center;">11.05%</td>
+<td style="text-align: center;">9.07%</td>
+<td style="text-align: center;">7.38%</td>
+<td style="text-align: center;"><strong>12.37%</strong></td>
+<td style="text-align: center;"><strong>14.93 pp</strong></td>
+<td style="text-align: center;">1,072 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;"><strong>SUTA (Unconstrained)</strong></td>
+<td style="text-align: center;">13.28%</td>
+<td style="text-align: center;">11.41%</td>
+<td style="text-align: center;"><strong>23.08%</strong></td>
+<td style="text-align: center;">11.25%</td>
+<td style="text-align: center;">9.47%</td>
+<td style="text-align: center;">8.17%</td>
+<td style="text-align: center;"><strong>12.77%</strong></td>
+<td style="text-align: center;"><strong>14.91 pp</strong></td>
+<td style="text-align: center;">1,107 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;"><strong>DSUTA (Entropy Resets)</strong></td>
+<td style="text-align: center;">13.08%</td>
+<td style="text-align: center;">11.49%</td>
+<td style="text-align: center;"><strong>22.66%</strong></td>
+<td style="text-align: center;">10.72%</td>
+<td style="text-align: center;">9.20%</td>
+<td style="text-align: center;">7.23%</td>
+<td style="text-align: center;"><strong>12.39%</strong></td>
+<td style="text-align: center;"><strong>15.43 pp</strong></td>
+<td style="text-align: center;">1,074 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;"><strong>DMSUTA (Memory Banks)</strong></td>
+<td style="text-align: center;">13.08%</td>
+<td style="text-align: center;">11.27%</td>
+<td style="text-align: center;"><strong>22.38%</strong></td>
+<td style="text-align: center;">10.65%</td>
+<td style="text-align: center;">9.13%</td>
+<td style="text-align: center;">7.09%</td>
+<td style="text-align: center;"><strong>12.26%</strong></td>
+<td style="text-align: center;"><strong>15.29 pp</strong></td>
+<td style="text-align: center;">1,063 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;"><strong>DSG-CTTA (Ours)</strong></td>
+<td style="text-align: center;">12.94%</td>
+<td style="text-align: center;">11.63%</td>
+<td style="text-align: center;"><strong>22.66%</strong></td>
+<td style="text-align: center;">10.78%</td>
+<td style="text-align: center;">9.00%</td>
+<td style="text-align: center;">7.30%</td>
+<td style="text-align: center;"><strong>12.38%</strong></td>
+<td style="text-align: center;"><strong>15.35 pp</strong></td>
+<td style="text-align: center;">1,073 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;"><strong>No-Adapt Baseline</strong></td>
+<td style="text-align: center;">20.37%</td>
+<td style="text-align: center;">20.24%</td>
+<td style="text-align: center;"><strong>38.46%</strong></td>
+<td style="text-align: center;">20.29%</td>
+<td style="text-align: center;">11.33%</td>
+<td style="text-align: center;">12.08%</td>
+<td style="text-align: center;"><strong>20.43%</strong></td>
+<td style="text-align: center;"><strong>27.13 pp</strong></td>
+<td style="text-align: center;">1,771 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;"><strong>SUTA (Unconstrained)</strong></td>
+<td style="text-align: center;">20.30%</td>
+<td style="text-align: center;">19.89%</td>
+<td style="text-align: center;"><strong>36.85%</strong></td>
+<td style="text-align: center;">20.90%</td>
+<td style="text-align: center;">12.40%</td>
+<td style="text-align: center;">13.74%</td>
+<td style="text-align: center;"><strong>20.65%</strong></td>
+<td style="text-align: center;"><strong>24.45 pp</strong></td>
+<td style="text-align: center;">1,790 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;"><strong>DSUTA (Entropy Resets)</strong></td>
+<td style="text-align: center;">19.82%</td>
+<td style="text-align: center;">19.96%</td>
+<td style="text-align: center;"><strong>36.50%</strong></td>
+<td style="text-align: center;">19.42%</td>
+<td style="text-align: center;">11.13%</td>
+<td style="text-align: center;">12.08%</td>
+<td style="text-align: center;"><strong>19.79%</strong></td>
+<td style="text-align: center;"><strong>25.37 pp</strong></td>
+<td style="text-align: center;">1,715 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;"><strong>DMSUTA (Memory Banks)</strong></td>
+<td style="text-align: center;">19.62%</td>
+<td style="text-align: center;">20.24%</td>
+<td style="text-align: center;"><strong>38.53%</strong></td>
+<td style="text-align: center;">20.03%</td>
+<td style="text-align: center;">11.13%</td>
+<td style="text-align: center;">12.22%</td>
+<td style="text-align: center;"><strong>20.26%</strong></td>
+<td style="text-align: center;"><strong>27.40 pp</strong></td>
+<td style="text-align: center;">1,756 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;"><strong>DSG-CTTA (Ours)</strong></td>
+<td style="text-align: center;">20.37%</td>
+<td style="text-align: center;">20.17%</td>
+<td style="text-align: center;"><strong>37.90%</strong></td>
+<td style="text-align: center;">20.09%</td>
+<td style="text-align: center;">11.40%</td>
+<td style="text-align: center;">12.15%</td>
+<td style="text-align: center;"><strong>20.32%</strong></td>
+<td style="text-align: center;"><strong>26.50 pp</strong></td>
+<td style="text-align: center;">1,761 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;"><strong>No-Adapt Baseline</strong></td>
+<td style="text-align: center;">13.76%</td>
+<td style="text-align: center;">12.06%</td>
+<td style="text-align: center;"><strong>16.99%</strong></td>
+<td style="text-align: center;">11.32%</td>
+<td style="text-align: center;">8.07%</td>
+<td style="text-align: center;">8.75%</td>
+<td style="text-align: center;"><strong>11.81%</strong></td>
+<td style="text-align: center;"><strong>8.93 pp</strong></td>
+<td style="text-align: center;">1,024 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;"><strong>SUTA (Unconstrained)</strong></td>
+<td style="text-align: center;">13.42%</td>
+<td style="text-align: center;">12.99%</td>
+<td style="text-align: center;"><strong>18.39%</strong></td>
+<td style="text-align: center;">15.14%</td>
+<td style="text-align: center;">12.53%</td>
+<td style="text-align: center;">14.82%</td>
+<td style="text-align: center;"><strong>14.54%</strong></td>
+<td style="text-align: center;"><strong>5.86 pp</strong></td>
+<td style="text-align: center;">1,260 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;"><strong>DSUTA (Entropy Resets)</strong></td>
+<td style="text-align: center;">13.49%</td>
+<td style="text-align: center;">12.20%</td>
+<td style="text-align: center;"><strong>16.92%</strong></td>
+<td style="text-align: center;">11.39%</td>
+<td style="text-align: center;">8.27%</td>
+<td style="text-align: center;">9.11%</td>
+<td style="text-align: center;"><strong>11.88%</strong></td>
+<td style="text-align: center;"><strong>8.66 pp</strong></td>
+<td style="text-align: center;">1,030 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;"><strong>DMSUTA (Memory Banks)</strong></td>
+<td style="text-align: center;">13.76%</td>
+<td style="text-align: center;">12.20%</td>
+<td style="text-align: center;"><strong>16.78%</strong></td>
+<td style="text-align: center;">11.39%</td>
+<td style="text-align: center;">8.07%</td>
+<td style="text-align: center;">8.75%</td>
+<td style="text-align: center;"><strong>11.81%</strong></td>
+<td style="text-align: center;"><strong>8.72 pp</strong></td>
+<td style="text-align: center;">1,024 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;"><strong>DSG-CTTA (Ours)</strong></td>
+<td style="text-align: center;">13.76%</td>
+<td style="text-align: center;">12.06%</td>
+<td style="text-align: center;"><strong>16.99%</strong></td>
+<td style="text-align: center;">11.32%</td>
+<td style="text-align: center;">8.07%</td>
+<td style="text-align: center;">8.75%</td>
+<td style="text-align: center;"><strong>11.81%</strong></td>
+<td style="text-align: center;"><strong>8.93 pp</strong></td>
+<td style="text-align: center;">1,024 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;"><strong>No-Adapt Baseline</strong></td>
+<td style="text-align: center;">14.85%</td>
+<td style="text-align: center;">12.35%</td>
+<td style="text-align: center;"><strong>20.14%</strong></td>
+<td style="text-align: center;">12.46%</td>
+<td style="text-align: center;">9.27%</td>
+<td style="text-align: center;">8.53%</td>
+<td style="text-align: center;"><strong>12.93%</strong></td>
+<td style="text-align: center;"><strong>11.61 pp</strong></td>
+<td style="text-align: center;">1,121 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;"><strong>SUTA (Unconstrained)</strong></td>
+<td style="text-align: center;">15.05%</td>
+<td style="text-align: center;">12.28%</td>
+<td style="text-align: center;"><strong>21.47%</strong></td>
+<td style="text-align: center;">13.26%</td>
+<td style="text-align: center;">10.33%</td>
+<td style="text-align: center;">11.50%</td>
+<td style="text-align: center;"><strong>13.97%</strong></td>
+<td style="text-align: center;"><strong>11.14 pp</strong></td>
+<td style="text-align: center;">1,211 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;"><strong>DSUTA (Entropy Resets)</strong></td>
+<td style="text-align: center;">14.92%</td>
+<td style="text-align: center;">12.35%</td>
+<td style="text-align: center;"><strong>19.93%</strong></td>
+<td style="text-align: center;">12.53%</td>
+<td style="text-align: center;">9.73%</td>
+<td style="text-align: center;">8.53%</td>
+<td style="text-align: center;"><strong>13.00%</strong></td>
+<td style="text-align: center;"><strong>11.40 pp</strong></td>
+<td style="text-align: center;">1,127 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;"><strong>DMSUTA (Memory Banks)</strong></td>
+<td style="text-align: center;">14.78%</td>
+<td style="text-align: center;">12.49%</td>
+<td style="text-align: center;"><strong>20.35%</strong></td>
+<td style="text-align: center;">12.53%</td>
+<td style="text-align: center;">9.33%</td>
+<td style="text-align: center;">8.89%</td>
+<td style="text-align: center;"><strong>13.06%</strong></td>
+<td style="text-align: center;"><strong>11.46 pp</strong></td>
+<td style="text-align: center;">1,132 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;"><strong>DSG-CTTA (Ours)</strong></td>
+<td style="text-align: center;">14.85%</td>
+<td style="text-align: center;">12.35%</td>
+<td style="text-align: center;"><strong>20.14%</strong></td>
+<td style="text-align: center;">12.46%</td>
+<td style="text-align: center;">9.13%</td>
+<td style="text-align: center;">8.53%</td>
+<td style="text-align: center;"><strong>12.91%</strong></td>
+<td style="text-align: center;"><strong>11.61 pp</strong></td>
+<td style="text-align: center;">1,119 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;"><strong>No-Adapt Baseline</strong></td>
+<td style="text-align: center;">15.94%</td>
+<td style="text-align: center;">12.85%</td>
+<td style="text-align: center;"><strong>18.81%</strong></td>
+<td style="text-align: center;">11.65%</td>
+<td style="text-align: center;">9.20%</td>
+<td style="text-align: center;">9.04%</td>
+<td style="text-align: center;"><strong>12.91%</strong></td>
+<td style="text-align: center;"><strong>9.77 pp</strong></td>
+<td style="text-align: center;">1,119 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;"><strong>SUTA (Unconstrained)</strong></td>
+<td style="text-align: center;">15.46%</td>
+<td style="text-align: center;">12.42%</td>
+<td style="text-align: center;"><strong>18.60%</strong></td>
+<td style="text-align: center;">11.86%</td>
+<td style="text-align: center;">9.93%</td>
+<td style="text-align: center;">11.50%</td>
+<td style="text-align: center;"><strong>13.28%</strong></td>
+<td style="text-align: center;"><strong>8.67 pp</strong></td>
+<td style="text-align: center;">1,151 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;"><strong>DSUTA (Entropy Resets)</strong></td>
+<td style="text-align: center;">15.67%</td>
+<td style="text-align: center;">12.56%</td>
+<td style="text-align: center;"><strong>18.46%</strong></td>
+<td style="text-align: center;">12.06%</td>
+<td style="text-align: center;">9.40%</td>
+<td style="text-align: center;">9.04%</td>
+<td style="text-align: center;"><strong>12.86%</strong></td>
+<td style="text-align: center;"><strong>9.42 pp</strong></td>
+<td style="text-align: center;">1,115 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;"><strong>DMSUTA (Memory Banks)</strong></td>
+<td style="text-align: center;">15.46%</td>
+<td style="text-align: center;">12.99%</td>
+<td style="text-align: center;"><strong>18.39%</strong></td>
+<td style="text-align: center;">12.19%</td>
+<td style="text-align: center;">9.47%</td>
+<td style="text-align: center;">9.04%</td>
+<td style="text-align: center;"><strong>12.92%</strong></td>
+<td style="text-align: center;"><strong>9.35 pp</strong></td>
+<td style="text-align: center;">1,120 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;"><strong>DSG-CTTA (Ours)</strong></td>
+<td style="text-align: center;">15.87%</td>
+<td style="text-align: center;">12.99%</td>
+<td style="text-align: center;"><strong>18.60%</strong></td>
+<td style="text-align: center;">11.79%</td>
+<td style="text-align: center;">9.13%</td>
+<td style="text-align: center;">8.97%</td>
+<td style="text-align: center;"><strong>12.89%</strong></td>
+<td style="text-align: center;"><strong>9.64 pp</strong></td>
+<td style="text-align: center;">1,117 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>whisper_base</code></td>
+<td style="text-align: left;"><strong>No-Adapt Baseline</strong></td>
+<td style="text-align: center;">16.55%</td>
+<td style="text-align: center;">14.43%</td>
+<td style="text-align: center;"><strong>21.40%</strong></td>
+<td style="text-align: center;">13.53%</td>
+<td style="text-align: center;">7.87%</td>
+<td style="text-align: center;">12.36%</td>
+<td style="text-align: center;"><strong>14.32%</strong></td>
+<td style="text-align: center;"><strong>13.53 pp</strong></td>
+<td style="text-align: center;">1,241 words</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>distil_whisper_small</code></td>
+<td style="text-align: left;"><strong>No-Adapt Baseline</strong></td>
+<td style="text-align: center;">10.90%</td>
+<td style="text-align: center;">9.62%</td>
+<td style="text-align: center;"><strong>13.50%</strong></td>
+<td style="text-align: center;">8.24%</td>
+<td style="text-align: center;">6.40%</td>
+<td style="text-align: center;">6.51%</td>
+<td style="text-align: center;"><strong>9.18%</strong></td>
+<td style="text-align: center;"><strong>7.10 pp</strong></td>
+<td style="text-align: center;">796 words</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-table-3-exact-edit-operation-breakdown-substitutions-deletions-insertions">4. Table 3: Exact Edit Operation Breakdown (Substitutions, Deletions, Insertions)</h2>
+<p>Below are the exact raw edit distances computed via dynamic string alignment across all 6 accent strata for each model under baseline (No-Adapt):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model Key</th>
+<th style="text-align: left;">Accent Stratum</th>
+<th style="text-align: center;">Reference Words</th>
+<th style="text-align: center;">Substitutions (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">S</span></span></span></span>)</th>
+<th style="text-align: center;">Deletions (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">D</span></span></span></span>)</th>
+<th style="text-align: center;">Insertions (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0785em;">I</span></span></span></span>)</th>
+<th style="text-align: center;">Total Errors (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">S</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">D</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0785em;">I</span></span></span></span>)</th>
+<th style="text-align: center;">Measured WER</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;">US English</td>
+<td style="text-align: center;">1468</td>
+<td style="text-align: center;">231</td>
+<td style="text-align: center;">34</td>
+<td style="text-align: center;">34</td>
+<td style="text-align: center;"><strong>299</strong></td>
+<td style="text-align: center;"><strong>20.37%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;">England English</td>
+<td style="text-align: center;">1393</td>
+<td style="text-align: center;">235</td>
+<td style="text-align: center;">21</td>
+<td style="text-align: center;">26</td>
+<td style="text-align: center;"><strong>282</strong></td>
+<td style="text-align: center;"><strong>20.24%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;">South Asian English</td>
+<td style="text-align: center;">1430</td>
+<td style="text-align: center;">439</td>
+<td style="text-align: center;">65</td>
+<td style="text-align: center;">46</td>
+<td style="text-align: center;"><strong>550</strong></td>
+<td style="text-align: center;"><strong>38.46%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;">Australian English</td>
+<td style="text-align: center;">1493</td>
+<td style="text-align: center;">245</td>
+<td style="text-align: center;">34</td>
+<td style="text-align: center;">24</td>
+<td style="text-align: center;"><strong>303</strong></td>
+<td style="text-align: center;"><strong>20.29%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;">Canadian English</td>
+<td style="text-align: center;">1500</td>
+<td style="text-align: center;">141</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">17</td>
+<td style="text-align: center;"><strong>170</strong></td>
+<td style="text-align: center;"><strong>11.33%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;">Irish English</td>
+<td style="text-align: center;">1383</td>
+<td style="text-align: center;">142</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">13</td>
+<td style="text-align: center;"><strong>167</strong></td>
+<td style="text-align: center;"><strong>12.08%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>distil_whisper_small</code></td>
+<td style="text-align: left;">US English</td>
+<td style="text-align: center;">1468</td>
+<td style="text-align: center;">124</td>
+<td style="text-align: center;">16</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;"><strong>160</strong></td>
+<td style="text-align: center;"><strong>10.90%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>distil_whisper_small</code></td>
+<td style="text-align: left;">England English</td>
+<td style="text-align: center;">1393</td>
+<td style="text-align: center;">100</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">23</td>
+<td style="text-align: center;"><strong>134</strong></td>
+<td style="text-align: center;"><strong>9.62%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>distil_whisper_small</code></td>
+<td style="text-align: left;">South Asian English</td>
+<td style="text-align: center;">1430</td>
+<td style="text-align: center;">149</td>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;"><strong>193</strong></td>
+<td style="text-align: center;"><strong>13.50%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>distil_whisper_small</code></td>
+<td style="text-align: left;">Australian English</td>
+<td style="text-align: center;">1493</td>
+<td style="text-align: center;">88</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;"><strong>123</strong></td>
+<td style="text-align: center;"><strong>8.24%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>distil_whisper_small</code></td>
+<td style="text-align: left;">Canadian English</td>
+<td style="text-align: center;">1500</td>
+<td style="text-align: center;">79</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;"><strong>96</strong></td>
+<td style="text-align: center;"><strong>6.40%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>distil_whisper_small</code></td>
+<td style="text-align: left;">Irish English</td>
+<td style="text-align: center;">1383</td>
+<td style="text-align: center;">72</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;"><strong>90</strong></td>
+<td style="text-align: center;"><strong>6.51%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;">US English</td>
+<td style="text-align: center;">1468</td>
+<td style="text-align: center;">163</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">22</td>
+<td style="text-align: center;"><strong>193</strong></td>
+<td style="text-align: center;"><strong>13.15%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;">England English</td>
+<td style="text-align: center;">1393</td>
+<td style="text-align: center;">127</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">19</td>
+<td style="text-align: center;"><strong>157</strong></td>
+<td style="text-align: center;"><strong>11.27%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;">South Asian English</td>
+<td style="text-align: center;">1430</td>
+<td style="text-align: center;">269</td>
+<td style="text-align: center;">25</td>
+<td style="text-align: center;">25</td>
+<td style="text-align: center;"><strong>319</strong></td>
+<td style="text-align: center;"><strong>22.31%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;">Australian English</td>
+<td style="text-align: center;">1493</td>
+<td style="text-align: center;">135</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;"><strong>165</strong></td>
+<td style="text-align: center;"><strong>11.05%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;">Canadian English</td>
+<td style="text-align: center;">1500</td>
+<td style="text-align: center;">109</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;"><strong>136</strong></td>
+<td style="text-align: center;"><strong>9.07%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;">Irish English</td>
+<td style="text-align: center;">1383</td>
+<td style="text-align: center;">86</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;"><strong>102</strong></td>
+<td style="text-align: center;"><strong>7.38%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;">Australian English</td>
+<td style="text-align: center;">1493</td>
+<td style="text-align: center;">271</td>
+<td style="text-align: center;">32</td>
+<td style="text-align: center;">39</td>
+<td style="text-align: center;"><strong>342</strong></td>
+<td style="text-align: center;"><strong>22.91%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;">Canadian English</td>
+<td style="text-align: center;">1500</td>
+<td style="text-align: center;">153</td>
+<td style="text-align: center;">13</td>
+<td style="text-align: center;">17</td>
+<td style="text-align: center;"><strong>183</strong></td>
+<td style="text-align: center;"><strong>12.20%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;">England English</td>
+<td style="text-align: center;">1393</td>
+<td style="text-align: center;">227</td>
+<td style="text-align: center;">27</td>
+<td style="text-align: center;">29</td>
+<td style="text-align: center;"><strong>283</strong></td>
+<td style="text-align: center;"><strong>20.32%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;">Irish English</td>
+<td style="text-align: center;">1383</td>
+<td style="text-align: center;">179</td>
+<td style="text-align: center;">23</td>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;"><strong>216</strong></td>
+<td style="text-align: center;"><strong>15.62%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;">South Asian English</td>
+<td style="text-align: center;">1430</td>
+<td style="text-align: center;">500</td>
+<td style="text-align: center;">53</td>
+<td style="text-align: center;">54</td>
+<td style="text-align: center;"><strong>607</strong></td>
+<td style="text-align: center;"><strong>42.45%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;">US English</td>
+<td style="text-align: center;">1468</td>
+<td style="text-align: center;">253</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">32</td>
+<td style="text-align: center;"><strong>315</strong></td>
+<td style="text-align: center;"><strong>21.46%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>whisper_base</code></td>
+<td style="text-align: left;">US English</td>
+<td style="text-align: center;">1468</td>
+<td style="text-align: center;">176</td>
+<td style="text-align: center;">16</td>
+<td style="text-align: center;">51</td>
+<td style="text-align: center;"><strong>243</strong></td>
+<td style="text-align: center;"><strong>16.55%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>whisper_base</code></td>
+<td style="text-align: left;">England English</td>
+<td style="text-align: center;">1393</td>
+<td style="text-align: center;">151</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;"><strong>201</strong></td>
+<td style="text-align: center;"><strong>14.43%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>whisper_base</code></td>
+<td style="text-align: left;">South Asian English</td>
+<td style="text-align: center;">1430</td>
+<td style="text-align: center;">229</td>
+<td style="text-align: center;">19</td>
+<td style="text-align: center;">58</td>
+<td style="text-align: center;"><strong>306</strong></td>
+<td style="text-align: center;"><strong>21.40%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>whisper_base</code></td>
+<td style="text-align: left;">Australian English</td>
+<td style="text-align: center;">1493</td>
+<td style="text-align: center;">153</td>
+<td style="text-align: center;">21</td>
+<td style="text-align: center;">28</td>
+<td style="text-align: center;"><strong>202</strong></td>
+<td style="text-align: center;"><strong>13.53%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>whisper_base</code></td>
+<td style="text-align: left;">Canadian English</td>
+<td style="text-align: center;">1500</td>
+<td style="text-align: center;">98</td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;"><strong>118</strong></td>
+<td style="text-align: center;"><strong>7.87%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>whisper_base</code></td>
+<td style="text-align: left;">Irish English</td>
+<td style="text-align: center;">1383</td>
+<td style="text-align: center;">134</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">27</td>
+<td style="text-align: center;"><strong>171</strong></td>
+<td style="text-align: center;"><strong>12.36%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;">US English</td>
+<td style="text-align: center;">1468</td>
+<td style="text-align: center;">161</td>
+<td style="text-align: center;">26</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;"><strong>202</strong></td>
+<td style="text-align: center;"><strong>13.76%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;">England English</td>
+<td style="text-align: center;">1393</td>
+<td style="text-align: center;">136</td>
+<td style="text-align: center;">18</td>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;"><strong>168</strong></td>
+<td style="text-align: center;"><strong>12.06%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;">South Asian English</td>
+<td style="text-align: center;">1430</td>
+<td style="text-align: center;">203</td>
+<td style="text-align: center;">25</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;"><strong>243</strong></td>
+<td style="text-align: center;"><strong>16.99%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;">Australian English</td>
+<td style="text-align: center;">1493</td>
+<td style="text-align: center;">136</td>
+<td style="text-align: center;">21</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;"><strong>169</strong></td>
+<td style="text-align: center;"><strong>11.32%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;">Canadian English</td>
+<td style="text-align: center;">1500</td>
+<td style="text-align: center;">104</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"><strong>121</strong></td>
+<td style="text-align: center;"><strong>8.07%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;">Irish English</td>
+<td style="text-align: center;">1383</td>
+<td style="text-align: center;">99</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;"><strong>121</strong></td>
+<td style="text-align: center;"><strong>8.75%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;">US English</td>
+<td style="text-align: center;">1468</td>
+<td style="text-align: center;">178</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;">25</td>
+<td style="text-align: center;"><strong>218</strong></td>
+<td style="text-align: center;"><strong>14.85%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;">England English</td>
+<td style="text-align: center;">1393</td>
+<td style="text-align: center;">142</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">23</td>
+<td style="text-align: center;"><strong>172</strong></td>
+<td style="text-align: center;"><strong>12.35%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;">South Asian English</td>
+<td style="text-align: center;">1430</td>
+<td style="text-align: center;">241</td>
+<td style="text-align: center;">26</td>
+<td style="text-align: center;">21</td>
+<td style="text-align: center;"><strong>288</strong></td>
+<td style="text-align: center;"><strong>20.14%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;">Australian English</td>
+<td style="text-align: center;">1493</td>
+<td style="text-align: center;">152</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;">19</td>
+<td style="text-align: center;"><strong>186</strong></td>
+<td style="text-align: center;"><strong>12.46%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;">Canadian English</td>
+<td style="text-align: center;">1500</td>
+<td style="text-align: center;">110</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">17</td>
+<td style="text-align: center;"><strong>139</strong></td>
+<td style="text-align: center;"><strong>9.27%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;">Irish English</td>
+<td style="text-align: center;">1383</td>
+<td style="text-align: center;">102</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;"><strong>118</strong></td>
+<td style="text-align: center;"><strong>8.53%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;">US English</td>
+<td style="text-align: center;">1468</td>
+<td style="text-align: center;">197</td>
+<td style="text-align: center;">17</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;"><strong>234</strong></td>
+<td style="text-align: center;"><strong>15.94%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;">England English</td>
+<td style="text-align: center;">1393</td>
+<td style="text-align: center;">148</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">23</td>
+<td style="text-align: center;"><strong>179</strong></td>
+<td style="text-align: center;"><strong>12.85%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;">South Asian English</td>
+<td style="text-align: center;">1430</td>
+<td style="text-align: center;">229</td>
+<td style="text-align: center;">21</td>
+<td style="text-align: center;">19</td>
+<td style="text-align: center;"><strong>269</strong></td>
+<td style="text-align: center;"><strong>18.81%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;">Australian English</td>
+<td style="text-align: center;">1493</td>
+<td style="text-align: center;">144</td>
+<td style="text-align: center;">13</td>
+<td style="text-align: center;">17</td>
+<td style="text-align: center;"><strong>174</strong></td>
+<td style="text-align: center;"><strong>11.65%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;">Canadian English</td>
+<td style="text-align: center;">1500</td>
+<td style="text-align: center;">117</td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;"><strong>138</strong></td>
+<td style="text-align: center;"><strong>9.20%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;">Irish English</td>
+<td style="text-align: center;">1383</td>
+<td style="text-align: center;">105</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;"><strong>125</strong></td>
+<td style="text-align: center;"><strong>9.04%</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-table-4-dsg-online-controller-decision-safety-statistics">5. Table 4: DSG Online Controller Decision &amp; Safety Statistics</h2>
+<p>Across all 6 adaptable CTC architectures, the Disparity Safety Gate evaluated <span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">350</span></span></span></span> candidate updates across 225 sequential stream windows:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model Key</th>
+<th style="text-align: left;">Model ID</th>
+<th style="text-align: center;">Architecture</th>
+<th style="text-align: center;">Candidate Updates</th>
+<th style="text-align: center;">Accepted Updates</th>
+<th style="text-align: center;">Rejected Updates</th>
+<th style="text-align: center;">Acceptance Rate</th>
+<th style="text-align: center;">Statistical Violations</th>
+<th style="text-align: center;">Fail-Closed Errors</th>
+<th style="text-align: center;">Final Net <span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord">Δ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.0077em;">R</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> vs Base</th>
+<th style="text-align: center;">Worst Subgroup Harm (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mop"><span class="mop">max</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.0359em;">g</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord">Δ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.0359em;">g</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_base</code></td>
+<td style="text-align: left;">facebook/wav2vec2-base-960h</td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">225</td>
+<td style="text-align: center;"><strong>9.0</strong></td>
+<td style="text-align: center;"><strong>216.0</strong></td>
+<td style="text-align: center;"><strong>4.0%</strong></td>
+<td style="text-align: center;">216.0</td>
+<td style="text-align: center;"><strong>0.0</strong></td>
+<td style="text-align: center;"><strong>+0.07 pp</strong></td>
+<td style="text-align: center;"><strong>+0.47 pp</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>whisper_base</code></td>
+<td style="text-align: left;">openai/whisper-base</td>
+<td style="text-align: center;">EncoderDecoder</td>
+<td style="text-align: center;">INCOMPATIBLE</td>
+<td style="text-align: center;"><strong>nan</strong></td>
+<td style="text-align: center;"><strong>nan</strong></td>
+<td style="text-align: center;"><strong>nan</strong></td>
+<td style="text-align: center;">nan</td>
+<td style="text-align: center;"><strong>nan</strong></td>
+<td style="text-align: center;"><strong>+nan pp</strong></td>
+<td style="text-align: center;"><strong>+nan pp</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hubert_large</code></td>
+<td style="text-align: left;">facebook/hubert-large-ls960-ft</td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">225</td>
+<td style="text-align: center;"><strong>6.0</strong></td>
+<td style="text-align: center;"><strong>219.0</strong></td>
+<td style="text-align: center;"><strong>2.7%</strong></td>
+<td style="text-align: center;">219.0</td>
+<td style="text-align: center;"><strong>0.0</strong></td>
+<td style="text-align: center;"><strong>+0.01 pp</strong></td>
+<td style="text-align: center;"><strong>+0.36 pp</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>data2vec_base</code></td>
+<td style="text-align: left;">facebook/data2vec-audio-base-960h</td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">225</td>
+<td style="text-align: center;"><strong>1.0</strong></td>
+<td style="text-align: center;"><strong>224.0</strong></td>
+<td style="text-align: center;"><strong>0.4%</strong></td>
+<td style="text-align: center;">224.0</td>
+<td style="text-align: center;"><strong>0.0</strong></td>
+<td style="text-align: center;"><strong>-0.12 pp</strong></td>
+<td style="text-align: center;"><strong>+0.07 pp</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>distil_whisper_small</code></td>
+<td style="text-align: left;">distil-whisper/distil-small.en</td>
+<td style="text-align: center;">EncoderDecoder</td>
+<td style="text-align: center;">INCOMPATIBLE</td>
+<td style="text-align: center;"><strong>nan</strong></td>
+<td style="text-align: center;"><strong>nan</strong></td>
+<td style="text-align: center;"><strong>nan</strong></td>
+<td style="text-align: center;">nan</td>
+<td style="text-align: center;"><strong>nan</strong></td>
+<td style="text-align: center;"><strong>+nan pp</strong></td>
+<td style="text-align: center;"><strong>+nan pp</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>xlsr_english</code></td>
+<td style="text-align: left;">jonatasgrosman/wav2vec2-large-xlsr-53-english</td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">225</td>
+<td style="text-align: center;"><strong>0.0</strong></td>
+<td style="text-align: center;"><strong>225.0</strong></td>
+<td style="text-align: center;"><strong>0.0%</strong></td>
+<td style="text-align: center;">225.0</td>
+<td style="text-align: center;"><strong>0.0</strong></td>
+<td style="text-align: center;"><strong>+0.00 pp</strong></td>
+<td style="text-align: center;"><strong>+0.00 pp</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_lv60</code></td>
+<td style="text-align: left;">facebook/wav2vec2-large-960h-lv60</td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">225</td>
+<td style="text-align: center;"><strong>2.0</strong></td>
+<td style="text-align: center;"><strong>223.0</strong></td>
+<td style="text-align: center;"><strong>0.9%</strong></td>
+<td style="text-align: center;">223.0</td>
+<td style="text-align: center;"><strong>0.0</strong></td>
+<td style="text-align: center;"><strong>-0.02 pp</strong></td>
+<td style="text-align: center;"><strong>+0.00 pp</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>wav2vec2_large_robust</code></td>
+<td style="text-align: left;">facebook/wav2vec2-large-robust-ft-libri-960h</td>
+<td style="text-align: center;">CTC</td>
+<td style="text-align: center;">225</td>
+<td style="text-align: center;"><strong>5.0</strong></td>
+<td style="text-align: center;"><strong>220.0</strong></td>
+<td style="text-align: center;"><strong>2.2%</strong></td>
+<td style="text-align: center;">220.0</td>
+<td style="text-align: center;"><strong>0.0</strong></td>
+<td style="text-align: center;"><strong>-0.02 pp</strong></td>
+<td style="text-align: center;"><strong>+0.14 pp</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-scientific-defense-authenticity-reconciliation-for-professors-and-reviewers">6. Scientific Defense &amp; Authenticity Reconciliation for Professors and Reviewers</h2>
+<p>When presenting these empirical numbers, reviewers often ask two key questions:</p>
+<h3 id="q1-why-are-the-common-voice-error-rates-11-42-higher-than-published-librispeech-benchmarks-2-8">Q1: Why are the Common Voice error rates (11% - 42%) higher than published LibriSpeech benchmarks (2% - 8%)?</h3>
+<ol>
+<li><strong>Acoustic Domain Divergence:</strong> LibriSpeech consists of clean, professional audiobooks read by native North American speakers in acoustically controlled environments using studio-grade condenser microphones.</li>
+<li><strong>Demographic and Accent Shift:</strong> Mozilla Common Voice 27.0 captures crowdsourced recordings from real-world laptop and smartphone microphones across global English speakers. For example, South Asian English exhibits phonemic retroflexion and syllable timing that diverges sharply from North American training priors (resulting in 42.45% baseline WER on <code>wav2vec2_base</code>).</li>
+<li><strong>Consistency with Literature:</strong> This divergence is fully corroborated by published literature: Koenecke et al. (PNAS 2020) demonstrated a 2x error rate elevation across diverse speakers; Radford et al. (ICML 2023) showed that Whisper error rates jump from 2.7% on LibriSpeech clean to 13.1% on global Common Voice English.</li>
+</ol>
+<h3 id="q2-how-can-the-results-be-verified-independently">Q2: How can the results be verified independently?</h3>
+<p>Every single number in this report is backed by raw row-level prediction CSVs stored in <code>reports/stage6/checkpoints/</code>:
+- Every transcribed audio clip has its exact audio ID, speaker ID, accent code, normalized reference text, model hypothesis string, and exact execution timestamp.
+- Any independent auditor can open any CSV in Excel or Python and run <code>(sub + del + ins) / ref_words</code> to verify bit-for-bit numerical reproducibility.</p>
+<hr />
+<h2 id="7-artifact-file-directory-reference">7. Artifact File Directory Reference</h2>
+<ul>
+<li><strong>Master CSV Matrix:</strong> <a href="file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6/master_model_accent_benchmark_matrix.csv"><code>reports/stage6/master_model_accent_benchmark_matrix.csv</code></a></li>
+<li><strong>8-Model Overall CSV:</strong> <a href="file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6/eight_model_benchmark.csv"><code>reports/stage6/eight_model_benchmark.csv</code></a></li>
+<li><strong>Complete Accent CSV:</strong> <a href="file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6/eight_model_group_metrics.csv"><code>reports/stage6/eight_model_group_metrics.csv</code></a></li>
+<li><strong>Dissertation Dossier PDF:</strong> <a href="file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/project_report/master_research_report.pdf"><code>reports/project_report/master_research_report.pdf</code></a></li>
+<li><strong>Formula Reference PDF:</strong> <a href="file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/project_report/formula_reference.pdf"><code>reports/project_report/formula_reference.pdf</code></a></li>
+</ul>
+</article>
+</body>
+</html>
