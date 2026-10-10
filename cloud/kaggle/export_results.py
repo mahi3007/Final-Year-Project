@@ -77,11 +77,29 @@ def package_all_results() -> Path:
     size_mb = out_zip.stat().st_size / (1024 * 1024)
     print(f"\nCreated unified archive: {out_zip} ({size_mb:.2f} MB, {total_packed} files packed)")
 
-    # If running in Kaggle environment, copy to /kaggle/working for 1-click download
+    # Also build a standalone stage5m_results_bundle.zip if Stage 5M outputs exist
+    s5m_results_dir = PROJECT_ROOT / "results" / "stage5m"
+    s5m_reports_dir = PROJECT_ROOT / "reports" / "stage5m"
+    if s5m_results_dir.exists() or s5m_reports_dir.exists():
+        s5m_zip = PROJECT_ROOT / "reports" / "stage5m_results_bundle.zip"
+        with zipfile.ZipFile(s5m_zip, "w", zipfile.ZIP_DEFLATED) as zf_5m:
+            for d in [s5m_results_dir, s5m_reports_dir]:
+                if d.exists():
+                    for f in d.rglob("*"):
+                        if f.is_file() and not f.name.endswith(".zip"):
+                            arc_name = f"stage5m/{f.relative_to(d.parent)}".replace("\\", "/")
+                            zf_5m.write(f, arcname=arc_name)
+        sz_5m_kb = s5m_zip.stat().st_size / 1024
+        print(f"Created dedicated Stage 5M archive: {s5m_zip} ({sz_5m_kb:.1f} KB)")
+        if Path("/kaggle/working").exists():
+            shutil.copyfile(s5m_zip, Path("/kaggle/working/stage5m_results_bundle.zip"))
+            print("Copied to Kaggle download directory: /kaggle/working/stage5m_results_bundle.zip")
+
+    # If running in Kaggle environment, copy unified zip to /kaggle/working for 1-click download
     if Path("/kaggle/working").exists():
         shutil.copyfile(out_zip, kaggle_out)
         print(f"Copied to Kaggle download directory: {kaggle_out}")
-        print("\n--> In Kaggle: Look in the right-hand panel under 'Output' -> Click 'Download' on 'stage5_stage6_results_bundle.zip'")
+        print("\n--> In Kaggle: Look in the right-hand panel under 'Output' -> Click 'Download' on 'stage5m_results_bundle.zip' or 'stage5_stage6_results_bundle.zip'")
 
     return out_zip
 

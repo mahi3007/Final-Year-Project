@@ -70,6 +70,8 @@ datasets/external/
 *.zip
 *.tar
 !stage6_audio_bundle.tar.gz
+!stage5m_audio_bundle.tar.gz
+stage5_stage6_audio_bundle.tar.gz
 tmp_voices/
 test_festvox.wav
 

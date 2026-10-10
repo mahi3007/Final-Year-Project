@@ -118,13 +118,14 @@ def verify_and_unpack_audio_bundles():
     ]
 
     found_archives = []
+    archive_exts = (".tar.gz", ".tgz", ".zip")
     for cdir in candidate_dirs:
         if cdir.exists():
-            for p in cdir.rglob("*audio*bundle*.*"):
-                if p.is_file() and p not in found_archives:
+            for p in cdir.rglob("*audio*bundle*"):
+                if p.is_file() and p.name.endswith(archive_exts) and p not in found_archives:
                     found_archives.append(p)
             for p in cdir.rglob("*.tar.gz"):
-                if p.is_file() and p not in found_archives:
+                if p.is_file() and not p.name.startswith("dateutil") and p not in found_archives:
                     found_archives.append(p)
 
     for arch in found_archives:
@@ -150,10 +151,22 @@ def run_preflight_checks():
     print("\n" + "=" * 80)
     print("STEP 4: RUNNING PREFLIGHT INTEGRITY AUDIT")
     print("=" * 80)
-    preflight_script = PROJECT_ROOT / "scripts" / "stage6" / "00_gpu_preflight.py"
-    if preflight_script.exists():
-        subprocess.check_call([sys.executable, str(preflight_script)])
-    print("Preflight check passed.")
+
+    # 1. Stage 5M Research Validity Check
+    stage5m_test = PROJECT_ROOT / "tests" / "research_validity" / "test_stage5m_online_control.py"
+    if stage5m_test.exists():
+        print("Running Stage 5M Research Validity Tests...")
+        subprocess.check_call([sys.executable, "-m", "pytest", str(stage5m_test)])
+        print("Stage 5M integrity invariants verified.")
+
+    # 2. Stage 6 Preflight (if Stage 6 eval clips present)
+    cv_eval_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "audio"
+    cv_clips = list(cv_eval_dir.glob("*.mp3")) if cv_eval_dir.exists() else []
+    if len(cv_clips) >= 900:
+        preflight_script = PROJECT_ROOT / "scripts" / "stage6" / "00_gpu_preflight.py"
+        if preflight_script.exists():
+            subprocess.check_call([sys.executable, str(preflight_script)])
+            print("Stage 6 preflight check passed.")
 
 
 if __name__ == "__main__":

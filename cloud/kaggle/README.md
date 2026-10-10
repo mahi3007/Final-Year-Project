@@ -28,10 +28,10 @@ Evaluating sequential prequential windows with batched sentinel panel verificati
 
 ---
 
-### Quickstart Guide: Running on Kaggle (Step-by-Step)
+### Quickstart Guide: Running Stage 5M on Kaggle (Step-by-Step)
 
 #### Step 1: Open Kaggle Notebooks
-1. Go to [https://www.kaggle.com/code](https://www.kaggle.com/code) and sign in.
+1. Go to [https://www.kaggle.com/code](https://www.kaggle.com/code) and sign in (or create a free account).
 2. Click **New Notebook** (top right).
 
 #### Step 2: Enable Free Tesla P100 GPU
@@ -46,48 +46,43 @@ In the first notebook cell:
 !git clone <YOUR_GITHUB_REPO_URL> project
 %cd project
 ```
-*(Alternatively, you can upload `cloud/kaggle/run_stage5_and_stage6_kaggle.ipynb` directly via File $\to$ Upload Notebook).*
+*(Alternatively, you can upload `cloud/kaggle/run_stage5m_kaggle.ipynb` directly via **File $\to$ Upload Notebook**).*
 
 #### Step 4: Run the Environment & Audio Setup
 In the next cell:
 ```python
 !python cloud/kaggle/setup_kaggle.py
 ```
-This automatically installs dependencies, checks the Tesla P100 GPU, validates audio assets, and executes preflight integrity checks.
+This automatically installs dependencies, checks the Tesla P100 GPU, extracts audio assets (`stage5m_audio_bundle.tar.gz`), and verifies Stage 5M research validity invariants.
 
-#### Step 5: Execute the Benchmarks
-
-You have several flexible execution options:
-
-##### Option A: Run Everything (Stage 5M + Stage 6 + Stage 6.1)
-```python
-!python cloud/kaggle/run_stage5_and_stage6.py --stage all
-```
-
-##### Option B: Run Stage 5M Only (Closed-Loop Online Control Suite)
-```python
-!python cloud/kaggle/run_stage5_and_stage6.py --stage 5m
-```
-
-##### Option C: Run Stage 6 Only (Six-Model Benchmark)
-```python
-!python cloud/kaggle/run_stage5_and_stage6.py --stage 6
-```
-
-##### Option D: Fast Smoke Test (Validates Stage 5M Sentinel Gate in ~30s)
+#### Step 5: Fast Smoke Test (Optional, ~30s)
+In the next cell:
 ```python
 !python cloud/kaggle/run_stage5m_online_control.py --smoke-test
 ```
+Verifies the Sentinel Safety Gate, paired bootstrap ($B=1000$), and label isolation firewall in ~30 seconds.
 
-#### Step 6: Download the Results Bundle
-Once execution completes, all CSVs, Markdown reports, and checkpoint records are automatically packaged into:
-`/kaggle/working/stage5_stage6_results_bundle.zip`
+#### Step 6: Execute the Full Stage 5M Suite
+In the next cell:
+```python
+!python cloud/kaggle/run_stage5m_online_control.py
+```
+This executes the preregistered matrix:
+- 3 CTC Development Backbones (`wav2vec2_base`, `data2vec_base`, `wav2vec2_100h`)
+- 5 Acoustic Stress Conditions (`clean`, `noise_15db`, `noise_5db`, `babble_15db`, `reverb_t60_04`)
+- 3 Active Adaptation Methods (`suta`, `dsuta`, `dmsuta`)
+- 3 Stream Arrival Orderings (`ORDER_A`, `ORDER_B`, `ORDER_C`)
+- 3 Seq2Seq Static Portability Controls (`whisper_base`, `distil_whisper_small`, `whisper_tiny`)
 
-1. Look at the right-hand sidebar under **Output**.
-2. Click the three dots next to `stage5_stage6_results_bundle.zip` $\to$ **Download**.
-3. Extract directly into your local repository:
+#### Step 7: Download the Stage 5M Results Bundle
+Once execution completes, all CSVs, Markdown reports, agreement matrices, and checkpoints are packaged into:
+`/kaggle/working/stage5m_results_bundle.zip`
+
+1. Look in the right-hand panel under **Output**.
+2. Click the three dots next to `stage5m_results_bundle.zip` $\to$ **Download**.
+3. Extract directly into your local project root:
    ```bash
-   unzip -o ~/Downloads/stage5_stage6_results_bundle.zip -d .
+   unzip -o ~/Downloads/stage5m_results_bundle.zip -d .
    ```
 
 ---
