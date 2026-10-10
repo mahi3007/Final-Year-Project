@@ -1,0 +1,80 @@
+{
+  "protocol_version": "v1.1.0-model-expansion",
+  "stage": "Stage 4M Multi-Model Stress & Boundary Characterization",
+  "audit_status": "POST_EXECUTION_AUDIT_VERIFIED",
+  "created_at": "2026-10-10T17:18:43Z",
+  "audited_at": "2026-10-10T17:40:00Z",
+  "git_commit": "def891b82be3f557c470a2d9eedcc4afdb1700fb",
+  "partitions": {
+    "clean": {
+      "path": "datasets/splits/stage4_characterization.csv",
+      "sha256": "df61e54e3bdfa29ddadc2facb14ecd8e83999c1ab54b21b3dea7cecb03a73e14"
+    },
+    "noise_15db": {
+      "path": "datasets/splits/stage4_noise_moderate.csv",
+      "sha256": "17e93a2949c54d6c0440b711f9cfa307cf41aeba3da88ea37890418905a19e54"
+    },
+    "noise_5db": {
+      "path": "datasets/splits/stage4_noise_severe.csv",
+      "sha256": "c41d77bc7804186e86c9db0852c5c5d38b157dd35b4a93129ff78629b3f0e841"
+    },
+    "babble_15db": {
+      "path": "datasets/splits/stage4_babble_moderate.csv",
+      "sha256": "cb48f3d6d2e5131c24145bb613ed9f50da062083f93c0ae1f3aafc8a3c1e4d1d"
+    },
+    "reverb_t60_04": {
+      "path": "datasets/splits/stage4_reverberation.csv",
+      "sha256": "795629cdd3ab73879d14eaadba4f7d95ff0111c8ccbab2427b83e205add6927a"
+    }
+  },
+  "streaming_parameters": {
+    "window_size_k": 4,
+    "total_windows": 30,
+    "adaptation_updates_per_stream": 29,
+    "terminal_window_rule": "WINDOW_29_EVALUATED_UPDATE_SKIPPED"
+  },
+  "nominal_settings": 180,
+  "canonical_settings": 150,
+  "canonical_record_count": 18000,
+  "source_utterance_cohort_size": 120,
+  "duplicated_sensitivity_record_count": 21600,
+  "seq2seq_controls_count": 15,
+  "k_sweep": {
+    "evaluated_k_values": [2, 4, 8],
+    "status": "EXPLORATORY_SENSITIVITY_CHECK",
+    "historical_protocol_reference": "Stage 4 used K in {1, 4, 5, 10} on calibration split; Stage 4M Preregistration Addendum line 34 documented exploratory K in {2, 4, 8}",
+    "confirmatory_status": "EXPLORATORY_ONLY"
+  },
+  "safety_assessment": {
+    "decision_type": "RETROSPECTIVE_SAFETY_CLASSIFICATION",
+    "timing": "POST_STREAM_RETROSPECTIVE",
+    "eval_data_source": "STAGE4M_GROUND_TRUTH_TRANSCRIPTS",
+    "operational_sentinel_isolation": "PRESERVED_NO_ONLINE_LEAKAGE",
+    "sample_unit": "COMPLETED_RUN_120_UTTS",
+    "total_active_settings": 135,
+    "retrospective_accept": 20,
+    "retrospective_reject": 115,
+    "frozen_tolerances": {
+      "epsilon_r_pp": 0.00,
+      "epsilon_g_pp": 2.00,
+      "epsilon_d_pp": 2.00,
+      "bootstrap_b": 1000,
+      "alpha": 0.05
+    }
+  },
+  "secondary_glmm": {
+    "canonical_parameters": 34,
+    "design_matrix_rank": 34,
+    "condition_number": 48.388,
+    "glmm_estimation_objective": "LAPLACE_MARGINAL_LIKELIHOOD",
+    "dispersion_phi": 143.9554,
+    "speaker_sd_sigma_s": 0.0042,
+    "utterance_sd_sigma_u": 0.2265,
+    "finite_sample_disclosure": "Speaker variance sigma_s estimated across 12 speaker clusters; secondary omnibus characterization only."
+  },
+  "audit_artifacts": [
+    "results/stage4_multimodel/stage4m_k_sweep_audit.csv",
+    "results/stage4_multimodel/stage4m_retrospective_vs_operational_audit.csv",
+    "results/stage4_multimodel/stage4m_error_decomposition_audit.csv"
+  ]
+}

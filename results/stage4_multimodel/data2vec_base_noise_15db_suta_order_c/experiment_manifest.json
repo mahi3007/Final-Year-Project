@@ -1,0 +1,27 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_data2vec_base_noise_15db_suta_order_c_k4",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_c_k4_s191647079",
+  "ordering_id": "ORDER_C",
+  "seed": 191647079,
+  "stream_hash": "a1787d3d3ae8d0cd3acd68d5ef99339df36558840d87a0a9e0119fff42e814a9",
+  "model_id": "data2vec_base",
+  "method_id": "suta",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {
+    "lr": 0.0001,
+    "temperature": 2.5,
+    "alpha": 0.5,
+    "steps": 1
+  },
+  "timestamp": "2026-10-10T07:26:17Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\data2vec_base_noise_15db_suta_order_c\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\data2vec_base_noise_15db_suta_order_c\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\data2vec_base_noise_15db_suta_order_c\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\data2vec_base_noise_15db_suta_order_c\\adaptation_trajectory.csv"
+  }
+}

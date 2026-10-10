@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_base_babble_15db_dsuta_order_c_k4",
+  "method_id": "dsuta",
+  "model_id": "wav2vec2_base",
+  "stream_id": "stream_order_c_k4_s276971042",
+  "ordering_id": "ORDER_C",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9411,
+  "speaker_macro_wer": 0.9411,
+  "disparity_d": 0.0543,
+  "disparity_ratio_r": 1.06,
+  "best_group_id": "Arabic",
+  "worst_group_id": "Mandarin",
+  "total_adaptation_time_seconds": 125.3065,
+  "total_inference_time_seconds": 28.4463,
+  "num_updates": 29,
+  "num_resets": 1,
+  "group_wers": {
+    "Arabic": 0.913,
+    "Hindi": 0.9185,
+    "Korean": 0.9348,
+    "Mandarin": 0.9674,
+    "Spanish": 0.9674,
+    "Vietnamese": 0.9457
+  },
+  "elapsed_seconds": 154.22
+}

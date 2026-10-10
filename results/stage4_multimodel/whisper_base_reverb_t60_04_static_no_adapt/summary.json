@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_whisper_base_reverb_t60_04_no_adapt_order_a_k4",
+  "method_id": "no_adapt",
+  "model_id": "whisper_base",
+  "stream_id": "stream_order_a_k4_s171501048",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9538,
+  "speaker_macro_wer": 0.9538,
+  "disparity_d": 0.1359,
+  "disparity_ratio_r": 1.15,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Hindi",
+  "total_adaptation_time_seconds": 3.8263,
+  "total_inference_time_seconds": 715.5294,
+  "num_updates": 0,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.9348,
+    "Hindi": 1.0435,
+    "Korean": 0.913,
+    "Mandarin": 0.9076,
+    "Spanish": 0.9402,
+    "Vietnamese": 0.9837
+  },
+  "elapsed_seconds": 723.48
+}

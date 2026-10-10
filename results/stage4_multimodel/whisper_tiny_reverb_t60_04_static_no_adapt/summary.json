@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_whisper_tiny_reverb_t60_04_no_adapt_order_a_k4",
+  "method_id": "no_adapt",
+  "model_id": "whisper_tiny",
+  "stream_id": "stream_order_a_k4_s355867969",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 1.0553,
+  "speaker_macro_wer": 1.0553,
+  "disparity_d": 0.2554,
+  "disparity_ratio_r": 1.269,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Korean",
+  "total_adaptation_time_seconds": 2.3399,
+  "total_inference_time_seconds": 754.9761,
+  "num_updates": 0,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 1.0054,
+    "Hindi": 1.038,
+    "Korean": 1.2065,
+    "Mandarin": 0.9511,
+    "Spanish": 1.1304,
+    "Vietnamese": 1.0
+  },
+  "elapsed_seconds": 760.13
+}

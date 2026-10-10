@@ -1,0 +1,42 @@
+{
+  "wav2vec2_base": {
+    "model_id": "facebook/wav2vec2-base-960h",
+    "commit_sha": "22aad52d435eb6dbaf354bdad9b0da84ce7d6156"
+  },
+  "data2vec_base": {
+    "model_id": "facebook/data2vec-audio-base-960h",
+    "commit_sha": "32331f3123e703528918aa688a9a38232d58c872"
+  },
+  "wav2vec2_100h": {
+    "model_id": "facebook/wav2vec2-base-100h",
+    "commit_sha": "9c1fef36b62a428a658e5b022ef9f21b38f47e0b"
+  },
+  "whisper_base": {
+    "model_id": "openai/whisper-base",
+    "commit_sha": "e37978b90ca9030d5170a5c07aadb050351a65bb"
+  },
+  "distil_whisper_small": {
+    "model_id": "distil-whisper/distil-small.en",
+    "commit_sha": "9e4a67ca4569c30be43a3fe7fba1621e504f0093"
+  },
+  "whisper_tiny": {
+    "model_id": "openai/whisper-tiny",
+    "commit_sha": "169d4a4341b33bc18d8881c4b69c2e104e1cc0af"
+  },
+  "hubert_large": {
+    "model_id": "facebook/hubert-large-ls960-ft",
+    "commit_sha": "ece5fabbf034c1073acae96d5401b25be96709d8"
+  },
+  "xlsr_english": {
+    "model_id": "jonatasgrosman/wav2vec2-large-xlsr-53-english",
+    "commit_sha": "569a6236e92bd5f7652a0420bfe9bb94c5664080"
+  },
+  "wav2vec2_large_lv60": {
+    "model_id": "facebook/wav2vec2-large-960h-lv60",
+    "commit_sha": "8e7d14742e8f98c6bbb24e5231406af321a8f9ce"
+  },
+  "wav2vec2_large_robust": {
+    "model_id": "facebook/wav2vec2-large-robust-ft-libri-960h",
+    "commit_sha": "5d28473cc25ef7b338c9f731fe55626c4b082f58"
+  }
+}

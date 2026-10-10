@@ -1,0 +1,22 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_whisper_base_clean_no_adapt_order_a_k4",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_a_k4_s111753618",
+  "ordering_id": "ORDER_A",
+  "seed": 111753618,
+  "stream_hash": "c1e7f8cf88c72d672e10fd72ff6387a65afd12080451d68af77b67a00718a459",
+  "model_id": "whisper_base",
+  "method_id": "no_adapt",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {},
+  "timestamp": "2026-10-10T11:47:28Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_base_clean_static_no_adapt\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_base_clean_static_no_adapt\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_base_clean_static_no_adapt\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_base_clean_static_no_adapt\\adaptation_trajectory.csv"
+  }
+}

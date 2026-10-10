@@ -1,0 +1,22 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE3M_data2vec_base_no_adapt_order_a",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_a_k4_s42",
+  "ordering_id": "ORDER_A",
+  "seed": 42,
+  "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778",
+  "model_id": "data2vec_base",
+  "method_id": "no_adapt",
+  "window_size_k": 4,
+  "total_windows": 15,
+  "total_utterances": 60,
+  "total_reference_words": 552,
+  "adapter_config": {},
+  "timestamp": "2026-10-09T13:15:58Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage3_multimodel\\data2vec_base_no_adapt_order_a\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage3_multimodel\\data2vec_base_no_adapt_order_a\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage3_multimodel\\data2vec_base_no_adapt_order_a\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage3_multimodel\\data2vec_base_no_adapt_order_a\\adaptation_trajectory.csv"
+  }
+}

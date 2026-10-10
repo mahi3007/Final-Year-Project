@@ -1,0 +1,28 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_base_babble_15db_dmsuta_order_b_k4",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_b_k4_s246646656",
+  "ordering_id": "ORDER_B",
+  "seed": 246646656,
+  "stream_hash": "ee266fbf1ac54f52df7b8c8509dbb3c5bca14a774444d4d373cf1312bf318862",
+  "model_id": "wav2vec2_base",
+  "method_id": "dmsuta",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {
+    "lr": 0.0001,
+    "temperature": 2.5,
+    "alpha": 0.5,
+    "steps": 1,
+    "max_bank_size": 3
+  },
+  "timestamp": "2026-10-10T06:15:35Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_base_babble_15db_dmsuta_order_b\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_base_babble_15db_dmsuta_order_b\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_base_babble_15db_dmsuta_order_b\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_base_babble_15db_dmsuta_order_b\\adaptation_trajectory.csv"
+  }
+}

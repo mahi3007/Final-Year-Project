@@ -1,0 +1,31 @@
+architecture,model_key,condition,method,ordering_id,reference_words,hypothesis_words,length_ratio,substitutions,deletions,insertions,corpus_wer
+CTC,wav2vec2_base,clean,no_adapt,ORDER_A,1104,1036,0.9384,768,135,67,0.8786
+CTC,wav2vec2_base,noise_15db,no_adapt,ORDER_A,1104,902,0.817,762,234,32,0.9312
+CTC,wav2vec2_base,noise_5db,no_adapt,ORDER_A,1104,476,0.4312,428,640,14,0.9801
+CTC,wav2vec2_base,babble_15db,no_adapt,ORDER_A,1104,898,0.8134,764,240,34,0.9402
+CTC,wav2vec2_base,reverb_t60_04,no_adapt,ORDER_A,1104,956,0.8659,784,198,50,0.9348
+CTC,data2vec_base,clean,no_adapt,ORDER_A,1104,1050,0.9511,719,130,76,0.8379
+CTC,data2vec_base,noise_15db,no_adapt,ORDER_A,1104,875,0.7926,720,263,34,0.9212
+CTC,data2vec_base,noise_5db,no_adapt,ORDER_A,1104,265,0.24,239,842,3,0.9819
+CTC,data2vec_base,babble_15db,no_adapt,ORDER_A,1104,888,0.8043,721,262,46,0.9321
+CTC,data2vec_base,reverb_t60_04,no_adapt,ORDER_A,1104,981,0.8886,770,181,58,0.9139
+CTC,wav2vec2_100h,clean,no_adapt,ORDER_A,1104,1063,0.9629,781,115,74,0.8786
+CTC,wav2vec2_100h,noise_15db,no_adapt,ORDER_A,1104,940,0.8514,789,209,45,0.9447
+CTC,wav2vec2_100h,noise_5db,no_adapt,ORDER_A,1104,811,0.7346,744,321,28,0.99
+CTC,wav2vec2_100h,babble_15db,no_adapt,ORDER_A,1104,1005,0.9103,839,170,71,0.9783
+CTC,wav2vec2_100h,reverb_t60_04,no_adapt,ORDER_A,1104,1003,0.9085,819,170,69,0.9583
+SEQ2SEQ,whisper_base,babble_15db,no_adapt,ORDER_A (static),1104,1144,1.0362,780,107,147,0.9366
+SEQ2SEQ,whisper_base,clean,no_adapt,ORDER_A (static),1104,1140,1.0326,757,94,130,0.8886
+SEQ2SEQ,whisper_base,noise_15db,no_adapt,ORDER_A (static),1104,1153,1.0444,785,122,171,0.9764
+SEQ2SEQ,whisper_base,noise_5db,no_adapt,ORDER_A (static),1104,1240,1.1232,864,128,264,1.1377
+SEQ2SEQ,whisper_base,reverb_t60_04,no_adapt,ORDER_A (static),1104,1156,1.0471,793,104,156,0.9538
+SEQ2SEQ,whisper_tiny,babble_15db,no_adapt,ORDER_A (static),1104,1121,1.0154,823,139,156,1.0127
+SEQ2SEQ,whisper_tiny,clean,no_adapt,ORDER_A (static),1104,1131,1.0245,754,136,163,0.9538
+SEQ2SEQ,whisper_tiny,noise_15db,no_adapt,ORDER_A (static),1104,1182,1.0707,838,104,182,1.0181
+SEQ2SEQ,whisper_tiny,noise_5db,no_adapt,ORDER_A (static),1104,1170,1.0598,841,171,237,1.1313
+SEQ2SEQ,whisper_tiny,reverb_t60_04,no_adapt,ORDER_A (static),1104,1231,1.115,848,95,222,1.0553
+SEQ2SEQ,distil_whisper_small,small,no_adapt,ORDER_A (static),1104,1138,1.0308,733,101,135,0.8777
+SEQ2SEQ,distil_whisper_small,small,no_adapt,ORDER_A (static),1104,1148,1.0399,692,76,120,0.8043
+SEQ2SEQ,distil_whisper_small,small,no_adapt,ORDER_A (static),1104,1128,1.0217,732,96,120,0.8587
+SEQ2SEQ,distil_whisper_small,small,no_adapt,ORDER_A (static),1104,1190,1.0779,809,113,199,1.0154
+SEQ2SEQ,distil_whisper_small,small,no_adapt,ORDER_A (static),1104,1156,1.0471,737,83,135,0.865

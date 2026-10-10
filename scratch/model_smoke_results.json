@@ -1,0 +1,61 @@
+{
+  "wav2vec2_base": {
+    "model_loaded": true,
+    "processor_loaded": true,
+    "parameter_count": 94396320,
+    "transcription": "",
+    "decoding_works": true,
+    "wer_computable": true,
+    "suta_initialized": true,
+    "dsuta_initialized": true,
+    "dmsuta_initialized": true,
+    "candidate_produced": true,
+    "checkpoint_discarded_cleanly": true,
+    "status": "PASS"
+  },
+  "data2vec_base": {
+    "model_loaded": true,
+    "processor_loaded": true,
+    "parameter_count": 93188896,
+    "transcription": "",
+    "decoding_works": true,
+    "wer_computable": true,
+    "suta_initialized": true,
+    "dsuta_initialized": true,
+    "dmsuta_initialized": true,
+    "candidate_produced": true,
+    "checkpoint_discarded_cleanly": true,
+    "status": "PASS"
+  },
+  "wav2vec2_100h": {
+    "model_loaded": true,
+    "processor_loaded": true,
+    "parameter_count": 94396320,
+    "transcription": "",
+    "decoding_works": true,
+    "wer_computable": true,
+    "suta_initialized": true,
+    "dsuta_initialized": true,
+    "dmsuta_initialized": true,
+    "candidate_produced": true,
+    "checkpoint_discarded_cleanly": true,
+    "status": "PASS"
+  },
+  "whisper_base": {
+    "model_loaded": true,
+    "processor_loaded": true,
+    "parameter_count": 72593920,
+    "transcription": "you",
+    "static_decoding_works": true,
+    "ctta_guard_rejects": true,
+    "status": "PASS"
+  },
+  "distil_whisper_small": {
+    "status": "FAIL",
+    "error": "[Errno 22] Invalid argument"
+  },
+  "whisper_tiny": {
+    "status": "FAIL",
+    "error": "[Errno 22] Invalid argument"
+  }
+}

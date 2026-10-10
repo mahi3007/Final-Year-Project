@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_100h_reverb_t60_04_no_adapt_order_a_k4",
+  "method_id": "no_adapt",
+  "model_id": "wav2vec2_100h",
+  "stream_id": "stream_order_a_k4_s524321059",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9583,
+  "speaker_macro_wer": 0.9583,
+  "disparity_d": 0.0761,
+  "disparity_ratio_r": 1.084,
+  "best_group_id": "Korean",
+  "worst_group_id": "Hindi",
+  "total_adaptation_time_seconds": 0.0546,
+  "total_inference_time_seconds": 26.3043,
+  "num_updates": 0,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.9511,
+    "Hindi": 0.9837,
+    "Korean": 0.9076,
+    "Mandarin": 0.962,
+    "Spanish": 0.9674,
+    "Vietnamese": 0.9783
+  },
+  "elapsed_seconds": 26.73
+}

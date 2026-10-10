@@ -1,0 +1,22 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_whisper_base_reverb_t60_04_no_adapt_order_a_k4",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_a_k4_s171501048",
+  "ordering_id": "ORDER_A",
+  "seed": 171501048,
+  "stream_hash": "772e8bf4596fedd4405eddd3b08a81222f22b92fcad7950f6b8e2142d73ddedb",
+  "model_id": "whisper_base",
+  "method_id": "no_adapt",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {},
+  "timestamp": "2026-10-10T12:34:30Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_base_reverb_t60_04_static_no_adapt\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_base_reverb_t60_04_static_no_adapt\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_base_reverb_t60_04_static_no_adapt\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_base_reverb_t60_04_static_no_adapt\\adaptation_trajectory.csv"
+  }
+}

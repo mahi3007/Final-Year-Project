@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_distil_whisper_small_reverb_t60_04_no_adapt_order_a_k4",
+  "method_id": "no_adapt",
+  "model_id": "distil_whisper_small",
+  "stream_id": "stream_order_a_k4_s1084405752",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.865,
+  "speaker_macro_wer": 0.865,
+  "disparity_d": 0.1304,
+  "disparity_ratio_r": 1.166,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Vietnamese",
+  "total_adaptation_time_seconds": 11.1839,
+  "total_inference_time_seconds": 2366.0169,
+  "num_updates": 0,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.8696,
+    "Hindi": 0.913,
+    "Korean": 0.8315,
+    "Mandarin": 0.788,
+    "Spanish": 0.8696,
+    "Vietnamese": 0.9185
+  },
+  "elapsed_seconds": 2389.86
+}

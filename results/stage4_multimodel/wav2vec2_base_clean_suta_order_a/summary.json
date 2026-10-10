@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_base_clean_suta_order_a_k4",
+  "method_id": "suta",
+  "model_id": "wav2vec2_base",
+  "stream_id": "stream_order_a_k4_s1331549060",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.875,
+  "speaker_macro_wer": 0.875,
+  "disparity_d": 0.0815,
+  "disparity_ratio_r": 1.098,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Arabic",
+  "total_adaptation_time_seconds": 86.9206,
+  "total_inference_time_seconds": 23.7748,
+  "num_updates": 29,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.913,
+    "Hindi": 0.8696,
+    "Korean": 0.8533,
+    "Mandarin": 0.8315,
+    "Spanish": 0.913,
+    "Vietnamese": 0.8696
+  },
+  "elapsed_seconds": 111.13
+}

@@ -1,17 +1,35 @@
 #!/usr/bin/env python3
 """
-Stage 6 Cloud Execution: Result Export & Artifact Packaging Tool.
-================================================================
-Packages all Stage 6 research artifacts into a single portable zip archive:
-- reports/stage6/six_model_benchmark.csv
-- reports/stage6/six_model_dsg_summary.csv
-- reports/stage6/six_model_group_metrics.csv
-- reports/stage6/six_model_comparative_analysis.md
-- reports/stage6/model_compatibility_matrix.md
-- reports/stage6/model_compatibility_manifest.json
-- reports/stage6/checkpoints/ (*.json, *.csv)
+Master Cloud Result Export & Packaging Tool
+===========================================
+Packages all Stage 5M, Stage 5D, Stage 6, and Stage 6.1 research artifacts into
+a single portable zip archive for 1-click download from Kaggle or Google Colab:
+- /kaggle/working/stage5_stage6_results_bundle.zip (on Kaggle)
+- reports/stage5_stage6_results_bundle.zip (locally)
 
-Provides ready-to-download outputs in /kaggle/working/stage6_results_bundle.zip.
+Included Artifacts:
+1. Stage 5M Closed-Loop Online Control:
+   - results/stage5m/stage5m_closed_loop_results.csv
+   - results/stage5m/stage5m_operational_decisions.csv
+   - results/stage5m/stage5m_decision_agreement_matrix.csv
+   - reports/stage5m/stage5m_closed_loop_report.md
+   - results/stage5m/checkpoints/*.json
+2. Stage 5D Common Voice DSG Re-execution:
+   - reports/stage5/stage5d_final_decision_audit.csv
+   - reports/stage5/stage5d_dsg_reexecution.md
+3. Stage 6 Six-Model Benchmark:
+   - reports/stage6/six_model_benchmark.csv
+   - reports/stage6/six_model_dsg_summary.csv
+   - reports/stage6/six_model_group_metrics.csv
+   - reports/stage6/six_model_comparative_analysis.md
+   - reports/stage6/model_compatibility_matrix.md
+   - reports/stage6/model_compatibility_manifest.json
+   - reports/stage6/checkpoints/*.*
+4. Stage 6.1 Two-Model CTC Extension:
+   - reports/stage6_1/stage6_1_benchmark.csv
+   - reports/stage6_1/stage6_1_dsg_summary.csv
+   - reports/stage6_1/eight_model_benchmark.csv
+   - reports/stage6_1/eight_model_dsg_summary.csv
 """
 
 from __future__ import annotations
@@ -23,54 +41,50 @@ import zipfile
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-REPORTS_DIR = PROJECT_ROOT / "reports" / "stage6"
-CHECKPOINTS_DIR = REPORTS_DIR / "checkpoints"
 
 
-def package_results() -> Path:
-    print("=" * 75)
-    print("STAGE 6: PACKAGING BENCHMARK RESULTS")
-    print("=" * 75)
+def package_all_results() -> Path:
+    print("=" * 80)
+    print("PACKAGING STAGE 5 & STAGE 6 BENCHMARK RESULTS BUNDLE")
+    print("=" * 80)
 
-    out_zip = REPORTS_DIR / "stage6_results_bundle.zip"
-    kaggle_out = Path("/kaggle/working/stage6_results_bundle.zip")
+    out_zip = PROJECT_ROOT / "reports" / "stage5_stage6_results_bundle.zip"
+    out_zip.parent.mkdir(parents=True, exist_ok=True)
+    kaggle_out = Path("/kaggle/working/stage5_stage6_results_bundle.zip")
 
-    files_to_pack = [
-        REPORTS_DIR / "six_model_benchmark.csv",
-        REPORTS_DIR / "six_model_dsg_summary.csv",
-        REPORTS_DIR / "six_model_group_metrics.csv",
-        REPORTS_DIR / "six_model_comparative_analysis.md",
-        REPORTS_DIR / "model_compatibility_matrix.md",
-        REPORTS_DIR / "model_compatibility_manifest.json",
+    # Collect all existing result files
+    search_dirs = [
+        (PROJECT_ROOT / "results" / "stage5m", "stage5m_results"),
+        (PROJECT_ROOT / "reports" / "stage5m", "stage5m_reports"),
+        (PROJECT_ROOT / "reports" / "stage5", "stage5d_reports"),
+        (PROJECT_ROOT / "reports" / "stage6", "stage6_reports"),
+        (PROJECT_ROOT / "reports" / "stage6_1", "stage6_1_reports"),
     ]
 
+    total_packed = 0
     with zipfile.ZipFile(out_zip, "w", zipfile.ZIP_DEFLATED) as zf:
-        for f in files_to_pack:
-            if f.exists():
-                arcname = f"stage6_results/{f.name}"
-                zf.write(f, arcname=arcname)
-                print(f"  Added: {f.name}")
-            else:
-                print(f"  Notice: {f.name} not found (may not have been generated yet).")
+        for base_dir, arc_prefix in search_dirs:
+            if not base_dir.exists():
+                print(f"  Notice: Directory not yet generated: {base_dir.name}")
+                continue
+            for f in base_dir.rglob("*"):
+                if f.is_file() and not f.name.endswith(".zip"):
+                    rel_path = f.relative_to(base_dir)
+                    arc_name = f"{arc_prefix}/{rel_path}".replace("\\", "/")
+                    zf.write(f, arcname=arc_name)
+                    total_packed += 1
 
-        # Also pack checkpoint summary jsons
-        if CHECKPOINTS_DIR.exists():
-            for ck in CHECKPOINTS_DIR.glob("*.*"):
-                arcname = f"stage6_results/checkpoints/{ck.name}"
-                zf.write(ck, arcname=arcname)
-                print(f"  Added checkpoint: {ck.name}")
+    size_mb = out_zip.stat().st_size / (1024 * 1024)
+    print(f"\nCreated unified archive: {out_zip} ({size_mb:.2f} MB, {total_packed} files packed)")
 
-    sz_kb = out_zip.stat().st_size / 1024
-    print(f"\nCreated local archive: {out_zip} ({sz_kb:.1f} KB)")
-
-    # If running in Kaggle environment, copy to root working directory for 1-click download
+    # If running in Kaggle environment, copy to /kaggle/working for 1-click download
     if Path("/kaggle/working").exists():
         shutil.copyfile(out_zip, kaggle_out)
         print(f"Copied to Kaggle download directory: {kaggle_out}")
-        print("\n--> In Kaggle: Look in the right-hand panel under 'Output' -> Click 'Download' on 'stage6_results_bundle.zip'")
+        print("\n--> In Kaggle: Look in the right-hand panel under 'Output' -> Click 'Download' on 'stage5_stage6_results_bundle.zip'")
 
     return out_zip
 
 
 if __name__ == "__main__":
-    package_results()
+    package_all_results()

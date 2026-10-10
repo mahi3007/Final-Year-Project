@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_data2vec_base_reverb_t60_04_no_adapt_order_a_k4",
+  "method_id": "no_adapt",
+  "model_id": "data2vec_base",
+  "stream_id": "stream_order_a_k4_s319321834",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9139,
+  "speaker_macro_wer": 0.9139,
+  "disparity_d": 0.0761,
+  "disparity_ratio_r": 1.087,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Hindi",
+  "total_adaptation_time_seconds": 0.0701,
+  "total_inference_time_seconds": 50.9623,
+  "num_updates": 0,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.913,
+    "Hindi": 0.9457,
+    "Korean": 0.9022,
+    "Mandarin": 0.8696,
+    "Spanish": 0.9239,
+    "Vietnamese": 0.9293
+  },
+  "elapsed_seconds": 51.53
+}

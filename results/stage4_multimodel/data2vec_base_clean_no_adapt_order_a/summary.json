@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_data2vec_base_clean_no_adapt_order_a_k4",
+  "method_id": "no_adapt",
+  "model_id": "data2vec_base",
+  "stream_id": "stream_order_a_k4_s444387832",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.8379,
+  "speaker_macro_wer": 0.8379,
+  "disparity_d": 0.1359,
+  "disparity_ratio_r": 1.174,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Vietnamese",
+  "total_adaptation_time_seconds": 9.915,
+  "total_inference_time_seconds": 27.8121,
+  "num_updates": 0,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.8152,
+    "Hindi": 0.8478,
+    "Korean": 0.837,
+    "Mandarin": 0.7826,
+    "Spanish": 0.8261,
+    "Vietnamese": 0.9185
+  },
+  "elapsed_seconds": 48.46
+}

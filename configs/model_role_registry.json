@@ -1,0 +1,222 @@
+{
+  "protocol_version": "v1.1.0-model-expansion",
+  "models": {
+    "wav2vec2_base": {
+      "model_id": "facebook/wav2vec2-base-960h",
+      "architecture": "CTC",
+      "development_role": "PRIMARY_CTC",
+      "stage2_role": "STATIC_BASELINE",
+      "stage3m_role": "CTC_DEVELOPMENT",
+      "stage4m_role": "CTC_DEVELOPMENT",
+      "stage5m_role": "CTC_DSG_QUALIFICATION",
+      "stage6_role": "OVERLAP_CTC_CONTROL",
+      "ctta_status": "COMPATIBLE",
+      "holdout_status": "OVERLAP_CONTROL",
+      "holdout_eligible": false,
+      "parameter_count": 94396448,
+      "processor": "Wav2Vec2Processor",
+      "has_ctc_head": true,
+      "has_frame_logits": true,
+      "evidence": [
+        "Historical Stage 2 primary baseline",
+        "Historical Stage 3-5 development model",
+        "Stage 6 cross-dataset replication control"
+      ]
+    },
+    "data2vec_base": {
+      "model_id": "facebook/data2vec-audio-base-960h",
+      "architecture": "CTC",
+      "development_role": "SECONDARY_CTC",
+      "stage2_role": "STATIC_BASELINE",
+      "stage3m_role": "CTC_DEVELOPMENT",
+      "stage4m_role": "CTC_DEVELOPMENT",
+      "stage5m_role": "CTC_DSG_QUALIFICATION",
+      "stage6_role": "OVERLAP_CTC_CONTROL",
+      "ctta_status": "COMPATIBLE",
+      "holdout_status": "OVERLAP_CONTROL",
+      "holdout_eligible": false,
+      "parameter_count": 94396448,
+      "processor": "Wav2Vec2Processor",
+      "has_ctc_head": true,
+      "has_frame_logits": true,
+      "evidence": [
+        "Historical Stage 2 multimodal SSL baseline",
+        "Stage 3M-5M multi-model development suite",
+        "Stage 6 cross-dataset replication control"
+      ]
+    },
+    "wav2vec2_100h": {
+      "model_id": "facebook/wav2vec2-base-100h",
+      "architecture": "CTC",
+      "development_role": "SECONDARY_CTC",
+      "stage2_role": "STATIC_BASELINE",
+      "stage3m_role": "CTC_DEVELOPMENT",
+      "stage4m_role": "CTC_DEVELOPMENT",
+      "stage5m_role": "CTC_DSG_QUALIFICATION",
+      "stage6_role": "NOT_EVALUATED_IN_STAGE6",
+      "ctta_status": "COMPATIBLE",
+      "holdout_status": "NOT_HELD_OUT",
+      "holdout_eligible": false,
+      "parameter_count": 94396448,
+      "processor": "Wav2Vec2Processor",
+      "has_ctc_head": true,
+      "has_frame_logits": true,
+      "evidence": [
+        "Historical Stage 2 low-resource baseline",
+        "Stage 3M-5M low-resource development backbone"
+      ]
+    },
+    "whisper_base": {
+      "model_id": "openai/whisper-base",
+      "architecture": "SEQ2SEQ",
+      "development_role": "SEQ2SEQ_STATIC",
+      "stage2_role": "STATIC_BASELINE",
+      "stage3m_role": "STATIC_ONLY",
+      "stage4m_role": "STATIC_STRESS_CONTROL",
+      "stage5m_role": "STATIC_PORTABILITY",
+      "stage6_role": "SEQ2SEQ_STATIC_PORTABILITY",
+      "ctta_status": "INCOMPATIBLE_NON_CTC",
+      "holdout_status": "STATIC_PORTABILITY_BASELINE",
+      "holdout_eligible": false,
+      "parameter_count": 72593920,
+      "processor": "WhisperProcessor",
+      "has_ctc_head": false,
+      "has_frame_logits": false,
+      "incompatibility_reason": "Current SUTA/DSUTA/DMSUTA formulation requires frame-synchronous categorical emissions; the autoregressive Seq2Seq architecture does not expose the same mathematical object.",
+      "evidence": [
+        "Historical Stage 2 static baseline",
+        "Stage 6 static portability baseline"
+      ]
+    },
+    "distil_whisper_small": {
+      "model_id": "distil-whisper/distil-small.en",
+      "architecture": "SEQ2SEQ",
+      "development_role": "SEQ2SEQ_STATIC",
+      "stage2_role": "STATIC_BASELINE",
+      "stage3m_role": "STATIC_ONLY",
+      "stage4m_role": "STATIC_STRESS_CONTROL",
+      "stage5m_role": "STATIC_PORTABILITY",
+      "stage6_role": "SEQ2SEQ_STATIC_PORTABILITY",
+      "ctta_status": "INCOMPATIBLE_NON_CTC",
+      "holdout_status": "STATIC_PORTABILITY_BASELINE",
+      "holdout_eligible": false,
+      "parameter_count": 166156288,
+      "processor": "AutoProcessor",
+      "has_ctc_head": false,
+      "has_frame_logits": false,
+      "incompatibility_reason": "Current SUTA/DSUTA/DMSUTA formulation requires frame-synchronous categorical emissions; the autoregressive Seq2Seq architecture does not expose the same mathematical object.",
+      "evidence": [
+        "Historical Stage 2 distilled baseline",
+        "Stage 6 static portability baseline"
+      ]
+    },
+    "whisper_tiny": {
+      "model_id": "openai/whisper-tiny",
+      "architecture": "SEQ2SEQ",
+      "development_role": "SEQ2SEQ_STATIC",
+      "stage2_role": "STATIC_BASELINE",
+      "stage3m_role": "STATIC_ONLY",
+      "stage4m_role": "STATIC_STRESS_CONTROL",
+      "stage5m_role": "STATIC_PORTABILITY",
+      "stage6_role": "NOT_EVALUATED_IN_STAGE6",
+      "ctta_status": "INCOMPATIBLE_NON_CTC",
+      "holdout_status": "STATIC_PORTABILITY_BASELINE",
+      "holdout_eligible": false,
+      "parameter_count": 37760640,
+      "processor": "WhisperProcessor",
+      "has_ctc_head": false,
+      "has_frame_logits": false,
+      "incompatibility_reason": "Current SUTA/DSUTA/DMSUTA formulation requires frame-synchronous categorical emissions; the autoregressive Seq2Seq architecture does not expose the same mathematical object.",
+      "evidence": [
+        "Historical Stage 2 lightweight baseline",
+        "Stage 3M-5M static portability control"
+      ]
+    },
+    "hubert_large": {
+      "model_id": "facebook/hubert-large-ls960-ft",
+      "architecture": "CTC",
+      "development_role": "EXCLUDED_FROM_DEVELOPMENT",
+      "stage2_role": "NOT_EVALUATED_IN_STAGE2",
+      "stage3m_role": "EXCLUDED_HELD_OUT",
+      "stage4m_role": "EXCLUDED_HELD_OUT",
+      "stage5m_role": "EXCLUDED_HELD_OUT",
+      "stage6_role": "HELD_OUT_CTC",
+      "ctta_status": "COMPATIBLE",
+      "holdout_status": "GENUINE_HELD_OUT",
+      "holdout_eligible": true,
+      "parameter_count": 316826400,
+      "processor": "Wav2Vec2Processor",
+      "has_ctc_head": true,
+      "has_frame_logits": true,
+      "evidence": [
+        "Zero exposure in Stage 2/3/4/5 development",
+        "Genuine held-out model for Stage 6 validation"
+      ]
+    },
+    "xlsr_english": {
+      "model_id": "jonatasgrosman/wav2vec2-large-xlsr-53-english",
+      "architecture": "CTC",
+      "development_role": "EXCLUDED_FROM_DEVELOPMENT",
+      "stage2_role": "NOT_EVALUATED_IN_STAGE2",
+      "stage3m_role": "EXCLUDED_HELD_OUT",
+      "stage4m_role": "EXCLUDED_HELD_OUT",
+      "stage5m_role": "EXCLUDED_HELD_OUT",
+      "stage6_role": "HELD_OUT_CTC",
+      "ctta_status": "COMPATIBLE",
+      "holdout_status": "GENUINE_HELD_OUT",
+      "holdout_eligible": true,
+      "parameter_count": 315471520,
+      "processor": "Wav2Vec2Processor",
+      "has_ctc_head": true,
+      "has_frame_logits": true,
+      "evidence": [
+        "Zero exposure in Stage 2/3/4/5 development",
+        "Genuine held-out model for Stage 6 validation"
+      ]
+    },
+    "wav2vec2_large_lv60": {
+      "model_id": "facebook/wav2vec2-large-960h-lv60",
+      "architecture": "CTC",
+      "development_role": "EXCLUDED_FROM_DEVELOPMENT",
+      "stage2_role": "NOT_EVALUATED_IN_STAGE2",
+      "stage3m_role": "EXCLUDED_HELD_OUT",
+      "stage4m_role": "EXCLUDED_HELD_OUT",
+      "stage5m_role": "EXCLUDED_HELD_OUT",
+      "stage6_role": "HELD_OUT_CTC",
+      "ctta_status": "COMPATIBLE",
+      "holdout_status": "GENUINE_HELD_OUT",
+      "holdout_eligible": true,
+      "parameter_count": 315471520,
+      "checkpoint_revision": "8e7d14742e8f98c6bbb24e5231406af321a8f9ce",
+      "processor": "Wav2Vec2Processor",
+      "has_ctc_head": true,
+      "has_frame_logits": true,
+      "evidence": [
+        "Zero exposure in Stage 2/3/4/5 development",
+        "Genuine held-out model for Stage 6.1 validation"
+      ]
+    },
+    "wav2vec2_large_robust": {
+      "model_id": "facebook/wav2vec2-large-robust-ft-libri-960h",
+      "architecture": "CTC",
+      "development_role": "EXCLUDED_FROM_DEVELOPMENT",
+      "stage2_role": "NOT_EVALUATED_IN_STAGE2",
+      "stage3m_role": "EXCLUDED_HELD_OUT",
+      "stage4m_role": "EXCLUDED_HELD_OUT",
+      "stage5m_role": "EXCLUDED_HELD_OUT",
+      "stage6_role": "HELD_OUT_CTC",
+      "ctta_status": "COMPATIBLE",
+      "holdout_status": "GENUINE_HELD_OUT",
+      "holdout_eligible": true,
+      "parameter_count": 315471520,
+      "checkpoint_revision": "5d28473cc25ef7b338c9f731fe55626c4b082f58",
+      "processor": "Wav2Vec2Processor",
+      "has_ctc_head": true,
+      "has_frame_logits": true,
+      "evidence": [
+        "Zero exposure in Stage 2/3/4/5 development",
+        "Genuine held-out model for Stage 6.1 validation"
+      ]
+    }
+  }
+}

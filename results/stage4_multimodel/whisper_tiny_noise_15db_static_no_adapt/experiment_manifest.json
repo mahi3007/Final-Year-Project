@@ -1,0 +1,22 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_whisper_tiny_noise_15db_no_adapt_order_a_k4",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_a_k4_s880834270",
+  "ordering_id": "ORDER_A",
+  "seed": 880834270,
+  "stream_hash": "bdf28bd939d932d4b5d0626d58fd9ad4b0f0ebb6002a71d228a7d81ed270012d",
+  "model_id": "whisper_tiny",
+  "method_id": "no_adapt",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {},
+  "timestamp": "2026-10-10T15:33:26Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_tiny_noise_15db_static_no_adapt\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_tiny_noise_15db_static_no_adapt\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_tiny_noise_15db_static_no_adapt\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\whisper_tiny_noise_15db_static_no_adapt\\adaptation_trajectory.csv"
+  }
+}

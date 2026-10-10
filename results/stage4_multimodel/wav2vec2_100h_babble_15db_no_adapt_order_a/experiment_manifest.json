@@ -1,0 +1,22 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_100h_babble_15db_no_adapt_order_a_k4",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_a_k4_s1173570806",
+  "ordering_id": "ORDER_A",
+  "seed": 1173570806,
+  "stream_hash": "18e13310f4b129e44ff1efff444954431edb5feafdcc529d51116052aaee70a0",
+  "model_id": "wav2vec2_100h",
+  "method_id": "no_adapt",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {},
+  "timestamp": "2026-10-10T10:41:06Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_babble_15db_no_adapt_order_a\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_babble_15db_no_adapt_order_a\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_babble_15db_no_adapt_order_a\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_babble_15db_no_adapt_order_a\\adaptation_trajectory.csv"
+  }
+}

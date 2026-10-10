@@ -1,0 +1,886 @@
+{
+  "protocol_version": "v1.1.0-model-expansion",
+  "window_size_k": 4,
+  "total_windows_per_order": 15,
+  "orders": {
+    "ORDER_A": [
+      {
+        "window_id": 0,
+        "utterance_ids": [
+          "ABA_arctic_a0001",
+          "ABA_arctic_a0002",
+          "ABA_arctic_a0003",
+          "ABA_arctic_a0004"
+        ],
+        "speaker_ids": [
+          "ABA"
+        ],
+        "group_ids_offline_only": [
+          "Arabic"
+        ],
+        "reference_words": 39,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 1,
+        "utterance_ids": [
+          "ABA_arctic_a0005",
+          "ABA_arctic_a0006",
+          "ABA_arctic_a0007",
+          "ABA_arctic_a0008"
+        ],
+        "speaker_ids": [
+          "ABA"
+        ],
+        "group_ids_offline_only": [
+          "Arabic"
+        ],
+        "reference_words": 35,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 2,
+        "utterance_ids": [
+          "ABA_arctic_a0009",
+          "ABA_arctic_a0010",
+          "BJM_arctic_a0001",
+          "BJM_arctic_a0002"
+        ],
+        "speaker_ids": [
+          "BJM",
+          "ABA"
+        ],
+        "group_ids_offline_only": [
+          "Arabic",
+          "Hindi"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 3,
+        "utterance_ids": [
+          "BJM_arctic_a0003",
+          "BJM_arctic_a0004",
+          "BJM_arctic_a0005",
+          "BJM_arctic_a0006"
+        ],
+        "speaker_ids": [
+          "BJM"
+        ],
+        "group_ids_offline_only": [
+          "Hindi"
+        ],
+        "reference_words": 38,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 4,
+        "utterance_ids": [
+          "BJM_arctic_a0007",
+          "BJM_arctic_a0008",
+          "BJM_arctic_a0009",
+          "BJM_arctic_a0010"
+        ],
+        "speaker_ids": [
+          "BJM"
+        ],
+        "group_ids_offline_only": [
+          "Hindi"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 5,
+        "utterance_ids": [
+          "EBVS_arctic_a0001",
+          "EBVS_arctic_a0002",
+          "EBVS_arctic_a0003",
+          "EBVS_arctic_a0004"
+        ],
+        "speaker_ids": [
+          "EBVS"
+        ],
+        "group_ids_offline_only": [
+          "Korean"
+        ],
+        "reference_words": 39,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 6,
+        "utterance_ids": [
+          "EBVS_arctic_a0005",
+          "EBVS_arctic_a0006",
+          "EBVS_arctic_a0007",
+          "EBVS_arctic_a0008"
+        ],
+        "speaker_ids": [
+          "EBVS"
+        ],
+        "group_ids_offline_only": [
+          "Korean"
+        ],
+        "reference_words": 35,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 7,
+        "utterance_ids": [
+          "EBVS_arctic_a0009",
+          "EBVS_arctic_a0010",
+          "TLX_arctic_a0001",
+          "TLX_arctic_a0002"
+        ],
+        "speaker_ids": [
+          "EBVS",
+          "TLX"
+        ],
+        "group_ids_offline_only": [
+          "Korean",
+          "Mandarin"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 8,
+        "utterance_ids": [
+          "TLX_arctic_a0003",
+          "TLX_arctic_a0004",
+          "TLX_arctic_a0005",
+          "TLX_arctic_a0006"
+        ],
+        "speaker_ids": [
+          "TLX"
+        ],
+        "group_ids_offline_only": [
+          "Mandarin"
+        ],
+        "reference_words": 38,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 9,
+        "utterance_ids": [
+          "TLX_arctic_a0007",
+          "TLX_arctic_a0008",
+          "TLX_arctic_a0009",
+          "TLX_arctic_a0010"
+        ],
+        "speaker_ids": [
+          "TLX"
+        ],
+        "group_ids_offline_only": [
+          "Mandarin"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 10,
+        "utterance_ids": [
+          "MBX_arctic_a0001",
+          "MBX_arctic_a0002",
+          "MBX_arctic_a0003",
+          "MBX_arctic_a0004"
+        ],
+        "speaker_ids": [
+          "MBX"
+        ],
+        "group_ids_offline_only": [
+          "Spanish"
+        ],
+        "reference_words": 39,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 11,
+        "utterance_ids": [
+          "MBX_arctic_a0005",
+          "MBX_arctic_a0006",
+          "MBX_arctic_a0007",
+          "MBX_arctic_a0008"
+        ],
+        "speaker_ids": [
+          "MBX"
+        ],
+        "group_ids_offline_only": [
+          "Spanish"
+        ],
+        "reference_words": 35,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 12,
+        "utterance_ids": [
+          "MBX_arctic_a0009",
+          "MBX_arctic_a0010",
+          "BVT_arctic_a0001",
+          "BVT_arctic_a0002"
+        ],
+        "speaker_ids": [
+          "MBX",
+          "BVT"
+        ],
+        "group_ids_offline_only": [
+          "Spanish",
+          "Vietnamese"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 13,
+        "utterance_ids": [
+          "BVT_arctic_a0003",
+          "BVT_arctic_a0004",
+          "BVT_arctic_a0005",
+          "BVT_arctic_a0006"
+        ],
+        "speaker_ids": [
+          "BVT"
+        ],
+        "group_ids_offline_only": [
+          "Vietnamese"
+        ],
+        "reference_words": 38,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      },
+      {
+        "window_id": 14,
+        "utterance_ids": [
+          "BVT_arctic_a0007",
+          "BVT_arctic_a0008",
+          "BVT_arctic_a0009",
+          "BVT_arctic_a0010"
+        ],
+        "speaker_ids": [
+          "BVT"
+        ],
+        "group_ids_offline_only": [
+          "Vietnamese"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_A",
+        "k": 4,
+        "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778"
+      }
+    ],
+    "ORDER_B": [
+      {
+        "window_id": 0,
+        "utterance_ids": [
+          "BVT_arctic_a0001",
+          "BVT_arctic_a0002",
+          "BVT_arctic_a0003",
+          "BVT_arctic_a0004"
+        ],
+        "speaker_ids": [
+          "BVT"
+        ],
+        "group_ids_offline_only": [
+          "Vietnamese"
+        ],
+        "reference_words": 39,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 1,
+        "utterance_ids": [
+          "BVT_arctic_a0005",
+          "BVT_arctic_a0006",
+          "BVT_arctic_a0007",
+          "BVT_arctic_a0008"
+        ],
+        "speaker_ids": [
+          "BVT"
+        ],
+        "group_ids_offline_only": [
+          "Vietnamese"
+        ],
+        "reference_words": 35,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 2,
+        "utterance_ids": [
+          "BVT_arctic_a0009",
+          "BVT_arctic_a0010",
+          "MBX_arctic_a0001",
+          "MBX_arctic_a0002"
+        ],
+        "speaker_ids": [
+          "BVT",
+          "MBX"
+        ],
+        "group_ids_offline_only": [
+          "Spanish",
+          "Vietnamese"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 3,
+        "utterance_ids": [
+          "MBX_arctic_a0003",
+          "MBX_arctic_a0004",
+          "MBX_arctic_a0005",
+          "MBX_arctic_a0006"
+        ],
+        "speaker_ids": [
+          "MBX"
+        ],
+        "group_ids_offline_only": [
+          "Spanish"
+        ],
+        "reference_words": 38,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 4,
+        "utterance_ids": [
+          "MBX_arctic_a0007",
+          "MBX_arctic_a0008",
+          "MBX_arctic_a0009",
+          "MBX_arctic_a0010"
+        ],
+        "speaker_ids": [
+          "MBX"
+        ],
+        "group_ids_offline_only": [
+          "Spanish"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 5,
+        "utterance_ids": [
+          "TLX_arctic_a0001",
+          "TLX_arctic_a0002",
+          "TLX_arctic_a0003",
+          "TLX_arctic_a0004"
+        ],
+        "speaker_ids": [
+          "TLX"
+        ],
+        "group_ids_offline_only": [
+          "Mandarin"
+        ],
+        "reference_words": 39,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 6,
+        "utterance_ids": [
+          "TLX_arctic_a0005",
+          "TLX_arctic_a0006",
+          "TLX_arctic_a0007",
+          "TLX_arctic_a0008"
+        ],
+        "speaker_ids": [
+          "TLX"
+        ],
+        "group_ids_offline_only": [
+          "Mandarin"
+        ],
+        "reference_words": 35,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 7,
+        "utterance_ids": [
+          "TLX_arctic_a0009",
+          "TLX_arctic_a0010",
+          "EBVS_arctic_a0001",
+          "EBVS_arctic_a0002"
+        ],
+        "speaker_ids": [
+          "EBVS",
+          "TLX"
+        ],
+        "group_ids_offline_only": [
+          "Korean",
+          "Mandarin"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 8,
+        "utterance_ids": [
+          "EBVS_arctic_a0003",
+          "EBVS_arctic_a0004",
+          "EBVS_arctic_a0005",
+          "EBVS_arctic_a0006"
+        ],
+        "speaker_ids": [
+          "EBVS"
+        ],
+        "group_ids_offline_only": [
+          "Korean"
+        ],
+        "reference_words": 38,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 9,
+        "utterance_ids": [
+          "EBVS_arctic_a0007",
+          "EBVS_arctic_a0008",
+          "EBVS_arctic_a0009",
+          "EBVS_arctic_a0010"
+        ],
+        "speaker_ids": [
+          "EBVS"
+        ],
+        "group_ids_offline_only": [
+          "Korean"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 10,
+        "utterance_ids": [
+          "BJM_arctic_a0001",
+          "BJM_arctic_a0002",
+          "BJM_arctic_a0003",
+          "BJM_arctic_a0004"
+        ],
+        "speaker_ids": [
+          "BJM"
+        ],
+        "group_ids_offline_only": [
+          "Hindi"
+        ],
+        "reference_words": 39,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 11,
+        "utterance_ids": [
+          "BJM_arctic_a0005",
+          "BJM_arctic_a0006",
+          "BJM_arctic_a0007",
+          "BJM_arctic_a0008"
+        ],
+        "speaker_ids": [
+          "BJM"
+        ],
+        "group_ids_offline_only": [
+          "Hindi"
+        ],
+        "reference_words": 35,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 12,
+        "utterance_ids": [
+          "BJM_arctic_a0009",
+          "BJM_arctic_a0010",
+          "ABA_arctic_a0001",
+          "ABA_arctic_a0002"
+        ],
+        "speaker_ids": [
+          "BJM",
+          "ABA"
+        ],
+        "group_ids_offline_only": [
+          "Arabic",
+          "Hindi"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 13,
+        "utterance_ids": [
+          "ABA_arctic_a0003",
+          "ABA_arctic_a0004",
+          "ABA_arctic_a0005",
+          "ABA_arctic_a0006"
+        ],
+        "speaker_ids": [
+          "ABA"
+        ],
+        "group_ids_offline_only": [
+          "Arabic"
+        ],
+        "reference_words": 38,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      },
+      {
+        "window_id": 14,
+        "utterance_ids": [
+          "ABA_arctic_a0007",
+          "ABA_arctic_a0008",
+          "ABA_arctic_a0009",
+          "ABA_arctic_a0010"
+        ],
+        "speaker_ids": [
+          "ABA"
+        ],
+        "group_ids_offline_only": [
+          "Arabic"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_B",
+        "k": 4,
+        "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74"
+      }
+    ],
+    "ORDER_C": [
+      {
+        "window_id": 0,
+        "utterance_ids": [
+          "BJM_arctic_a0001",
+          "BJM_arctic_a0002",
+          "BJM_arctic_a0003",
+          "BJM_arctic_a0004"
+        ],
+        "speaker_ids": [
+          "BJM"
+        ],
+        "group_ids_offline_only": [
+          "Hindi"
+        ],
+        "reference_words": 39,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 1,
+        "utterance_ids": [
+          "BJM_arctic_a0005",
+          "BJM_arctic_a0006",
+          "BJM_arctic_a0007",
+          "BJM_arctic_a0008"
+        ],
+        "speaker_ids": [
+          "BJM"
+        ],
+        "group_ids_offline_only": [
+          "Hindi"
+        ],
+        "reference_words": 35,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 2,
+        "utterance_ids": [
+          "BJM_arctic_a0009",
+          "BJM_arctic_a0010",
+          "TLX_arctic_a0001",
+          "TLX_arctic_a0002"
+        ],
+        "speaker_ids": [
+          "BJM",
+          "TLX"
+        ],
+        "group_ids_offline_only": [
+          "Mandarin",
+          "Hindi"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 3,
+        "utterance_ids": [
+          "TLX_arctic_a0003",
+          "TLX_arctic_a0004",
+          "TLX_arctic_a0005",
+          "TLX_arctic_a0006"
+        ],
+        "speaker_ids": [
+          "TLX"
+        ],
+        "group_ids_offline_only": [
+          "Mandarin"
+        ],
+        "reference_words": 38,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 4,
+        "utterance_ids": [
+          "TLX_arctic_a0007",
+          "TLX_arctic_a0008",
+          "TLX_arctic_a0009",
+          "TLX_arctic_a0010"
+        ],
+        "speaker_ids": [
+          "TLX"
+        ],
+        "group_ids_offline_only": [
+          "Mandarin"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 5,
+        "utterance_ids": [
+          "ABA_arctic_a0001",
+          "ABA_arctic_a0002",
+          "ABA_arctic_a0003",
+          "ABA_arctic_a0004"
+        ],
+        "speaker_ids": [
+          "ABA"
+        ],
+        "group_ids_offline_only": [
+          "Arabic"
+        ],
+        "reference_words": 39,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 6,
+        "utterance_ids": [
+          "ABA_arctic_a0005",
+          "ABA_arctic_a0006",
+          "ABA_arctic_a0007",
+          "ABA_arctic_a0008"
+        ],
+        "speaker_ids": [
+          "ABA"
+        ],
+        "group_ids_offline_only": [
+          "Arabic"
+        ],
+        "reference_words": 35,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 7,
+        "utterance_ids": [
+          "ABA_arctic_a0009",
+          "ABA_arctic_a0010",
+          "BVT_arctic_a0001",
+          "BVT_arctic_a0002"
+        ],
+        "speaker_ids": [
+          "BVT",
+          "ABA"
+        ],
+        "group_ids_offline_only": [
+          "Arabic",
+          "Vietnamese"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 8,
+        "utterance_ids": [
+          "BVT_arctic_a0003",
+          "BVT_arctic_a0004",
+          "BVT_arctic_a0005",
+          "BVT_arctic_a0006"
+        ],
+        "speaker_ids": [
+          "BVT"
+        ],
+        "group_ids_offline_only": [
+          "Vietnamese"
+        ],
+        "reference_words": 38,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 9,
+        "utterance_ids": [
+          "BVT_arctic_a0007",
+          "BVT_arctic_a0008",
+          "BVT_arctic_a0009",
+          "BVT_arctic_a0010"
+        ],
+        "speaker_ids": [
+          "BVT"
+        ],
+        "group_ids_offline_only": [
+          "Vietnamese"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 10,
+        "utterance_ids": [
+          "EBVS_arctic_a0001",
+          "EBVS_arctic_a0002",
+          "EBVS_arctic_a0003",
+          "EBVS_arctic_a0004"
+        ],
+        "speaker_ids": [
+          "EBVS"
+        ],
+        "group_ids_offline_only": [
+          "Korean"
+        ],
+        "reference_words": 39,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 11,
+        "utterance_ids": [
+          "EBVS_arctic_a0005",
+          "EBVS_arctic_a0006",
+          "EBVS_arctic_a0007",
+          "EBVS_arctic_a0008"
+        ],
+        "speaker_ids": [
+          "EBVS"
+        ],
+        "group_ids_offline_only": [
+          "Korean"
+        ],
+        "reference_words": 35,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 12,
+        "utterance_ids": [
+          "EBVS_arctic_a0009",
+          "EBVS_arctic_a0010",
+          "MBX_arctic_a0001",
+          "MBX_arctic_a0002"
+        ],
+        "speaker_ids": [
+          "MBX",
+          "EBVS"
+        ],
+        "group_ids_offline_only": [
+          "Korean",
+          "Spanish"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 13,
+        "utterance_ids": [
+          "MBX_arctic_a0003",
+          "MBX_arctic_a0004",
+          "MBX_arctic_a0005",
+          "MBX_arctic_a0006"
+        ],
+        "speaker_ids": [
+          "MBX"
+        ],
+        "group_ids_offline_only": [
+          "Spanish"
+        ],
+        "reference_words": 38,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      },
+      {
+        "window_id": 14,
+        "utterance_ids": [
+          "MBX_arctic_a0007",
+          "MBX_arctic_a0008",
+          "MBX_arctic_a0009",
+          "MBX_arctic_a0010"
+        ],
+        "speaker_ids": [
+          "MBX"
+        ],
+        "group_ids_offline_only": [
+          "Spanish"
+        ],
+        "reference_words": 36,
+        "stream_order": "ORDER_C",
+        "k": 4,
+        "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f"
+      }
+    ]
+  }
+}

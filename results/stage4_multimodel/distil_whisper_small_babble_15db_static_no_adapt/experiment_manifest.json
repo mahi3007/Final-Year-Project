@@ -1,0 +1,22 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_distil_whisper_small_babble_15db_no_adapt_order_a_k4",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_a_k4_s672238433",
+  "ordering_id": "ORDER_A",
+  "seed": 672238433,
+  "stream_hash": "43fc878a1040f1b12bc339ef9d8158e26e1e95f2f39cf87d6124f29f7e25f627",
+  "model_id": "distil_whisper_small",
+  "method_id": "no_adapt",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {},
+  "timestamp": "2026-10-10T14:25:39Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\distil_whisper_small_babble_15db_static_no_adapt\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\distil_whisper_small_babble_15db_static_no_adapt\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\distil_whisper_small_babble_15db_static_no_adapt\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\distil_whisper_small_babble_15db_static_no_adapt\\adaptation_trajectory.csv"
+  }
+}

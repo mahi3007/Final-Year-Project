@@ -75,7 +75,9 @@ def run_prequential_stream_experiment(
     output_dir: Optional[str] = None,
     seed: int = 42,
     experiment_id: Optional[str] = None,
-    stream_id: Optional[str] = None
+    stream_id: Optional[str] = None,
+    skip_terminal_update: bool = False,
+    asr_model: Optional[BaseASRModel] = None
 ) -> Dict[str, Any]:
     """
     Execute a single, strict prequential CTTA experiment across a sequential stream.
@@ -106,8 +108,9 @@ def run_prequential_stream_experiment(
     console.print(f"Total Utterances: [green]{stream.total_utterances}[/green] across [yellow]{stream.total_batches}[/yellow] windows.")
 
     # 2. Instantiate Live ASR Model
-    asr_model = create_asr_model(model_name, device=device)
-    asr_model.load_model()
+    if asr_model is None:
+        asr_model = create_asr_model(model_name, device=device)
+        asr_model.load_model()
 
     # 3. Instantiate CTTA Adapter
     adapter = create_ctta_adapter(
@@ -236,7 +239,20 @@ def run_prequential_stream_experiment(
         cum_wer = (cumulative_s + cumulative_d + cumulative_i) / cumulative_n if cumulative_n > 0 else 0.0
 
         # STEP C: Unlabeled Adaptation on B_t -> theta_(t+1)
-        adapt_res: AdaptationStepResult = adapter.adapt(unlabeled_batch)
+        if skip_terminal_update and (batch_idx == stream.total_batches - 1):
+            adapt_res = AdaptationStepResult(
+                batch_idx=batch_idx,
+                method_id=method_name,
+                theta_before_hash=theta_before_hash,
+                theta_after_hash=theta_before_hash,
+                updated=False,
+                reset_occurred=False,
+                adaptation_time_seconds=0.0,
+                loss_history=[],
+                details={"terminal_window_skipped": True}
+            )
+        else:
+            adapt_res: AdaptationStepResult = adapter.adapt(unlabeled_batch)
         total_adapt_time += adapt_res.adaptation_time_seconds
         if adapt_res.updated:
             num_updates += 1

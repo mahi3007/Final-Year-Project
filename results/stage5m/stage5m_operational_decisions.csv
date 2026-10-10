@@ -1,0 +1,5 @@
+experiment_id,model_key,condition,method,ordering_id,window_id,candidate_id,live_id,decision,rejection_category,delta_R,max_delta_g,delta_D,UCB_R,UCB_max_group,UCB_D,retrospective_nature,agreement_class,state_action,decision_reason
+STAGE5M_wav2vec2_base_clean_no_adapt_order_a_k4,wav2vec2_base,clean,no_adapt,ORDER_A,0,N/A,b36a6fcb615e0c0b,NO_ADAPT_STATIC,NONE,0.0,0.0,0.0,0.0,0.0,0.0,NEUTRAL,N/A,RETAIN,
+STAGE5M_wav2vec2_base_clean_no_adapt_order_a_k4,wav2vec2_base,clean,no_adapt,ORDER_A,1,N/A,b36a6fcb615e0c0b,SKIP_TERMINAL,NONE,0.0,0.0,0.0,0.0,0.0,0.0,NEUTRAL,N/A,RETAIN,
+STAGE5M_wav2vec2_base_clean_suta_order_a_k4,wav2vec2_base,clean,suta,ORDER_A,0,4c7e2544b798c765,b36a6fcb615e0c0b,REJECT,STATISTICAL_GATE_REJECTION,0.000683,0.002268,0.000127,0.002076,0.010106,0.00404,NEUTRAL,NEUTRAL_REJECTION,RETAIN,STATISTICAL_GATE_REJECTION
+STAGE5M_wav2vec2_base_clean_suta_order_a_k4,wav2vec2_base,clean,suta,ORDER_A,1,N/A,b36a6fcb615e0c0b,SKIP_TERMINAL,NONE,0.0,0.0,0.0,0.0,0.0,0.0,NEUTRAL,N/A,RETAIN,

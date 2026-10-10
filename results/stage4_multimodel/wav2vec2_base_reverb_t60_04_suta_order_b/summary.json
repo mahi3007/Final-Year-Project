@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_base_reverb_t60_04_suta_order_b_k4",
+  "method_id": "suta",
+  "model_id": "wav2vec2_base",
+  "stream_id": "stream_order_b_k4_s265042038",
+  "ordering_id": "ORDER_B",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.942,
+  "speaker_macro_wer": 0.942,
+  "disparity_d": 0.0761,
+  "disparity_ratio_r": 1.084,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Spanish",
+  "total_adaptation_time_seconds": 145.8654,
+  "total_inference_time_seconds": 45.3862,
+  "num_updates": 29,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.9565,
+    "Hindi": 0.9511,
+    "Korean": 0.913,
+    "Mandarin": 0.9076,
+    "Spanish": 0.9837,
+    "Vietnamese": 0.9402
+  },
+  "elapsed_seconds": 191.97
+}

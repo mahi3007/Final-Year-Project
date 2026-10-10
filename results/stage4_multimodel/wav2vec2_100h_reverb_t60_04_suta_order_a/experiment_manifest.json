@@ -1,0 +1,27 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_100h_reverb_t60_04_suta_order_a_k4",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_a_k4_s1489197810",
+  "ordering_id": "ORDER_A",
+  "seed": 1489197810,
+  "stream_hash": "24954e5c7c05f2ca66520cef785a8c97bee5abf563e308385d06d1ef03913a2c",
+  "model_id": "wav2vec2_100h",
+  "method_id": "suta",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {
+    "lr": 0.0001,
+    "temperature": 2.5,
+    "alpha": 0.5,
+    "steps": 1
+  },
+  "timestamp": "2026-10-10T11:06:45Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_reverb_t60_04_suta_order_a\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_reverb_t60_04_suta_order_a\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_reverb_t60_04_suta_order_a\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_reverb_t60_04_suta_order_a\\adaptation_trajectory.csv"
+  }
+}

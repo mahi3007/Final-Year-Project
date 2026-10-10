@@ -1,0 +1,27 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_base_clean_suta_order_a_k2",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_a_k2_s1615074291",
+  "ordering_id": "ORDER_A",
+  "seed": 1615074291,
+  "stream_hash": "1eeb377ecccc082b382d56eca05be27e793be35e64363fff0f06dada7bc2bcfd",
+  "model_id": "wav2vec2_base",
+  "method_id": "suta",
+  "window_size_k": 2,
+  "total_windows": 60,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {
+    "lr": 0.0001,
+    "temperature": 2.5,
+    "alpha": 0.5,
+    "steps": 1
+  },
+  "timestamp": "2026-10-10T16:18:58Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\k_sweep\\wav2vec2_base_clean_suta_k2\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\k_sweep\\wav2vec2_base_clean_suta_k2\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\k_sweep\\wav2vec2_base_clean_suta_k2\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\k_sweep\\wav2vec2_base_clean_suta_k2\\adaptation_trajectory.csv"
+  }
+}

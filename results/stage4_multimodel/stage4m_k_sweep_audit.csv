@@ -1,0 +1,10 @@
+model_key,method,ordering_id,condition,window_size_k,total_windows,utterances_count,reference_words,speakers_count,corpus_wer_fraction,corpus_wer_pct,disparity_d_fraction,disparity_d_pp,protocol_classification,historical_k_protocol
+wav2vec2_base,suta,ORDER_A,clean,2,60,120,1104,12,0.8678,86.78,0.0978,9.78,EXPLORATORY_SENSITIVITY,"Stage 4 used K={1,4,5,10}; Stage 4M Preregistration Addendum line 34 documented exploratory K={2,4,8}"
+wav2vec2_base,suta,ORDER_A,clean,4,30,120,1104,12,0.875,87.5,0.0815,8.15,CANONICAL_BENCHMARK_K4,Preregistered standard streaming window size K=4 across all 150 canonical settings
+wav2vec2_base,suta,ORDER_A,clean,8,15,120,1104,12,0.8777,87.77,0.0815,8.15,EXPLORATORY_SENSITIVITY,"Stage 4 used K={1,4,5,10}; Stage 4M Preregistration Addendum line 34 documented exploratory K={2,4,8}"
+wav2vec2_base,suta,ORDER_A,noise_5db,2,60,120,1104,12,0.9855,98.55,0.0652,6.52,EXPLORATORY_SENSITIVITY,"Stage 4 used K={1,4,5,10}; Stage 4M Preregistration Addendum line 34 documented exploratory K={2,4,8}"
+wav2vec2_base,suta,ORDER_A,noise_5db,4,30,120,1104,12,0.9846,98.46,0.038,3.8,CANONICAL_BENCHMARK_K4,Preregistered standard streaming window size K=4 across all 150 canonical settings
+wav2vec2_base,suta,ORDER_A,noise_5db,8,15,120,1104,12,0.9819,98.19,0.0489,4.89,EXPLORATORY_SENSITIVITY,"Stage 4 used K={1,4,5,10}; Stage 4M Preregistration Addendum line 34 documented exploratory K={2,4,8}"
+wav2vec2_base,suta,ORDER_A,reverb_t60_04,2,60,120,1104,12,0.9384,93.84,0.0924,9.24,EXPLORATORY_SENSITIVITY,"Stage 4 used K={1,4,5,10}; Stage 4M Preregistration Addendum line 34 documented exploratory K={2,4,8}"
+wav2vec2_base,suta,ORDER_A,reverb_t60_04,4,30,120,1104,12,0.9411,94.11,0.0707,7.07,CANONICAL_BENCHMARK_K4,Preregistered standard streaming window size K=4 across all 150 canonical settings
+wav2vec2_base,suta,ORDER_A,reverb_t60_04,8,15,120,1104,12,0.9402,94.02,0.0815,8.15,EXPLORATORY_SENSITIVITY,"Stage 4 used K={1,4,5,10}; Stage 4M Preregistration Addendum line 34 documented exploratory K={2,4,8}"

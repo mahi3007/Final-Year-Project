@@ -11,7 +11,7 @@ Otherwise REJECT.
 from __future__ import annotations
 import math
 from datetime import datetime, timezone
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 from dsg_ctta.controller.types import GateDecision, BootstrapMetrics
 from dsg_ctta.controller.exceptions import FailClosedException
@@ -21,6 +21,15 @@ class DisparitySafetyGate:
     """
     Risk-controlled candidate update safety gate.
     Evaluates bootstrap upper confidence bounds against frozen operating tolerances.
+
+    UNIT CONTRACT SPECIFICATION:
+    - Canonical Internal Representation: FRACTIONAL RATE DIFFERENCES (unbounded finite scale).
+      Example: epsilon_r = 0.0000 (0.00 pp), epsilon_g = 0.0200 (2.00 pp), epsilon_d = 0.0200 (2.00 pp).
+    - Human-Readable Reporting Representation: PERCENTAGE POINTS (pp, unbounded finite scale).
+      Exact invariant: value_pp == value_fraction * 100.0, value_fraction == value_pp / 100.0.
+    - Domain: Open-ended finite real numbers. Because Word Error Rate (WER = (S + D + I) / N) includes insertions,
+      WER can exceed 1.0 (100%), and differences (Delta_R, max_g Delta_g, Delta_D, and UCBs) can exceed +1.0 (+100 pp)
+      or fall below -1.0 (-100 pp). The gate accepts all finite real numbers without magnitude clipping.
     """
 
     def __init__(
@@ -29,9 +38,47 @@ class DisparitySafetyGate:
         epsilon_g: float = 0.0200,
         epsilon_d: float = 0.0200,
     ):
+        """Initialize gate with fractional rate tolerances (default: 0.0000, 0.0200, 0.0200)."""
         self.epsilon_r = float(epsilon_r)
         self.epsilon_g = float(epsilon_g)
         self.epsilon_d = float(epsilon_d)
+
+    @classmethod
+    def from_percentage_points(
+        cls,
+        epsilon_r_pp: float = 0.0000,
+        epsilon_g_pp: float = 2.0000,
+        epsilon_d_pp: float = 2.0000,
+    ) -> DisparitySafetyGate:
+        """
+        Initialize gate from percentage-point tolerances (e.g. 2.00 pp -> 0.0200 frac).
+        Ensures exact mathematical equivalence between fractional and percentage-point specifications.
+        """
+        return cls(
+            epsilon_r=float(epsilon_r_pp) / 100.0,
+            epsilon_g=float(epsilon_g_pp) / 100.0,
+            epsilon_d=float(epsilon_d_pp) / 100.0,
+        )
+
+    @staticmethod
+    def decision_to_percentage_points(decision: GateDecision) -> Dict[str, Any]:
+        """Convert a fractional GateDecision to human-readable percentage points."""
+        return {
+            "decision": decision.decision,
+            "accept": decision.accept,
+            "delta_r_pp": decision.delta_r * 100.0 if not math.isnan(decision.delta_r) else float("nan"),
+            "max_delta_g_pp": decision.max_delta_g * 100.0 if not math.isnan(decision.max_delta_g) else float("nan"),
+            "delta_d_pp": decision.delta_d * 100.0 if not math.isnan(decision.delta_d) else float("nan"),
+            "ucb_r_pp": decision.ucb_r * 100.0 if not math.isnan(decision.ucb_r) else float("nan"),
+            "ucb_max_group_pp": decision.ucb_max_group * 100.0 if not math.isnan(decision.ucb_max_group) else float("nan"),
+            "ucb_d_pp": decision.ucb_d * 100.0 if not math.isnan(decision.ucb_d) else float("nan"),
+            "epsilon_r_pp": decision.epsilon_r * 100.0,
+            "epsilon_g_pp": decision.epsilon_g * 100.0,
+            "epsilon_d_pp": decision.epsilon_d * 100.0,
+            "rejection_reasons": list(decision.rejection_reasons),
+            "rejection_category": decision.rejection_category,
+        }
+
 
     def evaluate_decision(
         self,

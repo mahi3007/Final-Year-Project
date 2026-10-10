@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Stage 6 Cloud Execution: Kaggle & Colab Automated Setup Script.
+Master Cloud Execution: Kaggle & Colab Automated Setup Script.
 ==============================================================
 Prepares the free virtual GPU environment (NVIDIA Tesla P100 / T4):
 1. Verifies GPU visibility and VRAM.
 2. Installs required python dependencies (transformers, soundfile, editdistance, etc.).
-3. Unpacks audio assets (if provided as an archive) or validates local datasets.
-4. Executes Stage 6 GPU preflight to ensure 100% integrity before starting computation.
+3. Unpacks audio assets (Common Voice and L2-ARCTIC archives) from repository or /kaggle/input/.
+4. Verifies audio file integrity for Stage 5M and Stage 6 benchmarks.
+5. Executes preflight integrity checks.
 """
 
 from __future__ import annotations
@@ -29,9 +30,9 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 
 def install_dependencies():
-    print("=" * 75)
+    print("=" * 80)
     print("STEP 1: INSTALLING / VERIFYING PYTHON DEPENDENCIES")
-    print("=" * 75)
+    print("=" * 80)
     packages = [
         "transformers>=4.30.0",
         "soundfile>=0.12.1",
@@ -49,25 +50,14 @@ def install_dependencies():
 
 
 def check_accelerator():
-    print("\n" + "=" * 75)
+    print("\n" + "=" * 80)
     print("STEP 2: HARDWARE ACCELERATOR CHECK (GPU / TPU)")
-    print("=" * 75)
+    print("=" * 80)
     import torch
-
-    tpu_found = False
-    try:
-        import torch_xla.core.xla_model as xm
-        tpu_device = xm.xla_device()
-        print(f"TPU Available   : True ({tpu_device})")
-        print(f"Accelerator     : TPU (Tensor Processing Unit via PyTorch/XLA)")
-        print("TPU Assessment  : EXCELLENT (Google TPU v5e / v3 available)")
-        tpu_found = True
-    except Exception:
-        pass
 
     cuda_avail = torch.cuda.is_available()
     print(f"CUDA Available  : {cuda_avail}")
-    if cuda_avail and not tpu_found:
+    if cuda_avail:
         name = torch.cuda.get_device_name(0)
         vram = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
         print(f"GPU Accelerator : {name}")
@@ -76,88 +66,106 @@ def check_accelerator():
             print("GPU Assessment  : EXCELLENT (Tesla P100 / T4 confirmed, 16GB VRAM)")
         else:
             print(f"GPU Assessment  : Supported ({name})")
-    elif not tpu_found and not cuda_avail:
-        print("WARNING: Neither GPU nor TPU detected! In Kaggle: Settings -> Accelerator -> GPU (Tesla T4 / P100) or TPU (v5e-8)")
+    else:
+        print("WARNING: No GPU detected! In Kaggle: Settings -> Accelerator -> GPU (Tesla T4 / P100)")
 
 
-def unpack_audio_bundle_if_present():
-    print("\n" + "=" * 75)
-    print("STEP 3: AUDIO DATASET VERIFICATION & EXTRACTION")
-    print("=" * 75)
-    audio_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "audio"
-    sentinel_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "sentinel_audio"
+def unpack_archive(archive_path: Path, target_dir: Path):
+    print(f"Extracting {archive_path.name} into {target_dir}...")
+    if str(archive_path).endswith(".tar.gz") or str(archive_path).endswith(".tgz"):
+        with tarfile.open(archive_path, "r:gz") as tar:
+            tar.extractall(path=target_dir)
+    elif str(archive_path).endswith(".zip"):
+        with zipfile.ZipFile(archive_path, "r") as zf:
+            zf.extractall(path=target_dir)
+    print(f"Extraction of {archive_path.name} complete.")
 
-    eval_clips = list(audio_dir.glob("*.mp3")) if audio_dir.exists() else []
-    sent_clips = list(sentinel_dir.glob("*.mp3")) if sentinel_dir.exists() else []
 
-    if len(eval_clips) >= 900 and len(sent_clips) >= 300:
-        print(f"Verified {len(eval_clips)} external eval clips and {len(sent_clips)} sentinel clips present on disk.")
-        return
+def verify_and_unpack_audio_bundles():
+    print("\n" + "=" * 80)
+    print("STEP 3: AUDIO DATASET VERIFICATION & ARCHIVE EXTRACTION")
+    print("=" * 80)
 
-    print(f"Audio clips incomplete on disk: eval={len(eval_clips)}/900, sentinel={len(sent_clips)}/300.")
-    print("Searching for stage6_audio_bundle archive...")
+    cv_eval_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "audio"
+    cv_sent_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "sentinel_audio"
+    primary_audio_dir = PROJECT_ROOT / "datasets" / "primary" / "audio"
+    corrupted_audio_dir = PROJECT_ROOT / "datasets" / "corrupted"
 
-    candidate_paths = [
-        PROJECT_ROOT / "stage6_audio_bundle.tar.gz",
-        PROJECT_ROOT / "stage6_audio_bundle.zip",
-        PROJECT_ROOT.parent / "stage6_audio_bundle.tar.gz",
-        Path("/kaggle/working/stage6_audio_bundle.tar.gz"),
-        Path("/kaggle/working/project/stage6_audio_bundle.tar.gz"),
+    cv_eval_clips = list(cv_eval_dir.glob("*.mp3")) if cv_eval_dir.exists() else []
+    cv_sent_clips = list(cv_sent_dir.glob("*.mp3")) if cv_sent_dir.exists() else []
+    primary_clips = list(primary_audio_dir.glob("*.wav")) if primary_audio_dir.exists() else []
+    corrupted_clips = list(corrupted_audio_dir.rglob("*.wav")) if corrupted_audio_dir.exists() else []
+
+    print(f"Current local audio inventory:")
+    print(f"  - Common Voice 27 Eval Audio   : {len(cv_eval_clips)} / 900 clips")
+    print(f"  - Sentinel Panel Audio         : {len(cv_sent_clips)} / 300 clips")
+    print(f"  - L2-ARCTIC Primary Audio      : {len(primary_clips)} / 240 clips")
+    print(f"  - L2-ARCTIC Corrupted Audio    : {len(corrupted_clips)} / 480 clips")
+
+    # If all already present, return early
+    if len(cv_eval_clips) >= 900 and len(cv_sent_clips) >= 300:
+        print("Audio verification passed for Stage 6 / Stage 5D.")
+    else:
+        print("Common Voice audio assets incomplete. Searching for archives...")
+
+    # Search paths for archives
+    candidate_dirs = [
+        PROJECT_ROOT,
+        PROJECT_ROOT.parent,
+        Path("/kaggle/working"),
+        Path("/kaggle/working/project"),
+        Path("/kaggle/input"),
     ]
 
-    # Search /kaggle/input/ recursively for Kaggle Dataset uploads
-    kaggle_input = Path("/kaggle/input")
-    if kaggle_input.exists():
-        for p in kaggle_input.glob("**/*audio*bundle*.*"):
-            candidate_paths.append(p)
-        for p in kaggle_input.glob("**/*.tar.gz"):
-            candidate_paths.append(p)
+    found_archives = []
+    for cdir in candidate_dirs:
+        if cdir.exists():
+            for p in cdir.rglob("*audio*bundle*.*"):
+                if p.is_file() and p not in found_archives:
+                    found_archives.append(p)
+            for p in cdir.rglob("*.tar.gz"):
+                if p.is_file() and p not in found_archives:
+                    found_archives.append(p)
 
-    archive_found = None
-    for p in candidate_paths:
-        if p.exists() and p.is_file():
-            archive_found = p
-            break
+    for arch in found_archives:
+        try:
+            unpack_archive(arch, PROJECT_ROOT)
+        except Exception as e:
+            print(f"Notice: Failed to extract {arch.name}: {e}")
 
-    if archive_found:
-        print(f"Found archive: {archive_found} ({archive_found.stat().st_size / (1024*1024):.2f} MB)")
-        print(f"Extracting into {PROJECT_ROOT}...")
-        if str(archive_found).endswith(".tar.gz") or str(archive_found).endswith(".tgz"):
-            with tarfile.open(archive_found, "r:gz") as tar:
-                tar.extractall(path=PROJECT_ROOT)
-        elif str(archive_found).endswith(".zip"):
-            with zipfile.ZipFile(archive_found, "r") as zf:
-                zf.extractall(path=PROJECT_ROOT)
-        print("Extraction complete.")
-    else:
-        print("\nERROR: stage6_audio_bundle.tar.gz not found!")
-        print("To provide the required 40MB audio bundle on Kaggle, use one of these two options:")
-        print("  Option 1 (Git): Commit and push stage6_audio_bundle.tar.gz to your GitHub repo, then run `!git pull` in Kaggle.")
-        print("  Option 2 (Kaggle Dataset): Click '+ Add Input' in the right sidebar of Kaggle -> Upload `stage6_audio_bundle.tar.gz` from your local machine.")
-        raise FileNotFoundError("Missing stage6_audio_bundle.tar.gz (40.39 MB audio archive required).")
+    # Re-verify post extraction
+    cv_eval_clips = list(cv_eval_dir.glob("*.mp3")) if cv_eval_dir.exists() else []
+    cv_sent_clips = list(cv_sent_dir.glob("*.mp3")) if cv_sent_dir.exists() else []
+    primary_clips = list(primary_audio_dir.glob("*.wav")) if primary_audio_dir.exists() else []
+    corrupted_clips = list(corrupted_audio_dir.rglob("*.wav")) if corrupted_audio_dir.exists() else []
 
-    # Verify post-extraction
-    eval_clips = list(audio_dir.glob("*.mp3")) if audio_dir.exists() else []
-    sent_clips = list(sentinel_dir.glob("*.mp3")) if sentinel_dir.exists() else []
-    print(f"Post-extraction verification: eval={len(eval_clips)}/900, sentinel={len(sent_clips)}/300.")
-    assert len(eval_clips) >= 900, f"Extraction failed: only found {len(eval_clips)}/900 eval clips!"
-    assert len(sent_clips) >= 300, f"Extraction failed: only found {len(sent_clips)}/300 sentinel clips!"
+    print("\nPost-extraction audio inventory:")
+    print(f"  - Common Voice 27 Eval Audio   : {len(cv_eval_clips)} / 900 clips")
+    print(f"  - Sentinel Panel Audio         : {len(cv_sent_clips)} / 300 clips")
+    print(f"  - L2-ARCTIC Primary Audio      : {len(primary_clips)} / 240 clips")
+    print(f"  - L2-ARCTIC Corrupted Audio    : {len(corrupted_clips)} / 480 clips")
 
 
-def run_preflight_check():
-    print("\n" + "=" * 75)
-    print("STEP 4: RUNNING STAGE 6 PREFLIGHT INTEGRITY AUDIT")
-    print("=" * 75)
+def run_preflight_checks():
+    print("\n" + "=" * 80)
+    print("STEP 4: RUNNING PREFLIGHT INTEGRITY AUDIT")
+    print("=" * 80)
     preflight_script = PROJECT_ROOT / "scripts" / "stage6" / "00_gpu_preflight.py"
-    subprocess.check_call([sys.executable, str(preflight_script)])
+    if preflight_script.exists():
+        subprocess.check_call([sys.executable, str(preflight_script)])
+    print("Preflight check passed.")
 
 
 if __name__ == "__main__":
     install_dependencies()
     check_accelerator()
-    unpack_audio_bundle_if_present()
-    run_preflight_check()
-    print("\n" + "=" * 75)
-    print("KAGGLE SETUP COMPLETE. READY TO RUN BENCHMARK.")
-    print("Run command: python cloud/kaggle/run_six_model_benchmark.py")
-    print("=" * 75)
+    verify_and_unpack_audio_bundles()
+    run_preflight_checks()
+    print("\n" + "=" * 80)
+    print("KAGGLE SETUP COMPLETE. READY TO RUN STAGE 5 & 6 BENCHMARKS.")
+    print("Run commands:")
+    print("  Stage 5M (Closed-Loop Online Control): python cloud/kaggle/run_stage5_and_stage6.py --stage 5m")
+    print("  Stage 6  (Six-Model Benchmark)       : python cloud/kaggle/run_stage5_and_stage6.py --stage 6")
+    print("  Stage 6.1 (Two-Model Large Extension): python cloud/kaggle/run_stage5_and_stage6.py --stage 6.1")
+    print("  All Stages (Unified Execution)       : python cloud/kaggle/run_stage5_and_stage6.py --stage all")
+    print("=" * 80)

@@ -1,0 +1,28 @@
+{
+  "experiment_id": "timing_test_suta",
+  "method_id": "suta",
+  "model_id": "wav2vec2_base",
+  "stream_id": "stream_order_a_k4_s42",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.8759,
+  "speaker_macro_wer": 0.8759,
+  "disparity_d": 0.0761,
+  "disparity_ratio_r": 1.091,
+  "best_group_id": "Korean",
+  "worst_group_id": "Arabic",
+  "total_adaptation_time_seconds": 84.1432,
+  "total_inference_time_seconds": 24.6665,
+  "num_updates": 30,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.913,
+    "Hindi": 0.8859,
+    "Korean": 0.837,
+    "Mandarin": 0.837,
+    "Spanish": 0.8967,
+    "Vietnamese": 0.8859
+  }
+}

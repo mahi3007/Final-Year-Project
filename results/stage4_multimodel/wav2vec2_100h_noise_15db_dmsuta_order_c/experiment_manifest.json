@@ -1,0 +1,28 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_100h_noise_15db_dmsuta_order_c_k4",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_c_k4_s1458484804",
+  "ordering_id": "ORDER_C",
+  "seed": 1458484804,
+  "stream_hash": "e5b97f1bc63a8763b7ef9e3268fc0a7ca91be425a3557b66a540596dd314bbe0",
+  "model_id": "wav2vec2_100h",
+  "method_id": "dmsuta",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {
+    "lr": 0.0001,
+    "temperature": 2.5,
+    "alpha": 0.5,
+    "steps": 1,
+    "max_bank_size": 3
+  },
+  "timestamp": "2026-10-10T10:14:17Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_noise_15db_dmsuta_order_c\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_noise_15db_dmsuta_order_c\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_noise_15db_dmsuta_order_c\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_100h_noise_15db_dmsuta_order_c\\adaptation_trajectory.csv"
+  }
+}

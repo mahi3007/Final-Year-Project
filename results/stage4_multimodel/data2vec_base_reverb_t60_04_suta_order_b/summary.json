@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_data2vec_base_reverb_t60_04_suta_order_b_k4",
+  "method_id": "suta",
+  "model_id": "data2vec_base",
+  "stream_id": "stream_order_b_k4_s1660478684",
+  "ordering_id": "ORDER_B",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.904,
+  "speaker_macro_wer": 0.904,
+  "disparity_d": 0.0707,
+  "disparity_ratio_r": 1.082,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Vietnamese",
+  "total_adaptation_time_seconds": 157.5251,
+  "total_inference_time_seconds": 51.9183,
+  "num_updates": 29,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.8859,
+    "Hindi": 0.9293,
+    "Korean": 0.8859,
+    "Mandarin": 0.8641,
+    "Spanish": 0.9239,
+    "Vietnamese": 0.9348
+  },
+  "elapsed_seconds": 210.08
+}

@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_100h_reverb_t60_04_dsuta_order_b_k4",
+  "method_id": "dsuta",
+  "model_id": "wav2vec2_100h",
+  "stream_id": "stream_order_b_k4_s208007641",
+  "ordering_id": "ORDER_B",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9502,
+  "speaker_macro_wer": 0.9502,
+  "disparity_d": 0.0598,
+  "disparity_ratio_r": 1.065,
+  "best_group_id": "Arabic",
+  "worst_group_id": "Hindi",
+  "total_adaptation_time_seconds": 118.5859,
+  "total_inference_time_seconds": 27.9307,
+  "num_updates": 29,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.9239,
+    "Hindi": 0.9837,
+    "Korean": 0.9239,
+    "Mandarin": 0.9293,
+    "Spanish": 0.962,
+    "Vietnamese": 0.9783
+  },
+  "elapsed_seconds": 147.03
+}

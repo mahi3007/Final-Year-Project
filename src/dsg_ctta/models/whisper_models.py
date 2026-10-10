@@ -6,6 +6,13 @@ Supports openai/whisper-tiny, openai/whisper-base, openai/whisper-small, distil-
 from __future__ import annotations
 import torch
 import numpy as np
+import warnings
+import transformers
+
+# Suppress HuggingFace generation warnings (e.g. max_new_tokens vs max_length precedence)
+transformers.logging.set_verbosity_error()
+warnings.filterwarnings("ignore", message=".*Both `max_new_tokens`.*")
+
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
 from dsg_ctta.models.base_adapter import BaseASRModel
 from dsg_ctta.data.acoustic import load_and_resample_audio
@@ -24,6 +31,8 @@ class WhisperModel(BaseASRModel):
             self.model_id,
             torch_dtype=target_dtype
         )
+        if hasattr(self.model, "generation_config") and self.model.generation_config is not None:
+            self.model.generation_config.max_length = None
         if self.device == "cpu":
             self.model = self.model.float()
         self.model.to(self.device)
@@ -41,6 +50,8 @@ class WhisperModel(BaseASRModel):
         ).input_features.to(device=self.device, dtype=self.model.dtype)
 
         with torch.no_grad():
+            if hasattr(self.model, "generation_config") and self.model.generation_config is not None:
+                self.model.generation_config.max_length = None
             is_multilingual = getattr(self.model.config, "is_multilingual", True)
             if is_multilingual and not self.model_id.endswith(".en"):
                 predicted_ids = self.model.generate(

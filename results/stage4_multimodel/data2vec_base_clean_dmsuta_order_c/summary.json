@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_data2vec_base_clean_dmsuta_order_c_k4",
+  "method_id": "dmsuta",
+  "model_id": "data2vec_base",
+  "stream_id": "stream_order_c_k4_s159838772",
+  "ordering_id": "ORDER_C",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.8379,
+  "speaker_macro_wer": 0.8379,
+  "disparity_d": 0.0924,
+  "disparity_ratio_r": 1.116,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Vietnamese",
+  "total_adaptation_time_seconds": 220.6162,
+  "total_inference_time_seconds": 28.2077,
+  "num_updates": 29,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.8152,
+    "Hindi": 0.8533,
+    "Korean": 0.837,
+    "Mandarin": 0.7989,
+    "Spanish": 0.8315,
+    "Vietnamese": 0.8913
+  },
+  "elapsed_seconds": 249.39
+}

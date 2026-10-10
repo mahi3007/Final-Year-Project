@@ -1,0 +1,7 @@
+group_id,num_speakers,num_utterances,reference_words,substitutions,deletions,insertions,total_errors,corpus_wer,speaker_macro_wer,substitution_ratio,deletion_ratio,insertion_ratio
+Arabic,2,20,184,121,47,3,171,0.9293,0.9293,0.7076,0.2749,0.0175
+Hindi,2,20,184,115,35,12,162,0.8804,0.8804,0.7099,0.216,0.0741
+Korean,2,20,184,118,34,5,157,0.8533,0.8533,0.7516,0.2166,0.0318
+Mandarin,2,20,184,135,28,10,173,0.9402,0.9402,0.7803,0.1618,0.0578
+Spanish,2,20,184,126,45,3,174,0.9457,0.9457,0.7241,0.2586,0.0172
+Vietnamese,2,20,184,128,41,4,173,0.9402,0.9402,0.7399,0.237,0.0231

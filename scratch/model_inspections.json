@@ -1,0 +1,178 @@
+{
+  "wav2vec2_base": {
+    "key": "wav2vec2_base",
+    "model_id": "facebook/wav2vec2-base-960h",
+    "architecture_class": "Wav2Vec2ForCTC",
+    "model_family": "wav2vec2",
+    "processor_type": "Wav2Vec2Processor",
+    "tokenizer_type": "Wav2Vec2CTCTokenizer",
+    "sampling_rate": 16000,
+    "vocab_size": 32,
+    "is_ctc": true,
+    "input_tensors": [
+      "input_values"
+    ],
+    "output_tensors": [
+      "logits"
+    ]
+  },
+  "data2vec_base": {
+    "key": "data2vec_base",
+    "model_id": "facebook/data2vec-audio-base-960h",
+    "architecture_class": "Data2VecAudioForCTC",
+    "model_family": "data2vec-audio",
+    "processor_type": "Wav2Vec2Processor",
+    "tokenizer_type": "Wav2Vec2CTCTokenizer",
+    "sampling_rate": 16000,
+    "vocab_size": 32,
+    "is_ctc": true,
+    "input_tensors": [
+      "input_values"
+    ],
+    "output_tensors": [
+      "logits"
+    ]
+  },
+  "wav2vec2_100h": {
+    "key": "wav2vec2_100h",
+    "model_id": "facebook/wav2vec2-base-100h",
+    "architecture_class": "Wav2Vec2ForCTC",
+    "model_family": "wav2vec2",
+    "processor_type": "Wav2Vec2Processor",
+    "tokenizer_type": "Wav2Vec2CTCTokenizer",
+    "sampling_rate": 16000,
+    "vocab_size": 32,
+    "is_ctc": true,
+    "input_tensors": [
+      "input_values"
+    ],
+    "output_tensors": [
+      "logits"
+    ]
+  },
+  "whisper_base": {
+    "key": "whisper_base",
+    "model_id": "openai/whisper-base",
+    "architecture_class": "WhisperForConditionalGeneration",
+    "model_family": "whisper",
+    "processor_type": "WhisperProcessor",
+    "tokenizer_type": "WhisperTokenizer",
+    "sampling_rate": 16000,
+    "vocab_size": 51865,
+    "is_ctc": false,
+    "input_tensors": [
+      "input_features",
+      "decoder_input_ids"
+    ],
+    "output_tensors": [
+      "sequences",
+      "logits"
+    ]
+  },
+  "distil_whisper_small": {
+    "key": "distil_whisper_small",
+    "model_id": "distil-whisper/distil-small.en",
+    "architecture_class": "WhisperForConditionalGeneration",
+    "model_family": "whisper",
+    "processor_type": "WhisperProcessor",
+    "tokenizer_type": "WhisperTokenizer",
+    "sampling_rate": 16000,
+    "vocab_size": 51864,
+    "is_ctc": false,
+    "input_tensors": [
+      "input_features",
+      "decoder_input_ids"
+    ],
+    "output_tensors": [
+      "sequences",
+      "logits"
+    ]
+  },
+  "whisper_tiny": {
+    "key": "whisper_tiny",
+    "model_id": "openai/whisper-tiny",
+    "architecture_class": "WhisperForConditionalGeneration",
+    "model_family": "whisper",
+    "processor_type": "WhisperProcessor",
+    "tokenizer_type": "WhisperTokenizer",
+    "sampling_rate": 16000,
+    "vocab_size": 51865,
+    "is_ctc": false,
+    "input_tensors": [
+      "input_features",
+      "decoder_input_ids"
+    ],
+    "output_tensors": [
+      "sequences",
+      "logits"
+    ]
+  },
+  "hubert_large": {
+    "key": "hubert_large",
+    "model_id": "facebook/hubert-large-ls960-ft",
+    "architecture_class": "HubertForCTC",
+    "model_family": "hubert",
+    "processor_type": "Wav2Vec2Processor",
+    "tokenizer_type": "Wav2Vec2CTCTokenizer",
+    "sampling_rate": 16000,
+    "vocab_size": 32,
+    "is_ctc": true,
+    "input_tensors": [
+      "input_values"
+    ],
+    "output_tensors": [
+      "logits"
+    ]
+  },
+  "xlsr_english": {
+    "key": "xlsr_english",
+    "model_id": "jonatasgrosman/wav2vec2-large-xlsr-53-english",
+    "architecture_class": "Wav2Vec2ForCTC",
+    "model_family": "wav2vec2",
+    "processor_type": "Error: \nWav2Vec2ProcessorWithLM requires the pyctcdecode library but it was not found in your environment. You can install it with pip:\n`pip install pyctcdecode`. Please note that you may need to restart your runtime after installation.\n",
+    "tokenizer_type": "AutoTokenizer",
+    "sampling_rate": 16000,
+    "vocab_size": 33,
+    "is_ctc": true,
+    "input_tensors": [
+      "input_values"
+    ],
+    "output_tensors": [
+      "logits"
+    ]
+  },
+  "wav2vec2_large_lv60": {
+    "key": "wav2vec2_large_lv60",
+    "model_id": "facebook/wav2vec2-large-960h-lv60",
+    "architecture_class": "Wav2Vec2ForCTC",
+    "model_family": "wav2vec2",
+    "processor_type": "Wav2Vec2Processor",
+    "tokenizer_type": "Wav2Vec2CTCTokenizer",
+    "sampling_rate": 16000,
+    "vocab_size": 32,
+    "is_ctc": true,
+    "input_tensors": [
+      "input_values"
+    ],
+    "output_tensors": [
+      "logits"
+    ]
+  },
+  "wav2vec2_large_robust": {
+    "key": "wav2vec2_large_robust",
+    "model_id": "facebook/wav2vec2-large-robust-ft-libri-960h",
+    "architecture_class": "Wav2Vec2ForCTC",
+    "model_family": "wav2vec2",
+    "processor_type": "Wav2Vec2Processor",
+    "tokenizer_type": "Wav2Vec2CTCTokenizer",
+    "sampling_rate": 16000,
+    "vocab_size": 32,
+    "is_ctc": true,
+    "input_tensors": [
+      "input_values"
+    ],
+    "output_tensors": [
+      "logits"
+    ]
+  }
+}

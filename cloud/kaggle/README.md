@@ -1,148 +1,111 @@
-# Stage 6: Cloud Virtual GPU Execution Guide
-## Running the Six-Model DSG Benchmark on Free Cloud GPUs (Kaggle & Google Colab)
+# Stage 5M & Stage 6: Cloud Virtual GPU Execution Guide
+## Running Closed-Loop Online Control & Multi-Model Benchmarks on Free Cloud GPUs (Kaggle & Colab)
 
-This directory contains the complete execution package for running **Stage 6 — Six-Model DSG Generalization Benchmark** on a free virtual GPU (NVIDIA Tesla P100 / T4).
+This directory contains the complete execution package for running **Stage 5M (Closed-Loop Online Control)** and **Stage 6 (Multi-Model Generalization Benchmark)** on free virtual GPUs (NVIDIA Tesla P100 / T4).
 
 ---
 
-### Why Use a Free Cloud GPU?
+### Executive Summary: What These Stages Evaluate
 
-Evaluating 225 sequential prequential windows ($K=4$, 900 evaluation clips) against a 300-clip sentinel panel across multiple ASR models requires approximately **68,000 forward passes per model**.
+| Stage | Objective | Benchmark Dataset | Evaluated Models | Online Adaptation & Gate |
+| :--- | :--- | :--- | :--- | :--- |
+| **Stage 5M** | **Closed-Loop Online Control** under acoustic stress | L2-ARCTIC (5 acoustic stress conditions, 12 speakers, 6 accents) | 3 CTC Backbones + 3 Seq2Seq Controls | Live Disparity Safety Gate on **Sentinel Panel ($N=30$)**; candidate updates accepted/rejected prequentially. |
+| **Stage 5D** | Single-Model DSG Re-execution | Common Voice 27.0 (900 clips, 225 windows, $K=4$) | `wav2vec2_base` | Live DSG Controller on 300-clip Sentinel Panel ($N=30$). |
+| **Stage 6** | **Cross-Architecture Generalization Benchmark** | Common Voice 27.0 (900 clips, 60 speakers, 6 strata) | 6 Diverse Architectures (CTC & Seq2Seq) | No-Adapt, SUTA, DSUTA, DMSUTA, and DSG across 225 prequential windows. |
+| **Stage 6.1** | Two-Model Large CTC Extension | Common Voice 27.0 (900 clips, 60 speakers, 6 strata) | `wav2vec2_large_lv60`, `wav2vec2_large_robust` | Parameter scale (315.5M) and acoustic pretraining robustness. |
 
-| Environment | GPU | VRAM | Typical Speed per Model | Total 6-Model Runtime | Cost |
+---
+
+### Why Use a Free Cloud GPU (NVIDIA Tesla P100)?
+
+Evaluating sequential prequential windows with batched sentinel panel verification requires significant neural forward passes:
+
+| Environment | Accelerator | VRAM | Typical Speed | Total Runtime | Cost |
 | :--- | :--- | :---: | :---: | :---: | :---: |
-| **Local Laptop CPU** | CPU (Intel/AMD) | System RAM | $\approx 2.5 - 4.0$ hours | $\approx 12 - 18$ hours | Free |
-| **Kaggle Notebooks (Recommended)** | **NVIDIA Tesla P100** | **16 GB** | **$\approx 25 - 35$ minutes** | **$\approx 2.0 - 2.5$ hours** | **Free (Zero cost)** |
-| **Google Colab Free Tier** | **NVIDIA T4** | **16 GB** | **$\approx 30 - 45$ minutes** | **$\approx 2.5 - 3.0$ hours** | **Free (Zero cost)** |
-
----
-
-### Architecture & Division of Responsibility
-
-```
-YOUR LOCAL PC (Antigravity IDE)
-┌──────────────────────────────────────────────────┐
-│ - Development, source code, configs, reports     │
-│ - Stage 5E frozen baseline locks                 │
-│ - Git repository & artifact analysis             │
-└────────────────────────┬─────────────────────────┘
-                         │ Git Push / Upload
-                         ▼
-FREE CLOUD VIRTUAL GPU (Kaggle / Colab)
-┌──────────────────────────────────────────────────┐
-│ - NVIDIA Tesla P100 GPU (16 GB VRAM)             │
-│ - Fast PyTorch CUDA execution                    │
-│ - High-speed model downloading (500+ Mbps)       │
-│ - Automated checkpointing & memory purging       │
-│ - Sequential multi-model evaluation              │
-└────────────────────────┬─────────────────────────┘
-                         │ Download stage6_results_bundle.zip
-                         ▼
-YOUR LOCAL PC (Antigravity IDE)
-┌──────────────────────────────────────────────────┐
-│ - Final CSVs in reports/stage6/                  │
-│ - Full comparative analysis & manuscript tables  │
-└──────────────────────────────────────────────────┘
-```
+| **Local Laptop CPU** | CPU (Intel/AMD) | System RAM | 1x | 12 – 18 hours | Free |
+| **Kaggle Notebooks (Recommended)** | **NVIDIA Tesla P100** | **16 GB** | **15x – 25x faster** | **~1.5 – 2.5 hours** | **Free (Zero cost)** |
+| **Google Colab Free Tier** | **NVIDIA T4** | **16 GB** | **10x – 15x faster** | **~2.0 – 3.0 hours** | **Free (Zero cost)** |
 
 ---
 
 ### Quickstart Guide: Running on Kaggle (Step-by-Step)
 
 #### Step 1: Open Kaggle Notebooks
-1. Go to [https://www.kaggle.com/code](https://www.kaggle.com/code) and sign in (or create a free account).
+1. Go to [https://www.kaggle.com/code](https://www.kaggle.com/code) and sign in.
 2. Click **New Notebook** (top right).
 
 #### Step 2: Enable Free Tesla P100 GPU
-1. In the right-hand sidebar under **Notebook options**:
+1. In the right-hand panel under **Notebook options**:
    - Click **Accelerator** $\to$ Select **GPU P100**.
    - Ensure **Internet** is toggled **ON**.
 
 #### Step 3: Clone or Upload the Code
-In the first notebook cell, clone your repository or upload the notebook:
-
+In the first notebook cell:
 ```bash
 # Clone the repository
 !git clone <YOUR_GITHUB_REPO_URL> project
 %cd project
 ```
+*(Alternatively, you can upload `cloud/kaggle/run_stage5_and_stage6_kaggle.ipynb` directly via File $\to$ Upload Notebook).*
 
-*(Alternatively, you can upload `cloud/kaggle/run_stage6_kaggle.ipynb` directly to Kaggle via File $\to$ Upload Notebook).*
-
-#### Step 4: Run the Environment Setup
+#### Step 4: Run the Environment & Audio Setup
 In the next cell:
 ```python
 !python cloud/kaggle/setup_kaggle.py
 ```
-This automatically installs dependencies, checks the Tesla P100 GPU, validates audio paths, and verifies all 10 preflight integrity checks.
+This automatically installs dependencies, checks the Tesla P100 GPU, validates audio assets, and executes preflight integrity checks.
 
-#### Step 5: Run the Benchmark
-In the next cell:
+#### Step 5: Execute the Benchmarks
+
+You have several flexible execution options:
+
+##### Option A: Run Everything (Stage 5M + Stage 6 + Stage 6.1)
 ```python
-!python cloud/kaggle/run_six_model_benchmark.py
+!python cloud/kaggle/run_stage5_and_stage6.py --stage all
 ```
 
-The runner executes models sequentially:
-1. `wav2vec2_base`: Imports frozen Stage 5E metrics instantly.
-2. `whisper_base`: Audits static No-Adapt; records CTTA as `INCOMPATIBLE`.
-3. `hubert_base`: Evaluates No-Adapt, SUTA, DSUTA, DMSUTA, and DSG across 225 windows.
-4. `data2vec_base`: Evaluates No-Adapt, SUTA, DSUTA, DMSUTA, and DSG across 225 windows.
-5. `distil_whisper_small`: Audits static No-Adapt; records CTTA as `INCOMPATIBLE`.
-6. `xlsr_english`: Evaluates No-Adapt, SUTA, DSUTA, DMSUTA, and DSG across 225 windows.
+##### Option B: Run Stage 5M Only (Closed-Loop Online Control Suite)
+```python
+!python cloud/kaggle/run_stage5_and_stage6.py --stage 5m
+```
 
-Between every model, `del model`, `torch.cuda.empty_cache()`, and `gc.collect()` purge VRAM, preventing out-of-memory errors.
+##### Option C: Run Stage 6 Only (Six-Model Benchmark)
+```python
+!python cloud/kaggle/run_stage5_and_stage6.py --stage 6
+```
 
-#### Step 6: Download the Results
-Once complete, the runner packages all results into `/kaggle/working/stage6_results_bundle.zip`.
-- Look at the right-hand panel under **Output** $\to$ click the three dots on `stage6_results_bundle.zip` $\to$ **Download**.
-- Extract `stage6_results_bundle.zip` directly into your local project directory:
-  ```bash
-  # Inside your local Antigravity terminal:
-  unzip -o ~/Downloads/stage6_results_bundle.zip -d .
-  ```
+##### Option D: Fast Smoke Test (Validates Stage 5M Sentinel Gate in ~30s)
+```python
+!python cloud/kaggle/run_stage5m_online_control.py --smoke-test
+```
 
----
+#### Step 6: Download the Results Bundle
+Once execution completes, all CSVs, Markdown reports, and checkpoint records are automatically packaged into:
+`/kaggle/working/stage5_stage6_results_bundle.zip`
 
-### Alternative: Running on Google Colab
-
-1. Go to [https://colab.research.google.com](https://colab.research.google.com).
-2. Click **File** $\to$ **Upload notebook** $\to$ Select `cloud/kaggle/run_stage6_kaggle.ipynb`.
-3. Click **Runtime** $\to$ **Change runtime type** $\to$ Select **T4 GPU** $\to$ **Save**.
-4. Clone your repository in the first cell and click **Runtime** $\to$ **Run all**.
-5. When finished, Colab automatically makes `stage6_results_bundle.zip` available for download.
-
----
-
-### Invariant & Scientific Guardrails Enforced
-
-1. **Stage 5E Invariant:** `facebook/wav2vec2-base-960h` results are strictly locked and never overwritten.
-2. **Seq2Seq Non-CTC Honesty:** `openai/whisper-base` and `distil-whisper/distil-small.en` are evaluated for static No-Adapt and legitimately marked `INCOMPATIBLE` for CTTA adaptation rather than fabricating numbers.
-3. **Identical Datasets & Seeds:** Every model runs on the exact 900-clip external stream, 30-speaker sentinel panel, $B=1,000$ paired cluster bootstrap, $\epsilon_R=0.0000, \epsilon_G=0.0200, \epsilon_D=0.0200$, and seed $20261002$.
-4. **Resumption & Checkpointing:** If a cloud session times out or disconnects, re-running the script automatically resumes from the last completed model/method without re-computing past windows.
-
----
-
-### Stage 6.1: Running the Two-Model CTC Extension on Kaggle
-
-To evaluate the two additional CTC models (`facebook/wav2vec2-large-960h-lv60` and `facebook/wav2vec2-large-robust-ft-libri-960h`):
-
-1. In Kaggle, open a notebook with **GPU enabled (Tesla P100 or T4)** and **Internet ON**.
-2. Run setup:
-   ```python
-   !python cloud/kaggle/setup_kaggle.py
-   ```
-3. Run Stage 6.1 Preflight Audit (verifies AutoModelForCTC, CTC logits, Shannon frame entropy, SUTA update, and DSG shadow isolation):
-   ```python
-   !python scripts/stage6/06_stage6_1_preflight_audit.py
-   ```
-4. Run the Stage 6.1 Extension across 225 prequential windows:
-   ```python
-   !python cloud/kaggle/run_stage6_1_extension.py
-   ```
-5. Download `stage6_1_results_bundle.zip` from `/kaggle/working/` (right panel Output).
-6. In your local project, extract the bundle and merge results into the unified 8-model suite:
+1. Look at the right-hand sidebar under **Output**.
+2. Click the three dots next to `stage5_stage6_results_bundle.zip` $\to$ **Download**.
+3. Extract directly into your local repository:
    ```bash
-   unzip -o ~/Downloads/stage6_1_results_bundle.zip -d .
-   python scripts/stage6/09_merge_stage6_1_into_stage6.py
+   unzip -o ~/Downloads/stage5_stage6_results_bundle.zip -d .
    ```
 
+---
+
+### Methodological & Scientific Invariants Enforced
+
+1. **Frozen Safety Policy**:
+   $$\epsilon_R = 0.00\text{ pp} \ (0.0000), \quad \epsilon_G = +2.00\text{ pp} \ (0.0200), \quad \epsilon_D = +2.00\text{ pp} \ (0.0200)$$
+   $$B = 1,000 \text{ resamples}, \quad \alpha = 0.05 \ (95\% \text{ confidence})$$
+2. **Strict Online Label Isolation**:
+   - Candidate-update acceptance decisions are made exclusively on the **Sentinel Panel ($N=30$ independent speakers)**.
+   - Reference transcripts of the incoming evaluation stream are strictly quarantined via `LabelIsolationSanitizer` during adaptation.
+3. **Primary Diagnostic Result — Operational vs. Retrospective Agreement**:
+   - The runner logs both the operational gate decision (ACCEPT/REJECT) and the retrospective ground-truth outcome on the stream.
+   - Specifically records **False Approvals** (cases where the operational gate accepted a candidate that was retrospectively harmful on the test stream) as a critical diagnostic of controller limitations.
+4. **Seq2Seq Static-Only Boundary**:
+   - `whisper_base`, `distil_whisper_small`, and `whisper_tiny` are evaluated strictly as static No-Adapt portability controls, preserving architectural honesty.
+5. **GPU VRAM Safety**:
+   - Between models and stages, explicit `del model`, `torch.cuda.empty_cache()`, and `gc.collect()` prevent out-of-memory errors on 16GB VRAM.
+6. **Automatic Resumption & Checkpointing**:
+   - If a cloud session disconnects or times out, re-running automatically resumes from the last completed checkpoint without re-running finished streams.

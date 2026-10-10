@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_whisper_base_noise_15db_no_adapt_order_a_k4",
+  "method_id": "no_adapt",
+  "model_id": "whisper_base",
+  "stream_id": "stream_order_a_k4_s959371278",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9764,
+  "speaker_macro_wer": 0.9764,
+  "disparity_d": 0.0978,
+  "disparity_ratio_r": 1.104,
+  "best_group_id": "Arabic",
+  "worst_group_id": "Hindi",
+  "total_adaptation_time_seconds": 3.6519,
+  "total_inference_time_seconds": 571.6419,
+  "num_updates": 0,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.9402,
+    "Hindi": 1.038,
+    "Korean": 0.9511,
+    "Mandarin": 0.9837,
+    "Spanish": 0.962,
+    "Vietnamese": 0.9837
+  },
+  "elapsed_seconds": 579.06
+}

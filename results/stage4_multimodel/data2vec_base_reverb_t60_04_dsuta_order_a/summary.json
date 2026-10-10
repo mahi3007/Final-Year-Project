@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_data2vec_base_reverb_t60_04_dsuta_order_a_k4",
+  "method_id": "dsuta",
+  "model_id": "data2vec_base",
+  "stream_id": "stream_order_a_k4_s506729682",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.904,
+  "speaker_macro_wer": 0.904,
+  "disparity_d": 0.087,
+  "disparity_ratio_r": 1.102,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Hindi",
+  "total_adaptation_time_seconds": 208.4313,
+  "total_inference_time_seconds": 51.2786,
+  "num_updates": 29,
+  "num_resets": 1,
+  "group_wers": {
+    "Arabic": 0.9185,
+    "Hindi": 0.9402,
+    "Korean": 0.9022,
+    "Mandarin": 0.8533,
+    "Spanish": 0.9022,
+    "Vietnamese": 0.9076
+  },
+  "elapsed_seconds": 260.43
+}

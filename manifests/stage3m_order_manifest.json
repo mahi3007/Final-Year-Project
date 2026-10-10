@@ -1,0 +1,56 @@
+{
+  "protocol_version": "v1.1.0-model-expansion",
+  "orders": {
+    "ORDER_A": {
+      "ordering_id": "ORDER_A",
+      "group_sequence": [
+        "Arabic",
+        "Hindi",
+        "Korean",
+        "Mandarin",
+        "Spanish",
+        "Vietnamese"
+      ],
+      "description": "Canonical ascending group ordering",
+      "stream_hash": "e02b45a1fd0070116800e79940ec34ef1d0956a8d95a034a1bf987c43f08f778",
+      "total_utterances": 60,
+      "window_count": 15,
+      "window_size_k": 4,
+      "seed": 42
+    },
+    "ORDER_B": {
+      "ordering_id": "ORDER_B",
+      "group_sequence": [
+        "Vietnamese",
+        "Spanish",
+        "Mandarin",
+        "Korean",
+        "Hindi",
+        "Arabic"
+      ],
+      "description": "Reverse group ordering",
+      "stream_hash": "e45bd9d0921c06db3a830efbdec8725bcec9c0f6e4cb89976f647b95c9bf5e74",
+      "total_utterances": 60,
+      "window_count": 15,
+      "window_size_k": 4,
+      "seed": 42
+    },
+    "ORDER_C": {
+      "ordering_id": "ORDER_C",
+      "group_sequence": [
+        "Hindi",
+        "Mandarin",
+        "Arabic",
+        "Vietnamese",
+        "Korean",
+        "Spanish"
+      ],
+      "description": "Interleaved group permutation",
+      "stream_hash": "5dc02804e713625a856f87e70ea9aa72262378f7a3d028f26c4715767243b98f",
+      "total_utterances": 60,
+      "window_count": 15,
+      "window_size_k": 4,
+      "seed": 42
+    }
+  }
+}

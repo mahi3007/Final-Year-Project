@@ -1,0 +1,28 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_base_reverb_t60_04_dsuta_order_b_k4",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_b_k4_s1415839660",
+  "ordering_id": "ORDER_B",
+  "seed": 1415839660,
+  "stream_hash": "a8a80f88165f31e6f032ed974fe38d00a4d05ed5336fb3927d6cf5e00ac31b75",
+  "model_id": "wav2vec2_base",
+  "method_id": "dsuta",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {
+    "lr": 0.0001,
+    "temperature": 2.5,
+    "alpha": 0.5,
+    "steps": 1,
+    "reset_threshold_ratio": 1.25
+  },
+  "timestamp": "2026-10-10T06:36:21Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_base_reverb_t60_04_dsuta_order_b\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_base_reverb_t60_04_dsuta_order_b\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_base_reverb_t60_04_dsuta_order_b\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\wav2vec2_base_reverb_t60_04_dsuta_order_b\\adaptation_trajectory.csv"
+  }
+}

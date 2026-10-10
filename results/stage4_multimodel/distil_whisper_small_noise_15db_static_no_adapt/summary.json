@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_distil_whisper_small_noise_15db_no_adapt_order_a_k4",
+  "method_id": "no_adapt",
+  "model_id": "distil_whisper_small",
+  "stream_id": "stream_order_a_k4_s667293619",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.8587,
+  "speaker_macro_wer": 0.8587,
+  "disparity_d": 0.1413,
+  "disparity_ratio_r": 1.179,
+  "best_group_id": "Mandarin",
+  "worst_group_id": "Vietnamese",
+  "total_adaptation_time_seconds": 7.6304,
+  "total_inference_time_seconds": 1446.8065,
+  "num_updates": 0,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.9239,
+    "Hindi": 0.8533,
+    "Korean": 0.8315,
+    "Mandarin": 0.788,
+    "Spanish": 0.8261,
+    "Vietnamese": 0.9293
+  },
+  "elapsed_seconds": 1462.71
+}

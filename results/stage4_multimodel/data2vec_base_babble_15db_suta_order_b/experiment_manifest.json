@@ -1,0 +1,27 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_data2vec_base_babble_15db_suta_order_b_k4",
+  "protocol_version": "v1.0.0-canonical",
+  "stream_id": "stream_order_b_k4_s555101633",
+  "ordering_id": "ORDER_B",
+  "seed": 555101633,
+  "stream_hash": "fa7619ff89e5674bd8ca31a222fe6c492cce9c18ca7dc6a0202a5bb423d007a6",
+  "model_id": "data2vec_base",
+  "method_id": "suta",
+  "window_size_k": 4,
+  "total_windows": 30,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "adapter_config": {
+    "lr": 0.0001,
+    "temperature": 2.5,
+    "alpha": 0.5,
+    "steps": 1
+  },
+  "timestamp": "2026-10-10T08:18:50Z",
+  "output_files": {
+    "predictions_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\data2vec_base_babble_15db_suta_order_b\\predictions.csv",
+    "window_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\data2vec_base_babble_15db_suta_order_b\\window_metrics.csv",
+    "group_metrics_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\data2vec_base_babble_15db_suta_order_b\\group_metrics.csv",
+    "adaptation_trajectory_csv": "C:\\Users\\venka\\Downloads\\final year project main\\results\\stage4_multimodel\\data2vec_base_babble_15db_suta_order_b\\adaptation_trajectory.csv"
+  }
+}

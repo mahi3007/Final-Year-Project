@@ -1,0 +1,7 @@
+model_key,condition,method,window_size_k,total_windows,corpus_wer,disparity_d
+wav2vec2_base,clean,suta,2,60,0.8678,0.0978
+wav2vec2_base,noise_5db,suta,2,60,0.9855,0.0652
+wav2vec2_base,reverb_t60_04,suta,2,60,0.9384,0.0924
+wav2vec2_base,clean,suta,8,15,0.8777,0.0815
+wav2vec2_base,noise_5db,suta,8,15,0.9819,0.0489
+wav2vec2_base,reverb_t60_04,suta,8,15,0.9402,0.0815

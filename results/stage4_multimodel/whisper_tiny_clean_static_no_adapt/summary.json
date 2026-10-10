@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_whisper_tiny_clean_no_adapt_order_a_k4",
+  "method_id": "no_adapt",
+  "model_id": "whisper_tiny",
+  "stream_id": "stream_order_a_k4_s554166139",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9538,
+  "speaker_macro_wer": 0.9538,
+  "disparity_d": 0.2011,
+  "disparity_ratio_r": 1.23,
+  "best_group_id": "Hindi",
+  "worst_group_id": "Korean",
+  "total_adaptation_time_seconds": 2.4678,
+  "total_inference_time_seconds": 757.6345,
+  "num_updates": 0,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.9565,
+    "Hindi": 0.875,
+    "Korean": 1.0761,
+    "Mandarin": 0.9076,
+    "Spanish": 0.9293,
+    "Vietnamese": 0.9783
+  },
+  "elapsed_seconds": 763.05
+}

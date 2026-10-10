@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_wav2vec2_100h_noise_15db_no_adapt_order_a_k4",
+  "method_id": "no_adapt",
+  "model_id": "wav2vec2_100h",
+  "stream_id": "stream_order_a_k4_s2029436611",
+  "ordering_id": "ORDER_A",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9447,
+  "speaker_macro_wer": 0.9447,
+  "disparity_d": 0.1196,
+  "disparity_ratio_r": 1.139,
+  "best_group_id": "Korean",
+  "worst_group_id": "Mandarin",
+  "total_adaptation_time_seconds": 0.0534,
+  "total_inference_time_seconds": 26.4866,
+  "num_updates": 0,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.9565,
+    "Hindi": 0.9402,
+    "Korean": 0.8587,
+    "Mandarin": 0.9783,
+    "Spanish": 0.9783,
+    "Vietnamese": 0.9565
+  },
+  "elapsed_seconds": 26.92
+}

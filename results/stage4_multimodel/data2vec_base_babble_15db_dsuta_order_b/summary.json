@@ -1,0 +1,29 @@
+{
+  "experiment_id": "EXP_v1.1.0_STAGE4M_data2vec_base_babble_15db_dsuta_order_b_k4",
+  "method_id": "dsuta",
+  "model_id": "data2vec_base",
+  "stream_id": "stream_order_b_k4_s1924190885",
+  "ordering_id": "ORDER_B",
+  "window_size_k": 4,
+  "total_utterances": 120,
+  "total_reference_words": 1104,
+  "corpus_wer": 0.9248,
+  "speaker_macro_wer": 0.9248,
+  "disparity_d": 0.1087,
+  "disparity_ratio_r": 1.125,
+  "best_group_id": "Korean",
+  "worst_group_id": "Vietnamese",
+  "total_adaptation_time_seconds": 129.9582,
+  "total_inference_time_seconds": 28.0157,
+  "num_updates": 29,
+  "num_resets": 0,
+  "group_wers": {
+    "Arabic": 0.9348,
+    "Hindi": 0.8859,
+    "Korean": 0.8696,
+    "Mandarin": 0.9293,
+    "Spanish": 0.9511,
+    "Vietnamese": 0.9783
+  },
+  "elapsed_seconds": 158.43
+}
