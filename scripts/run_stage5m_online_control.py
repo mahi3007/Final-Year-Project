@@ -137,6 +137,98 @@ def resolve_audio_path(raw_path: str, project_root: Path) -> str:
     return str(project_root / clean_str)
 
 
+def ensure_audio_assets_extracted(project_root: Path):
+    """Auto-detects and extracts audio bundles if clips are missing on disk, or links from parent dir."""
+    import tarfile
+    import shutil
+    sentinel_dir = project_root / "datasets" / "external" / "common_voice_27" / "sentinel_audio"
+    primary_dir = project_root / "datasets" / "primary" / "audio"
+
+    has_sentinel = sentinel_dir.exists() and len(list(sentinel_dir.glob("*.mp3"))) >= 300
+    has_primary = primary_dir.exists() and len(list(primary_dir.glob("*.wav"))) >= 240
+
+    if has_sentinel and has_primary:
+        return
+
+    # Check parent directory in case of nested clone (e.g. /kaggle/working/project/project)
+    parent_sent = project_root.parent / "datasets" / "external" / "common_voice_27" / "sentinel_audio"
+    if parent_sent.exists() and len(list(parent_sent.glob("*.mp3"))) >= 300 and not has_sentinel:
+        print(f"Detected sentinel audio in parent {project_root.parent}. Linking / copying into {project_root}...")
+        sentinel_dir.mkdir(parents=True, exist_ok=True)
+        for f in parent_sent.glob("*.mp3"):
+            target_f = sentinel_dir / f.name
+            if not target_f.exists():
+                try:
+                    os.symlink(f, target_f)
+                except Exception:
+                    shutil.copy2(f, target_f)
+        has_sentinel = len(list(sentinel_dir.glob("*.mp3"))) >= 300
+
+    parent_prim = project_root.parent / "datasets" / "primary" / "audio"
+    if parent_prim.exists() and len(list(parent_prim.glob("*.wav"))) >= 240 and not has_primary:
+        print(f"Detected primary audio in parent {project_root.parent}. Linking / copying into {project_root}...")
+        primary_dir.mkdir(parents=True, exist_ok=True)
+        for f in parent_prim.glob("*.wav"):
+            target_f = primary_dir / f.name
+            if not target_f.exists():
+                try:
+                    os.symlink(f, target_f)
+                except Exception:
+                    shutil.copy2(f, target_f)
+        has_primary = len(list(primary_dir.glob("*.wav"))) >= 240
+
+    parent_corr = project_root.parent / "datasets" / "corrupted"
+    target_corr = project_root / "datasets" / "corrupted"
+    if parent_corr.exists() and not (target_corr.exists() and any(target_corr.iterdir())):
+        target_corr.mkdir(parents=True, exist_ok=True)
+        for sub in parent_corr.rglob("*.wav"):
+            rel = sub.relative_to(parent_corr)
+            dest = target_corr / rel
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            if not dest.exists():
+                try:
+                    os.symlink(sub, dest)
+                except Exception:
+                    shutil.copy2(sub, dest)
+
+    if has_sentinel and has_primary:
+        return
+
+    print("Audio assets not yet extracted. Searching for audio bundle archives...")
+    candidate_roots = [
+        project_root,
+        project_root.parent,
+        Path.cwd(),
+        Path.cwd().parent,
+        Path("/kaggle/working"),
+        Path("/kaggle/working/project"),
+        Path("/kaggle/input"),
+    ]
+
+    seen_archives = set()
+    for root in candidate_roots:
+        if not root.exists():
+            continue
+        candidates = (
+            list(root.glob("*audio*bundle*.tar.gz"))
+            + list(root.rglob("stage5m_audio_bundle.tar.gz"))
+            + list(root.glob("*.tar.gz"))
+        )
+        for arch in candidates:
+            if arch.is_file() and not arch.name.startswith("dateutil") and arch not in seen_archives:
+                seen_archives.add(arch)
+                print(f"Auto-extracting {arch.name} into {project_root}...")
+                try:
+                    with tarfile.open(arch, "r:gz") as tar:
+                        tar.extractall(path=project_root)
+                    print(f"Successfully extracted {arch.name}.")
+                except Exception as e:
+                    print(f"Notice: Failed to extract {arch.name}: {e}")
+                # Re-check
+                if sentinel_dir.exists() and len(list(sentinel_dir.glob("*.mp3"))) >= 300:
+                    return
+
+
 def derive_run_seed(experiment_id: str, base_seed: int = 42) -> int:
     h = hashlib.sha256(f"{experiment_id}_{base_seed}".encode("utf-8")).hexdigest()
     return int(h[:8], 16) % (2**31 - 1)
@@ -616,6 +708,9 @@ def run_stage5m_suite(
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     CHECKPOINTS_DIR.mkdir(parents=True, exist_ok=True)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    # 0. Ensure audio assets are unpacked and available
+    ensure_audio_assets_extracted(PROJECT_ROOT)
 
     # 1. Load Sentinel Panel & Resolver
     print("\n>>> INITIALIZING SENTINEL PANEL & DSG EVALUATOR...")

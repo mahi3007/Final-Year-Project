@@ -200,6 +200,39 @@ class SentinelAudioResolver:
 
         # 4. Verify file exists and is non-empty
         if not local_path.exists():
+            # Check alternative search locations across nested clone trees (e.g. /kaggle/working/project/project)
+            for alt_root in [self.project_root.parent, Path.cwd(), Path.cwd().parent, Path("/kaggle/working/project"), Path("/kaggle/working")]:
+                alt_path = (alt_root / local_rel).resolve()
+                if alt_path.is_file():
+                    local_path = alt_path
+                    break
+
+        if not local_path.exists():
+            # Auto-extract from audio bundles if present in surrounding directories
+            for search_dir in [self.project_root, self.project_root.parent, Path.cwd(), Path.cwd().parent, Path("/kaggle/working"), Path("/kaggle/working/project"), Path("/kaggle/input")]:
+                if search_dir.exists():
+                    candidates = list(search_dir.glob("*audio*bundle*.tar.gz")) + list(search_dir.rglob("stage5m_audio_bundle.tar.gz"))
+                    for bundle in candidates:
+                        if bundle.is_file():
+                            import tarfile
+                            try:
+                                with tarfile.open(bundle, "r:gz") as tar:
+                                    tar.extractall(path=self.project_root)
+                            except Exception:
+                                pass
+                            break
+                    if local_path.exists():
+                        break
+                    # Re-check alt paths if archive was unpacked elsewhere
+                    for alt_root in [self.project_root.parent, Path.cwd(), Path.cwd().parent, Path("/kaggle/working/project"), Path("/kaggle/working")]:
+                        alt_path = (alt_root / local_rel).resolve()
+                        if alt_path.is_file():
+                            local_path = alt_path
+                            break
+                    if local_path.exists():
+                        break
+
+        if not local_path.exists():
             raise SentinelAudioResolutionError(
                 f"FAIL-CLOSED: Sentinel audio file missing on disk: {local_path} "
                 f"(expected for sentinel_id '{entry.get('sentinel_id')}')."
