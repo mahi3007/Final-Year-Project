@@ -107,18 +107,34 @@ ADAPTER_CONFIGS = {
 
 
 def resolve_audio_path(raw_path: str, project_root: Path) -> str:
-    """Cross-platform audio filepath resolver handling relative/absolute paths."""
-    p = Path(raw_path)
-    if p.exists():
+    """Cross-platform audio filepath resolver handling relative/absolute paths and mixed slash styles."""
+    clean_str = str(raw_path).replace("\\", "/").strip()
+    
+    # 1. If it's already an existing file on the filesystem
+    p = Path(clean_str)
+    if p.is_file():
         return str(p)
-    parts = p.parts
-    if "datasets" in parts:
-        idx = parts.index("datasets")
-        rel = Path(*parts[idx:])
-        candidate = project_root / rel
-        if candidate.exists():
+    
+    # 2. Extract relative path starting from 'datasets/'
+    if "datasets/" in clean_str:
+        idx = clean_str.index("datasets/")
+        rel_path = clean_str[idx:]
+        candidate = project_root / rel_path
+        if candidate.is_file():
             return str(candidate)
-    return str(project_root / raw_path)
+
+    # 3. Direct relative to project root
+    candidate = project_root / clean_str
+    if candidate.is_file():
+        return str(candidate)
+
+    # 4. Search by filename inside datasets/
+    fname = p.name
+    matches = list((project_root / "datasets").rglob(fname))
+    if matches:
+        return str(matches[0])
+
+    return str(project_root / clean_str)
 
 
 def derive_run_seed(experiment_id: str, base_seed: int = 42) -> int:

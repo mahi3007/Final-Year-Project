@@ -30,7 +30,7 @@ def load_and_resample_audio(
 ) -> Tuple[np.ndarray, int]:
     """Load audio and ensure mono 16kHz float32 waveform."""
     if isinstance(filepath_or_array, (str, Path)):
-        filepath_str = str(filepath_or_array)
+        filepath_str = str(filepath_or_array).replace("\\", "/")
         if not os.path.exists(filepath_str):
             raise FileNotFoundError(f"Audio file not found: {filepath_str}")
         audio, sr = sf.read(filepath_str)
