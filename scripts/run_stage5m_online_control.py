@@ -663,6 +663,8 @@ def run_stage5m_suite(
         c_path = PROJECT_ROOT / c_rel
         assert c_path.exists(), f"Condition partition not found: {c_path}"
         utts = load_partition_from_csv(str(c_path))
+        for u in utts:
+            u.audio_filepath = resolve_audio_path(u.audio_filepath, PROJECT_ROOT)
         condition_partitions[c_name] = utts
         print(f"Acoustic Condition Loaded: {c_name:15s} ({len(utts)} utts)")
 

@@ -11,16 +11,51 @@ import numpy as np
 import soundfile as sf
 
 
-def compute_audio_sha256(filepath: str) -> str:
+def _find_audio_file(filepath_str: str) -> Optional[str]:
+    """Robustly locates audio file across operating systems, nested paths, and directory layouts."""
+    clean_str = str(filepath_str).replace("\\", "/").strip()
+    if os.path.exists(clean_str) and os.path.isfile(clean_str):
+        return clean_str
+
+    # Check relative to current working directory
+    p_cwd = Path.cwd() / clean_str
+    if p_cwd.is_file():
+        return str(p_cwd)
+
+    # Check relative to module root hierarchy
+    mod_root = Path(__file__).resolve().parent.parent.parent.parent
+    p_mod = mod_root / clean_str
+    if p_mod.is_file():
+        return str(p_mod)
+
+    # Extract relative path starting from 'datasets/'
+    if "datasets/" in clean_str:
+        rel_datasets = clean_str[clean_str.index("datasets/"):]
+        for base in [Path.cwd(), Path.cwd().parent, mod_root, mod_root.parent]:
+            candidate = base / rel_datasets
+            if candidate.is_file():
+                return str(candidate)
+
+    # Search by filename in any datasets/ directory within search trees
+    fname = Path(clean_str).name
+    for search_root in [Path.cwd(), Path.cwd().parent, mod_root, mod_root.parent]:
+        d_dir = search_root / "datasets"
+        if d_dir.exists():
+            matches = list(d_dir.rglob(fname))
+            if matches:
+                return str(matches[0])
+
+    return None
+
+
+def compute_audio_sha256(filepath: str | Path) -> str:
     """Compute exact SHA256 checksum of raw audio file on disk."""
+    resolved = _find_audio_file(str(filepath)) or str(filepath).replace("\\", "/")
     hasher = hashlib.sha256()
-    with open(filepath, "rb") as f:
+    with open(resolved, "rb") as f:
         while chunk := f.read(65536):
             hasher.update(chunk)
     return hasher.hexdigest()
-
-
-from pathlib import Path
 
 
 def load_and_resample_audio(
@@ -30,10 +65,10 @@ def load_and_resample_audio(
 ) -> Tuple[np.ndarray, int]:
     """Load audio and ensure mono 16kHz float32 waveform."""
     if isinstance(filepath_or_array, (str, Path)):
-        filepath_str = str(filepath_or_array).replace("\\", "/")
-        if not os.path.exists(filepath_str):
-            raise FileNotFoundError(f"Audio file not found: {filepath_str}")
-        audio, sr = sf.read(filepath_str)
+        resolved = _find_audio_file(str(filepath_or_array))
+        if resolved is None:
+            raise FileNotFoundError(f"Audio file not found: {filepath_or_array}")
+        audio, sr = sf.read(resolved)
     else:
         audio = filepath_or_array
         sr = orig_sr or target_sr
