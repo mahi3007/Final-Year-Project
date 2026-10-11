@@ -87,7 +87,7 @@ def package_all_results() -> Path:
                 if d.exists():
                     for f in d.rglob("*"):
                         if f.is_file() and not f.name.endswith(".zip"):
-                            arc_name = f"stage5m/{f.relative_to(d.parent)}".replace("\\", "/")
+                            arc_name = f"stage5m/{f.relative_to(d)}".replace("\\", "/")
                             zf_5m.write(f, arcname=arc_name)
         sz_5m_kb = s5m_zip.stat().st_size / 1024
         print(f"Created dedicated Stage 5M archive: {s5m_zip} ({sz_5m_kb:.1f} KB)")

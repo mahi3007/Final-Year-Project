@@ -2,8 +2,8 @@
 ## Controlled Research Evaluation of the Operational Disparity Safety Gate
 
 **Protocol**: `v1.1.0-model-expansion` | **Standard**: ADR-005  
-**Execution Timestamp**: 2026-10-11 04:52:38 UTC  
-**Total Runtime**: 10.3 seconds (0.17 minutes)  
+**Execution Timestamp**: 2026-10-11 05:08:01 UTC  
+**Total Runtime**: 28.7 seconds (0.48 minutes)  
 
 ---
 
