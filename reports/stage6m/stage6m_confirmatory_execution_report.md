@@ -7,8 +7,8 @@
 **Authorization Token:** `AUTH-20261020-STAGE6M-AMEND-V134-EXECUTE-PERMITTED`  
 **Supervisor Record:** Prof. L.V. Srinivas (Identified Academic Supervisor; independent research record)  
 **Supervisor Disclaimer:** *The amendment does not represent or imply approval by the academic supervisor.*  
-**Execution Timestamp (UTC):** `2026-10-23T16:23:09.363298+00:00`  
-**Git Commit Revision:** `c18fdeeff988e0ca28e4d604dfd3bd2ee5d7ef4d`  
+**Execution Timestamp (UTC):** `2026-10-23T17:06:03.362624+00:00`  
+**Git Commit Revision:** `a43640107953f5297f0e630574546b9dec2c674e`  
 **Candidate Manifest SHA-256:** `610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895` (Cryptographically Verified)  
 
 ---
@@ -71,7 +71,7 @@ $$\boxed{\begin{aligned}
 
 ## 4. Hardware Runtime & Compute Footprint
 
-- **Total Execution Time:** `28.17` seconds (`0.47` minutes)
-- **Mean Window Latency:** `16.05` ms / window
-- **Peak Process RAM:** `3.51` MB
+- **Total Execution Time:** `27.12` seconds (`0.45` minutes)
+- **Mean Window Latency:** `15.45` ms / window
+- **Peak Process RAM:** `3.49` MB
 - **Replay Vault:** Serialized `1754` candidate states, recipes, and provenance logs to `checkpoints/stage6m/research_vault/`.

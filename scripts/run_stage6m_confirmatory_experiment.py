@@ -633,7 +633,7 @@ def execute_confirmatory_experiment() -> Dict[str, Any]:
 **Supervisor Disclaimer:** *The amendment does not represent or imply approval by the academic supervisor.*  
 **Execution Timestamp (UTC):** `{start_time_utc}`  
 **Git Commit Revision:** `{git_rev}`  
-**Candidate Manifest SHA-256:** `{EXPECTED_MANIFEST_SHA256}` (Cryptographically Verified)  
+**Candidate Manifest SHA-256:** `{computed_hash}` (Cryptographically Verified)  
 
 ---
 

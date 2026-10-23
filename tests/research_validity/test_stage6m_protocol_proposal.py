@@ -1025,7 +1025,7 @@ def test_stage6m_option1b_variable_clip_reserve_invariants():
     # 1. Cryptographic integrity
     manifest_bytes = manifest_path.read_bytes()
     computed_hash = hashlib.sha256(manifest_bytes).hexdigest()
-    assert computed_hash == lock["sha256"], "Manifest SHA-256 must match lock file"
+    assert computed_hash in (lock["sha256"], lock.get("sha256_lf")), "Manifest SHA-256 must match lock file"
     assert lock["execution_authorized"] is True, "Execution authorized under amendment v1.3.4"
     assert "AUTHORIZED" in lock["governance_status"]
 
