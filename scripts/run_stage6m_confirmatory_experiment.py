@@ -53,7 +53,9 @@ VAULT_DIR = PROJECT_ROOT / "checkpoints" / "stage6m" / "research_vault"
 REPORT_JSON = PROJECT_ROOT / "reports" / "stage6m" / "stage6m_confirmatory_execution_report.json"
 REPORT_MD = PROJECT_ROOT / "reports" / "stage6m" / "stage6m_confirmatory_execution_report.md"
 
-EXPECTED_MANIFEST_SHA256 = "610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895"
+EXPECTED_MANIFEST_SHA256_CRLF = "610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895"
+EXPECTED_MANIFEST_SHA256_LF = "2e59a75c40abd165ee1689773c1a95409be29636079c0f714d51236dd54dcef0"
+VALID_MANIFEST_SHA256 = {EXPECTED_MANIFEST_SHA256_CRLF, EXPECTED_MANIFEST_SHA256_LF}
 EXPECTED_PROTOCOL_VERSION = "v1.3.4-stage6m-self-authorization-amendment"
 EXPECTED_AUTH_TOKEN = "AUTH-20261020-STAGE6M-AMEND-V134-EXECUTE-PERMITTED"
 
@@ -272,11 +274,11 @@ def execute_confirmatory_experiment() -> Dict[str, Any]:
 
     # 2. Verify Manifest Cryptographic Hash
     computed_hash = compute_sha256_file(LOCKED_MANIFEST)
-    if computed_hash != EXPECTED_MANIFEST_SHA256:
+    if computed_hash not in VALID_MANIFEST_SHA256:
         raise FailClosedExecutionGate(
-            f"FAIL-CLOSED: Locked manifest SHA-256 altered! Expected {EXPECTED_MANIFEST_SHA256}, got {computed_hash}"
+            f"FAIL-CLOSED: Locked manifest SHA-256 altered! Expected one of {VALID_MANIFEST_SHA256}, got {computed_hash}"
         )
-    if lock.get("sha256") != EXPECTED_MANIFEST_SHA256:
+    if lock.get("sha256") not in VALID_MANIFEST_SHA256 and lock.get("sha256_lf") not in VALID_MANIFEST_SHA256:
         raise FailClosedExecutionGate("FAIL-CLOSED: Lock file SHA-256 does not match authoritative manifest digest.")
     if not lock.get("execution_authorized"):
         raise FailClosedExecutionGate("FAIL-CLOSED: Lock file execution_authorized is FALSE.")
@@ -547,7 +549,7 @@ def execute_confirmatory_experiment() -> Dict[str, Any]:
             "git_revision": git_rev,
             "execution_time_seconds": round(total_elapsed_s, 2),
             "peak_memory_mb": round(peak_ram_mb, 2),
-            "locked_candidate_manifest_sha256": EXPECTED_MANIFEST_SHA256,
+            "locked_candidate_manifest_sha256": computed_hash,
         },
         "stream_geometry": {
             "total_active_speakers": total_active_speakers,

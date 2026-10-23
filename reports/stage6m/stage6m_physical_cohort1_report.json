@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+    "execution_scope": "Cohort 1 Physical Prequential Stream (Stage 5B/6M Replication)",
+    "execution_mode": "Physical PyTorch wav2vec2-base-960h Acoustic Inference",
+    "timestamp_utc": "2026-10-23T16:46:24.839901+00:00",
+    "total_execution_seconds": 9890.8,
+    "stream_windows": 225,
+    "candidate_update_opportunities": 224,
+    "total_audio_clips": 900,
+    "total_speakers": 60,
+    "total_strata": 6,
+    "total_reference_words": 8667
+  },
+  "overall_results": {
+    "arm1_static_wer_pct": 22.85,
+    "arm2_ungated_wer_pct": 23.76,
+    "arm3_gated_wer_pct": 22.85,
+    "delta_arm3_vs_arm2_pp": -0.91,
+    "delta_arm3_vs_arm1_pp": 0.0,
+    "disparity_arm1_pp": 29.4,
+    "disparity_arm2_pp": 27.06,
+    "disparity_arm3_pp": 29.4,
+    "delta_disparity_arm3_vs_arm1_pp": 0.0,
+    "delta_disparity_arm3_vs_arm2_pp": 2.33
+  },
+  "gate_performance": {
+    "total_candidates": 224,
+    "accepted_updates": 0,
+    "rejected_updates": 224,
+    "acceptance_rate_pct": 0.0,
+    "rejection_rate_pct": 100.0
+  },
+  "inferential_statistics_speaker_clustered": {
+    "sample_size_n_speakers": 60,
+    "paired_t_arm3_vs_arm2": {
+      "t_statistic": -2.7137,
+      "p_value": 0.0087099229947911,
+      "statistically_significant_p05": true
+    },
+    "paired_t_arm3_vs_arm1": {
+      "t_statistic": NaN,
+      "p_value": NaN,
+      "statistically_significant_p05": false
+    }
+  },
+  "stratum_breakdown": [
+    {
+      "stratum": "Australian English",
+      "ref_words": 1467,
+      "wer_arm1_static": 23.59,
+      "wer_arm2_ungated": 24.27,
+      "wer_arm3_gated": 23.59,
+      "delta_g_arm3_vs_arm1": 0.0,
+      "delta_g_arm3_vs_arm2": -0.68
+    },
+    {
+      "stratum": "Canadian English",
+      "ref_words": 1518,
+      "wer_arm1_static": 12.91,
+      "wer_arm2_ungated": 14.56,
+      "wer_arm3_gated": 12.91,
+      "delta_g_arm3_vs_arm1": 0.0,
+      "delta_g_arm3_vs_arm2": -1.65
+    },
+    {
+      "stratum": "England English",
+      "ref_words": 1373,
+      "wer_arm1_static": 20.83,
+      "wer_arm2_ungated": 21.63,
+      "wer_arm3_gated": 20.83,
+      "delta_g_arm3_vs_arm1": 0.0,
+      "delta_g_arm3_vs_arm2": -0.8
+    },
+    {
+      "stratum": "Irish English",
+      "ref_words": 1365,
+      "wer_arm1_static": 15.75,
+      "wer_arm2_ungated": 18.68,
+      "wer_arm3_gated": 15.75,
+      "delta_g_arm3_vs_arm1": 0.0,
+      "delta_g_arm3_vs_arm2": -2.93
+    },
+    {
+      "stratum": "South Asian English",
+      "ref_words": 1456,
+      "wer_arm1_static": 42.31,
+      "wer_arm2_ungated": 41.62,
+      "wer_arm3_gated": 42.31,
+      "delta_g_arm3_vs_arm1": 0.0,
+      "delta_g_arm3_vs_arm2": 0.69
+    },
+    {
+      "stratum": "US English",
+      "ref_words": 1488,
+      "wer_arm1_static": 21.57,
+      "wer_arm2_ungated": 21.77,
+      "wer_arm3_gated": 21.57,
+      "delta_g_arm3_vs_arm1": 0.0,
+      "delta_g_arm3_vs_arm2": -0.2
+    }
+  ]
+}

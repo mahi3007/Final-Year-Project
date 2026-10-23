@@ -183,6 +183,17 @@ def main():
     print("      Execution speedup on Tesla P100: ~15x-20x relative to host CPU.")
     print(f"      Results will be exported to: {results_dir}")
 
+    print("\n[4/4] Executing Stage 6M Confirmatory Stream across 1,755 Windows...")
+    sys.path.insert(0, str(PROJECT_ROOT))
+    from scripts.run_stage6m_confirmatory_experiment import execute_confirmatory_experiment
+    report = execute_confirmatory_experiment()
+
+    # Also archive report copy into results_dir
+    out_json = results_dir / "stage6m_confirmatory_execution_report.json"
+    with open(out_json, "w", encoding="utf-8") as f:
+        json.dump(report, f, indent=2)
+    print(f"\n[PASS] Confirmatory Benchmark Complete. Results archived to {results_dir} and reports/stage6m/")
+
 
 if __name__ == "__main__":
     import copy

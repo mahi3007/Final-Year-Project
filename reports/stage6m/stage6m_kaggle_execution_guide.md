@@ -36,22 +36,24 @@ You have two easy options:
 2. Select [`cloud/kaggle/run_stage6m_cohort2_kaggle.ipynb`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/cloud/kaggle/run_stage6m_cohort2_kaggle.ipynb) from your local computer.
 
 #### Option B: Clone via Git
-In the first code cell:
-```bash
+In the setup code cell:
+```python
 !git clone https://github.com/mahi3007/Final-Year-Project.git project
 %cd project
 ```
+> [!IMPORTANT]
+> **Use `%cd project` instead of `!cd project`:** In Jupyter Notebooks, `!` commands run in an isolated subshell that exits immediately without changing the notebook kernel's working directory. Running `%cd project` ensures all subsequent Python code cells and manifest paths resolve relative to the cloned workspace.
 
 ### Step 4: Execute the Confirmatory Benchmark
 Run the notebook cells sequentially:
-1. **Cell 1:** Hardware verification (`torch.cuda.is_available()` returns `True`, displaying Tesla P100 16 GB VRAM).
-2. **Cell 2:** Dependency installation (`transformers`, `soundfile`, `editdistance`, `statsmodels`).
+1. **Cell 1:** Hardware verification (`torch.cuda.is_available()` returns `True`, displaying Tesla P100 / T4 16 GB VRAM).
+2. **Cell 2:** Navigate into workspace (`%cd project`) and install dependencies (`transformers`, `soundfile`, `editdistance`, `statsmodels`).
 3. **Cell 3:** Cryptographic lock check (verifies SHA-256 hash `610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895`).
 4. **Cell 4:** Launch the confirmatory runner:
    ```bash
    !python cloud/kaggle/run_stage6m_cohort2_benchmark.py
    ```
-5. **Cell 5:** Compress output artifacts into `stage6m_confirmatory_results.tar.gz`.
+5. **Cell 5:** Compress output artifacts into `/kaggle/working/stage6m_confirmatory_results.tar.gz`.
 
 ### Step 5: Download Confirmatory Results
 1. In the right-hand panel under **Output** (`/kaggle/working/`), find `stage6m_confirmatory_results.tar.gz`.
