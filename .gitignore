@@ -80,3 +80,15 @@ test_festvox.wav
 *.bin
 *.onnx
 *.safetensors
+
+# Temporary Kaggle downloads and extracted research bundles
+scratch/all_kaggle_research_outputs/
+scratch/extracted_stage5m_bundle/
+scratch/kaggle_kernel/
+scratch/kaggle_run_check/
+scratch/kaggle_run_output/
+scratch/kaggle_run_output_full/
+scratch/kaggle_run_output_utf8/
+scratch/selective_download/
+scratch/*.log
+

@@ -1,0 +1,13 @@
+{
+  "candidate_id": "cand_step_0002",
+  "stream_order": 2,
+  "window_clip_ids": [
+    "HJK_arctic_a0009",
+    "HJK_arctic_a0010",
+    "HKK_arctic_a0001",
+    "HKK_arctic_a0002"
+  ],
+  "optimizer": "SGD_Entropy_Min",
+  "learning_rate": 0.005,
+  "decision": "ACCEPT"
+}

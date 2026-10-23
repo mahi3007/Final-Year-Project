@@ -1,0 +1,17 @@
+{
+  "manifest_path": "stage6m_locked_candidate_manifest.json",
+  "sha256": "610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895",
+  "generated_timestamp_utc": "2026-10-20T07:00:24.413670+00:00",
+  "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+  "governing_standard": "ADR-005 (Amended via AMENDMENT-001)",
+  "total_active_speakers": 468,
+  "governance_status": "AUTHORIZED_UNDER_AMENDMENT_v1.3.4",
+  "execution_authorized": true,
+  "authorization_record": {
+    "authorizing_authority": "Designated Project Lead",
+    "basis": "Protocol Amendment-001: Internal ADR-005 supervisor signature requirement removed following confirmation that university rules do not mandate it.",
+    "supervisor_disclaimer": "The amendment does not represent or imply approval by the academic supervisor.",
+    "token": "AUTH-20261020-STAGE6M-AMEND-V134-EXECUTE-PERMITTED",
+    "effective_date": "2026-10-20"
+  }
+}

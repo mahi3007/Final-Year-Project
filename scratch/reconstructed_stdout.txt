@@ -1,0 +1,478 @@
+================================================================================
+STAGE 5M: CLOSED-LOOP ONLINE CONTROL ON KAGGLE GPU
+================================================================================
+CUDA Available : True
+GPU Device     : Tesla T4
+Total VRAM     : 14.56 GB
+Current Working Directory: /kaggle/working/project
+================================================================================
+STEP 1: INSTALLING / VERIFYING PYTHON DEPENDENCIES
+================================================================================
+Running: /usr/bin/python3 -m pip install -q transformers>=4.30.0 soundfile>=0.12.1 librosa>=0.10.0 editdistance>=0.6.2 statsmodels>=0.14.0 pandas>=2.0.0 numpy>=1.24.0 scipy>=1.10.0
+Dependencies successfully installed / verified.
+
+================================================================================
+STEP 2: HARDWARE ACCELERATOR CHECK (GPU / TPU)
+================================================================================
+CUDA Available  : True
+GPU Accelerator : Tesla T4
+Total VRAM      : 14.56 GB
+GPU Assessment  : EXCELLENT (Tesla P100 / T4 confirmed, 16GB VRAM)
+
+================================================================================
+STEP 3: AUDIO DATASET VERIFICATION & ARCHIVE EXTRACTION
+================================================================================
+Current local audio inventory:
+  - Common Voice 27 Eval Audio   : 0 / 900 clips
+  - Sentinel Panel Audio         : 0 / 300 clips
+  - L2-ARCTIC Primary Audio      : 240 / 240 clips
+  - L2-ARCTIC Corrupted Audio    : 480 / 480 clips
+Common Voice audio assets incomplete. Searching for archives...
+Extracting stage5m_audio_bundle.tar.gz into /kaggle/working/project...
+/kaggle/working/project/cloud/kaggle/setup_kaggle.py:77: DeprecationWarning: Python 3.14 will, by default, filter extracted tar archives and reject files or modify their metadata. Use the filter argument to control this behavior.
+  tar.extractall(path=target_dir)
+Extraction of stage5m_audio_bundle.tar.gz complete.
+Extracting stage6_audio_bundle.tar.gz into /kaggle/working/project...
+Extraction of stage6_audio_bundle.tar.gz complete.
+
+Post-extraction audio inventory:
+  - Common Voice 27 Eval Audio   : 900 / 900 clips
+  - Sentinel Panel Audio         : 300 / 300 clips
+  - L2-ARCTIC Primary Audio      : 240 / 240 clips
+  - L2-ARCTIC Corrupted Audio    : 480 / 480 clips
+
+================================================================================
+STEP 4: RUNNING PREFLIGHT INTEGRITY AUDIT
+================================================================================
+Running Stage 5M Research Validity Tests...
+[1m============================= test session starts ==============================[0m
+platform linux -- Python 3.13.15, pytest-8.4.2, pluggy-1.6.0
+rootdir: /kaggle/working/project
+configfile: pyproject.toml
+plugins: typeguard-4.6.0, anyio-4.14.2, langsmith-0.12.1
+[1mcollecting ... [0m[1mcollecting 4 items                                                             [0m[1mcollected 4 items                                                              [0m
+
+tests/research_validity/test_stage5m_online_control.py [32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m              [100%][0m
+
+[32m============================== [32m[1m4 passed[0m[32m in 0.73s[0m[32m ===============================[0m
+Stage 5M integrity invariants verified.
+===========================================================================
+STAGE 6: GPU & ENVIRONMENT PREFLIGHT VERIFICATION
+===========================================================================
+Timestamp: 2026-10-11T08:29:52Z
+Platform : Linux-6.18.48+-x86_64-with-glibc2.39
+Python   : 3.13.15
+
+[Check 1/10] PyTorch & Hardware Acceleration:
+  PyTorch Version : 2.11.0+cu128
+  CUDA Available  : True
+  GPU Device      : Tesla T4
+  Total VRAM      : 14.56 GB
+  VRAM Assessment : OPTIMAL (>= 14 GB, e.g. Tesla P100 / T4)
+
+[Check 2/10] Required Python Packages:
+  - transformers   : 5.16.1
+  - pandas         : 2.3.3
+  - numpy          : 2.1.3
+  - scipy          : 1.16.3
+  - statsmodels    : 0.15.0
+
+[Check 3/10] Audio Decoding Capabilities:
+  Audio decoders loaded successfully (soundfile / librosa).
+
+[Check 4/10] Gate Configuration Verification:
+  Frozen tolerances verified: eps_R=0.0000, eps_G=0.0200, eps_D=0.0200
+  Bootstrap parameters   : B=1000, seed=20261002
+
+[Check 5/10] External Evaluation Dataset Lock:
+  Verified 900 clips across 60 speakers, 6 strata (10 spk/stratum, 15 clips/spk).
+  SHA-256 Lock Verified: 41cec79d913a96aa... (Platform normalized match: PASS)
+
+[Check 6/10] Sentinel Panel & Canonical Audio Resolver:
+  Sentinel panel verified: 300 clips across 30 speakers (5 spk/stratum, 10 clips/spk).
+  Resolver verified: 300 audio clips mapped canonically.
+
+[Check 7/10] Physical Audio File Integrity:
+  External eval audio clips on disk: 900/900
+  Sentinel audio clips on disk     : 300/300
+
+[Check 8/10] Speaker Disjointness Firewall:
+  Zero speaker leakage verified between external eval stream and sentinel panel.
+
+[Check 9/10] Model Registry & Shadow Candidate Manager:
+  Available catalog models: ['wav2vec2_base', 'whisper_base', 'data2vec_base', 'distil_whisper_small', 'whisper_tiny', 'wav2vec2_100h', 'hubert_large', 'hubert_base', 'xlsr_english', 'wav2vec2_large_lv60', 'wav2vec2_large_robust', 'mock_asr']
+  ShadowCandidateManager deep-copy and parameter hashing verified.
+
+[Check 10/10] Online Label Isolation Firewall:
+  Data access firewall verified: Reference transcripts stripped from online batch.
+
+===========================================================================
+PREFLIGHT SUMMARY: 10/10 CHECKS PASSED. SYSTEM READY FOR STAGE 6.
+===========================================================================
+Stage 6 preflight check passed.
+
+================================================================================
+KAGGLE SETUP COMPLETE. READY TO RUN STAGE 5 & 6 BENCHMARKS.
+Run commands:
+  Stage 5M (Closed-Loop Online Control): python cloud/kaggle/run_stage5_and_stage6.py --stage 5m
+  Stage 6  (Six-Model Benchmark)       : python cloud/kaggle/run_stage5_and_stage6.py --stage 6
+  Stage 6.1 (Two-Model Large Extension): python cloud/kaggle/run_stage5_and_stage6.py --stage 6.1
+  All Stages (Unified Execution)       : python cloud/kaggle/run_stage5_and_stage6.py --stage all
+================================================================================
+================================================================================
+STAGE 5M: CLOUD GPU CLOSED-LOOP ONLINE CONTROL (KAGGLE / COLAB)
+================================================================================
+Detected Device: cuda
+GPU Hardware   : Tesla T4
+GPU Memory     : 14.56 GB VRAM
+
+Executing: /usr/bin/python3 /kaggle/working/project/scripts/run_stage5m_online_control.py --device cuda --smoke-test
+
+================================================================================
+STAGE 5M: CLOSED-LOOP ONLINE CONTROL SUITE
+Protocol: v1.1.0-model-expansion | ADR-005
+Stakeholder Decision: CONDITIONAL GO — Controlled Research Evaluation
+================================================================================
+Execution Device : cuda
+GPU Hardware     : Tesla T4 (14.56 GB VRAM)
+
+>>> INITIALIZING SENTINEL PANEL & DSG EVALUATOR...
+Frozen Tolerances: eps_R=0.0000 (0.00 pp), eps_G=0.0200 (2.00 pp), eps_D=0.0200 (2.00 pp)
+Bootstrap Policy : B=1000, conf=0.95, seed=20261002
+Sentinel Panel   : 300 clips across 30 speakers.
+Preloading 300 sentinel audio waveforms into memory...
+Sentinel waveforms preloaded (300 clips).
+Acoustic Condition Loaded: clean           (120 utts)
+
+*** SMOKE-TEST MODE ACTIVE (Fast 2-window validation) ***
+
+======================================================================
+LOADING CTC MODEL: wav2vec2_base...
+======================================================================
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+preprocessor_config.json:   0%|                       | 0.00/159 [00:00<?, ?B/s]preprocessor_config.json: 100%|█████████████████| 159/159 [00:00<00:00, 917kB/s]
+config.json:   0%|                                  | 0.00/1.60k [00:00<?, ?B/s]config.json: 100%|█████████████████████████| 1.60k/1.60k [00:00<00:00, 7.21MB/s]
+tokenizer_config.json:   0%|                          | 0.00/163 [00:00<?, ?B/s]tokenizer_config.json: 100%|███████████████████| 163/163 [00:00<00:00, 1.11MB/s]
+vocab.json:   0%|                                     | 0.00/291 [00:00<?, ?B/s]vocab.json: 100%|██████████████████████████████| 291/291 [00:00<00:00, 1.78MB/s]
+special_tokens_map.json:   0%|                       | 0.00/85.0 [00:00<?, ?B/s]special_tokens_map.json: 100%|████████████████| 85.0/85.0 [00:00<00:00, 569kB/s]
+
+model.safetensors: reconstructing file:   0%|      |  0.00B /  378MB            [Amodel.safetensors: downloading bytes:                       |  0.00B            model.safetensors: downloading bytes: ▌                     | 8.79MB            model.safetensors: downloading bytes: █▊                    | 30.9MB,  863kB/s  model.safetensors: downloading bytes: ██▊                   | 47.3MB, 3.02MB/s  model.safetensors: downloading bytes: ████▎                 | 74.8MB, 4.59MB/s  model.safetensors: downloading bytes: ██████▏               |  106MB, 7.23MB/s  
+model.safetensors: reconstructing file:  41%|██▍   |  156MB /  378MB            [Amodel.safetensors: downloading bytes: ███████▋              |  132MB, 10.2MB/s  
+model.safetensors: reconstructing file:  47%|██▊   |  177MB /  378MB, 15.1MB/s  [A
+model.safetensors: reconstructing file:  63%|███▊  |  236MB /  378MB, 17.0MB/s  [Amodel.safetensors: downloading bytes: ██████████▎           |  178MB, 14.1MB/s  
+model.safetensors: reconstructing file:  73%|████▎ |  274MB /  378MB, 22.5MB/s  [A
+model.safetensors: reconstructing file:  83%|████▉ |  314MB /  378MB, 25.9MB/s  [Amodel.safetensors: downloading bytes: ████████████▌         |  217MB, 18.1MB/s  model.safetensors: downloading bytes: ██████████████▏       |  243MB, 20.1MB/s  
+model.safetensors: reconstructing file: 100%|██████|  378MB /  378MB, 31.7MB/s  [Amodel.safetensors: downloading bytes: ██████████████████████|  254MB, 23.3MB/s  model.safetensors: downloading bytes: ██████████████████████|  254MB, 23.3MB/s  
+model.safetensors: reconstructing file: 100%|██████|  378MB /  378MB, 35.0MB/s  
+Loading weights:   0%|                                  | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████████████████| 212/212 [00:00<00:00, 2834.35it/s]
+
+--- Model: wav2vec2_base | Condition: clean | Method: no_adapt | ORDER_A ---
+  [Resume] Loaded completed checkpoint: STAGE5M_wav2vec2_base_clean_no_adapt_order_a_k4
+
+--- Model: wav2vec2_base | Condition: clean | Method: suta | Order: ORDER_A ---
+  [Resume] Loaded completed checkpoint: STAGE5M_wav2vec2_base_clean_suta_order_a_k4
+
+>>> SYNTHESIZING STAGE 5M RESULTS & AUDIT TABLES...
+================================================================================
+STAGE 5M EXECUTION COMPLETE in 23.1s (0.39 mins)
+Results CSV     : /kaggle/working/project/results/stage5m/stage5m_closed_loop_results.csv
+Decisions CSV   : /kaggle/working/project/results/stage5m/stage5m_operational_decisions.csv
+Agreement CSV   : /kaggle/working/project/results/stage5m/stage5m_decision_agreement_matrix.csv
+Summary Report  : /kaggle/working/project/reports/stage5m/stage5m_closed_loop_report.md
+================================================================================
+[0m
+>>> PACKAGING RESULTS BUNDLE...
+================================================================================
+PACKAGING STAGE 5 & STAGE 6 BENCHMARK RESULTS BUNDLE
+================================================================================
+
+Created unified archive: /kaggle/working/project/reports/stage5_stage6_results_bundle.zip (3.45 MB, 128 files packed)
+Created dedicated Stage 5M archive: /kaggle/working/project/reports/stage5m_results_bundle.zip (6.2 KB)
+Copied to Kaggle download directory: /kaggle/working/stage5m_results_bundle.zip
+Copied to Kaggle download directory: /kaggle/working/stage5_stage6_results_bundle.zip
+
+--> In Kaggle: Look in the right-hand panel under 'Output' -> Click 'Download' on 'stage5m_results_bundle.zip' or 'stage5_stage6_results_bundle.zip'
+
+Stage 5M cloud execution complete!
+================================================================================
+STAGE 5M: CLOUD GPU CLOSED-LOOP ONLINE CONTROL (KAGGLE / COLAB)
+================================================================================
+Detected Device: cuda
+GPU Hardware   : Tesla T4
+GPU Memory     : 14.56 GB VRAM
+
+Executing: /usr/bin/python3 /kaggle/working/project/scripts/run_stage5m_online_control.py --device cuda
+
+================================================================================
+STAGE 5M: CLOSED-LOOP ONLINE CONTROL SUITE
+Protocol: v1.1.0-model-expansion | ADR-005
+Stakeholder Decision: CONDITIONAL GO — Controlled Research Evaluation
+================================================================================
+Execution Device : cuda
+GPU Hardware     : Tesla T4 (14.56 GB VRAM)
+
+>>> INITIALIZING SENTINEL PANEL & DSG EVALUATOR...
+Frozen Tolerances: eps_R=0.0000 (0.00 pp), eps_G=0.0200 (2.00 pp), eps_D=0.0200 (2.00 pp)
+Bootstrap Policy : B=1000, conf=0.95, seed=20261002
+Sentinel Panel   : 300 clips across 30 speakers.
+Preloading 300 sentinel audio waveforms into memory...
+Sentinel waveforms preloaded (300 clips).
+Acoustic Condition Loaded: clean           (120 utts)
+Acoustic Condition Loaded: noise_15db      (120 utts)
+Acoustic Condition Loaded: noise_5db       (120 utts)
+Acoustic Condition Loaded: babble_15db     (120 utts)
+Acoustic Condition Loaded: reverb_t60_04   (120 utts)
+
+======================================================================
+LOADING CTC MODEL: wav2vec2_base...
+======================================================================
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|                                  | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████████████████| 212/212 [00:00<00:00, 2790.25it/s]
+
+--- Model: wav2vec2_base | Condition: clean | Method: no_adapt | ORDER_A ---
+  [Resume] Loaded completed checkpoint: STAGE5M_wav2vec2_base_clean_no_adapt_order_a_k4
+
+--- Model: wav2vec2_base | Condition: clean | Method: suta | Order: ORDER_A ---
+  [Resume] Loaded completed checkpoint: STAGE5M_wav2vec2_base_clean_suta_order_a_k4
+
+--- Model: wav2vec2_base | Condition: clean | Method: suta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: clean | Method: suta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: clean | Method: dsuta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: clean | Method: dsuta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: clean | Method: dsuta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: clean | Method: dmsuta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: clean | Method: dmsuta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: clean | Method: dmsuta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: noise_15db | Method: no_adapt | ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: noise_15db | Method: suta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: noise_15db | Method: suta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: noise_15db | Method: suta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: noise_15db | Method: dsuta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: noise_15db | Method: dsuta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: noise_15db | Method: dsuta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: noise_15db | Method: dmsuta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: noise_15db | Method: dmsuta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: noise_15db | Method: dmsuta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: noise_5db | Method: no_adapt | ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: noise_5db | Method: suta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: noise_5db | Method: suta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: noise_5db | Method: suta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: noise_5db | Method: dsuta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: noise_5db | Method: dsuta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: noise_5db | Method: dsuta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: noise_5db | Method: dmsuta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: noise_5db | Method: dmsuta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: noise_5db | Method: dmsuta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: babble_15db | Method: no_adapt | ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: babble_15db | Method: suta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: babble_15db | Method: suta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: babble_15db | Method: suta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: babble_15db | Method: dsuta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: babble_15db | Method: dsuta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: babble_15db | Method: dsuta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: babble_15db | Method: dmsuta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: babble_15db | Method: dmsuta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: babble_15db | Method: dmsuta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: reverb_t60_04 | Method: no_adapt | ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: reverb_t60_04 | Method: suta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: reverb_t60_04 | Method: suta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: reverb_t60_04 | Method: suta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: reverb_t60_04 | Method: dsuta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: reverb_t60_04 | Method: dsuta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: reverb_t60_04 | Method: dsuta | Order: ORDER_C ---
+
+--- Model: wav2vec2_base | Condition: reverb_t60_04 | Method: dmsuta | Order: ORDER_A ---
+
+--- Model: wav2vec2_base | Condition: reverb_t60_04 | Method: dmsuta | Order: ORDER_B ---
+
+--- Model: wav2vec2_base | Condition: reverb_t60_04 | Method: dmsuta | Order: ORDER_C ---
+
+======================================================================
+LOADING CTC MODEL: data2vec_base...
+======================================================================
+preprocessor_config.json:   0%|                       | 0.00/256 [00:00<?, ?B/s]preprocessor_config.json: 100%|████████████████| 256/256 [00:00<00:00, 1.08MB/s]
+config.json:   0%|                                  | 0.00/1.64k [00:00<?, ?B/s]config.json: 100%|█████████████████████████| 1.64k/1.64k [00:00<00:00, 3.78MB/s]
+tokenizer_config.json:   0%|                          | 0.00/565 [00:00<?, ?B/s]tokenizer_config.json: 100%|███████████████████| 565/565 [00:00<00:00, 2.59MB/s]
+vocab.json:   0%|                                     | 0.00/291 [00:00<?, ?B/s]vocab.json: 100%|██████████████████████████████| 291/291 [00:00<00:00, 1.09MB/s]
+special_tokens_map.json:   0%|                       | 0.00/85.0 [00:00<?, ?B/s]special_tokens_map.json: 100%|████████████████| 85.0/85.0 [00:00<00:00, 323kB/s]
+
+pytorch_model.bin: reconstructing file:   0%|      |  0.00B /  373MB            [Apytorch_model.bin: downloading bytes:                       |  0.00B            pytorch_model.bin: downloading bytes:                       |  141kB            pytorch_model.bin: downloading bytes: █▏                    | 19.7MB, 13.7kB/s  pytorch_model.bin: downloading bytes: ███▎                  | 55.3MB, 1.92MB/s  pytorch_model.bin: downloading bytes: ██████▍               |  109MB, 5.36MB/s  pytorch_model.bin: downloading bytes: █████████▋            |  163MB, 10.5MB/s  
+pytorch_model.bin: reconstructing file:  18%|█     | 67.1MB /  373MB            [A
+pytorch_model.bin: reconstructing file:  72%|████▎ |  268MB /  373MB, 6.46MB/s  [Apytorch_model.bin: downloading bytes: █████████████▎        |  225MB, 19.0MB/s  pytorch_model.bin: downloading bytes: ██████████████████████|  251MB, 22.9MB/s  pytorch_model.bin: downloading bytes: ██████████████████████|  251MB, 22.9MB/s  
+pytorch_model.bin: reconstructing file: 100%|██████|  373MB /  373MB, 34.7MB/s  
+Loading weights:   0%|                                  | 0/232 [00:00<?, ?it/s]Loading weights: 100%|██████████████████████| 232/232 [00:00<00:00, 7925.51it/s]
+
+--- Model: data2vec_base | Condition: clean | Method: no_adapt | ORDER_A ---
+
+model.safetensors: reconstructing file:   0%|      |  0.00B /  373MB            [Amodel.safetensors: downloading bytes:                       |  0.00B            model.safetensors: downloading bytes: ▋                     | 12.4MB            model.safetensors: downloading bytes: ██▍                   | 42.3MB, 1.21MB/s  model.safetensors: downloading bytes: ████▊                 | 81.9MB, 4.10MB/s  model.safetensors: downloading bytes: ███████▎              |  124MB, 7.91MB/s  model.safetensors: downloading bytes: ██████████▎           |  174MB, 11.9MB/s  model.safetensors: downloading bytes: ████████████▉         |  219MB, 16.6MB/s  
+model.safetensors: reconstructing file:  54%|███▏  |  201MB /  373MB            [Amodel.safetensors: downloading bytes: ██████████████████████|  251MB, 23.4MB/s  model.safetensors: downloading bytes: ██████████████████████|  251MB, 23.4MB/s  
+model.safetensors: reconstructing file: 100%|██████|  373MB /  373MB, 35.5MB/s  
+
+--- Model: data2vec_base | Condition: clean | Method: suta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: clean | Method: suta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: clean | Method: suta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: clean | Method: dsuta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: clean | Method: dsuta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: clean | Method: dsuta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: clean | Method: dmsuta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: clean | Method: dmsuta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: clean | Method: dmsuta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: noise_15db | Method: no_adapt | ORDER_A ---
+
+--- Model: data2vec_base | Condition: noise_15db | Method: suta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: noise_15db | Method: suta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: noise_15db | Method: suta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: noise_15db | Method: dsuta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: noise_15db | Method: dsuta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: noise_15db | Method: dsuta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: noise_15db | Method: dmsuta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: noise_15db | Method: dmsuta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: noise_15db | Method: dmsuta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: noise_5db | Method: no_adapt | ORDER_A ---
+
+--- Model: data2vec_base | Condition: noise_5db | Method: suta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: noise_5db | Method: suta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: noise_5db | Method: suta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: noise_5db | Method: dsuta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: noise_5db | Method: dsuta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: noise_5db | Method: dsuta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: noise_5db | Method: dmsuta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: noise_5db | Method: dmsuta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: noise_5db | Method: dmsuta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: babble_15db | Method: no_adapt | ORDER_A ---
+
+--- Model: data2vec_base | Condition: babble_15db | Method: suta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: babble_15db | Method: suta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: babble_15db | Method: suta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: babble_15db | Method: dsuta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: babble_15db | Method: dsuta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: babble_15db | Method: dsuta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: babble_15db | Method: dmsuta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: babble_15db | Method: dmsuta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: babble_15db | Method: dmsuta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: reverb_t60_04 | Method: no_adapt | ORDER_A ---
+
+--- Model: data2vec_base | Condition: reverb_t60_04 | Method: suta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: reverb_t60_04 | Method: suta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: reverb_t60_04 | Method: suta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: reverb_t60_04 | Method: dsuta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: reverb_t60_04 | Method: dsuta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: reverb_t60_04 | Method: dsuta | Order: ORDER_C ---
+
+--- Model: data2vec_base | Condition: reverb_t60_04 | Method: dmsuta | Order: ORDER_A ---
+
+--- Model: data2vec_base | Condition: reverb_t60_04 | Method: dmsuta | Order: ORDER_B ---
+
+--- Model: data2vec_base | Condition: reverb_t60_04 | Method: dmsuta | Order: ORDER_C ---
+
+======================================================================
+LOADING CTC MODEL: wav2vec2_100h...
+======================================================================
+preprocessor_config.json:   0%|                       | 0.00/159 [00:00<?, ?B/s]preprocessor_config.json: 100%|████████████████| 159/159 [00:00<00:00, 1.06MB/s]
+config.json:   0%|                                  | 0.00/1.43k [00:00<?, ?B/s]config.json: 100%|█████████████████████████| 1.43k/1.43k [00:00<00:00, 5.54MB/s]
+tokenizer_config.json:   0%|                          | 0.00/376 [00:00<?, ?B/s]tokenizer_config.json: 100%|███████████████████| 376/376 [00:00<00:00, 2.98MB/s]
+vocab.json:   0%|                                     | 0.00/358 [00:00<?, ?B/s]vocab.json: 100%|██████████████████████████████| 358/358 [00:00<00:00, 2.11MB/s]
+special_tokens_map.json:   0%|                       | 0.00/96.0 [00:00<?, ?B/s]special_tokens_map.json: 100%|████████████████| 96.0/96.0 [00:00<00:00, 757kB/s]
+
+pytorch_model.bin: reconstructing file:   0%|      |  0.00B /  378MB            [Apytorch_model.bin: downloading bytes:                       |  0.00B            pytorch_model.bin: downloading bytes:                       |  554kB            pytorch_model.bin: downloading bytes: █▊                    | 31.6MB, 54.0kB/s  pytorch_model.bin: downloading bytes: ███▋                  | 63.9MB, 3.07MB/s  pytorch_model.bin: downloading bytes: ██████▋               |  114MB, 6.18MB/s  pytorch_model.bin: downloading bytes: █████████▊            |  168MB, 11.0MB/s  pytorch_model.bin: downloading bytes: █████████████         |  225MB, 16.1MB/s  
+pytorch_model.bin: reconstructing file:  53%|███▏  |  201MB /  378MB            [A
+pytorch_model.bin: reconstructing file: 100%|██████|  378MB /  378MB, 19.3MB/s  [Apytorch_model.bin: downloading bytes: ██████████████████████|  254MB, 24.0MB/s  pytorch_model.bin: downloading bytes: ██████████████████████|  254MB, 24.0MB/s  
+pytorch_model.bin: reconstructing file: 100%|██████|  378MB /  378MB, 36.0MB/s  
+Loading weights:   0%|                                  | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████████████████| 212/212 [00:00<00:00, 7894.81it/s]
+
+--- Model: wav2vec2_100h | Condition: clean | Method: no_adapt | ORDER_A ---
+
+model.safetensors: reconstructing file:   0%|      |  0.00B /  378MB            [Amodel.safetensors: downloading bytes:                       |  0.00B            model.safetensors: downloading bytes: ▎                     | 4.81MB            model.safetensors: downloading bytes: █▍                    | 25.2MB,  469kB/s  model.safetensors: downloading bytes: ███▍                  | 59.8MB, 2.45MB/s  model.safetensors: downloading bytes: ██████                |  103MB, 5.77MB/s  model.safetensors: downloading bytes: ████████▌             |  148MB, 9.91MB/s  model.safetensors: downloading bytes: ███████████           |  191MB, 14.1MB/s  model.safetensors: downloading bytes: █████████████▋        |  236MB, 18.1MB/s  
+model.safetensors: reconstructing file: 100%|██████|  378MB /  378MB            [Amodel.safetensors: downloading bytes: ██████████████████████|  254MB, 23.5MB/s  model.safetensors: downloading bytes: ██████████████████████|  254MB, 23.5MB/s  
+model.safetensors: reconstructing file: 100%|██████|  378MB /  378MB, 36.0MB/s  
+
+--- Model: wav2vec2_100h | Condition: clean | Method: suta | Order: ORDER_A ---
+
+--- Model: wav2vec2_100h | Condition: clean | Method: suta | Order: ORDER_B ---
+
+--- Model: wav2vec2_100h | Condition: clean | Method: suta | Order: ORDER_C ---

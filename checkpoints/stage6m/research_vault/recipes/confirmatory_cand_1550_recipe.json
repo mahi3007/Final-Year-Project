@@ -1,0 +1,9 @@
+{
+  "candidate_id": "confirmatory_cand_1550",
+  "stream_order": 1550,
+  "optimizer": "Continual_Entropy_Min",
+  "learning_rate": 0.005,
+  "decision": "REJECT",
+  "live_model_hash": "93d0c30d12a332cdf3f4c272946582dcb13625e4cf51915686991a0dbb106172",
+  "candidate_model_hash": "6ab85314de04add25af8a18d078a7c3c2e30c00f0e2eee0bc2248dde625d7c3f"
+}

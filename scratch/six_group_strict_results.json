@@ -1,0 +1,390 @@
+{
+  "Australian English": {
+    "baseline_inventory": 400,
+    "failing_strict_count": 2,
+    "failing_strict_details": [
+      [
+        "4fe0eb6706bbcb9c916c8e3a\u2026",
+        15,
+        12
+      ],
+      [
+        "b835db39bd1c209687467f26\u2026",
+        15,
+        13
+      ]
+    ],
+    "strictly_eligible_total": 398,
+    "strictly_eligible_exposed": 15,
+    "q_overlap_e1": 0,
+    "q_overlap_es": 0,
+    "e1_count": 10,
+    "es_count": 5,
+    "other_exclusions": 0,
+    "net_available_unexposed_strict": 383
+  },
+  "Canadian English": {
+    "baseline_inventory": 511,
+    "failing_strict_count": 0,
+    "failing_strict_details": [],
+    "strictly_eligible_total": 511,
+    "strictly_eligible_exposed": 15,
+    "q_overlap_e1": 0,
+    "q_overlap_es": 0,
+    "e1_count": 10,
+    "es_count": 5,
+    "other_exclusions": 0,
+    "net_available_unexposed_strict": 496
+  },
+  "England English": {
+    "baseline_inventory": 1223,
+    "failing_strict_count": 10,
+    "failing_strict_details": [
+      [
+        "64b662519e5702fafd0d1142\u2026",
+        16,
+        14
+      ],
+      [
+        "847a6ca42db442f131107b13\u2026",
+        15,
+        14
+      ],
+      [
+        "04e6c290693ece0014531a5a\u2026",
+        15,
+        13
+      ],
+      [
+        "d66c4a4086501f2e809ae112\u2026",
+        19,
+        14
+      ],
+      [
+        "108d8f54744c4540317c94bd\u2026",
+        15,
+        13
+      ],
+      [
+        "4ac92e02afdc51ce2a77d205\u2026",
+        15,
+        14
+      ],
+      [
+        "3cc097e8fb45b9a7225fa891\u2026",
+        16,
+        8
+      ],
+      [
+        "062d40cdfa9ecc0142fb6e45\u2026",
+        15,
+        13
+      ],
+      [
+        "eef81ebcae5bd5f644f6f5c3\u2026",
+        15,
+        14
+      ],
+      [
+        "f2f0f9aa356bb291eaf01eda\u2026",
+        15,
+        14
+      ]
+    ],
+    "strictly_eligible_total": 1213,
+    "strictly_eligible_exposed": 15,
+    "q_overlap_e1": 0,
+    "q_overlap_es": 0,
+    "e1_count": 10,
+    "es_count": 5,
+    "other_exclusions": 0,
+    "net_available_unexposed_strict": 1198
+  },
+  "Irish English": {
+    "baseline_inventory": 94,
+    "failing_strict_count": 2,
+    "failing_strict_details": [
+      [
+        "fc22fd45334612a489c45562\u2026",
+        15,
+        14
+      ],
+      [
+        "f3ea04475e301f84785710b9\u2026",
+        15,
+        13
+      ]
+    ],
+    "strictly_eligible_total": 92,
+    "strictly_eligible_exposed": 14,
+    "q_overlap_e1": 1,
+    "q_overlap_es": 0,
+    "e1_count": 10,
+    "es_count": 5,
+    "other_exclusions": 0,
+    "net_available_unexposed_strict": 78
+  },
+  "South Asian English": {
+    "baseline_inventory": 764,
+    "failing_strict_count": 18,
+    "failing_strict_details": [
+      [
+        "68f6a6d4b661bf95b436c8cf\u2026",
+        15,
+        14
+      ],
+      [
+        "c82e910466a6daf30269f4e2\u2026",
+        17,
+        13
+      ],
+      [
+        "e63335914c5cefc2bf26043c\u2026",
+        17,
+        14
+      ],
+      [
+        "d80376b4949db041c53b45fc\u2026",
+        15,
+        14
+      ],
+      [
+        "6cd7653404104d87053bcef6\u2026",
+        15,
+        13
+      ],
+      [
+        "aeeab502a3a7bea6feeffc72\u2026",
+        15,
+        14
+      ],
+      [
+        "aeb2ce733a2be4c3324bd701\u2026",
+        15,
+        14
+      ],
+      [
+        "ab60eac21544ef9b87e78146\u2026",
+        15,
+        13
+      ],
+      [
+        "07004fed5c5e5b0eec54cada\u2026",
+        15,
+        14
+      ],
+      [
+        "08db8832be31a320e1e52247\u2026",
+        17,
+        14
+      ],
+      [
+        "95f6d62fb364e587f5ddf367\u2026",
+        17,
+        14
+      ],
+      [
+        "e1cb092c5225ac8abf8da7d4\u2026",
+        15,
+        14
+      ],
+      [
+        "0a0db76f30e3d011216425ef\u2026",
+        18,
+        12
+      ],
+      [
+        "197db23b78ddf54dd52e3ffc\u2026",
+        21,
+        3
+      ],
+      [
+        "e78fb51346ec751976528795\u2026",
+        15,
+        13
+      ],
+      [
+        "50bfe8d67a98f72e0eb681a4\u2026",
+        15,
+        13
+      ],
+      [
+        "25949e8d7229d181418b78ad\u2026",
+        15,
+        13
+      ],
+      [
+        "a7a33ab5ac9181d03e49a22a\u2026",
+        17,
+        14
+      ]
+    ],
+    "strictly_eligible_total": 746,
+    "strictly_eligible_exposed": 15,
+    "q_overlap_e1": 0,
+    "q_overlap_es": 0,
+    "e1_count": 10,
+    "es_count": 5,
+    "other_exclusions": 0,
+    "net_available_unexposed_strict": 731
+  },
+  "US English": {
+    "baseline_inventory": 3913,
+    "failing_strict_count": 29,
+    "failing_strict_details": [
+      [
+        "7097fd37459c7170a47b8a2c\u2026",
+        16,
+        14
+      ],
+      [
+        "ea0b3761814cc852bef71889\u2026",
+        15,
+        14
+      ],
+      [
+        "cb92106a056416968283d4cb\u2026",
+        15,
+        13
+      ],
+      [
+        "24925385cc1ace9fbe01611a\u2026",
+        15,
+        14
+      ],
+      [
+        "4fe1878a0585ac15bdb35082\u2026",
+        15,
+        14
+      ],
+      [
+        "0338799dba32266ce1d27176\u2026",
+        15,
+        14
+      ],
+      [
+        "b3ab209d6ff3fad6e945f499\u2026",
+        17,
+        9
+      ],
+      [
+        "204ee4b196500c3cd8a68aa6\u2026",
+        15,
+        14
+      ],
+      [
+        "1b781ac6da63e7ec62610ea4\u2026",
+        15,
+        14
+      ],
+      [
+        "72e3e15b854b70c01938228b\u2026",
+        15,
+        13
+      ],
+      [
+        "95e7dae602dc18e059a86241\u2026",
+        18,
+        13
+      ],
+      [
+        "57bbfadae29317538ce327ed\u2026",
+        15,
+        14
+      ],
+      [
+        "7a63f8131f6bb4ef07803995\u2026",
+        15,
+        14
+      ],
+      [
+        "35155bf7fe351664f2baa3ee\u2026",
+        15,
+        14
+      ],
+      [
+        "b314fb24bec5d00a679599d9\u2026",
+        15,
+        13
+      ],
+      [
+        "7c57b728e76cacc5531ccbba\u2026",
+        15,
+        14
+      ],
+      [
+        "6fd13ac122db1d7cd464ab9f\u2026",
+        16,
+        11
+      ],
+      [
+        "1f4a7df35bee3da1b62d4c67\u2026",
+        15,
+        13
+      ],
+      [
+        "0e1b4881dbfcf45ed46ecdf3\u2026",
+        19,
+        14
+      ],
+      [
+        "118a67a21bab22f940e97853\u2026",
+        20,
+        13
+      ],
+      [
+        "29bb6454ce898ae4452e8de8\u2026",
+        15,
+        14
+      ],
+      [
+        "5f437e7ebf8ff6bef221d5fb\u2026",
+        15,
+        14
+      ],
+      [
+        "82a1c355b822992f1b2dd3e6\u2026",
+        15,
+        14
+      ],
+      [
+        "6ed1063c178840f5a9a6fba4\u2026",
+        15,
+        11
+      ],
+      [
+        "de296504d25dc1a139db06e1\u2026",
+        15,
+        14
+      ],
+      [
+        "d674b453b299c01364bd5cc2\u2026",
+        16,
+        14
+      ],
+      [
+        "0e8fc1319b871940a4d8d845\u2026",
+        16,
+        8
+      ],
+      [
+        "879bc044821beaa29dbfb9e8\u2026",
+        15,
+        14
+      ],
+      [
+        "435fb74c25c3c55c31e397d6\u2026",
+        28,
+        0
+      ]
+    ],
+    "strictly_eligible_total": 3884,
+    "strictly_eligible_exposed": 15,
+    "q_overlap_e1": 0,
+    "q_overlap_es": 0,
+    "e1_count": 10,
+    "es_count": 5,
+    "other_exclusions": 0,
+    "net_available_unexposed_strict": 3869
+  }
+}

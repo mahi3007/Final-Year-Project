@@ -1,0 +1,435 @@
+<USER_REQUEST>
+Supervisor Review: Estimand and Power-Rule Reconciliation
+
+Verdict: The specification is substantially more rigorous, but I would not approve the proposed confirmatory analysis or authorize the next simulation yet.
+
+The report has correctly identified a mismatch between the existing protocol and the proposed four-model estimand, recognized the risks of inference under continual adaptation, and separated Monte Carlo uncertainty from the underlying power of the study.
+
+However, five issues still require resolution before the specification can be frozen. The most important is that the proposed primary estimand uses four models, while the model-role registry described in the same report does not authorize that four-model combination.
+
+I reviewed the report you supplied. I have not independently inspected your repository, reproduced the test run, or executed the statistical analysis.
+
+1. Critical blocker: The four-model estimand conflicts with the model-role registry
+
+Your proposed primary estimand is:
+
+$$ \Delta_R^{\text{spk-macro}} = \frac{1}{N}\sum_{s=1}^{N} \left[ \frac{1}{M} \sum_{m=1}^{M} \left( \operatorname{WER}_{s,m}^{(3)} - \operatorname{WER}_{s,m}^{(2)} \right) \right] $$
+
+with \(M=4\).
+
+Averaging the four model-specific effects is mathematically reasonable if the intended estimand is the mean effect across four prespecified model architectures.
+
+The problem is that the model-role table does not support the proposed selection as an already authorized design.
+
+Model	Reported registry status	Consequence
+wav2vec2_base	Primary CTC; Stage 6 overlap control	Existing primary track, but its role must be reconciled with the proposed confirmatory contrast.
+data2vec_base	Secondary CTC; overlap control	Including it in the primary estimand requires justification or an approved amendment.
+wav2vec2_100h	Not evaluated in Stage 6	Cannot be assumed to belong to the confirmatory model set.
+hubert_base	Not established in the supplied model-role table	Its identity and role must be resolved before inclusion.
+hubert_large	Held-out CTC in the supplied table	Not interchangeable with hubert_base.
+xlsr_english	Held-out CTC	A different candidate from the proposed four-model list.
+
+Your report already acknowledges that the four-model average is a proposed protocol amendment, rather than an existing ADR-005 requirement.
+
+My recommendation: Retain Wav2Vec2-base as the current primary candidate until the existing model-role registry and ADR-005 are reconciled. Treat the four-model aggregate as a proposed amendment requiring written supervisor approval.
+
+Do not run a four-model confirmatory power simulation until the model identities, checkpoints, adaptation eligibility, and primary/secondary roles have been settled.
+
+There is another detail to finalize: your primary estimand does not explicitly include the stream ordering \(o\). Because continual adaptation can make a speaker's outcome depend on the preceding stream, the specification needs to state whether results are averaged over ORDER_A, ORDER_B, and ORDER_C, evaluated separately by ordering, or combined through another prespecified method.
+
+2. The estimand is now mathematically clearer, with one important distinction
+
+The report defines each speaker's WER as:
+
+$$ \operatorname{WER}_{s,m}^{(a)} = \frac{S_{s,m}^{(a)}+D_{s,m}^{(a)}+I_{s,m}^{(a)}} {N_{s,\mathrm{ref}}} $$
+
+where edit counts are accumulated over the speaker's eligible utterances.
+
+It then averages the speaker-level contrasts equally across participants.
+
+That is a defensible approach for a fairness-focused study because it prevents speakers with substantially more reference words from dominating the primary result.
+
+However, it is important to describe the resulting quantity accurately.
+
+Your primary estimand is an equal-speaker macro-average of per-speaker WER differences—not the difference in pooled corpus WER.
+
+The distinction matters because conventional WER divides total word errors by the total number of reference words. Speaker-macro averaging instead gives every speaker equal weight after computing that speaker's WER. These quantities can differ when speakers contribute different amounts of speech.
+
+I recommend retaining the proposed equal-speaker estimand if it reflects your research objective, while making the following definitions explicit:
+
+WER is aggregated over each speaker's eligible utterances before the arm contrast is calculated.
+Each speaker receives equal weight.
+Each model receives equal weight only if the four-model amendment is approved.
+Group contributions are determined by the prespecified sampling and weighting scheme.
+The transcript normalization and reference-word rules remain fixed.
+Stream-order effects are handled explicitly rather than omitted from the estimand.
+
+The pooled-word contrast should remain a secondary descriptive result unless the supervisor approves a different primary target.
+
+3. Critical blocker: The safety confidence bound is not yet fully specified
+
+Your proposed safety statistic is:
+
+$$ D_m^{(a)} = \max_{g\in\mathcal G}\operatorname{WER}_{g,m}^{(a)} - \min_{g\in\mathcal G}\operatorname{WER}_{g,m}^{(a)} $$
+
+and:
+
+$$ \Delta_D = D^{(3)}-D^{(2)} $$
+
+where the model-level disparities are averaged across the proposed four models.
+
+This is a plausible way to measure the change in the range of group-level WERs.
+
+But three gaps remain.
+
+A. Group-level WER needs a definition
+
+The report does not fully specify whether \(\operatorname{WER}_{g,m}^{(a)}\) means:
+
+The equal-speaker average of individual speaker WERs within group \(g\); or
+Pooled-word WER across all speakers in group \(g\).
+
+Those are different estimands. Given your primary equal-speaker objective, I would recommend evaluating whether the first is the appropriate choice for consistency, but that choice must be explicit and approved.
+
+B. Averaging disparity across models can hide model-specific safety failures
+
+Your proposed statistic is:
+
+$$ D^{(a)} = \frac{1}{M}\sum_{m=1}^{M}D_m^{(a)}. $$
+
+This evaluates the average disparity across the selected models. A large disparity increase for one model could be offset by smaller decreases for other models.
+
+If your claim is that the gate controls disparity for every model, this average does not establish that stronger claim.
+
+The supervisor needs to choose between an average-model safety estimand and a safety requirement that also constrains adverse model-specific outcomes. The multiplicity and confidence-bound procedure must then match that decision.
+
+C. Calling the bound “adjusted” requires further specification
+
+The report proposes taking the 97.5th empirical percentile of \(B=1{,}000\) speaker-stratified bootstrap replicates.
+
+That defines a percentile-bootstrap upper bound, but the report does not specify what statistical adjustment makes it an adjusted upper confidence bound.
+
+With 1,000 bootstrap replicates, approximately 25 lie beyond the 97.5th percentile. This gives limited resolution for estimating such an upper-tail quantile.
+
+Bootstrap inference also depends on resampling at a unit that respects the dependence structure. Standard cluster bootstrap methods resample clusters rather than treating every observation as independent; the appropriate choice depends on the actual design.
+
+Required action: Specify the exact disparity statistic, the multiplicity family, the confidence-bound construction, and the resampling scheme. Do not use the label Adjusted UCB until the adjustment is defined.
+
+The \(+1.40\)-percentage-point safety threshold must remain:
+
+PROPOSED — NOT APPROVED AS A CONFIRMATORY SAFETY BOUNDARY
+
+It is not an approved ADR-005 threshold merely because it provides a margin below the operational \(+2.00\)-point ceiling.
+
+4. Critical blocker: The proposed bootstrap does not yet account for continual adaptation
+
+Your report correctly recognizes that the model's state carries forward through the stream:
+
+$$ \theta_{t+1} = \operatorname{Adapt}(\theta_t,B_t). $$
+
+Consequently, a speaker's outcome may depend on the preceding sequence of speakers and model updates.
+
+However, the report's proposed bootstrap resamples speakers and computes disparities on the resulting samples. That procedure does not automatically reproduce the trajectory dependence induced by continual adaptation.
+
+There are two different operations:
+
+Post-hoc resampling: Resample already computed speaker outcomes and recalculate the statistic.
+
+Trajectory-aware resampling: Construct an appropriate resampled stream and replay the adaptation procedure so that each evaluation reflects the state resulting from its preceding sequence.
+
+These procedures estimate uncertainty under different assumptions.
+
+The current specification must not claim that resampling speaker-level outcomes automatically preserves the adaptation trajectory.
+
+There is also a limitation with using only three prescribed orderings. Treating those three orderings as independent clusters would provide a very small number of clusters for conventional cluster-level inference. A bootstrap or mixed-effects model needs a justified dependence structure, not just a different statistical label.
+
+My recommendation
+
+Keep all three proposed inference approaches—stream-aware bootstrap, mixed-effects modelling and paired permutation—as candidates for methodological assessment.
+
+Before selecting one, determine:
+
+What population the inference is intended to generalize to.
+Whether the inference is conditional on the three prescribed stream orderings or generalizes beyond them.
+Whether the full adaptation procedure must be rerun in each resample.
+Whether the proposed model adequately represents the sequential state dependence.
+Whether the method satisfies the approved ADR-005 inferential requirements.
+
+Do not declare the paired Student-t test definitively invalid solely because state carry-forward permits dependence. Instead, require evidence that its assumptions are appropriate—or select a defensible alternative before confirmatory execution.
+
+5. The integrity criterion is clearer, but its role in joint power must be resolved
+
+The report now gives three missingness states:
+
+Missing outcome rate	Criterion C	Consequence
+\(0\%\)	Pass	Evaluate utility and safety criteria.
+More than \(0\%\), up to and including \(5\%\)	Fail	Result is inconclusive.
+More than \(5\%\)	Invalid	The run is disqualified.
+
+This is internally coherent as a proposed operational status system.
+
+However, the report defines:
+
+$$ N_{\text{total eval}} = T\times M\times 2\times|\mathcal O| $$
+
+where \(M\) is the number of models, 2 represents Arms 2 and 3, and \(\mathcal O\) denotes stream orderings.
+
+The specification must define \(T\) precisely: it needs to be the total number of required evaluation windows per complete stream, not an ambiguously defined count per speaker or per ordering.
+
+It also needs to reconcile \(M=4\) with the unresolved model-role registry.
+
+More importantly, your old simulation did not model Criterion C. Therefore, it cannot estimate the probability of the full compound event:
+
+$$ P(\mathcal A\cap\mathcal B\cap\mathcal C) $$
+
+unless the integrity condition is modelled explicitly or the power quantity is clearly defined as conditional on complete evaluation.
+
+The supervisor must decide whether integrity is:
+
+An operational validity requirement separate from statistical power; or
+A component of the simulated end-to-end joint success probability.
+
+Do not mix those interpretations in the next power analysis.
+
+6. Rule B: The proposed Monte Carlo precision plan is reasonable, but not a guarantee
+
+Your current findings for the existing simulation remain:
+
+\(N\)	Estimated joint power	Lower 95% Monte Carlo bound	Rule A	Rule B
+450	84.50%	83.38%	Fail	Fail
+468	85.825%	84.74%	Pass	Fail
+540	90.40%	89.49%	Pass	Pass under baseline assumptions
+
+Power estimated by simulation is the proportion of simulated datasets in which the specified analysis rejects its null hypothesis or satisfies its predefined success criterion. Its precision depends on the number of simulation replications and the variance of that estimated proportion.
+
+Your proposed \(S=20{,}000\) setting is a plausible planning option. At a success probability near 85.8%, it should give a materially more precise estimate than \(S=4{,}000\).
+
+But there are two important qualifications.
+
+First, the claim that the margin of error will be at most \(0.50\) percentage points is conditional on the underlying simulated success probability being near the expected value. It is not a universal guarantee for every possible probability.
+
+Second, a larger simulation may produce a lower 95% bound above 85%, but it cannot guarantee that result in advance. It will estimate the operating power more precisely; it does not increase the power of the physical experiment.
+
+Most importantly, the simulation must be aligned with the final estimand and success event before the new value of \(S\) is chosen.
+
+The current simulation uses a scalar Gaussian setup, whereas the proposed analysis introduces four-model aggregation, a different primary contrast, sequential dependence, and a new integrity condition.
+
+The old power values are therefore useful for understanding their original setup, but they cannot be treated as power estimates for the new confirmatory design.
+
+Rule B remains mandatory. The specification must also use the same strict inequality everywhere:
+
+$$ \boxed{L_{95\%,\mathrm{MC}}>85\%} $$
+
+not sometimes \(L_{95\%,\mathrm{MC}}\geq85\%\).
+
+7. The final decision depends on whether the study must demonstrate net adaptation benefit
+
+The proposed primary comparison is Arm 3 versus Arm 2.
+
+That comparison asks:
+
+Does gate-controlled adaptation perform better than ungated adaptation?
+
+It does not independently establish:
+
+Does gate-controlled adaptation perform better than the static base model?
+
+Your report includes Arm 1 as a secondary reference, which is useful. However, if the thesis claims both drift mitigation and a net adaptation benefit, the professor must decide whether Arm 3 versus Arm 1 is a secondary analysis or part of the confirmatory success criteria.
+
+Do not add another mandatory test without approval, but do not claim net benefit over the static model based only on Arm 3 versus Arm 2.
+
+8. Supervisor decision: What can be approved now?
+Area	My recommendation
+Equal-speaker macro-average WER	Accept as a proposed primary estimand, subject to model-role and stream-order reconciliation.
+Four-model aggregate	Requires formal protocol amendment and written approval.
+Paired Student-t inference	Requires validation against stream dependence.
+Stream-aware bootstrap	Candidate method; implementation and inferential target require specification.
+\(+1.40\)-point safety threshold	Not approved.
+Disparity confidence bound	Not finalized; adjustment and multiplicity strategy require specification.
+Integrity criterion	Operational framework proposed; joint-power interpretation unresolved.
+\(S=20{,}000\)	Planning option, not yet an approved simulation configuration.
+Final sample size	Unfrozen.
+Confirmatory execution	STRICT NO-GO.
+My recommendation
+
+Do not run the new simulation yet. Complete the model-role reconciliation, establish the inferential unit and stream-dependence treatment, define the safety statistic and missingness gate, and obtain supervisor approval for the primary estimand.
+
+Only then should a separately versioned simulation be designed with its replication count, seeds, DGP assumptions, confidence-interval method, and success event fixed in advance.
+
+Next Antigravity prompt
+
+Use this focused prompt to resolve the remaining issues without modifying the frozen simulation or running any new experiment.
+
+Stage 6M — Final Inferential Specification and Simulation Readiness Audit
+
+Conduct a targeted readiness audit of:
+
+reports/stage6m/stage6m_primary_estimand_and_power_spec.md
+
+Cross-reference:
+
+docs/adr/ADR-005-stage5-gate-rule.md
+configs/model_role_registry.json
+Existing prequential-stream and statistical-inference specifications
+reports/stage6m/stage6m_hierarchical_power_analysis_spec.md
+reports/stage6m/power_simulation_results.json
+
+Governance:
+
+execution_authorized = false
+STAGE 6M STATUS = HOLD — STRICTLY NOT AUTHORIZED
+Confirmatory verdict: STRICT NO-GO
+ABSOLUTE RESTRICTIONS
+
+Do not run confirmatory ASR evaluation.
+
+Do not acquire or process confirmatory audio.
+
+Do not create Cohort 2 or modify its exposure assignments.
+
+Do not modify frozen datasets, manifests, calibration data or simulation JSON.
+
+Do not launch the proposed high-precision simulation.
+
+Do not alter the approved statistical rules or silently promote proposed model roles to authoritative ones.
+
+Do not describe newly drafted methods as supervisor-approved.
+
+TASK 1 — RECONCILE THE MODEL SET
+
+The proposed estimand averages four models, but the current registry does not establish the proposed four-model set as an authorized primary analysis.
+
+Explicitly reconcile:
+
+wav2vec2_base
+data2vec_base
+wav2vec2_100h
+hubert_base
+hubert_large
+Other model roles marked held-out or excluded from development.
+
+Determine which models are authorized for the existing primary analysis, which are secondary controls, and which would require a protocol amendment.
+
+Do not assume hubert_base is interchangeable with hubert_large.
+
+Retain the four-model aggregate as a proposed amendment unless the existing governing documents establish otherwise.
+
+TASK 2 — DEFINE STREAM ORDERING IN THE ESTIMAND
+
+The current speaker-level WER estimand does not explicitly index the stream ordering.
+
+Establish how ORDER_A, ORDER_B, and ORDER_C enter:
+
+The per-speaker model contrast.
+The speaker-macro effect.
+The disparity statistic.
+The primary inference.
+
+Determine whether the target is conditional on the three prescribed orderings or intended to generalize to a broader population of stream orders.
+
+Do not combine or average the orderings without a prespecified rule.
+
+TASK 3 — VALIDATE THE INFERENTIAL UNIT
+
+The continual model state carries forward between evaluation windows.
+
+Determine whether a post-hoc resampling of already computed speaker outcomes can represent uncertainty under that state-dependence structure.
+
+If the proposed bootstrap requires replaying complete adaptation trajectories on resampled streams, state that requirement explicitly.
+
+Do not claim that the speaker bootstrap preserves trajectory dependence unless the algorithm actually does so.
+
+Evaluate the proposed alternatives—paired Student-t, stream-aware bootstrap, mixed-effects modelling, and paired permutation—against the real design. Do not declare any alternative valid without explaining its assumptions.
+
+Keep any required change to an existing approved inference method marked as a proposed amendment.
+
+TASK 4 — RESOLVE THE SAFETY-BOUND SPECIFICATION
+
+The current safety statistic averages the range disparity across four models.
+
+Define the group-level WER estimator explicitly, including whether it is speaker-macro or pooled-word WER.
+
+Determine whether the intended claim concerns mean disparity across models or safety for every evaluated model.
+
+For the proposed Adjusted UCB 97.5%:
+
+Identify exactly what the bound is adjusted for.
+Specify the multiplicity family if simultaneous claims are made across groups, models, or stream orderings.
+Distinguish a percentile-bootstrap upper bound from a multiplicity-adjusted confidence bound.
+State whether the existing B = 1,000 setting is adequate for the proposed tail-quantile requirement, without changing any frozen setting silently.
+
+Keep the +1.40 pp threshold marked as proposed and unapproved.
+
+TASK 5 — RECONCILE THE INTEGRITY GATE AND JOINT POWER
+
+Define the exact denominator for missingness and the scope of required outcomes.
+
+Specify whether Arm 1 is included in the integrity criterion or whether only the two streaming arms are required.
+
+Explain whether Criterion C is:
+
+An operational validity precondition separate from power; or
+A stochastic event included in the simulated compound-success probability.
+
+The existing frozen simulation did not model the new integrity criterion. Do not report its existing joint-power estimates as if they already include Criterion C.
+
+TASK 6 — FREEZE THE FUTURE SIMULATION SPECIFICATION, NOT THE SIMULATION RUN
+
+Do not launch a new simulation.
+
+Before a later authorized run, the specification must define:
+
+Approved primary estimand.
+Exact authorized model set.
+Stream-ordering treatment.
+Valid inference procedure.
+Safety statistic and confidence-bound construction.
+Integrity criterion and missingness assumptions.
+DGP parameters and evidence supporting them.
+Monte Carlo replication count and seed schedule.
+Confidence-interval method.
+Exact per-replication success indicator.
+
+Preserve Rule A and Rule B as mandatory unless an explicit, formally approved amendment states otherwise.
+
+Clarify that increasing the replication count improves Monte Carlo precision but does not guarantee that the lower confidence bound will exceed 85%.
+
+DELIVERABLES
+A protocol-to-estimand reconciliation table.
+A definitive list of the models that are currently authorized versus proposed.
+A stream-ordering and inferential-unit specification.
+A precise safety-statistic and confidence-bound definition.
+A consistent integrity-gate and joint-power interpretation.
+A proposed simulation-ready specification with every unresolved choice visibly marked.
+A list of supervisor decisions required before execution.
+A changed-versus-untouched file inventory.
+
+Do not produce new power estimates.
+
+Do not modify the frozen simulation JSON.
+
+Final state:
+execution_authorized = false
+STAGE 6M STATUS = HOLD — STRICTLY NOT AUTHORIZED
+CONFIRMATORY VERDICT = STRICT NO-GO
+
+Final recommendation: Your new specification is close to becoming a useful statistical protocol, but it is not yet simulation-ready. Reconcile the model set, stream-ordering estimand, inference procedure, safety confidence bound, and integrity gate first. Then submit those decisions to your professor for approval.
+
+The existing 113-test result is useful software evidence, but it does not resolve these statistical questions. The project remains on hold, and the frozen canonical simulation must remain unchanged.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-10-15T23:57:17+05:30.
+
+The user's current state is as follows:
+Active Document: c:\Users\venka\Downloads\final year project main\reports\stage6m\stage6m_protocol_proposal.md (LANGUAGE_MARKDOWN)
+Cursor is on line: 1
+Other open documents:
+- c:\Users\venka\Downloads\final year project main\scripts\compile_report.py (LANGUAGE_PYTHON)
+- c:\Users\venka\Downloads\final year project main\docs\dataset_candidate_evaluation.md (LANGUAGE_MARKDOWN)
+- c:\Users\venka\Downloads\final year project main\tests\unit\test_normalization.py (LANGUAGE_PYTHON)
+- c:\Users\venka\Downloads\final year project main\src\dsg_ctta\models\base_adapter.py (LANGUAGE_PYTHON)
+- c:\Users\venka\Downloads\final year project main\src\dsg_ctta\offline\metrics.py (LANGUAGE_PYTHON)
+</ADDITIONAL_METADATA>
+<USER_SETTINGS_CHANGE>
+The user changed setting `Model Selection` from None to Gemini 3.8 Flash (High). No need to comment on this change if the user doesn't ask about it. If reporting what model you are, please use a human readable name instead of the exact string.
+</USER_SETTINGS_CHANGE>

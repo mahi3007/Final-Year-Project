@@ -1,0 +1,13 @@
+{
+  "candidate_id": "cand_step_0012",
+  "stream_order": 12,
+  "window_clip_ids": [
+    "TNI_arctic_a0009",
+    "TNI_arctic_a0010",
+    "TNT_arctic_a0001",
+    "TNT_arctic_a0002"
+  ],
+  "optimizer": "SGD_Entropy_Min",
+  "learning_rate": 0.005,
+  "decision": "ACCEPT"
+}

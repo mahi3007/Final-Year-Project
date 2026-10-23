@@ -1,0 +1,177 @@
+{
+  "metadata": {
+    "protocol_version": "v1.3.3-stage6m-reconciled-decision-pack",
+    "governing_standard": "ADR-005",
+    "timestamp_utc": "2026-10-20T07:05:02.760753+00:00",
+    "trajectories_evaluated": 500,
+    "updates_per_trajectory": 1754,
+    "sentinel_speakers": 30,
+    "clips_per_sentinel_speaker": 10,
+    "sentinel_clips_per_evaluation": 300,
+    "global_safety_tolerances": {
+      "tau_G_pp": 0.5,
+      "tau_D_pp": 1.4
+    },
+    "confidence_interval_methods": [
+      "Wilson Score (95%)",
+      "Clopper-Pearson Exact (95%)",
+      "Exact One-Sided Upper Bound (for k=0)"
+    ]
+  },
+  "regime_1_gross_regressions": {
+    "nominal_uncorrected_ucb975": {
+      "false_deployment_events_k": 0,
+      "total_trajectories_n": 500,
+      "trajectory_fwer": 0.0,
+      "wilson_score_95ci": [
+        0.0,
+        0.007624
+      ],
+      "clopper_pearson_exact_95ci": [
+        0.0,
+        0.007351
+      ],
+      "exact_one_sided_95_upper_bound": 0.005974,
+      "safe_candidate_acceptance_rate": 0.9262,
+      "average_sentinel_invocations": 1754.0,
+      "sentinel_invocation_reduction_pct": 0.0,
+      "full_panel_clip_decodings": 526200.0,
+      "fwer_controlled_le_005": true
+    },
+    "bonferroni_trajectory_gate": {
+      "false_deployment_events_k": 0,
+      "total_trajectories_n": 500,
+      "trajectory_fwer": 0.0,
+      "wilson_score_95ci": [
+        0.0,
+        0.007624
+      ],
+      "clopper_pearson_exact_95ci": [
+        0.0,
+        0.007351
+      ],
+      "exact_one_sided_95_upper_bound": 0.005974,
+      "safe_candidate_acceptance_rate": 0.4977,
+      "average_sentinel_invocations": 1754.0,
+      "sentinel_invocation_reduction_pct": 0.0,
+      "full_panel_clip_decodings": 526200.0,
+      "fwer_controlled_le_005": true
+    },
+    "obrien_fleming_alpha_spending": {
+      "false_deployment_events_k": 0,
+      "total_trajectories_n": 500,
+      "trajectory_fwer": 0.0,
+      "wilson_score_95ci": [
+        0.0,
+        0.007624
+      ],
+      "clopper_pearson_exact_95ci": [
+        0.0,
+        0.007351
+      ],
+      "exact_one_sided_95_upper_bound": 0.005974,
+      "safe_candidate_acceptance_rate": 0.651,
+      "average_sentinel_invocations": 1754.0,
+      "sentinel_invocation_reduction_pct": 0.0,
+      "full_panel_clip_decodings": 526200.0,
+      "fwer_controlled_le_005": true
+    },
+    "hierarchical_prescreen_obf": {
+      "false_deployment_events_k": 0,
+      "total_trajectories_n": 500,
+      "trajectory_fwer": 0.0,
+      "wilson_score_95ci": [
+        0.0,
+        0.007624
+      ],
+      "clopper_pearson_exact_95ci": [
+        0.0,
+        0.007351
+      ],
+      "exact_one_sided_95_upper_bound": 0.005974,
+      "safe_candidate_acceptance_rate": 0.6312,
+      "average_sentinel_invocations": 1463.4,
+      "sentinel_invocation_reduction_pct": 16.57,
+      "full_panel_clip_decodings": 439014.0,
+      "fwer_controlled_le_005": true
+    }
+  },
+  "regime_2_borderline_regressions": {
+    "nominal_uncorrected_ucb975": {
+      "false_deployment_events_k": 37,
+      "total_trajectories_n": 500,
+      "trajectory_fwer": 0.074,
+      "wilson_score_95ci": [
+        0.054161,
+        0.100335
+      ],
+      "clopper_pearson_exact_95ci": [
+        0.052635,
+        0.100559
+      ],
+      "exact_one_sided_95_upper_bound": 0.100559,
+      "safe_candidate_acceptance_rate": 0.9244,
+      "average_sentinel_invocations": 1754.0,
+      "sentinel_invocation_reduction_pct": 0.0,
+      "full_panel_clip_decodings": 526200.0,
+      "fwer_controlled_le_005": false
+    },
+    "bonferroni_trajectory_gate": {
+      "false_deployment_events_k": 0,
+      "total_trajectories_n": 500,
+      "trajectory_fwer": 0.0,
+      "wilson_score_95ci": [
+        0.0,
+        0.007624
+      ],
+      "clopper_pearson_exact_95ci": [
+        0.0,
+        0.007351
+      ],
+      "exact_one_sided_95_upper_bound": 0.005974,
+      "safe_candidate_acceptance_rate": 0.496,
+      "average_sentinel_invocations": 1754.0,
+      "sentinel_invocation_reduction_pct": 0.0,
+      "full_panel_clip_decodings": 526200.0,
+      "fwer_controlled_le_005": true
+    },
+    "obrien_fleming_alpha_spending": {
+      "false_deployment_events_k": 4,
+      "total_trajectories_n": 500,
+      "trajectory_fwer": 0.008,
+      "wilson_score_95ci": [
+        0.003115,
+        0.020387
+      ],
+      "clopper_pearson_exact_95ci": [
+        0.002184,
+        0.020356
+      ],
+      "exact_one_sided_95_upper_bound": 0.020356,
+      "safe_candidate_acceptance_rate": 0.6492,
+      "average_sentinel_invocations": 1754.0,
+      "sentinel_invocation_reduction_pct": 0.0,
+      "full_panel_clip_decodings": 526200.0,
+      "fwer_controlled_le_005": true
+    },
+    "hierarchical_prescreen_obf": {
+      "false_deployment_events_k": 3,
+      "total_trajectories_n": 500,
+      "trajectory_fwer": 0.006,
+      "wilson_score_95ci": [
+        0.002043,
+        0.01749
+      ],
+      "clopper_pearson_exact_95ci": [
+        0.001239,
+        0.017434
+      ],
+      "exact_one_sided_95_upper_bound": 0.017434,
+      "safe_candidate_acceptance_rate": 0.6294,
+      "average_sentinel_invocations": 1602.9,
+      "sentinel_invocation_reduction_pct": 8.62,
+      "full_panel_clip_decodings": 480866.0,
+      "fwer_controlled_le_005": true
+    }
+  }
+}

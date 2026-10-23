@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "rehearsal_name": "Stage 6M Full Non-Confirmatory Engineering Rehearsal",
+    "protocol_version": "v1.3.3-stage6m-reconciled-decision-pack",
+    "governing_standard": "ADR-005",
+    "governance_status": "HOLD_STRICTLY_NOT_AUTHORIZED",
+    "confirmatory_execution_authorized": false,
+    "execution_timestamp_utc": "2026-10-20T07:10:31.914437+00:00",
+    "git_revision": "2af91e674e7948233a8b72bdb80171a349e64bba",
+    "environment": {
+      "os": "Windows",
+      "release": "10",
+      "python": "3.11.9",
+      "cuda_available": false
+    }
+  },
+  "stream_geometry_verification": {
+    "calibration_dataset_clips": 60,
+    "window_size_k": 4,
+    "total_windows_w": 15,
+    "candidate_update_opportunities_u": 14,
+    "terminal_window_rule": "WINDOW_14_PREDICTION_ONLY_NO_ADAPTATION",
+    "terminal_window_invariant_passed": true
+  },
+  "three_arm_invariants_verification": {
+    "matched_stream_order": true,
+    "prequential_evaluation_precedes_adaptation": true,
+    "arm_1_static_updates_count": 0,
+    "arm_2_ungated_updates_count": 14,
+    "arm_3_gated_accepted_count": 13,
+    "arm_3_gated_rejected_count": 1,
+    "rollback_on_rejection_verified": true,
+    "rejection_l_inf_drift": 0.0
+  },
+  "reserve_policy_invariants_verification": {
+    "tier_1_auto_continuation_tested_r": 14,
+    "tier_1_power_guarantee": ">=85.66%",
+    "tier_2_boundary_stop_tested": true,
+    "tier_2_exception_caught": true,
+    "hard_stop_policy_enforced": true
+  },
+  "hardware_profiling": {
+    "elapsed_seconds": 0.2262,
+    "mean_window_ms": 15.08,
+    "peak_heap_ram_mb": 1.62,
+    "vault_records_count": 14
+  },
+  "overall_verdict": "NON_CONFIRMATORY_ENGINEERING_REHEARSAL_PASS"
+}

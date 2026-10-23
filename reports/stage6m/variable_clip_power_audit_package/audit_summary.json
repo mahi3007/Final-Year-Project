@@ -1,0 +1,247 @@
+{
+  "metadata": {
+    "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+    "historical_lineage_version": "v1.3.3-stage6m-reconciled-decision-pack",
+    "governing_standard": "ADR-005 (Amended via AMENDMENT-001)",
+    "supervisory_decision": "Option 1B (Variable-Clip Reserve in Common Voice 27.0)",
+    "streaming_architecture": "Option 2A (Full Continuous Stream Reference)",
+    "sequential_error_control": "Lan-DeMets O'Brien-Fleming with Two-Stage Pre-Screen (Leading Candidate)",
+    "execution_timestamp_utc": "2026-10-20T07:01:47.320065+00:00",
+    "git_revision": "2af91e674e7948233a8b72bdb80171a349e64bba",
+    "system_info": {
+      "os": "Windows",
+      "release": "10",
+      "python_version": "3.11.9",
+      "numpy_version": "1.26.4"
+    },
+    "monte_carlo_repetitions": "S = 20,000 trials per replacement condition (SE <= 0.25 pp)",
+    "status": "Awaiting Supervisor Written Sign-Off in Section 11 of stage6m_protocol_proposal.md"
+  },
+  "variable_clip_power_audit_results": [
+    {
+      "cohort_n": 468,
+      "speakers_per_stratum": 78,
+      "reserve_replacements_r": 0,
+      "irish_clip_counts_summary": {
+        "total_irish_speakers": 78,
+        "speakers_with_15_clips": 78,
+        "speakers_with_14_clips": 0,
+        "speakers_with_13_clips": 0,
+        "speakers_with_12_clips": 0,
+        "speakers_with_11_clips": 0,
+        "speakers_with_10_clips": 0,
+        "total_irish_clips": 1170,
+        "clip_shortfall_from_invariant": 0
+      },
+      "stream_geometry": {
+        "total_stream_clips": 7020,
+        "total_windows": 1755,
+        "final_window_policy": "terminal_window_strictly_prediction_only",
+        "final_window_clips": 4,
+        "candidate_update_opportunities": 1754
+      },
+      "simulations_s": 20000,
+      "bootstrap_b": 1000,
+      "seed": 42101,
+      "successes_k": 17207,
+      "estimated_power_p_hat": 0.86035,
+      "mc_se": 0.002451,
+      "wald_95_ci": [
+        0.855546,
+        0.865154
+      ],
+      "wilson_95_ci": [
+        0.855477,
+        0.865085
+      ],
+      "clopper_pearson_95_ci": [
+        0.855469,
+        0.865126
+      ],
+      "rule_a_verdict": "PASS",
+      "rule_b_wald_verdict": "PASS",
+      "rule_b_wilson_verdict": "PASS",
+      "scenario_description": "Baseline (0 replacements; 78 Irish @ 15 clips)"
+    },
+    {
+      "cohort_n": 468,
+      "speakers_per_stratum": 78,
+      "reserve_replacements_r": 5,
+      "irish_clip_counts_summary": {
+        "total_irish_speakers": 78,
+        "speakers_with_15_clips": 73,
+        "speakers_with_14_clips": 4,
+        "speakers_with_13_clips": 1,
+        "speakers_with_12_clips": 0,
+        "speakers_with_11_clips": 0,
+        "speakers_with_10_clips": 0,
+        "total_irish_clips": 1164,
+        "clip_shortfall_from_invariant": 6
+      },
+      "stream_geometry": {
+        "total_stream_clips": 7014,
+        "total_windows": 1754,
+        "final_window_policy": "terminal_window_strictly_prediction_only",
+        "final_window_clips": 2,
+        "candidate_update_opportunities": 1753
+      },
+      "simulations_s": 20000,
+      "bootstrap_b": 1000,
+      "seed": 42102,
+      "successes_k": 17121,
+      "estimated_power_p_hat": 0.85605,
+      "mc_se": 0.002482,
+      "wald_95_ci": [
+        0.851185,
+        0.860915
+      ],
+      "wilson_95_ci": [
+        0.851117,
+        0.860847
+      ],
+      "clopper_pearson_95_ci": [
+        0.851108,
+        0.860888
+      ],
+      "rule_a_verdict": "PASS",
+      "rule_b_wald_verdict": "PASS",
+      "rule_b_wilson_verdict": "PASS",
+      "scenario_description": "Modest Dropout (5 replacements; 4@14, 1@13)"
+    },
+    {
+      "cohort_n": 468,
+      "speakers_per_stratum": 78,
+      "reserve_replacements_r": 10,
+      "irish_clip_counts_summary": {
+        "total_irish_speakers": 78,
+        "speakers_with_15_clips": 68,
+        "speakers_with_14_clips": 4,
+        "speakers_with_13_clips": 5,
+        "speakers_with_12_clips": 1,
+        "speakers_with_11_clips": 0,
+        "speakers_with_10_clips": 0,
+        "total_irish_clips": 1153,
+        "clip_shortfall_from_invariant": 17
+      },
+      "stream_geometry": {
+        "total_stream_clips": 7003,
+        "total_windows": 1751,
+        "final_window_policy": "terminal_window_strictly_prediction_only",
+        "final_window_clips": 3,
+        "candidate_update_opportunities": 1750
+      },
+      "simulations_s": 20000,
+      "bootstrap_b": 1000,
+      "seed": 42103,
+      "successes_k": 17198,
+      "estimated_power_p_hat": 0.8599,
+      "mc_se": 0.002454,
+      "wald_95_ci": [
+        0.85509,
+        0.86471
+      ],
+      "wilson_95_ci": [
+        0.855021,
+        0.864641
+      ],
+      "clopper_pearson_95_ci": [
+        0.855012,
+        0.864683
+      ],
+      "rule_a_verdict": "PASS",
+      "rule_b_wald_verdict": "PASS",
+      "rule_b_wilson_verdict": "PASS",
+      "scenario_description": "Substantial Dropout (10 replacements; 4@14, 5@13, 1@12)"
+    },
+    {
+      "cohort_n": 468,
+      "speakers_per_stratum": 78,
+      "reserve_replacements_r": 14,
+      "irish_clip_counts_summary": {
+        "total_irish_speakers": 78,
+        "speakers_with_15_clips": 64,
+        "speakers_with_14_clips": 4,
+        "speakers_with_13_clips": 5,
+        "speakers_with_12_clips": 5,
+        "speakers_with_11_clips": 0,
+        "speakers_with_10_clips": 0,
+        "total_irish_clips": 1141,
+        "clip_shortfall_from_invariant": 29
+      },
+      "stream_geometry": {
+        "total_stream_clips": 6991,
+        "total_windows": 1748,
+        "final_window_policy": "terminal_window_strictly_prediction_only",
+        "final_window_clips": 3,
+        "candidate_update_opportunities": 1747
+      },
+      "simulations_s": 20000,
+      "bootstrap_b": 1000,
+      "seed": 42104,
+      "successes_k": 17132,
+      "estimated_power_p_hat": 0.8566,
+      "mc_se": 0.002478,
+      "wald_95_ci": [
+        0.851743,
+        0.861457
+      ],
+      "wilson_95_ci": [
+        0.851674,
+        0.861389
+      ],
+      "clopper_pearson_95_ci": [
+        0.851666,
+        0.86143
+      ],
+      "rule_a_verdict": "PASS",
+      "rule_b_wald_verdict": "PASS",
+      "rule_b_wilson_verdict": "PASS",
+      "scenario_description": "Full C>=12 Pool Exhausted (14 replacements; 4@14, 5@13, 5@12)"
+    },
+    {
+      "cohort_n": 468,
+      "speakers_per_stratum": 78,
+      "reserve_replacements_r": 27,
+      "irish_clip_counts_summary": {
+        "total_irish_speakers": 78,
+        "speakers_with_15_clips": 51,
+        "speakers_with_14_clips": 4,
+        "speakers_with_13_clips": 5,
+        "speakers_with_12_clips": 5,
+        "speakers_with_11_clips": 4,
+        "speakers_with_10_clips": 9,
+        "total_irish_clips": 1080,
+        "clip_shortfall_from_invariant": 90
+      },
+      "stream_geometry": {
+        "total_stream_clips": 6930,
+        "total_windows": 1733,
+        "final_window_policy": "terminal_window_strictly_prediction_only",
+        "final_window_clips": 2,
+        "candidate_update_opportunities": 1732
+      },
+      "simulations_s": 20000,
+      "bootstrap_b": 1000,
+      "seed": 42105,
+      "successes_k": 16914,
+      "estimated_power_p_hat": 0.8457,
+      "mc_se": 0.002554,
+      "wald_95_ci": [
+        0.840694,
+        0.850706
+      ],
+      "wilson_95_ci": [
+        0.840627,
+        0.85064
+      ],
+      "clopper_pearson_95_ci": [
+        0.840618,
+        0.850681
+      ],
+      "rule_a_verdict": "FAIL",
+      "rule_b_wald_verdict": "FAIL",
+      "rule_b_wilson_verdict": "FAIL",
+      "scenario_description": "Extreme Stress Test (All 27 replacements drawn; down to C=10)"
+    }
+  ]
+}

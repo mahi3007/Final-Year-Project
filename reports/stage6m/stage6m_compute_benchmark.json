@@ -1,0 +1,46 @@
+{
+  "metadata": {
+    "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+    "historical_lineage_version": "v1.3.3-stage6m-reconciled-decision-pack",
+    "governing_standard": "ADR-005 (Amended via AMENDMENT-001)",
+    "timestamp_utc": "2026-10-20T07:03:59.815571+00:00",
+    "evaluation_scope": "Non-Confirmatory Workload Profiling & Latency Extrapolation"
+  },
+  "bootstrap_engine_performance": {
+    "mean_seconds": 0.02213565999525599,
+    "std_seconds": 0.0035366432045165846,
+    "min_seconds": 0.01829479995649308,
+    "max_seconds": 0.03132869995897636
+  },
+  "unmitigated_continuous_stream": {
+    "stream_windows": 1755,
+    "stream_audio_clips": 7020,
+    "candidate_updates": 1754,
+    "sentinel_panel_clips": 300,
+    "total_sentinel_decodings": 526200,
+    "total_arm3_decodings": 533220,
+    "extrapolated_gpu_hours": 6.71,
+    "extrapolated_cpu_hours": 32.8,
+    "feasibility_assessment": "Computationally demanding; requires dedicated GPU runtime or architectural screening mitigation."
+  },
+  "mitigation_option_strided_gate": {
+    "stride_windows": 4,
+    "candidate_updates": 438,
+    "total_arm3_decodings": 138420,
+    "extrapolated_gpu_hours": 1.74,
+    "speedup_factor": 3.85
+  },
+  "mitigation_option_two_tier_decoupled": {
+    "tier1_stream_windows": 225,
+    "tier1_candidate_updates": 224,
+    "tier2_evaluation_clips": 7020,
+    "total_decodings": 89160,
+    "extrapolated_gpu_hours": 1.12,
+    "speedup_factor": 5.99
+  },
+  "memory_profile_bytes": {
+    "current_bytes": 10410,
+    "peak_bytes": 1681413,
+    "peak_mb": 1.6
+  }
+}

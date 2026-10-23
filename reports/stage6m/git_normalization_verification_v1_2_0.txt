@@ -1,0 +1,114 @@
+================================================================================
+STAGE 6M v1.2.0 - TRACKED BASELINE ARTIFACT GIT NORMALIZATION VERIFICATION LOG
+Standard: ADR-005
+Platform: Windows (core.autocrlf = true)
+Verification Mode: Read-Only Bit-Level Normalization and Git Object Audit
+================================================================================
+
+Artifact Path: reports/stage5/external_speaker_inventory.csv
+  Git Commit Reference: ac9657b
+  Git Blob Path: reports/stage5/external_speaker_inventory.csv
+  Git Object ID (SHA-1): e327b481eea1aea280554fc0737730e575587e0e
+  Working-Tree Status: CLEAN (unmodified)
+  Working-Tree Raw Size: 557100 bytes
+  Working-Tree Raw SHA-256: e964799b50a84fa564173393ab55948afc3166b882e032d0ad0be7f880b7c94a
+  CRLF Terminator Count: 6906
+  Standalone CR Count: 0
+  Normalized Byte Count (LF): 550194 bytes
+  Normalized SHA-256: 96534400161e9d7a5da2a7726ee4743511f76a816e05300ca905aaf8ec6bb610
+  Git Blob Size: 550194 bytes
+  Git Blob SHA-256: 96534400161e9d7a5da2a7726ee4743511f76a816e05300ca905aaf8ec6bb610
+  Raw-Byte Equality (Disk == Git): False
+  Size Delta Matches CRLF Count: True
+  Normalized Byte Equality (Disk LF == Git Blob): True
+  Verdict: Text content matches Git version after line-ending normalization; raw bytes differ due to newline conversion.
+
+Artifact Path: datasets/splits/stage5_external_eval.csv
+  Git Commit Reference: ac9657b
+  Git Blob Path: datasets/splits/stage5_external_eval.csv
+  Git Object ID (SHA-1): d3e20c88ac911b3f2c11246a94b31994a419bc84
+  Working-Tree Status: CLEAN (unmodified)
+  Working-Tree Raw Size: 451539 bytes
+  Working-Tree Raw SHA-256: 41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32
+  CRLF Terminator Count: 901
+  Standalone CR Count: 0
+  Normalized Byte Count (LF): 450638 bytes
+  Normalized SHA-256: 56cb4f9fc7ab7b8b959a65d19f195d9d8b1751a6bca26f474a6304dd47559093
+  Git Blob Size: 450638 bytes
+  Git Blob SHA-256: 56cb4f9fc7ab7b8b959a65d19f195d9d8b1751a6bca26f474a6304dd47559093
+  Raw-Byte Equality (Disk == Git): False
+  Size Delta Matches CRLF Count: True
+  Normalized Byte Equality (Disk LF == Git Blob): True
+  Verdict: Text content matches Git version after line-ending normalization; raw bytes differ due to newline conversion.
+
+Artifact Path: datasets/splits/stage5_sentinel_panel.csv
+  Git Commit Reference: ac9657b
+  Git Blob Path: datasets/splits/stage5_sentinel_panel.csv
+  Git Object ID (SHA-1): e9eea418fa14262c93336e267ad19cb53f456492
+  Working-Tree Status: CLEAN (unmodified)
+  Working-Tree Raw Size: 92340 bytes
+  Working-Tree Raw SHA-256: 665009a00660f7e9bbdf8de8a53473fc1249362ca2a5bc0038518313d18f0543
+  CRLF Terminator Count: 301
+  Standalone CR Count: 0
+  Normalized Byte Count (LF): 92039 bytes
+  Normalized SHA-256: 612b7045e3e68326d00a963f9ade44b197a53e2c2640a13f8ee5162b2efc3691
+  Git Blob Size: 92039 bytes
+  Git Blob SHA-256: 612b7045e3e68326d00a963f9ade44b197a53e2c2640a13f8ee5162b2efc3691
+  Raw-Byte Equality (Disk == Git): False
+  Size Delta Matches CRLF Count: True
+  Normalized Byte Equality (Disk LF == Git Blob): True
+  Verdict: Text content matches Git version after line-ending normalization; raw bytes differ due to newline conversion.
+
+Artifact Path: datasets/splits/stage5_sentinel_panel_manifest.json
+  Git Commit Reference: ac9657b
+  Git Blob Path: datasets/splits/stage5_sentinel_panel_manifest.json
+  Git Object ID (SHA-1): f49bec277f9b3ad3093f92f5c95b846c2690788d
+  Working-Tree Status: CLEAN (unmodified)
+  Working-Tree Raw Size: 5344 bytes
+  Working-Tree Raw SHA-256: 4622b215b18c6b4de80fb7832788ce7286e88c5528f501e2bac62f935e570028
+  CRLF Terminator Count: 77
+  Standalone CR Count: 0
+  Normalized Byte Count (LF): 5267 bytes
+  Normalized SHA-256: 63a189fdefdb2595da596910bdb51c2d74e123d0c370cb0006cc852a79970364
+  Git Blob Size: 5267 bytes
+  Git Blob SHA-256: 63a189fdefdb2595da596910bdb51c2d74e123d0c370cb0006cc852a79970364
+  Raw-Byte Equality (Disk == Git): False
+  Size Delta Matches CRLF Count: True
+  Normalized Byte Equality (Disk LF == Git Blob): True
+  Verdict: Text content matches Git version after line-ending normalization; raw bytes differ due to newline conversion.
+
+Artifact Path: datasets/splits/stage4_characterization.csv
+  Git Commit Reference: 5c748af
+  Git Blob Path: datasets/splits/stage4_characterization.csv
+  Git Object ID (SHA-1): 113685050722868a39c835051b849c3019526f36
+  Working-Tree Status: CLEAN (unmodified)
+  Working-Tree Raw Size: 39689 bytes
+  Working-Tree Raw SHA-256: c2a746db83e02e81289baf8ca5fcd95be254a6e1de312a3f76c9b44e8c899d03
+  CRLF Terminator Count: 121
+  Standalone CR Count: 0
+  Normalized Byte Count (LF): 39568 bytes
+  Normalized SHA-256: 652e0fadc045dea8356da8c87255f374f7a31b94863a1a713e2efb49b5aea46c
+  Git Blob Size: 39568 bytes
+  Git Blob SHA-256: 652e0fadc045dea8356da8c87255f374f7a31b94863a1a713e2efb49b5aea46c
+  Raw-Byte Equality (Disk == Git): False
+  Size Delta Matches CRLF Count: True
+  Normalized Byte Equality (Disk LF == Git Blob): True
+  Verdict: Text content matches Git version after line-ending normalization; raw bytes differ due to newline conversion.
+
+Artifact Path: datasets/splits/calibration.csv
+  Git Commit Reference: ac9657b
+  Git Blob Path: datasets/splits/calibration.csv
+  Git Object ID (SHA-1): f858ba45a7a6ab371a99d9bbf9a9fc7203ebcae6
+  Working-Tree Status: CLEAN (unmodified)
+  Working-Tree Raw Size: 19210 bytes
+  Working-Tree Raw SHA-256: 7c1659433b2b3539aa02b079d30588210a799620c5182e99c2ea0a61de284ca2
+  CRLF Terminator Count: 61
+  Standalone CR Count: 0
+  Normalized Byte Count (LF): 19149 bytes
+  Normalized SHA-256: 8a3a7b0fff1fc013e3c3829bb4479bc90c5b1028be693055f254c17086a2c913
+  Git Blob Size: 19149 bytes
+  Git Blob SHA-256: 8a3a7b0fff1fc013e3c3829bb4479bc90c5b1028be693055f254c17086a2c913
+  Raw-Byte Equality (Disk == Git): False
+  Size Delta Matches CRLF Count: True
+  Normalized Byte Equality (Disk LF == Git Blob): True
+  Verdict: Text content matches Git version after line-ending normalization; raw bytes differ due to newline conversion.

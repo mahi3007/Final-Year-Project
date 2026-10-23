@@ -1,0 +1,13 @@
+{
+  "candidate_id": "cand_step_0009",
+  "stream_order": 9,
+  "window_clip_ids": [
+    "SKA_arctic_a0007",
+    "SKA_arctic_a0008",
+    "SKA_arctic_a0009",
+    "SKA_arctic_a0010"
+  ],
+  "optimizer": "SGD_Entropy_Min",
+  "learning_rate": 0.005,
+  "decision": "ACCEPT"
+}

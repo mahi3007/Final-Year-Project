@@ -1,0 +1,17 @@
+Extracting stage5m_audio_bundle.tar.gz into /kaggle/working/project...
+Extraction of stage5m_audio_bundle.tar.gz complete.
+tests/research_validity/test_stage5m_online_control.py [32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m              [100%][0m
+Executing: /usr/bin/python3 /kaggle/working/project/scripts/run_stage5m_online_control.py --device cuda --smoke-test
+  [Resume] Loaded completed checkpoint: STAGE5M_wav2vec2_base_clean_no_adapt_order_a_k4
+  [Resume] Loaded completed checkpoint: STAGE5M_wav2vec2_base_clean_suta_order_a_k4
+Results CSV     : /kaggle/working/project/results/stage5m/stage5m_closed_loop_results.csv
+Decisions CSV   : /kaggle/working/project/results/stage5m/stage5m_operational_decisions.csv
+Agreement CSV   : /kaggle/working/project/results/stage5m/stage5m_decision_agreement_matrix.csv
+Summary Report  : /kaggle/working/project/reports/stage5m/stage5m_closed_loop_report.md
+Created unified archive: /kaggle/working/project/reports/stage5_stage6_results_bundle.zip (3.45 MB, 128 files packed)
+Created dedicated Stage 5M archive: /kaggle/working/project/reports/stage5m_results_bundle.zip (6.2 KB)
+Copied to Kaggle download directory: /kaggle/working/stage5m_results_bundle.zip
+--> In Kaggle: Look in the right-hand panel under 'Output' -> Click 'Download' on 'stage5m_results_bundle.zip' or 'stage5_stage6_results_bundle.zip'
+Executing: /usr/bin/python3 /kaggle/working/project/scripts/run_stage5m_online_control.py --device cuda
+  [Resume] Loaded completed checkpoint: STAGE5M_wav2vec2_base_clean_no_adapt_order_a_k4
+  [Resume] Loaded completed checkpoint: STAGE5M_wav2vec2_base_clean_suta_order_a_k4

@@ -1,0 +1,109 @@
+{
+  "metadata": {
+    "experiment_name": "Stage 6M Full-Stream Synthetic Trajectory Simulation & Controller Dry-Run",
+    "execution_type": "SYNTHETIC_TRAJECTORY_SIMULATION_AND_CONTROLLER_DRY_RUN",
+    "physical_acoustic_inference_executed": false,
+    "cohort_materialization_status": "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD",
+    "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+    "governing_standard": "ADR-005 (Amended via AMENDMENT-001)",
+    "governance_status": "CONTROLLER_DRY_RUN_COMPLETED_PHYSICAL_ASR_PENDING",
+    "authorizing_authority": "Designated Project Lead",
+    "authorization_token": "AUTH-20261020-STAGE6M-AMEND-V134-EXECUTE-PERMITTED",
+    "supervisor_record": "Prof. L.V. Srinivas (Identified Academic Supervisor; independent research record)",
+    "supervisor_disclaimer": "The amendment does not represent or imply approval by the academic supervisor.",
+    "execution_timestamp_utc": "2026-10-20T11:19:58.414530+00:00",
+    "git_revision": "2af91e674e7948233a8b72bdb80171a349e64bba",
+    "execution_time_seconds": 26.21,
+    "peak_memory_mb": 3.51,
+    "locked_candidate_manifest_sha256": "610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895",
+    "epistemic_limitation": "This artifact evaluates controller logic, OBF alpha spending, two-stage pre-screening, and parameter rollback in an in-memory simulation. It does NOT constitute physical ASR inference on real audio waveforms from Common Voice 27.0, as Cohort 2 audio clips remain on download hold."
+  },
+  "stream_geometry": {
+    "total_active_speakers": 468,
+    "strata_count": 6,
+    "nominal_stream_clips": 7020,
+    "window_size_k": 4,
+    "total_windows_w": 1755,
+    "adaptation_opportunities_u": 1754,
+    "terminal_window_rule": "PREDICTION_ONLY_NO_ADAPTATION",
+    "terminal_window_verified": true
+  },
+  "matched_three_arm_results": {
+    "arm_1_static_control": {
+      "name": "ARM_1_STATIC_NO_ADAPT",
+      "mean_wer_percent": 18.699,
+      "disparity_pp": 6.0,
+      "total_updates": 0
+    },
+    "arm_2_ungated_ctta": {
+      "name": "ARM_2_UNGATED_CTTA_REPLAY",
+      "mean_wer_percent": 19.32,
+      "disparity_pp": 5.996,
+      "total_updates": 1754
+    },
+    "arm_3_gate_controlled_ctta": {
+      "name": "ARM_3_GATE_CONTROLLED_CTTA",
+      "mean_wer_percent": 16.579,
+      "disparity_pp": 6.002,
+      "total_updates_accepted": 581,
+      "total_updates_rejected": 1173,
+      "acceptance_rate_percent": 33.12
+    }
+  },
+  "stratum_breakdown": {
+    "Irish English": {
+      "arm1_wer": 0.20199999999999999,
+      "arm2_wer": 0.20821375654918334,
+      "arm3_gated_wer": 0.1808247098976109
+    },
+    "England English": {
+      "arm1_wer": 0.17700000000000002,
+      "arm2_wer": 0.18325457058581746,
+      "arm3_gated_wer": 0.15580668941979522
+    },
+    "Canadian English": {
+      "arm1_wer": 0.17199999999999996,
+      "arm2_wer": 0.17829539108226286,
+      "arm3_gated_wer": 0.15078457337883958
+    },
+    "Australian English": {
+      "arm1_wer": 0.19700000000000004,
+      "arm2_wer": 0.20311266787381554,
+      "arm3_gated_wer": 0.17580671232876713
+    },
+    "South Asian English": {
+      "arm1_wer": 0.21700000000000003,
+      "arm2_wer": 0.22315334530490255,
+      "arm3_gated_wer": 0.1957919178082192
+    },
+    "US English": {
+      "arm1_wer": 0.157,
+      "arm2_wer": 0.1631940110953736,
+      "arm3_gated_wer": 0.1357743835616438
+    }
+  },
+  "statistical_hypothesis_tests": {
+    "utility_gain_pp": 2.1202,
+    "paired_t_statistic": 75.6839,
+    "one_sided_p_value": 0.0,
+    "superiority_verdict": "CONFIRMED_STATISTICALLY_SIGNIFICANT",
+    "disparity_expansion_pp": 0.0018,
+    "disparity_ucb95_pp": 0.2958,
+    "disparity_safety_threshold_pp": 1.4,
+    "safety_verdict": "CONFIRMED_DISPARITY_CONTROLLED"
+  },
+  "safety_gate_workload_and_invariants": {
+    "sequential_procedure": "Lan-DeMets O'Brien-Fleming Alpha Spending + Two-Stage Pre-Screen",
+    "fast_prescreen_evaluations": 277,
+    "full_sentinel_evaluations": 1477,
+    "compute_savings_percent": 15.79,
+    "rollback_events_verified": 1173,
+    "parameter_drift_on_rollback_linf": 0.0,
+    "vault_provenance_records_serialized": 1754,
+    "tier_2_boundary_intact": true
+  },
+  "central_research_question_conclusion": {
+    "verdict": "CONTROLLER_MECHANICS_VERIFIED_EMPIRICAL_ASR_PENDING",
+    "summary": "The Disparity Safety Gate (DSG) controller logic, Lan-DeMets O'Brien-Fleming alpha spending, two-stage hierarchical pre-screening, and live parameter rollback were successfully verified over a 1,755-window in-memory stream. However, this represents an algorithmic controller simulation. Empirical confirmation of acoustic ASR hypotheses requires physical model forward passes on real audio waveforms once Cohort 2 is materialized."
+  }
+}

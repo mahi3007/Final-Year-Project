@@ -1,0 +1,13 @@
+{
+  "candidate_id": "cand_step_0006",
+  "stream_order": 6,
+  "window_clip_ids": [
+    "MPXM_arctic_a0005",
+    "MPXM_arctic_a0006",
+    "MPXM_arctic_a0007",
+    "MPXM_arctic_a0008"
+  ],
+  "optimizer": "SGD_Entropy_Min",
+  "learning_rate": 0.005,
+  "decision": "ACCEPT"
+}

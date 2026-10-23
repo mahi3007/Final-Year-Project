@@ -1,0 +1,167 @@
+================================================================================
+TEST EXECUTION AUDIT RECORD: Full Research Validity Test Suite (tests/research_validity/)
+Command: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe -m pytest tests/research_validity/ -v
+Working Directory: C:\Users\venka\Downloads\final year project main
+Start Timestamp (UTC): 2026-10-14T19:11:19.934823+00:00
+End Timestamp (UTC):   2026-10-14T19:11:50.649209+00:00
+Exit Code: 0
+Execution Status: SUCCESS
+================================================================================
+
+--- STDOUT ---
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\venka\Downloads\final year project main
+configfile: pyproject.toml
+plugins: anyio-4.9.0, langsmith-0.4.53, asyncio-1.3.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 110 items
+
+tests/research_validity/test_historical_immutability.py::test_historical_artifact_manifest_hash_stability PASSED [  0%]
+tests/research_validity/test_historical_immutability.py::test_historical_stage2_numerical_immutability PASSED [  1%]
+tests/research_validity/test_historical_immutability.py::test_historical_stage3_numerical_immutability PASSED [  2%]
+tests/research_validity/test_historical_immutability.py::test_historical_stage4_thresholds_immutability PASSED [  3%]
+tests/research_validity/test_historical_immutability.py::test_historical_stage5_gate_config_immutability PASSED [  4%]
+tests/research_validity/test_historical_immutability.py::test_historical_split_speaker_disjointness PASSED [  5%]
+tests/research_validity/test_historical_immutability.py::test_historical_stage6_seq2seq_incompatibility_recorded PASSED [  6%]
+tests/research_validity/test_label_isolation.py::test_label_isolation_strips_all_ground_truth PASSED [  7%]
+tests/research_validity/test_model_role_registry.py::test_all_stage2_models_registered PASSED [  8%]
+tests/research_validity/test_model_role_registry.py::test_all_stage6_models_registered PASSED [  9%]
+tests/research_validity/test_model_role_registry.py::test_ctc_models_have_ctta_eligibility PASSED [ 10%]
+tests/research_validity/test_model_role_registry.py::test_seq2seq_models_marked_incompatible PASSED [ 10%]
+tests/research_validity/test_model_role_registry.py::test_holdout_models_not_in_development_registry PASSED [ 11%]
+tests/research_validity/test_model_role_registry.py::test_overlap_models_not_marked_holdout PASSED [ 12%]
+tests/research_validity/test_model_role_registry.py::test_unknown_model_fails_closed PASSED [ 13%]
+tests/research_validity/test_model_role_registry.py::test_model_id_immutability PASSED [ 14%]
+tests/research_validity/test_model_role_registry.py::test_checkpoint_identity PASSED [ 15%]
+tests/research_validity/test_model_role_registry.py::test_architecture_identity PASSED [ 16%]
+tests/research_validity/test_model_role_registry.py::test_whisper_not_sent_to_ctc_adapter PASSED [ 17%]
+tests/research_validity/test_prequential_stream.py::test_stream_ordering_determinism PASSED [ 18%]
+tests/research_validity/test_prequential_stream.py::test_online_label_isolation_in_prequential_stream PASSED [ 19%]
+tests/research_validity/test_prequential_stream.py::test_no_adaptation_control_invariant PASSED [ 20%]
+tests/research_validity/test_prequential_stream.py::test_suta_parameter_isolation PASSED [ 20%]
+tests/research_validity/test_prequential_stream.py::test_dsuta_adapter_contract PASSED [ 21%]
+tests/research_validity/test_prequential_stream.py::test_dmsuta_adapter_contract PASSED [ 22%]
+tests/research_validity/test_seed_reproducibility.py::test_seed_determinism PASSED [ 23%]
+tests/research_validity/test_sentinel_contamination.py::test_sentinel_panel_clean PASSED [ 24%]
+tests/research_validity/test_sentinel_contamination.py::test_contaminated_sentinel_raises_assertion PASSED [ 25%]
+tests/research_validity/test_speaker_leakage.py::test_zero_speaker_leakage_on_splits PASSED [ 26%]
+tests/research_validity/test_speaker_leakage.py::test_intentional_leakage_detection_raises_error PASSED [ 27%]
+tests/research_validity/test_stage3m_stream_audit.py::test_manifest_structure_and_cell_count PASSED [ 28%]
+tests/research_validity/test_stage3m_stream_audit.py::test_model_catalog_integrity PASSED [ 29%]
+tests/research_validity/test_stage3m_stream_audit.py::test_no_adapt_stream_order_invariance PASSED [ 30%]
+tests/research_validity/test_stage3m_stream_audit.py::test_ctc_seq2seq_architectural_boundary PASSED [ 30%]
+tests/research_validity/test_stage3m_stream_audit.py::test_bootstrap_uncertainty_limitations_acknowledged PASSED [ 31%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage3m_reproducibility_bridge PASSED [ 32%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage3m_collapse_diagnostics PASSED [ 33%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage3m_speaker_overlap_audit PASSED [ 34%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage3m_scientific_audit_addendum_exists PASSED [ 35%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_preregistration_addenda_exist PASSED [ 36%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_observation_grain_and_row_count PASSED [ 37%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_window_count_and_terminal_rule PASSED [ 38%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_empirical_logit_completely_removed PASSED [ 39%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_actual_glmm_with_random_effects_validated PASSED [ 40%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_differential_subgroup_harm_fixtures PASSED [ 40%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_marginal_g_computation_targets PASSED [ 41%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_stratified_paired_bootstrap PASSED [ 42%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_fallback_triggers_and_small_cluster_policy PASSED [ 43%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_subgroup_safety_estimands_in_percentage_points PASSED [ 44%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_seed_policy_and_dropout_state PASSED [ 45%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_fixed_effect_34_parameters_and_canonical_full_rank PASSED [ 46%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_analysis_a_and_b_separation PASSED [ 47%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_laplace_marginal_objective_and_multidataset_validation PASSED [ 48%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_formal_dsg_gate_controller_boundary_cases PASSED [ 49%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_bootstrap_729_multiset_support PASSED [ 50%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_safety_gate_unit_contract_and_invariance PASSED [ 50%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_evaluation_boundary_and_sentinel_separation PASSED [ 51%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_repeated_no_adapt_observations_handling PASSED [ 52%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_unbounded_fractional_metric_bounds_and_conversion PASSED [ 53%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_observed_hessian_curvature_and_constant_reconciliation PASSED [ 54%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_canonical_option_a_structure_and_sensitivity PASSED [ 55%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_glmm_scope_and_laplace_approximation_terminology PASSED [ 56%]
+tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_execution_authorization_and_gate_status PASSED [ 57%]
+tests/research_validity/test_stage4_invariants.py::test_stage4_split_scale_and_balance PASSED [ 58%]
+tests/research_validity/test_stage4_invariants.py::test_stage4_zero_speaker_leakage PASSED [ 59%]
+tests/research_validity/test_stage4_invariants.py::test_stage4_frozen_thresholds_provenance PASSED [ 60%]
+tests/research_validity/test_stage4_invariants.py::test_stage4_window_sweep_provenance PASSED [ 60%]
+tests/research_validity/test_stage4_invariants.py::test_acoustic_stress_partitions_integrity PASSED [ 61%]
+tests/research_validity/test_stage4_invariants.py::test_stage4_decision_and_boundary_integrity PASSED [ 62%]
+tests/research_validity/test_stage5_external_eval.py::test_eval_has_exactly_six_groups PASSED [ 63%]
+tests/research_validity/test_stage5_external_eval.py::test_eval_has_exactly_ten_speakers_per_group PASSED [ 64%]
+tests/research_validity/test_stage5_external_eval.py::test_eval_has_exactly_fifteen_clips_per_speaker PASSED [ 65%]
+tests/research_validity/test_stage5_external_eval.py::test_eval_total_speakers_is_sixty PASSED [ 66%]
+tests/research_validity/test_stage5_external_eval.py::test_eval_total_clips_is_nine_hundred PASSED [ 67%]
+tests/research_validity/test_stage5_external_eval.py::test_no_duplicate_recording_ids PASSED [ 68%]
+tests/research_validity/test_stage5_external_eval.py::test_no_duplicate_audio_hashes PASSED [ 69%]
+tests/research_validity/test_stage5_external_eval.py::test_all_transcripts_nonempty PASSED [ 70%]
+tests/research_validity/test_stage5_external_eval.py::test_selection_seed_provenance PASSED [ 70%]
+tests/research_validity/test_stage5_external_eval.py::test_group_definition_provenance PASSED [ 71%]
+tests/research_validity/test_stage5_external_eval.py::test_no_l2_arctic_speaker_reuse PASSED [ 72%]
+tests/research_validity/test_stage5_external_eval.py::test_no_calibration_speaker_reuse PASSED [ 73%]
+tests/research_validity/test_stage5_external_eval.py::test_eval_manifest_immutable PASSED [ 74%]
+tests/research_validity/test_stage5_external_eval.py::test_eval_availability_scope_correct PASSED [ 75%]
+tests/research_validity/test_stage5_external_eval.py::test_eval_raw_accent_preservation_and_no_compound PASSED [ 76%]
+tests/research_validity/test_stage5_external_eval.py::test_speaker_accent_homogeneity PASSED [ 77%]
+tests/research_validity/test_stage5m_online_control.py::test_stage5m_frozen_safety_thresholds PASSED [ 78%]
+tests/research_validity/test_stage5m_online_control.py::test_stage5m_model_roles_and_seq2seq_boundary PASSED [ 79%]
+tests/research_validity/test_stage5m_online_control.py::test_stage5m_agreement_classification_logic PASSED [ 80%]
+tests/research_validity/test_stage5m_online_control.py::test_stage5m_sentinel_panel_disjoint_speakers PASSED [ 80%]
+tests/research_validity/test_stage5m_online_control.py::test_stage5m_temporal_validity_audit_artifacts PASSED [ 81%]
+tests/research_validity/test_stage5m_online_control.py::test_stage5m_temporal_estimand_separation_and_harm_forensics PASSED [ 82%]
+tests/research_validity/test_stage5m_online_control.py::test_stage5m_counterfactual_verification_and_missingness_bounds PASSED [ 83%]
+tests/research_validity/test_stage5m_online_control.py::test_stage5m_report_wording_and_decision_matrix_labels PASSED [ 84%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_governance_lock_and_config PASSED [ 85%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_proposal_documentation_completeness PASSED [ 86%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_dataset_disjointness_invariant PASSED [ 87%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_model_registry_held_out_isolation PASSED [ 88%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_deliverables_and_scientific_audits_exist PASSED [ 89%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_simulation_grid_exact_synchronization PASSED [ 90%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_speaker_inventory_arithmetic_and_provenance PASSED [ 90%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_inventory_strata_counts_and_reconciliation PASSED [ 91%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_exact_boundary_tie_checks PASSED [ 92%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_clean_non_degradation_marginal_evidence PASSED [ 93%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_power_decision_rules PASSED [ 94%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_trial_level_intersections PASSED [ 95%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_clean_ucb_sign_convention_and_deterministic_bound PASSED [ 96%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_simulation_grid_matches_intersection_n_abc PASSED [ 97%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_venn_cells_nonnegative_and_sum_to_s PASSED [ 98%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_common_voice_provenance_metadata PASSED [ 99%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_irish_speaker_set_theoretic_accounting PASSED [100%]
+
+============================== warnings summary ===============================
+..\..\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torchvision\transforms\_functional_pil.py:245
+  C:\Users\venka\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torchvision\transforms\_functional_pil.py:245: DeprecationWarning: BILINEAR is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BILINEAR instead.
+    interpolation: int = Image.BILINEAR,
+
+..\..\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torchvision\transforms\_functional_pil.py:291
+  C:\Users\venka\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torchvision\transforms\_functional_pil.py:291: DeprecationWarning: NEAREST is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.NEAREST or Dither.NONE instead.
+    interpolation: int = Image.NEAREST,
+
+..\..\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torchvision\transforms\_functional_pil.py:307
+  C:\Users\venka\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torchvision\transforms\_functional_pil.py:307: DeprecationWarning: NEAREST is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.NEAREST or Dither.NONE instead.
+    interpolation: int = Image.NEAREST,
+
+..\..\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torchvision\transforms\_functional_pil.py:324
+  C:\Users\venka\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\torchvision\transforms\_functional_pil.py:324: DeprecationWarning: BICUBIC is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.BICUBIC instead.
+    interpolation: int = Image.BICUBIC,
+
+<frozen importlib._bootstrap>:241
+  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:241
+  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+====================== 110 passed, 6 warnings in 26.77s =======================
+
+
+--- STDERR ---
+C:\Users\venka\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\__init__.py:113: RequestsDependencyWarning: urllib3 (1.26.12) or chardet (7.4.3)/charset_normalizer (2.1.1) doesn't match a supported version!
+  warnings.warn(
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+
+================================================================================
+END OF AUDIT RECORD
+================================================================================

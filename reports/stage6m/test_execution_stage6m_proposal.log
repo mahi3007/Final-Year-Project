@@ -1,0 +1,49 @@
+================================================================================
+TEST EXECUTION AUDIT RECORD: Stage 6M Protocol Proposal Test Module (test_stage6m_protocol_proposal.py)
+Command: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe -m pytest tests/research_validity/test_stage6m_protocol_proposal.py -v
+Working Directory: C:\Users\venka\Downloads\final year project main
+Start Timestamp (UTC): 2026-10-14T19:11:50.650744+00:00
+End Timestamp (UTC):   2026-10-14T19:11:57.153545+00:00
+Exit Code: 0
+Execution Status: SUCCESS
+================================================================================
+
+--- STDOUT ---
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\venka\Downloads\final year project main
+configfile: pyproject.toml
+plugins: anyio-4.9.0, langsmith-0.4.53, asyncio-1.3.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 17 items
+
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_governance_lock_and_config PASSED [  5%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_proposal_documentation_completeness PASSED [ 11%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_dataset_disjointness_invariant PASSED [ 17%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_model_registry_held_out_isolation PASSED [ 23%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_deliverables_and_scientific_audits_exist PASSED [ 29%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_simulation_grid_exact_synchronization PASSED [ 35%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_speaker_inventory_arithmetic_and_provenance PASSED [ 41%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_inventory_strata_counts_and_reconciliation PASSED [ 47%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_exact_boundary_tie_checks PASSED [ 52%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_clean_non_degradation_marginal_evidence PASSED [ 58%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_power_decision_rules PASSED [ 64%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_trial_level_intersections PASSED [ 70%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_clean_ucb_sign_convention_and_deterministic_bound PASSED [ 76%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_simulation_grid_matches_intersection_n_abc PASSED [ 82%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_venn_cells_nonnegative_and_sum_to_s PASSED [ 88%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_common_voice_provenance_metadata PASSED [ 94%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_irish_speaker_set_theoretic_accounting PASSED [100%]
+
+============================= 17 passed in 4.51s ==============================
+
+
+--- STDERR ---
+C:\Users\venka\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\__init__.py:113: RequestsDependencyWarning: urllib3 (1.26.12) or chardet (7.4.3)/charset_normalizer (2.1.1) doesn't match a supported version!
+  warnings.warn(
+
+
+================================================================================
+END OF AUDIT RECORD
+================================================================================

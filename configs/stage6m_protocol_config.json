@@ -1,0 +1,215 @@
+{
+  "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+  "governing_standard": "ADR-005 (Amended via AMENDMENT-001)",
+  "stage_designation": "Stage 6M: Multi-Model Cumulative Adaptation & Cross-Dataset Confirmatory Validation",
+  "execution_status": "AUTHORIZED_UNDER_AMENDMENT_v1.3.4",
+  "execution_authorized": true,
+  "governance_amendment": {
+    "amendment_id": "AMENDMENT-001",
+    "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+    "effective_date": "2026-10-20",
+    "prior_protocol_version": "v1.3.3-stage6m-reconciled-decision-pack",
+    "authorizing_authority": "Designated Project Lead",
+    "basis": "Removal of internal ADR-005 supervisor-signature requirement following confirmation that this signature is not required by university applicable rules. Confirmatory execution authorized by Designated Project Lead once technical, statistical, data-integrity and reproducibility checks have passed and final protocol configuration has been frozen.",
+    "supervisor_disclaimer": "The amendment does not represent or imply approval by the academic supervisor.",
+    "authorization_token": "AUTH-20261020-STAGE6M-AMEND-V134-EXECUTE-PERMITTED"
+  },
+  "experimental_arms": {
+    "arm_1": {
+      "name": "ARM_1_STATIC_NO_ADAPT",
+      "description": "Fixed unadapted base model evaluated across all stream windows (reference trajectory)",
+      "adaptation_enabled": false,
+      "gate_enabled": false,
+      "purpose": "Establishes non-adaptive baseline performance and natural temporal drift"
+    },
+    "arm_2": {
+      "name": "ARM_2_UNGATED_CTTA_REPLAY",
+      "description": "Continuous test-time adaptation with unconditional acceptance in isolated research replay",
+      "adaptation_enabled": true,
+      "gate_enabled": false,
+      "environment": "ISOLATED_RESEARCH_SANDBOX",
+      "deployment_authorized": false,
+      "purpose": "Measures true unconstrained adaptation dynamics, cumulative error drift, and divergence risk"
+    },
+    "arm_3": {
+      "name": "ARM_3_GATE_CONTROLLED_CTTA",
+      "description": "Operational prequential streaming controlled by Disparity Safety Gate on Sentinel Panel",
+      "adaptation_enabled": true,
+      "gate_enabled": true,
+      "purpose": "Measures closed-loop safety, cumulative stability, and utility preservation under frozen policy"
+    }
+  },
+  "dataset_specifications": {
+    "two_cohort_architecture": {
+      "cohort_1": {
+        "scientific_role": "CROSS_DATASET_REPLICATION_AND_MULTI_STEP_REPLAY_BENCHMARK",
+        "dataset_name": "Common Voice 27.0 English Holdout",
+        "csv_path": "datasets/splits/stage5_external_eval.csv",
+        "manifest_path": "datasets/splits/stage5_external_eval_manifest.json",
+        "lock_path": "datasets/splits/stage5_external_eval.lock.json",
+        "total_clips": 900,
+        "total_speakers": 60,
+        "speakers_per_stratum": 10,
+        "clips_per_speaker": 15,
+        "prior_exposure_declared": true
+      },
+      "cohort_2": {
+        "scientific_role": "PRIMARY_CONFIRMATORY_BLIND_BENCHMARK",
+        "dataset_name": "Common Voice 27.0 English Independent Split",
+        "selected_design_path": "OPTION_1B_VARIABLE_CLIP_RESERVE_EXPANSION",
+        "active_speakers_total": 468,
+        "speakers_per_stratum": 78,
+        "active_clips_nominal": 7020,
+        "total_windows_nominal": 1755,
+        "candidate_updates_nominal": 1754,
+        "terminal_window_rule": "PREDICTION_ONLY_NO_ADAPTATION",
+        "reserve_speakers_irish": 27,
+        "reserve_tier_1_speakers": 14,
+        "reserve_tier_2_speakers": 13,
+        "reserve_policy": "TIER_1_AUTO_CONTINUE_TIER_2_HARD_STOP",
+        "transcripts_locked": true,
+        "prior_exposure_declared": false,
+        "candidate_pool_feasibility_status": "FEASIBILITY_VERIFIED_LOCKED_MANIFEST_GENERATED",
+        "cohort_materialization_status": "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD",
+        "manifest_generation_status": "LOCKED_MANIFEST_GENERATED_EXECUTION_GATE_HOLD"
+      }
+    },
+    "evaluation_stream": {
+      "dataset_name": "Common Voice 27.0 English Holdout",
+      "csv_path": "datasets/splits/stage5_external_eval.csv",
+      "manifest_path": "datasets/splits/stage5_external_eval_manifest.json",
+      "lock_path": "datasets/splits/stage5_external_eval.lock.json",
+      "total_clips": 900,
+      "total_speakers": 60,
+      "speakers_per_stratum": 10,
+      "clips_per_speaker": 15,
+      "strata": [
+        "Australian English",
+        "Canadian English",
+        "England English",
+        "Irish English",
+        "South Asian English",
+        "US English"
+      ],
+      "independent_sampling_unit": "speaker",
+      "disjoint_from_sentinel": true,
+      "disjoint_from_development": true
+    },
+    "sentinel_panel": {
+      "panel_id": "stage5_sentinel_v2_expanded",
+      "csv_path": "datasets/splits/stage5_sentinel_panel.csv",
+      "manifest_path": "datasets/splits/stage5_sentinel_panel_manifest.json",
+      "lock_path": "datasets/splits/stage5_sentinel_panel.lock.json",
+      "total_clips": 300,
+      "total_speakers": 30,
+      "clips_per_speaker": 10,
+      "num_strata": 6
+    },
+    "calibration_split": {
+      "description": "Isolated development split for secondary Pareto frontier exploration (never used for final testing)",
+      "csv_path": "datasets/splits/calibration.csv"
+    }
+  },
+  "model_architecture_matrix": {
+    "overlap_ctc_controls": [
+      "wav2vec2_base",
+      "data2vec_base"
+    ],
+    "genuine_held_out_ctc_backbones": [
+      "hubert_large",
+      "xlsr_english",
+      "wav2vec2_large_lv60",
+      "wav2vec2_large_robust"
+    ],
+    "static_seq2seq_controls": [
+      "whisper_base",
+      "distil_whisper_small"
+    ]
+  },
+  "frozen_gate_tolerances": {
+    "epsilon_R": 0.0000,
+    "epsilon_G": 0.0200,
+    "epsilon_D": 0.0200,
+    "bootstrap": {
+      "B": 1000,
+      "confidence": 0.95,
+      "resampling_unit": "speaker",
+      "paired": true,
+      "seed": 20261002
+    }
+  },
+  "counterfactual_replay_architecture": {
+    "vault_directory": "checkpoints/stage6m/research_vault/",
+    "replay_mode": "HYBRID_CHECKPOINT_AND_RECIPE",
+    "serialize_rejected_candidates": true,
+    "serialize_accepted_candidates": true,
+    "prospective_window_horizon": 1,
+    "multi_step_horizons": [1, 3, 5],
+    "quarantined_reference_evaluation": true
+  },
+  "provenance_and_missingness_invariants": {
+    "required_record_fields": [
+      "candidate_id",
+      "stream_order",
+      "retained_checkpoint_hash",
+      "candidate_checkpoint_hash",
+      "cumulative_accepted_updates_count",
+      "adaptation_config_and_seed",
+      "comparator_state_hash",
+      "prospective_window_audio_ids",
+      "counterfactual_verification_status"
+    ],
+    "strict_unavailability_flagging": true,
+    "prohibit_silent_neutral_imputation": true
+  },
+  "statistical_power_and_inference": {
+    "independent_speakers_count": 60,
+    "option_a_planning_target_speakers": 180,
+    "option_a_intermediate_candidate_speakers": 240,
+    "option_a_ucb95_high_power_target_speakers": 360,
+    "option_a_adjusted_ucb975_high_power_target_speakers": 468,
+    "resampling_unit": "speaker",
+    "bootstrap_repetitions": 1000,
+    "alpha": 0.05,
+    "primary_test_option": "OPTION_A_ONE_SIDED_SUPERIORITY",
+    "anticipated_wer_benefit_pp": 0.85,
+    "exact_student_t_decision_rule": true,
+    "option_a_one_sided_wer_power_n60": 0.970,
+    "option_a_one_sided_wer_power_n180": 1.000,
+    "option_a_one_sided_wer_power_n240": 1.000,
+    "option_a_one_sided_wer_power_n360": 1.000,
+    "option_a_one_sided_wer_power_n468": 1.000,
+    "scientific_disparity_margin_pp": 1.40,
+    "strict_disparity_rule_power_n60": 0.562,
+    "strict_disparity_rule_power_n180": 0.912,
+    "strict_disparity_rule_power_n240": 0.962,
+    "strict_disparity_rule_power_n360": 0.995,
+    "strict_disparity_rule_power_n468": 0.999,
+    "strict_joint_safety_utility_power_s1_n60": 0.548,
+    "strict_joint_safety_utility_power_s1_n180": 0.912,
+    "strict_joint_safety_utility_power_s1_n240": 0.962,
+    "strict_joint_safety_utility_power_s1_n360": 0.995,
+    "strict_joint_safety_utility_power_s1_n468": 0.999,
+    "adjusted_ucb975_joint_power_s1_n180": 0.848,
+    "adjusted_ucb975_joint_power_s1_n240": 0.928,
+    "adjusted_ucb975_joint_power_s1_n360": 0.988,
+    "adjusted_ucb975_joint_power_s1_n468": 0.998,
+    "drift_joint_safety_utility_power_s2_n180_ucb95": 0.629,
+    "drift_joint_safety_utility_power_s2_n240_ucb95": 0.721,
+    "drift_joint_safety_utility_power_s2_n360_ucb95": 0.856,
+    "drift_joint_safety_utility_power_s2_n450_ucb95": 0.908,
+    "drift_joint_safety_utility_power_s2_n468_ucb95": 0.919,
+    "drift_joint_safety_utility_power_s2_n180_adjusted_ucb975": 0.481,
+    "drift_joint_safety_utility_power_s2_n240_adjusted_ucb975": 0.590,
+    "drift_joint_safety_utility_power_s2_n360_adjusted_ucb975": 0.772,
+    "drift_joint_safety_utility_power_s2_n450_adjusted_ucb975": 0.845,
+    "drift_joint_safety_utility_power_s2_n468_adjusted_ucb975": 0.858,
+    "operational_joint_safety_utility_power_s1_n60": 0.793,
+    "operational_joint_safety_utility_power_s2_n360": 0.997,
+    "operational_joint_safety_utility_power_s2_n468": 0.999,
+    "null_false_positive_rate_s3_n180": 0.042,
+    "null_false_positive_rate_s3_n360": 0.045,
+    "null_false_positive_rate_s3_n468": 0.044,
+    "canonical_simulation_json_hash": "a3d60352cbb533cade344977ad29d9d0f19a1a6950f24bd11e36aba808039e5b"
+  }
+}

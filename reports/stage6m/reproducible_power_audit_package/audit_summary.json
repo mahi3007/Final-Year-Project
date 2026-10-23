@@ -1,0 +1,175 @@
+{
+  "metadata": {
+    "protocol_version": "v1.2.0-stage6m-proposal",
+    "governing_standard": "ADR-005",
+    "execution_timestamp_utc": "2026-10-17T06:10:18.406309+00:00",
+    "git_revision": "2af91e674e7948233a8b72bdb80171a349e64bba",
+    "system_info": {
+      "os": "Windows",
+      "release": "10",
+      "python_version": "3.11.9",
+      "numpy_version": "1.26.4"
+    },
+    "investigation_focus": "Monte Carlo Precision vs. Statistical Power Distinction",
+    "preregistered_monte_carlo_precision_budget": "S = 20,000 trials (Target Margin of Error <= 0.30 pp)",
+    "status": "Simulation precision audit executed; physical study power contingent on real-world DGP alignment"
+  },
+  "audit_results": [
+    {
+      "cohort_n": 468,
+      "speakers_per_stratum": 78,
+      "simulations_s": 4000,
+      "bootstrap_b": 1000,
+      "seed": 42001,
+      "successes_k": 3464,
+      "estimated_power_p_hat": 0.866,
+      "mc_se": 0.005386,
+      "wald_95_ci": [
+        0.855443,
+        0.876557
+      ],
+      "wilson_95_ci": [
+        0.855091,
+        0.876206
+      ],
+      "clopper_pearson_95_ci": [
+        0.855051,
+        0.876412
+      ],
+      "rule_a_verdict": "PASS",
+      "rule_b_wald_verdict": "PASS",
+      "rule_b_wilson_verdict": "PASS",
+      "rule_b_cp_verdict": "PASS"
+    },
+    {
+      "cohort_n": 468,
+      "speakers_per_stratum": 78,
+      "simulations_s": 10000,
+      "bootstrap_b": 1000,
+      "seed": 42002,
+      "successes_k": 8542,
+      "estimated_power_p_hat": 0.8542,
+      "mc_se": 0.003529,
+      "wald_95_ci": [
+        0.847283,
+        0.861117
+      ],
+      "wilson_95_ci": [
+        0.847147,
+        0.860981
+      ],
+      "clopper_pearson_95_ci": [
+        0.84713,
+        0.861063
+      ],
+      "rule_a_verdict": "PASS",
+      "rule_b_wald_verdict": "FAIL",
+      "rule_b_wilson_verdict": "FAIL",
+      "rule_b_cp_verdict": "FAIL"
+    },
+    {
+      "cohort_n": 468,
+      "speakers_per_stratum": 78,
+      "simulations_s": 20000,
+      "bootstrap_b": 1000,
+      "seed": 42003,
+      "successes_k": 17143,
+      "estimated_power_p_hat": 0.85715,
+      "mc_se": 0.002474,
+      "wald_95_ci": [
+        0.8523,
+        0.862
+      ],
+      "wilson_95_ci": [
+        0.852232,
+        0.861931
+      ],
+      "clopper_pearson_95_ci": [
+        0.852224,
+        0.861972
+      ],
+      "rule_a_verdict": "PASS",
+      "rule_b_wald_verdict": "PASS",
+      "rule_b_wilson_verdict": "PASS",
+      "rule_b_cp_verdict": "PASS"
+    },
+    {
+      "cohort_n": 420,
+      "speakers_per_stratum": 70,
+      "simulations_s": 4000,
+      "bootstrap_b": 1000,
+      "seed": 42004,
+      "successes_k": 3274,
+      "estimated_power_p_hat": 0.8185,
+      "mc_se": 0.006094,
+      "wald_95_ci": [
+        0.806555,
+        0.830445
+      ],
+      "wilson_95_ci": [
+        0.806252,
+        0.830137
+      ],
+      "clopper_pearson_95_ci": [
+        0.806199,
+        0.830334
+      ],
+      "rule_a_verdict": "FAIL",
+      "rule_b_wald_verdict": "FAIL",
+      "rule_b_wilson_verdict": "FAIL",
+      "rule_b_cp_verdict": "FAIL"
+    },
+    {
+      "cohort_n": 420,
+      "speakers_per_stratum": 70,
+      "simulations_s": 10000,
+      "bootstrap_b": 1000,
+      "seed": 42005,
+      "successes_k": 8261,
+      "estimated_power_p_hat": 0.8261,
+      "mc_se": 0.00379,
+      "wald_95_ci": [
+        0.818671,
+        0.833529
+      ],
+      "wilson_95_ci": [
+        0.818546,
+        0.833403
+      ],
+      "clopper_pearson_95_ci": [
+        0.818527,
+        0.833483
+      ],
+      "rule_a_verdict": "FAIL",
+      "rule_b_wald_verdict": "FAIL",
+      "rule_b_wilson_verdict": "FAIL",
+      "rule_b_cp_verdict": "FAIL"
+    },
+    {
+      "cohort_n": 420,
+      "speakers_per_stratum": 70,
+      "simulations_s": 20000,
+      "bootstrap_b": 1000,
+      "seed": 42006,
+      "successes_k": 16441,
+      "estimated_power_p_hat": 0.82205,
+      "mc_se": 0.002704,
+      "wald_95_ci": [
+        0.816749,
+        0.827351
+      ],
+      "wilson_95_ci": [
+        0.816688,
+        0.827289
+      ],
+      "clopper_pearson_95_ci": [
+        0.816678,
+        0.827329
+      ],
+      "rule_a_verdict": "FAIL",
+      "rule_b_wald_verdict": "FAIL",
+      "rule_b_wilson_verdict": "FAIL",
+      "rule_b_cp_verdict": "FAIL"
+    }
+  ]
+}

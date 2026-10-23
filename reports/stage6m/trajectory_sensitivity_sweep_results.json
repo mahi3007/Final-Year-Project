@@ -1,0 +1,973 @@
+{
+  "metadata": {
+    "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+    "historical_lineage_version": "v1.3.3-stage6m-reconciled-decision-pack",
+    "governing_standard": "ADR-005 (Amended via AMENDMENT-001)",
+    "investigation": "Deliverable 3 Empirical Trajectory Sensitivity Sweeps",
+    "execution_timestamp_utc": "2026-10-20T06:54:52.412589+00:00",
+    "git_revision": "2af91e674e7948233a8b72bdb80171a349e64bba",
+    "trajectories_per_condition": 500,
+    "updates_per_trajectory": 1754,
+    "status": "Empirical sweeps executed and verified under reconciled error definitions"
+  },
+  "sweeps": {
+    "autoregressive_dependence": {
+      "rho_0.0": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 62,
+          "fwer_estimate": 0.124,
+          "wilson_95_ci": [
+            0.097946,
+            0.155787
+          ],
+          "clopper_pearson_95_ci": [
+            0.096406,
+            0.156129
+          ],
+          "safe_acceptance_rate": 0.9235,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Autoregressive drift rho=0.0",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 7,
+          "fwer_estimate": 0.014,
+          "wilson_95_ci": [
+            0.006798,
+            0.028613
+          ],
+          "clopper_pearson_95_ci": [
+            0.005647,
+            0.028632
+          ],
+          "safe_acceptance_rate": 0.6488,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Autoregressive drift rho=0.0",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 2,
+          "fwer_estimate": 0.004,
+          "wilson_95_ci": [
+            0.001098,
+            0.014466
+          ],
+          "clopper_pearson_95_ci": [
+            0.000485,
+            0.014374
+          ],
+          "safe_acceptance_rate": 0.5801,
+          "mean_sentinel_invocations_per_traj": 1426.2,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Autoregressive drift rho=0.0",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "rho_0.2": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 58,
+          "fwer_estimate": 0.116,
+          "wilson_95_ci": [
+            0.090814,
+            0.147042
+          ],
+          "clopper_pearson_95_ci": [
+            0.089272,
+            0.147366
+          ],
+          "safe_acceptance_rate": 0.924,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Autoregressive drift rho=0.2",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 2,
+          "fwer_estimate": 0.004,
+          "wilson_95_ci": [
+            0.001098,
+            0.014466
+          ],
+          "clopper_pearson_95_ci": [
+            0.000485,
+            0.014374
+          ],
+          "safe_acceptance_rate": 0.6477,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Autoregressive drift rho=0.2",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 0,
+          "fwer_estimate": 0.0,
+          "wilson_95_ci": [
+            0.0,
+            0.007624
+          ],
+          "clopper_pearson_95_ci": [
+            0.0,
+            0.007351
+          ],
+          "safe_acceptance_rate": 0.5793,
+          "mean_sentinel_invocations_per_traj": 1426.6,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Autoregressive drift rho=0.2",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "rho_0.4": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 57,
+          "fwer_estimate": 0.114,
+          "wilson_95_ci": [
+            0.089037,
+            0.144849
+          ],
+          "clopper_pearson_95_ci": [
+            0.087495,
+            0.145168
+          ],
+          "safe_acceptance_rate": 0.9221,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Autoregressive drift rho=0.4",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 7,
+          "fwer_estimate": 0.014,
+          "wilson_95_ci": [
+            0.006798,
+            0.028613
+          ],
+          "clopper_pearson_95_ci": [
+            0.005647,
+            0.028632
+          ],
+          "safe_acceptance_rate": 0.6447,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Autoregressive drift rho=0.4",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 2,
+          "fwer_estimate": 0.004,
+          "wilson_95_ci": [
+            0.001098,
+            0.014466
+          ],
+          "clopper_pearson_95_ci": [
+            0.000485,
+            0.014374
+          ],
+          "safe_acceptance_rate": 0.5767,
+          "mean_sentinel_invocations_per_traj": 1426.9,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Autoregressive drift rho=0.4",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "rho_0.6": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 71,
+          "fwer_estimate": 0.142,
+          "wilson_95_ci": [
+            0.114129,
+            0.17533
+          ],
+          "clopper_pearson_95_ci": [
+            0.112597,
+            0.175711
+          ],
+          "safe_acceptance_rate": 0.9252,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Autoregressive drift rho=0.6",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 6,
+          "fwer_estimate": 0.012,
+          "wilson_95_ci": [
+            0.005511,
+            0.02593
+          ],
+          "clopper_pearson_95_ci": [
+            0.004416,
+            0.025935
+          ],
+          "safe_acceptance_rate": 0.6503,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Autoregressive drift rho=0.6",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 4,
+          "fwer_estimate": 0.008,
+          "wilson_95_ci": [
+            0.003115,
+            0.020387
+          ],
+          "clopper_pearson_95_ci": [
+            0.002184,
+            0.020356
+          ],
+          "safe_acceptance_rate": 0.5819,
+          "mean_sentinel_invocations_per_traj": 1427.7,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Autoregressive drift rho=0.6",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "rho_0.8": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 51,
+          "fwer_estimate": 0.102,
+          "wilson_95_ci": [
+            0.078434,
+            0.131635
+          ],
+          "clopper_pearson_95_ci": [
+            0.076892,
+            0.131926
+          ],
+          "safe_acceptance_rate": 0.9207,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Autoregressive drift rho=0.8",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 4,
+          "fwer_estimate": 0.008,
+          "wilson_95_ci": [
+            0.003115,
+            0.020387
+          ],
+          "clopper_pearson_95_ci": [
+            0.002184,
+            0.020356
+          ],
+          "safe_acceptance_rate": 0.641,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Autoregressive drift rho=0.8",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 2,
+          "fwer_estimate": 0.004,
+          "wilson_95_ci": [
+            0.001098,
+            0.014466
+          ],
+          "clopper_pearson_95_ci": [
+            0.000485,
+            0.014374
+          ],
+          "safe_acceptance_rate": 0.5734,
+          "mean_sentinel_invocations_per_traj": 1427.1,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Autoregressive drift rho=0.8",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        }
+      }
+    },
+    "sentinel_panel_sizing": {
+      "n_sent_20": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 62,
+          "fwer_estimate": 0.124,
+          "wilson_95_ci": [
+            0.097946,
+            0.155787
+          ],
+          "clopper_pearson_95_ci": [
+            0.096406,
+            0.156129
+          ],
+          "safe_acceptance_rate": 0.8202,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Sentinel Panel sizing N_sent=20",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 6,
+          "fwer_estimate": 0.012,
+          "wilson_95_ci": [
+            0.005511,
+            0.02593
+          ],
+          "clopper_pearson_95_ci": [
+            0.004416,
+            0.025935
+          ],
+          "safe_acceptance_rate": 0.4573,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Sentinel Panel sizing N_sent=20",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 1,
+          "fwer_estimate": 0.002,
+          "wilson_95_ci": [
+            0.000353,
+            0.011241
+          ],
+          "clopper_pearson_95_ci": [
+            5.1e-05,
+            0.011092
+          ],
+          "safe_acceptance_rate": 0.4091,
+          "mean_sentinel_invocations_per_traj": 1426.2,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Sentinel Panel sizing N_sent=20",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "n_sent_30": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 63,
+          "fwer_estimate": 0.126,
+          "wilson_95_ci": [
+            0.099735,
+            0.157968
+          ],
+          "clopper_pearson_95_ci": [
+            0.098196,
+            0.158314
+          ],
+          "safe_acceptance_rate": 0.922,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Sentinel Panel sizing N_sent=30",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 6,
+          "fwer_estimate": 0.012,
+          "wilson_95_ci": [
+            0.005511,
+            0.02593
+          ],
+          "clopper_pearson_95_ci": [
+            0.004416,
+            0.025935
+          ],
+          "safe_acceptance_rate": 0.6454,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Sentinel Panel sizing N_sent=30",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 3,
+          "fwer_estimate": 0.006,
+          "wilson_95_ci": [
+            0.002043,
+            0.01749
+          ],
+          "clopper_pearson_95_ci": [
+            0.001239,
+            0.017434
+          ],
+          "safe_acceptance_rate": 0.5772,
+          "mean_sentinel_invocations_per_traj": 1426.3,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Sentinel Panel sizing N_sent=30",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "n_sent_40": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 45,
+          "fwer_estimate": 0.09,
+          "wilson_95_ci": [
+            0.067943,
+            0.118309
+          ],
+          "clopper_pearson_95_ci": [
+            0.066404,
+            0.118573
+          ],
+          "safe_acceptance_rate": 0.9554,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Sentinel Panel sizing N_sent=40",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 4,
+          "fwer_estimate": 0.008,
+          "wilson_95_ci": [
+            0.003115,
+            0.020387
+          ],
+          "clopper_pearson_95_ci": [
+            0.002184,
+            0.020356
+          ],
+          "safe_acceptance_rate": 0.7269,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Sentinel Panel sizing N_sent=40",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 2,
+          "fwer_estimate": 0.004,
+          "wilson_95_ci": [
+            0.001098,
+            0.014466
+          ],
+          "clopper_pearson_95_ci": [
+            0.000485,
+            0.014374
+          ],
+          "safe_acceptance_rate": 0.6498,
+          "mean_sentinel_invocations_per_traj": 1426.4,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Sentinel Panel sizing N_sent=40",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "n_sent_50": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 49,
+          "fwer_estimate": 0.098,
+          "wilson_95_ci": [
+            0.074924,
+            0.127206
+          ],
+          "clopper_pearson_95_ci": [
+            0.073383,
+            0.127489
+          ],
+          "safe_acceptance_rate": 0.9791,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Sentinel Panel sizing N_sent=50",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 5,
+          "fwer_estimate": 0.01,
+          "wilson_95_ci": [
+            0.004279,
+            0.023193
+          ],
+          "clopper_pearson_95_ci": [
+            0.003255,
+            0.023181
+          ],
+          "safe_acceptance_rate": 0.8136,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Sentinel Panel sizing N_sent=50",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 2,
+          "fwer_estimate": 0.004,
+          "wilson_95_ci": [
+            0.001098,
+            0.014466
+          ],
+          "clopper_pearson_95_ci": [
+            0.000485,
+            0.014374
+          ],
+          "safe_acceptance_rate": 0.7278,
+          "mean_sentinel_invocations_per_traj": 1426.5,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Sentinel Panel sizing N_sent=50",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        }
+      }
+    },
+    "near_boundary_grid": {
+      "delta_g_0.45_clean_subharm": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 0,
+          "fwer_estimate": 0.0,
+          "wilson_95_ci": [
+            0.0,
+            0.007624
+          ],
+          "clopper_pearson_95_ci": [
+            0.0,
+            0.007351
+          ],
+          "safe_acceptance_rate": 0.8004,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Clean Sub-Harm WER (Benign: Delta_G <= 0.50 pp, Delta_D <= 1.40 pp)",
+          "true_delta_g_mean_pp": 0.45,
+          "true_delta_d_mean_pp": 0.8
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 0,
+          "fwer_estimate": 0.0,
+          "wilson_95_ci": [
+            0.0,
+            0.007624
+          ],
+          "clopper_pearson_95_ci": [
+            0.0,
+            0.007351
+          ],
+          "safe_acceptance_rate": 0.5501,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Clean Sub-Harm WER (Benign: Delta_G <= 0.50 pp, Delta_D <= 1.40 pp)",
+          "true_delta_g_mean_pp": 0.45,
+          "true_delta_d_mean_pp": 0.8
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 0,
+          "fwer_estimate": 0.0,
+          "wilson_95_ci": [
+            0.0,
+            0.007624
+          ],
+          "clopper_pearson_95_ci": [
+            0.0,
+            0.007351
+          ],
+          "safe_acceptance_rate": 0.492,
+          "mean_sentinel_invocations_per_traj": 1568.7,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Clean Sub-Harm WER (Benign: Delta_G <= 0.50 pp, Delta_D <= 1.40 pp)",
+          "true_delta_g_mean_pp": 0.45,
+          "true_delta_d_mean_pp": 0.8
+        }
+      },
+      "delta_g_0.45_compound_disparity": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 166,
+          "fwer_estimate": 0.332,
+          "wilson_95_ci": [
+            0.29214,
+            0.374421
+          ],
+          "clopper_pearson_95_ci": [
+            0.290821,
+            0.37518
+          ],
+          "safe_acceptance_rate": 0.9224,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Compound Disparity Violation under Sub-Harm WER (Delta_G <= 0.50, Delta_D > 1.40)",
+          "true_delta_g_mean_pp": 0.45,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 12,
+          "fwer_estimate": 0.024,
+          "wilson_95_ci": [
+            0.013781,
+            0.041477
+          ],
+          "clopper_pearson_95_ci": [
+            0.012461,
+            0.041548
+          ],
+          "safe_acceptance_rate": 0.6453,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Compound Disparity Violation under Sub-Harm WER (Delta_G <= 0.50, Delta_D > 1.40)",
+          "true_delta_g_mean_pp": 0.45,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 3,
+          "fwer_estimate": 0.006,
+          "wilson_95_ci": [
+            0.002043,
+            0.01749
+          ],
+          "clopper_pearson_95_ci": [
+            0.001239,
+            0.017434
+          ],
+          "safe_acceptance_rate": 0.5772,
+          "mean_sentinel_invocations_per_traj": 1425.8,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Compound Disparity Violation under Sub-Harm WER (Delta_G <= 0.50, Delta_D > 1.40)",
+          "true_delta_g_mean_pp": 0.45,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "delta_g_0.45": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 166,
+          "fwer_estimate": 0.332,
+          "wilson_95_ci": [
+            0.29214,
+            0.374421
+          ],
+          "clopper_pearson_95_ci": [
+            0.290821,
+            0.37518
+          ],
+          "safe_acceptance_rate": 0.9224,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Compound Disparity Violation under Sub-Harm WER (Delta_G <= 0.50, Delta_D > 1.40)",
+          "true_delta_g_mean_pp": 0.45,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 12,
+          "fwer_estimate": 0.024,
+          "wilson_95_ci": [
+            0.013781,
+            0.041477
+          ],
+          "clopper_pearson_95_ci": [
+            0.012461,
+            0.041548
+          ],
+          "safe_acceptance_rate": 0.6453,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Compound Disparity Violation under Sub-Harm WER (Delta_G <= 0.50, Delta_D > 1.40)",
+          "true_delta_g_mean_pp": 0.45,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 3,
+          "fwer_estimate": 0.006,
+          "wilson_95_ci": [
+            0.002043,
+            0.01749
+          ],
+          "clopper_pearson_95_ci": [
+            0.001239,
+            0.017434
+          ],
+          "safe_acceptance_rate": 0.5772,
+          "mean_sentinel_invocations_per_traj": 1425.8,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Compound Disparity Violation under Sub-Harm WER (Delta_G <= 0.50, Delta_D > 1.40)",
+          "true_delta_g_mean_pp": 0.45,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "delta_g_0.50": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 99,
+          "fwer_estimate": 0.198,
+          "wilson_95_ci": [
+            0.165431,
+            0.235174
+          ],
+          "clopper_pearson_95_ci": [
+            0.163944,
+            0.235673
+          ],
+          "safe_acceptance_rate": 0.9233,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.50 pp",
+          "true_delta_g_mean_pp": 0.5,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 13,
+          "fwer_estimate": 0.026,
+          "wilson_95_ci": [
+            0.015256,
+            0.043971
+          ],
+          "clopper_pearson_95_ci": [
+            0.013915,
+            0.04405
+          ],
+          "safe_acceptance_rate": 0.6478,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.50 pp",
+          "true_delta_g_mean_pp": 0.5,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 5,
+          "fwer_estimate": 0.01,
+          "wilson_95_ci": [
+            0.004279,
+            0.023193
+          ],
+          "clopper_pearson_95_ci": [
+            0.003255,
+            0.023181
+          ],
+          "safe_acceptance_rate": 0.5796,
+          "mean_sentinel_invocations_per_traj": 1426.9,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.50 pp",
+          "true_delta_g_mean_pp": 0.5,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "delta_g_0.52": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 97,
+          "fwer_estimate": 0.194,
+          "wilson_95_ci": [
+            0.161726,
+            0.23094
+          ],
+          "clopper_pearson_95_ci": [
+            0.160235,
+            0.23143
+          ],
+          "safe_acceptance_rate": 0.9248,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.52 pp",
+          "true_delta_g_mean_pp": 0.52,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 5,
+          "fwer_estimate": 0.01,
+          "wilson_95_ci": [
+            0.004279,
+            0.023193
+          ],
+          "clopper_pearson_95_ci": [
+            0.003255,
+            0.023181
+          ],
+          "safe_acceptance_rate": 0.6497,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.52 pp",
+          "true_delta_g_mean_pp": 0.52,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 1,
+          "fwer_estimate": 0.002,
+          "wilson_95_ci": [
+            0.000353,
+            0.011241
+          ],
+          "clopper_pearson_95_ci": [
+            5.1e-05,
+            0.011092
+          ],
+          "safe_acceptance_rate": 0.5812,
+          "mean_sentinel_invocations_per_traj": 1426.3,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.52 pp",
+          "true_delta_g_mean_pp": 0.52,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "delta_g_0.55": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 47,
+          "fwer_estimate": 0.094,
+          "wilson_95_ci": [
+            0.071426,
+            0.122765
+          ],
+          "clopper_pearson_95_ci": [
+            0.069886,
+            0.123038
+          ],
+          "safe_acceptance_rate": 0.9222,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.55 pp",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 4,
+          "fwer_estimate": 0.008,
+          "wilson_95_ci": [
+            0.003115,
+            0.020387
+          ],
+          "clopper_pearson_95_ci": [
+            0.002184,
+            0.020356
+          ],
+          "safe_acceptance_rate": 0.6447,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.55 pp",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 1,
+          "fwer_estimate": 0.002,
+          "wilson_95_ci": [
+            0.000353,
+            0.011241
+          ],
+          "clopper_pearson_95_ci": [
+            5.1e-05,
+            0.011092
+          ],
+          "safe_acceptance_rate": 0.5769,
+          "mean_sentinel_invocations_per_traj": 1426.2,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.55 pp",
+          "true_delta_g_mean_pp": 0.55,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "delta_g_0.60": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 38,
+          "fwer_estimate": 0.076,
+          "wilson_95_ci": [
+            0.055869,
+            0.102596
+          ],
+          "clopper_pearson_95_ci": [
+            0.054341,
+            0.102826
+          ],
+          "safe_acceptance_rate": 0.9235,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": false,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.60 pp",
+          "true_delta_g_mean_pp": 0.6,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 2,
+          "fwer_estimate": 0.004,
+          "wilson_95_ci": [
+            0.001098,
+            0.014466
+          ],
+          "clopper_pearson_95_ci": [
+            0.000485,
+            0.014374
+          ],
+          "safe_acceptance_rate": 0.6492,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.60 pp",
+          "true_delta_g_mean_pp": 0.6,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 1,
+          "fwer_estimate": 0.002,
+          "wilson_95_ci": [
+            0.000353,
+            0.011241
+          ],
+          "clopper_pearson_95_ci": [
+            5.1e-05,
+            0.011092
+          ],
+          "safe_acceptance_rate": 0.5808,
+          "mean_sentinel_invocations_per_traj": 1427.8,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.60 pp",
+          "true_delta_g_mean_pp": 0.6,
+          "true_delta_d_mean_pp": 1.45
+        }
+      },
+      "delta_g_0.65": {
+        "nominal_uncorrected": {
+          "false_deployments_k": 7,
+          "fwer_estimate": 0.014,
+          "wilson_95_ci": [
+            0.006798,
+            0.028613
+          ],
+          "clopper_pearson_95_ci": [
+            0.005647,
+            0.028632
+          ],
+          "safe_acceptance_rate": 0.9209,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.65 pp",
+          "true_delta_g_mean_pp": 0.65,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "obrien_fleming_alpha_spending": {
+          "false_deployments_k": 0,
+          "fwer_estimate": 0.0,
+          "wilson_95_ci": [
+            0.0,
+            0.007624
+          ],
+          "clopper_pearson_95_ci": [
+            0.0,
+            0.007351
+          ],
+          "safe_acceptance_rate": 0.6424,
+          "mean_sentinel_invocations_per_traj": 1754.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.65 pp",
+          "true_delta_g_mean_pp": 0.65,
+          "true_delta_d_mean_pp": 1.45
+        },
+        "hierarchical_prescreen_obf": {
+          "false_deployments_k": 0,
+          "fwer_estimate": 0.0,
+          "wilson_95_ci": [
+            0.0,
+            0.007624
+          ],
+          "clopper_pearson_95_ci": [
+            0.0,
+            0.007351
+          ],
+          "safe_acceptance_rate": 0.5749,
+          "mean_sentinel_invocations_per_traj": 1427.0,
+          "fwer_budget_pass": true,
+          "scenario_classification": "Near-Boundary Drift Delta_G=0.65 pp",
+          "true_delta_g_mean_pp": 0.65,
+          "true_delta_d_mean_pp": 1.45
+        }
+      }
+    }
+  }
+}
