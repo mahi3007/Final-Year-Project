@@ -63,7 +63,7 @@
         "mean_paired_difference_pp": -0.031,
         "standard_error_pp": 0.1204,
         "ci_90_pp": [-0.2321, 0.1702],
-        "ci_95_pp": [-0.2669, 0.2049],
+        "ci_95_pp": [-0.2719, 0.2099],
         "t_lower": 3.8963,
         "p_lower": 0.00012598,
         "t_upper": -4.4111,

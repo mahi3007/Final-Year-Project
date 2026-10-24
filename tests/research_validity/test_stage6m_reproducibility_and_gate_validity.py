@@ -244,22 +244,20 @@ def test_production_streaming_sentinel_safety_gate_selectivity():
     assert any("Overall risk violation" in r for r in dec_harm.rejection_reasons)
     assert any("Point degradation" in r for r in dec_harm.rejection_reasons)
 
-    # Case 2: Neutral update (bitwise identical candidate)
+    # Case 2: Neutral / tied update (identical candidate error counts)
+    # Under fail-closed safety, ties and zero measured improvement must REJECT
     cand_neutral = list(live_errors)
     dec_neu = gate.evaluate_candidate(0, speaker_ids, stratum_groups, live_errors, cand_neutral, ref_lengths)
-    assert dec_neu.decision == "ACCEPT", f"Expected ACCEPT for neutral update, got {dec_neu.decision}"
-    assert dec_neu.passed_gate is True
+    assert dec_neu.decision == "REJECT", f"Expected REJECT for tied candidate, got {dec_neu.decision}"
+    assert dec_neu.passed_gate is False
     assert dec_neu.delta_r == 0.0
-    assert dec_neu.se_r == 0.0
-    assert dec_neu.ucb_r == 0.0
-    assert dec_neu.max_delta_g == 0.0
-    assert dec_neu.ucb_max_group == 0.0
-    assert dec_neu.delta_d == 0.0
-    assert dec_neu.se_d == 0.0
-    assert dec_neu.ucb_d == 0.0
-    assert len(dec_neu.rejection_reasons) == 0
+    assert abs(dec_neu.se_r - (1.0 / 450.0 * 100.0)) < 1e-3  # Regularized by cluster sensitivity floor
+    assert dec_neu.ucb_r > 0.0  # z_0 * se_floor > 0
+    assert any("Non-improvement / tie rejection" in r for r in dec_neu.rejection_reasons)
+    assert any("Degenerate zero-variance tie" in r for r in dec_neu.rejection_reasons)
 
     # Case 3: Universally Beneficial update (reduces errors across all strata)
+
     cand_beneficial = [max(0, e - 1) for e in live_errors]
     dec_ben = gate.evaluate_candidate(0, speaker_ids, stratum_groups, live_errors, cand_beneficial, ref_lengths)
     assert dec_ben.decision == "ACCEPT", f"Expected ACCEPT for beneficial update, got {dec_ben.decision}"
@@ -292,6 +290,23 @@ def test_production_streaming_sentinel_safety_gate_selectivity():
     assert dec_sub.decision == "REJECT", f"Expected REJECT for subgroup regression, got {dec_sub.decision}"
     assert dec_sub.passed_gate is False
     assert any("Subgroup regression violation in [grp_5]" in r for r in dec_sub.rejection_reasons)
+
+    # Case 6: Zero net improvement with non-zero variance (sum(cand) == sum(live) but individual errors differ)
+    # Under fail-closed non-improvement rule, Delta_R = 0.0 must be rejected
+    cand_zero_net = list(live_errors)
+    cand_zero_net[0] += 1
+    cand_zero_net[1] -= 1
+    dec_zero_net = gate.evaluate_candidate(0, speaker_ids, stratum_groups, live_errors, cand_zero_net, ref_lengths)
+    assert dec_zero_net.delta_r == 0.0
+    assert dec_zero_net.decision == "REJECT", "Candidate with zero net improvement must be rejected"
+    assert dec_zero_net.passed_gate is False
+    assert any("Non-improvement / tie rejection" in r for r in dec_zero_net.rejection_reasons)
+
+    # Case 7: Cluster single-token sensitivity floor verification
+    # Verifies that se_r is bounded below by 1 / total_words * 100% (0.2222 pp for 450 words)
+    expected_floor = (1.0 / 450.0) * 100.0
+    assert dec_neu.se_r == round(expected_floor, 4), f"Expected se_r = {expected_floor:.4f}, got {dec_neu.se_r}"
+
 
 
 def test_paired_vs_independent_uncertainty_quantification():
@@ -455,16 +470,102 @@ def test_bootstrap_stability_and_replicate_convergence():
 def test_multicriterion_streaming_gate_joint_null_safety():
     """Verify that tripartite gate maintains joint false-acceptance rate <= alpha under null streams."""
     null_res = simulate_multicriterion_streaming_gate_null(
-        num_streams=50,
+        num_streams=100,
         num_updates=224,
         alpha_target=0.05,
-        num_boot_replicates=100,
+        num_boot_replicates=50,
         seed=42,
     )
     assert null_res["joint_control_demonstrated"] is True
     assert null_res["empirical_joint_fwer"] <= 0.0500, (
         f"Joint empirical FWER ({null_res['empirical_joint_fwer']}) must not exceed 0.0500"
     )
+    assert null_res["ci_95"][1] <= 0.0500, f"Wilson upper bound must be <= 0.05, got {null_res['ci_95'][1]}"
+
+
+def test_shared_panel_null_simulation_artifact_verification():
+    """Verify that committed 1,000-stream shared-panel simulation artifact establishes FWER <= alpha_target."""
+    sim_artifact = PROJECT_ROOT / "reports" / "stage6m" / "stage6m_shared_panel_null_simulation_results.json"
+    assert sim_artifact.exists(), f"Missing shared panel null simulation artifact: {sim_artifact}"
+    with open(sim_artifact, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    meta = data["metadata"]
+    res = data["simulation_results"]
+    assert meta["num_streams"] == 1000
+    assert meta["num_updates_per_stream"] == 224
+    assert meta["total_candidate_evaluations"] == 224000
+    assert meta["random_seed"] == 42
+    assert meta["sentinel_speakers"] == 30
+
+    assert res["false_acceptances"] == 0
+    assert res["empirical_fwer"] == 0.0
+    assert res["one_sided_95_upper_bound"] < 0.005, f"Wilson upper bound must be < 0.5%, got {res['one_sided_95_upper_bound']}"
+    assert res["fwer_statistically_controlled"] is True
+
+
+def test_tost_equivalence_and_student_t_confidence_intervals():
+    """Verify recalculation of unweighted speaker-level TOST and exact t(59) confidence intervals from committed records."""
+    spk_csv = PROJECT_ROOT / "reports" / "stage6m" / "stage6m_physical_cohort1_revised_gate_speaker_records.csv"
+    assert spk_csv.exists(), f"Missing speaker records CSV: {spk_csv}"
+    df = pd.read_csv(spk_csv)
+    assert len(df) == 60
+
+    # Estimand: Unweighted speaker-average paired difference
+    diff = (df["err3"] - df["err1"]) / df["wc"] * 100.0
+    n = len(diff)
+    df_spk = n - 1
+    mean_diff = float(np.mean(diff))
+    std_diff = float(np.std(diff, ddof=1))
+    se_diff = std_diff / math.sqrt(n)
+
+    # Recomputed values matching auditor calculations
+    assert abs(mean_diff - (-0.03098)) < 1e-4, f"Mean diff {mean_diff} != -0.03098"
+    assert abs(se_diff - 0.12038) < 1e-4, f"SE diff {se_diff} != 0.12038"
+
+    # Paired t-statistic
+    t_stat = mean_diff / se_diff
+    assert abs(t_stat - (-0.2574)) < 1e-3, f"t-statistic {t_stat} != -0.2574"
+
+    # Student t critical values for df = 59
+    t_crit_90 = stats.t.ppf(0.95, df=df_spk)   # 1.671093
+    t_crit_95 = stats.t.ppf(0.975, df=df_spk)  # 2.000995
+
+    ci_90_low = mean_diff - t_crit_90 * se_diff
+    ci_90_high = mean_diff + t_crit_90 * se_diff
+    ci_95_low = mean_diff - t_crit_95 * se_diff
+    ci_95_high = mean_diff + t_crit_95 * se_diff
+
+    # Verify exact agreement with auditor recalculated intervals
+    assert abs(ci_90_low - (-0.2321)) < 1e-3
+    assert abs(ci_90_high - 0.1702) < 1e-3
+    assert abs(ci_95_low - (-0.2719)) < 1e-3
+    assert abs(ci_95_high - 0.2099) < 1e-3
+
+    # TOST for margin +/-0.50 pp
+    margin = 0.50
+    t1 = (mean_diff - (-margin)) / se_diff
+    p1 = 1.0 - stats.t.cdf(t1, df=df_spk)
+    t2 = (mean_diff - margin) / se_diff
+    p2 = stats.t.cdf(t2, df=df_spk)
+    p_tost = max(p1, p2)
+
+    assert abs(t1 - 3.8963) < 1e-3
+    assert abs(t2 - (-4.4111)) < 1e-3
+    assert p_tost < 1.3e-4, f"p_tost {p_tost} should be ~ 1.26e-4"
+    assert p_tost < 0.05, "TOST equivalence within +/-0.50 pp must be established"
+
+    # Verify report JSON serializes these exact values
+    rep_json = PROJECT_ROOT / "reports" / "stage6m" / "stage6m_physical_cohort1_revised_gate_report.json"
+    assert rep_json.exists()
+    with open(rep_json, "r", encoding="utf-8") as f:
+        rep_data = json.load(f)
+    tost_sec = rep_data["inferential_statistics_speaker_clustered"]["paired_t_arm3_vs_arm1"]["tost_equivalence"]
+    assert tost_sec["statistically_equivalent"] is True
+    assert tost_sec["equivalence_margin_pp"] == 0.50
+    assert abs(tost_sec["mean_paired_difference_pp"] - (-0.031)) < 1e-3
+    assert abs(tost_sec["ci_95_pp"][0] - (-0.2719)) < 1e-3
+    assert abs(tost_sec["ci_95_pp"][1] - 0.2099) < 1e-3
 
 
 def test_production_report_json_agrees_with_unrounded_inferential_statistics():

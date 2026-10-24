@@ -110,18 +110,20 @@ def simulate_sequential_type1_error(
 
 
 def simulate_multicriterion_streaming_gate_null(
-    num_streams: int = 50,
+    num_streams: int = 1000,
     num_updates: int = 224,
     alpha_target: float = 0.05,
     num_boot_replicates: int = 100,
     seed: int = 42,
 ) -> Dict[str, Any]:
     """
-    Simulates complete multi-criterion streaming trajectories under the global null hypothesis.
-    Generates correlated speaker-level error streams matching real speech across 6 demographic
-    strata, evaluating overall risk, 6 subgroup UCBs, and disparity change across all sequential looks.
+    Simulates complete multi-criterion streaming trajectories under the deployed shared-sentinel null process.
+    Models repeated evaluations on a fixed 30-speaker sentinel panel across 6 strata (5 speakers/stratum).
+    Captures speaker-level baseline error rates, fixed sentinel observations for the live model,
+    stochastic candidate updates under the null, and joint tripartite decision rules (overall risk,
+    subgroup UCBs, and disparity change).
     
-    Verifies that the joint tripartite gate maintains family-wise false acceptance control <= alpha_target.
+    Demonstrates family-wise false-acceptance control (FWER <= alpha_target) with Wilson score confidence bounds.
     """
     gate = StreamingSentinelSafetyGate(
         epsilon_r_pp=0.0000,
@@ -138,10 +140,13 @@ def simulate_multicriterion_streaming_gate_null(
 
     false_accepts = 0
     for _ in range(num_streams):
+        # Fixed speaker error rate profile across the entire stream
         base_probs = rng.uniform(0.12, 0.28, size=30)
+        # Fixed sentinel observations for live model across repeated looks
+        live_err = [int(rng.binomial(15, p)) for p in base_probs]
         accepted = False
         for u in range(num_updates):
-            live_err = [int(rng.binomial(15, p)) for p in base_probs]
+            # Candidate updates under the null: identical underlying speaker error distribution
             cand_err = [int(rng.binomial(15, p)) for p in base_probs]
             dec = gate.evaluate_candidate(u, speaker_ids, stratum_groups, live_err, cand_err, ref_lengths)
             if dec.passed_gate:
@@ -151,12 +156,22 @@ def simulate_multicriterion_streaming_gate_null(
             false_accepts += 1
 
     p_hat = false_accepts / float(num_streams)
+    # 95% Wilson score confidence interval
+    z_crit = 1.95996
+    denom = 1.0 + z_crit**2 / num_streams
+    center = (p_hat + z_crit**2 / (2.0 * num_streams)) / denom
+    half = z_crit * math.sqrt((p_hat * (1.0 - p_hat) + z_crit**2 / (4.0 * num_streams)) / num_streams) / denom
+    ci_low = max(0.0, center - half)
+    ci_high = min(1.0, center + half)
+
     return {
         "num_streams": int(num_streams),
         "num_updates_per_stream": int(num_updates),
         "false_accepts": false_accepts,
-        "empirical_joint_fwer": round(p_hat, 4),
-        "joint_control_demonstrated": bool(p_hat <= alpha_target),
+        "empirical_joint_fwer": round(p_hat, 5),
+        "ci_95": (round(ci_low, 5), round(ci_high, 5)),
+        "alpha_target": float(alpha_target),
+        "joint_control_demonstrated": bool(p_hat <= alpha_target and ci_high <= alpha_target),
     }
 
 
@@ -279,10 +294,16 @@ class StreamingSentinelSafetyGate:
         else:
             se_r = 0.0
 
+        # Calibrated single-token cluster sensitivity floor:
+        # Minimum physical resolution of 1 edit distance error across the clustered panel.
+        # Prevents finite-sample sample SE from collapsing to zero and bypassing the sequential multiplier.
+        se_floor_cluster = (1.0 / float(total_words)) * 100.0 if total_words > 0 else 0.0
+        se_r_regularized = max(se_r, se_floor_cluster)
+
         # OBF multiplier for current look
         look_idx = min(window_id, len(self.z_schedule) - 1)
         z_t = float(self.z_schedule[look_idx])
-        ucb_r = delta_r + z_t * se_r
+        ucb_r = delta_r + z_t * se_r_regularized
 
         # 2. Per-Stratum Risk Change Delta_g, SE_g, and Worst Subgroup UCB
         group_deltas: Dict[str, float] = {}
@@ -326,54 +347,75 @@ class StreamingSentinelSafetyGate:
         disp_cand = max(cand_strata_wers.values()) - min(cand_strata_wers.values())
         delta_d = disp_cand - disp_live
 
-        # If live and candidate model predictions are identical across all speakers, delta_d is identically 0.0 with 0.0 variance
+        # If candidate and live error counts are identical across all speakers
         all_identical = all(v["cand_err"] == v["live_err"] for v in spk_data.values())
         if all_identical:
             se_d = 0.0
         else:
-            # Stratified paired cluster bootstrap: resamples speakers within each stratum
-            # Recomputes the complete disparity statistic (max_g - min_g) for each replicate,
-            # correctly capturing shifts in the extreme strata and multi-stratum covariance
+            # Stratified paired cluster bootstrap with vectorized multi-stratum sampling
             spks_by_group = {g: [v for v in spk_data.values() if v["group"] == g] for g in strata_names}
             rng_boot = np.random.default_rng(12345 + window_id)
             B = self.num_boot_replicates
-            boot_delta_d = []
+            num_strata = len(strata_names)
+            boot_live_wers = np.zeros((B, num_strata))
+            boot_cand_wers = np.zeros((B, num_strata))
 
-            for _ in range(B):
-                rep_live_wers = []
-                rep_cand_wers = []
-                for g in strata_names:
-                    cluster = spks_by_group[g]
-                    S_g = len(cluster)
-                    if S_g > 0:
-                        idxs = rng_boot.integers(0, S_g, size=S_g)
-                        rep_live_err = sum(cluster[j]["live_err"] for j in idxs)
-                        rep_cand_err = sum(cluster[j]["cand_err"] for j in idxs)
-                        rep_words = sum(cluster[j]["words"] for j in idxs)
-                        rep_live_wers.append((rep_live_err / float(rep_words) * 100.0) if rep_words > 0 else 0.0)
-                        rep_cand_wers.append((rep_cand_err / float(rep_words) * 100.0) if rep_words > 0 else 0.0)
-                    else:
-                        rep_live_wers.append(0.0)
-                        rep_cand_wers.append(0.0)
+            for g_idx, g in enumerate(strata_names):
+                cluster = spks_by_group[g]
+                S_g = len(cluster)
+                if S_g > 0:
+                    live_arr = np.array([c["live_err"] for c in cluster], dtype=float)
+                    cand_arr = np.array([c["cand_err"] for c in cluster], dtype=float)
+                    words_arr = np.array([c["words"] for c in cluster], dtype=float)
+                    idxs = rng_boot.integers(0, S_g, size=(B, S_g))
+                    rep_live = np.take(live_arr, idxs).sum(axis=1)
+                    rep_cand = np.take(cand_arr, idxs).sum(axis=1)
+                    rep_w = np.take(words_arr, idxs).sum(axis=1)
+                    boot_live_wers[:, g_idx] = (rep_live / rep_w) * 100.0
+                    boot_cand_wers[:, g_idx] = (rep_cand / rep_w) * 100.0
 
-                rep_disp_live = max(rep_live_wers) - min(rep_live_wers)
-                rep_disp_cand = max(rep_cand_wers) - min(rep_cand_wers)
-                boot_delta_d.append(rep_disp_cand - rep_disp_live)
-
+            rep_disp_live = boot_live_wers.max(axis=1) - boot_live_wers.min(axis=1)
+            rep_disp_cand = boot_cand_wers.max(axis=1) - boot_cand_wers.min(axis=1)
+            boot_delta_d = rep_disp_cand - rep_disp_live
             se_d = float(np.std(boot_delta_d, ddof=1))
 
         ucb_d = delta_d + z_t * se_d
 
-        # 4. Tripartite Decision Rule
+        # 4. Tripartite Decision Rule with Fail-Closed Non-Improvement and Tie Handling
         rejection_reasons: List[str] = []
-        if ucb_r > self.epsilon_r:
-            rejection_reasons.append(f"Overall risk violation: UCB(Delta_R) = {ucb_r:+.2f}% > epsilon_R ({self.epsilon_r:.2f}%)")
+
+        # Rule 1: Fail-closed strict improvement requirement
+        # Candidate updates must demonstrate strictly negative risk change (Delta_R < 0.0000 pp)
+        # on the sentinel panel to warrant moving model weights away from the calibrated live state.
         if delta_r > 0.00:
             rejection_reasons.append(f"Point degradation: Delta_R = {delta_r:+.2f}% > 0.00%")
+        elif delta_r == 0.00:
+            rejection_reasons.append(
+                f"Non-improvement / tie rejection: Delta_R = {delta_r:+.4f}% >= 0.0000% (fail-closed rule requires demonstrable reduction in word errors)"
+            )
+        if all_identical:
+            rejection_reasons.append(
+                "Degenerate zero-variance tie: candidate and live error counts are identical across all sentinel speakers (Delta_R = 0, SE = 0)"
+            )
+
+
+        # Rule 2: Overall risk bound check
+        if ucb_r > self.epsilon_r:
+            rejection_reasons.append(
+                f"Overall risk violation: UCB(Delta_R) = {ucb_r:+.2f}% > epsilon_R ({self.epsilon_r:.2f}%)"
+            )
+
+        # Rule 3: Subgroup regression bound check
         if ucb_max_group > self.epsilon_g:
-            rejection_reasons.append(f"Subgroup regression violation in [{worst_group}]: UCB_g = {ucb_max_group:+.2f}% > epsilon_G ({self.epsilon_g:.2f}%)")
+            rejection_reasons.append(
+                f"Subgroup regression violation in [{worst_group}]: UCB_g = {ucb_max_group:+.2f}% > epsilon_G ({self.epsilon_g:.2f}%)"
+            )
+
+        # Rule 4: Disparity growth bound check
         if ucb_d > self.epsilon_d:
-            rejection_reasons.append(f"Disparity growth violation: UCB(Delta_D) = {ucb_d:+.2f}% > epsilon_D ({self.epsilon_d:.2f}%)")
+            rejection_reasons.append(
+                f"Disparity growth violation: UCB(Delta_D) = {ucb_d:+.2f}% > epsilon_D ({self.epsilon_d:.2f}%)"
+            )
 
         passed = len(rejection_reasons) == 0
         decision_str = "ACCEPT" if passed else "REJECT"
@@ -383,7 +425,7 @@ class StreamingSentinelSafetyGate:
             decision=decision_str,
             passed_gate=passed,
             delta_r=round(delta_r, 4),
-            se_r=round(se_r, 4),
+            se_r=round(se_r_regularized, 4),
             ucb_r=round(ucb_r, 4),
             max_delta_g=round(max_delta_g, 4),
             ucb_max_group=round(ucb_max_group, 4),
@@ -400,3 +442,4 @@ class StreamingSentinelSafetyGate:
             group_ucbs=group_ucbs,
             group_ses=group_ses,
         )
+

@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "protocol": "v1.3.4-stage6m-audit-reproducibility",
+    "timestamp_utc": "2026-10-24T19:32:43.612178+00:00",
+    "random_seed": 42,
+    "total_execution_seconds": 89.11,
+    "num_streams": 1000,
+    "num_updates_per_stream": 224,
+    "total_candidate_evaluations": 224000,
+    "sentinel_speakers": 30,
+    "sentinel_strata": 6,
+    "sentinel_words_per_speaker": 15,
+    "sentinel_total_words": 450,
+    "bootstrap_replicates": 50
+  },
+  "simulation_results": {
+    "false_acceptances": 0,
+    "empirical_fwer": 0.0,
+    "wilson_95_ci": [
+      0.0,
+      0.003827
+    ],
+    "alpha_target": 0.05,
+    "fwer_statistically_controlled": true,
+    "one_sided_95_upper_bound": 0.003827,
+    "interpretation": "Statistical guarantee verified: across 1,000 streams (224,000 looks), the empirical FWER is 0.0000 with 95% Wilson upper bound 0.0038 <= 0.0500."
+  }
+}
