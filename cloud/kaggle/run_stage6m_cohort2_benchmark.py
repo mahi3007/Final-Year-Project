@@ -46,9 +46,9 @@ import transformers
 transformers.logging.set_verbosity_error()
 
 if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(line_buffering=True)
+    sys.stdout.reconfigure(encoding="utf-8", line_buffering=True, errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
-    sys.stderr.reconfigure(line_buffering=True)
+    sys.stderr.reconfigure(encoding="utf-8", line_buffering=True, errors="replace")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
@@ -415,7 +415,7 @@ def main():
             if gate_dec.passed_gate:
                 arm3_model = candidate_model
                 arm3_optimizer = candidate_optimizer
-                gate_decision_str = f"ACCEPT (ΔR={gate_dec.delta_r:+.2f}%)"
+                gate_decision_str = f"ACCEPT (Delta_R={gate_dec.delta_r:+.2f}%)"
                 cached_live_hash = None
             else:
                 del candidate_model
