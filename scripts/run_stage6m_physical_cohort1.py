@@ -188,6 +188,12 @@ def main():
         default="stage6m_physical_cohort1_revised_gate",
         help="Output prefix for report JSON/MD and CSV artifacts",
     )
+    parser.add_argument(
+        "--max-windows",
+        type=int,
+        default=None,
+        help="Optional limit on stream windows for rapid verification (default: None, runs all 225 windows)",
+    )
     args, _ = parser.parse_known_args()
 
     try:
@@ -280,7 +286,9 @@ def main():
     window_size_k = 4
     num_clips = len(eval_df)
     num_windows = (num_clips + window_size_k - 1) // window_size_k  # 225
-    num_updates = num_windows - 1  # 224
+    if args.max_windows is not None:
+        num_windows = min(num_windows, int(args.max_windows))
+    num_updates = max(1, num_windows - 1)
 
     safety_gate = StreamingSentinelSafetyGate(
         epsilon_r_pp=0.0000,
