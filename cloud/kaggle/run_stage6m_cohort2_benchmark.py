@@ -387,16 +387,25 @@ def main():
             strata_live_errors: Dict[str, int] = {s: 0 for s in set(core_sentinel_strata)}
             strata_cand_errors: Dict[str, int] = {s: 0 for s in set(core_sentinel_strata)}
             strata_words: Dict[str, int] = {s: 0 for s in set(core_sentinel_strata)}
+            spk_sent_live: Dict[str, int] = {}
+            spk_sent_cand: Dict[str, int] = {}
+            spk_sent_words: Dict[str, int] = {}
 
             for s_idx in range(len(core_sentinel_ids)):
                 r_norm = core_sentinel_refs[s_idx]
                 grp = core_sentinel_strata[s_idx]
+                s_id = str(core_sentinel_df.iloc[s_idx]["speaker_id"])
+
                 m_live = compute_utterance_metrics(r_norm, TextNormalizer.normalize(cached_live_core_hyps[s_idx]))
                 m_cand = compute_utterance_metrics(r_norm, TextNormalizer.normalize(cand_core_hyps[s_idx]))
 
                 e_live = m_live.substitutions + m_live.deletions + m_live.insertions
                 e_cand = m_cand.substitutions + m_cand.deletions + m_cand.insertions
                 w_len = m_live.reference_length
+
+                spk_sent_live[s_id] = spk_sent_live.get(s_id, 0) + e_live
+                spk_sent_cand[s_id] = spk_sent_cand.get(s_id, 0) + e_cand
+                spk_sent_words[s_id] = spk_sent_words.get(s_id, 0) + w_len
 
                 live_sent_errors += e_live
                 cand_sent_errors += e_cand
@@ -417,7 +426,19 @@ def main():
             cand_disp = (max(cand_strata_wers) - min(cand_strata_wers)) * 100.0 if cand_strata_wers else 0.0
             delta_d = cand_disp - live_disp
 
-            se_sent = math.sqrt(max(1e-6, 2.0 * live_sent_wer * (1.0 - live_sent_wer) / total_sent_words)) * 100.0
+            # Paired, Speaker-Clustered Delta-Method Standard Error
+            # Directly models paired covariance and intra-speaker dependence
+            S = len(spk_sent_words)
+            if S > 1 and total_sent_words > 0:
+                u_r_sq = sum(
+                    ((spk_sent_cand[sid] - spk_sent_live[sid]) - (delta_r / 100.0) * spk_sent_words[sid]) ** 2
+                    for sid in spk_sent_words
+                )
+                var_r = (S / (S - 1)) * u_r_sq / (total_sent_words ** 2)
+                se_sent = math.sqrt(max(0.0, var_r)) * 100.0
+            else:
+                se_sent = 0.0
+
             z_t = z_obf[win_idx]
             ucb_r = delta_r + z_t * se_sent
             ucb_d = delta_d + z_t * se_sent
@@ -591,11 +612,13 @@ def main():
             "total_audio_clips": num_clips,
             "total_speakers": eval_df["speaker_id"].nunique(),
             "total_strata": len(strata_names),
-            "total_reference_words": int(total_ref_words),
-            "initial_live_parameter_hash": init_hash[:16],
-            "final_live_parameter_hash": compute_model_parameter_hash(arm3_model)[:16],
-            "bitwise_rollback_verified": bool(init_hash[:16] == compute_model_parameter_hash(arm3_model)[:16]) if n_accept == 0 else "PARTIAL_ADAPTATION",
-            "parameter_drift_linf": 0.0 if n_accept == 0 else "NON_ZERO"
+            "initial_live_parameter_hash_sha256": init_hash,
+            "final_live_parameter_hash_sha256": compute_model_parameter_hash(arm3_model),
+            "full_hash_bitwise_rollback_verified": bool(init_hash == compute_model_parameter_hash(arm3_model)),
+            "parameter_drift_linf": 0.0 if n_accept == 0 else max(
+                torch.max(torch.abs(p1.detach().cpu() - p3.detach().cpu())).item()
+                for p1, p3 in zip(arm1_model.parameters(), arm3_model.parameters())
+            )
         },
         "overall_results": {
             "arm1_static_wer_pct": round(wer_arm1, 2),
