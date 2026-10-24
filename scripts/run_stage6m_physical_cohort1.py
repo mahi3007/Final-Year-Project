@@ -207,7 +207,12 @@ def main():
     out_report_md = REPORTS_DIR / f"{args.output_prefix}_report.md"
     out_predictions_csv = REPORTS_DIR / f"{args.output_prefix}_predictions.csv"
     out_speakers_csv = REPORTS_DIR / f"{args.output_prefix}_speaker_records.csv"
-    out_gate_csv = REPORTS_DIR / f"{args.output_prefix}_gate_decisions.csv"
+    gate_csv_name = (
+        f"{args.output_prefix}_decisions.csv"
+        if args.output_prefix.endswith("_gate")
+        else f"{args.output_prefix}_gate_decisions.csv"
+    )
+    out_gate_csv = REPORTS_DIR / gate_csv_name
 
     print("=" * 88)
     print("STAGE 6M: PHYSICAL COHORT 1 THREE-ARM STREAMING EXPERIMENT")

@@ -41,7 +41,7 @@
     "rejected_updates": 212,
     "acceptance_rate_pct": 5.36,
     "rejection_rate_pct": 94.64,
-    "interpretation": "Selective adaptation outcome: 12 candidate updates (5.36%) satisfied all sequential safety, subgroup regression, and disparity bounds, preventing ungated CTTA degradation (+0.92 pp) while preserving base accuracy and reducing cross-accent disparity."
+    "interpretation": "Selective adaptation outcome: 12 candidate updates (5.36%) satisfied sequential bounds on the 30-clip panel, preventing ungated CTTA degradation (+0.92 pp) while preserving base accuracy. Note: All 12 accepted updates exhibited Delta_R = 0 and SE_R = 0 on the 30-clip panel, reflecting an empirical tie rather than measured improvement."
   },
   "inferential_statistics_speaker_clustered": {
     "sample_size_n_speakers": 60,
@@ -57,7 +57,20 @@
       "p_value": 0.7977643853630947,
       "degrees_of_freedom": 59,
       "statistically_significant_p05": false,
-      "interpretation": "Statistically equivalent to static baseline (t = -0.2574, p = 0.7978 > 0.05), demonstrating robust stability without catastrophic degradation."
+      "interpretation": "No statistically significant difference detected from static baseline under standard paired t-test (t = -0.2574, p = 0.7978 > 0.05). Formal equivalence established via Two One-Sided Tests (TOST) within +/-0.50 pp margin (p_TOST = 1.2598e-4 < 0.001; 90% CI: [-0.2321, +0.1702] pp).",
+      "tost_equivalence": {
+        "equivalence_margin_pp": 0.5,
+        "mean_paired_difference_pp": -0.031,
+        "standard_error_pp": 0.1204,
+        "ci_90_pp": [-0.2321, 0.1702],
+        "ci_95_pp": [-0.2669, 0.2049],
+        "t_lower": 3.8963,
+        "p_lower": 0.00012598,
+        "t_upper": -4.4111,
+        "p_upper": 0.00002215,
+        "p_tost": 0.00012598,
+        "statistically_equivalent": true
+      }
     }
   },
   "stratum_breakdown": [
