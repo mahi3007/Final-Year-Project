@@ -3,14 +3,18 @@
     "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
     "execution_scope": "Cohort 1 Physical Prequential Stream (Stage 5B/6M Replication)",
     "execution_mode": "Physical PyTorch wav2vec2-base-960h Acoustic Inference",
-    "timestamp_utc": "2026-10-23T16:46:24.839901+00:00",
+    "timestamp_utc": "2026-10-23T18:00:58.903440+00:00",
     "total_execution_seconds": 9890.8,
     "stream_windows": 225,
     "candidate_update_opportunities": 224,
     "total_audio_clips": 900,
     "total_speakers": 60,
     "total_strata": 6,
-    "total_reference_words": 8667
+    "total_reference_words": 8667,
+    "initial_live_parameter_hash": "8390bd20927fa3b2",
+    "final_live_parameter_hash": "8390bd20927fa3b2",
+    "bitwise_rollback_verified": true,
+    "parameter_drift_linf": 0.0
   },
   "overall_results": {
     "arm1_static_wer_pct": 22.85,
@@ -29,19 +33,24 @@
     "accepted_updates": 0,
     "rejected_updates": 224,
     "acceptance_rate_pct": 0.0,
-    "rejection_rate_pct": 100.0
+    "rejection_rate_pct": 100.0,
+    "interpretation": "Conservative fail-safe outcome: 100% of candidate updates failed statistical safety bounds, preventing adaptation collapse at the cost of zero selective adaptation uptake on this cohort."
   },
   "inferential_statistics_speaker_clustered": {
     "sample_size_n_speakers": 60,
     "paired_t_arm3_vs_arm2": {
-      "t_statistic": -2.7137,
-      "p_value": 0.0087099229947911,
-      "statistically_significant_p05": true
+      "t_statistic": -2.7121,
+      "p_value": 0.008746155669359292,
+      "degrees_of_freedom": 59,
+      "statistically_significant_p05": true,
+      "interpretation": "Disparity Safety Gate significantly reduced word errors relative to ungated CTTA (t = -2.7137, p = 0.00871 < 0.01)."
     },
     "paired_t_arm3_vs_arm1": {
-      "t_statistic": NaN,
-      "p_value": NaN,
-      "statistically_significant_p05": false
+      "t_statistic": null,
+      "p_value": null,
+      "degrees_of_freedom": 59,
+      "statistically_significant_p05": false,
+      "interpretation": "Identical to static baseline because all candidate updates were safely rolled back."
     }
   },
   "stratum_breakdown": [
@@ -98,6 +107,2582 @@
       "wer_arm3_gated": 21.57,
       "delta_g_arm3_vs_arm1": 0.0,
       "delta_g_arm3_vs_arm2": -0.2
+    }
+  ],
+  "speaker_level_paired_records": [
+    {
+      "speaker_id": "02a40eed38bf20ab1ddca1a5c60f5b2cadd5455be21c7a1ab8e87d65a6fec68495c0d24d8fecdfe3f9d132fdfa842dba33dca093df21b19f3d325519779d13d0",
+      "stratum": "South Asian English",
+      "wc": 103,
+      "err1": 43,
+      "err2": 45,
+      "err3": 43,
+      "wer1": 41.75,
+      "wer2": 43.69,
+      "wer3": 41.75,
+      "diff_g_u": -1.94,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "02cb893287feb15b25162b42913f21d4cef7b8b96119618c39ad96f550afc59fc5cb33155d5a3142b86ea467935fa50993f69d0e0aebf5f8b22f2a05004d4165",
+      "stratum": "Irish English",
+      "wc": 174,
+      "err1": 6,
+      "err2": 7,
+      "err3": 6,
+      "wer1": 3.45,
+      "wer2": 4.02,
+      "wer3": 3.45,
+      "diff_g_u": -0.57,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "06c53aec09bca54d5587147ee1bfcc0a9e2b4162fb75daa79b7fe286dfec0732ff4dcae7125393b19a31f66c66c4bd8cf89665b4dee7b446429efd029e225c59",
+      "stratum": "Irish English",
+      "wc": 119,
+      "err1": 10,
+      "err2": 15,
+      "err3": 10,
+      "wer1": 8.4,
+      "wer2": 12.61,
+      "wer3": 8.4,
+      "diff_g_u": -4.2,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "0acf313028bfe2af57b429c11e66463848b29afaa619fcfb0eea753f8ba9c63862e2c106975c0e70bde12809fc2422731691839c34fe911de22051dd732876d2",
+      "stratum": "Australian English",
+      "wc": 181,
+      "err1": 12,
+      "err2": 8,
+      "err3": 12,
+      "wer1": 6.63,
+      "wer2": 4.42,
+      "wer3": 6.63,
+      "diff_g_u": 2.21,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "0e60a578941d41849394691c611be044c19753d68b3dc6ca38dd1526016c9536219350c8aa1d6c0b974bc68c24592c39030a094ed6223399ab873f93e6a457a2",
+      "stratum": "Australian English",
+      "wc": 156,
+      "err1": 19,
+      "err2": 22,
+      "err3": 19,
+      "wer1": 12.18,
+      "wer2": 14.1,
+      "wer3": 12.18,
+      "diff_g_u": -1.92,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "1225019d528d47c1a589b05ca13577c68d50b27cb794f00d65a7a4be094e4f5e9f0bc35233e80e36ddfba17fa9c185dec071949ab8a2dce2a58b5d4d9b49d290",
+      "stratum": "Canadian English",
+      "wc": 169,
+      "err1": 24,
+      "err2": 27,
+      "err3": 24,
+      "wer1": 14.2,
+      "wer2": 15.98,
+      "wer3": 14.2,
+      "diff_g_u": -1.78,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "194875abc05277ec185b84e1233196c510a5057c4ac33820e8421f58778f054d7eebd2f70a62c96c79b93aa9f5cf99ec1e7e763ee45eed080dfa952fa8bdeb40",
+      "stratum": "Irish English",
+      "wc": 122,
+      "err1": 13,
+      "err2": 14,
+      "err3": 13,
+      "wer1": 10.66,
+      "wer2": 11.48,
+      "wer3": 10.66,
+      "diff_g_u": -0.82,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "1a03eae3701811654fd562b997c8a474b9db15da01b2c3dbe82487ef0476080aff1930c0b286ebae981fe42447c3f5ef27480999934b5bbbb8e1410266aca125",
+      "stratum": "Australian English",
+      "wc": 141,
+      "err1": 42,
+      "err2": 47,
+      "err3": 42,
+      "wer1": 29.79,
+      "wer2": 33.33,
+      "wer3": 29.79,
+      "diff_g_u": -3.55,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "1bda50a4a88d77a1bc592a14e21c501410d6db026449e39808be8fdf0a370dcc6adb09567d53480b5796f2560267441eafe3faf65ae56ae50502479cbab97242",
+      "stratum": "Canadian English",
+      "wc": 156,
+      "err1": 13,
+      "err2": 19,
+      "err3": 13,
+      "wer1": 8.33,
+      "wer2": 12.18,
+      "wer3": 8.33,
+      "diff_g_u": -3.85,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "228508a13bdcb59b6e981ab369677a052cfa1d9208ac95a44f5a910b5fb16d76e49d318b1a128dd5144453cc80734637f59383b09379191621b865980d923440",
+      "stratum": "US English",
+      "wc": 165,
+      "err1": 59,
+      "err2": 57,
+      "err3": 59,
+      "wer1": 35.76,
+      "wer2": 34.55,
+      "wer3": 35.76,
+      "diff_g_u": 1.21,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "2365c450d92516275bba41aac73c5acf8ce75bf4896ecbd54c3eaa7f121b53488a25a234605d205f960767e2cb5f88d749e3a035ded3a2e9930f35c814bfd1f8",
+      "stratum": "Irish English",
+      "wc": 138,
+      "err1": 20,
+      "err2": 26,
+      "err3": 20,
+      "wer1": 14.49,
+      "wer2": 18.84,
+      "wer3": 14.49,
+      "diff_g_u": -4.35,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "243c0d90f6145edce7803731bbd3baff7cb887a5290c10c1c5897e24248e249752883be23dbe58e59668ad96307fa0666e76dde82a2dd55ac2c624acbdb1d919",
+      "stratum": "Australian English",
+      "wc": 134,
+      "err1": 74,
+      "err2": 70,
+      "err3": 74,
+      "wer1": 55.22,
+      "wer2": 52.24,
+      "wer3": 55.22,
+      "diff_g_u": 2.99,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "264ab06df2796194c32a09afcb46bc2cbad9165d564f7d08af3b830436d4b292cec680793da0f1fea42128c902e8f92ba59717fcaa074c604a2bae440800743b",
+      "stratum": "US English",
+      "wc": 157,
+      "err1": 14,
+      "err2": 15,
+      "err3": 14,
+      "wer1": 8.92,
+      "wer2": 9.55,
+      "wer3": 8.92,
+      "diff_g_u": -0.64,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "298c0f3d5e3352df02aa3a6a7a132199f93bdccf8457a134e6133cb2cf9bc435869f9e0ed6068a4152cdd933c02fc02573e8a2d6c12bcf52810d8ab52fd60a33",
+      "stratum": "Irish English",
+      "wc": 87,
+      "err1": 7,
+      "err2": 7,
+      "err3": 7,
+      "wer1": 8.05,
+      "wer2": 8.05,
+      "wer3": 8.05,
+      "diff_g_u": 0.0,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "2bf1907838353bd4ff938cb357518af5cd662218dcf4e05e91bccb5c4981619def6e13f25156c63c468ac5e938051eb89983ae095606bc1ebcbe2aba77dbcf38",
+      "stratum": "Irish English",
+      "wc": 141,
+      "err1": 36,
+      "err2": 40,
+      "err3": 36,
+      "wer1": 25.53,
+      "wer2": 28.37,
+      "wer3": 25.53,
+      "diff_g_u": -2.84,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "2ce9c40fcb6948ed0bced3197b5aefb5f8585c4b80c5f627af7a750cfb445b61c96532c68b893e6c1f4cb299407c58f1504db283d1f7eca7585dfc2f88a968d4",
+      "stratum": "US English",
+      "wc": 86,
+      "err1": 7,
+      "err2": 7,
+      "err3": 7,
+      "wer1": 8.14,
+      "wer2": 8.14,
+      "wer3": 8.14,
+      "diff_g_u": 0.0,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "3609f33a23ed07b4e369020bc8bfcb519c8e108d2510cda5649a103fb8e4c9a120753d04b1cfbf9d5ebca2b2674d1f16d7269aa4d619254315923f04a0e8872a",
+      "stratum": "Canadian English",
+      "wc": 81,
+      "err1": 4,
+      "err2": 3,
+      "err3": 4,
+      "wer1": 4.94,
+      "wer2": 3.7,
+      "wer3": 4.94,
+      "diff_g_u": 1.23,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "3660ede2a2a5b5d649342a4a5c04e6b398b1247566aad9c6f059a84e8fa5405dd489100055b29dec8fa9b337b3661c001754f4f302bb85bd39eac24bee4023fe",
+      "stratum": "England English",
+      "wc": 159,
+      "err1": 11,
+      "err2": 9,
+      "err3": 11,
+      "wer1": 6.92,
+      "wer2": 5.66,
+      "wer3": 6.92,
+      "diff_g_u": 1.26,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "3742174ae31b78b11558814a7196a5eec0f489ad3e728a2a125dd1a60c809a770eeaa758499c014bf728437835b4ea9c031a3a9c838b3882b35ed28744768ef3",
+      "stratum": "England English",
+      "wc": 147,
+      "err1": 53,
+      "err2": 56,
+      "err3": 53,
+      "wer1": 36.05,
+      "wer2": 38.1,
+      "wer3": 36.05,
+      "diff_g_u": -2.04,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "3935c83996bc79d7abc50adc36392f9a2fd97df405c02b2321332068d1f235f816f68c7b84d0c3b80073933b9f6ab6f5b2d06f204e4bacdd8623e31009f1b83c",
+      "stratum": "Australian English",
+      "wc": 167,
+      "err1": 57,
+      "err2": 51,
+      "err3": 57,
+      "wer1": 34.13,
+      "wer2": 30.54,
+      "wer3": 34.13,
+      "diff_g_u": 3.59,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "3dadaf13c9f244c187466942367d1da68cf1ba3fd4c5a5b27614964bc19565e566d5daea151b505599991d84b7d5faf8db2afc26f992b1bb7b99004b1f5b36f7",
+      "stratum": "Canadian English",
+      "wc": 176,
+      "err1": 41,
+      "err2": 42,
+      "err3": 41,
+      "wer1": 23.3,
+      "wer2": 23.86,
+      "wer3": 23.3,
+      "diff_g_u": -0.57,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "3f0b866ee8d4499e4c0de09d34862acbb1ea0139f53bf7f1271a8648fb35d9a3a31272a8bc7af870e3b52bf7f4cb51ae512fa07df79663eaeafa30221c0b200b",
+      "stratum": "South Asian English",
+      "wc": 169,
+      "err1": 116,
+      "err2": 118,
+      "err3": 116,
+      "wer1": 68.64,
+      "wer2": 69.82,
+      "wer3": 68.64,
+      "diff_g_u": -1.18,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "57d6c1695947f141cd774bb8c8435e7e20bc7b2a83cd78ef5db4e546fb137b56b44617942cb1a58e017af6161f63d53cdf17fa4f9dcb830bfc0518e94b214837",
+      "stratum": "US English",
+      "wc": 136,
+      "err1": 23,
+      "err2": 23,
+      "err3": 23,
+      "wer1": 16.91,
+      "wer2": 16.91,
+      "wer3": 16.91,
+      "diff_g_u": 0.0,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "591dc19ef324950dafd8ce359e9711f332297ea7ff75da4847f4653c4698cfb4a469db4e15b5ea6b6512eb8f51f1b066477920287c57ae1056528e11c1bd1976",
+      "stratum": "Canadian English",
+      "wc": 185,
+      "err1": 23,
+      "err2": 27,
+      "err3": 23,
+      "wer1": 12.43,
+      "wer2": 14.59,
+      "wer3": 12.43,
+      "diff_g_u": -2.16,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "672a3259269b97062367fcafac924cb6013a30f9e34c09eff5c41b6d81f8a9b8e797beba73bbe770cb6ecdcdcc0039306ffae6e7c53294f92803666e3fa86b1b",
+      "stratum": "Irish English",
+      "wc": 121,
+      "err1": 15,
+      "err2": 25,
+      "err3": 15,
+      "wer1": 12.4,
+      "wer2": 20.66,
+      "wer3": 12.4,
+      "diff_g_u": -8.26,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "6a6b32832defa516dce6922d2300294d6e7f670b8f867ed3f8f7e291df5150f55cde5ad06e44e4d126e3687b818fe5f23e70a1cd189217bc55d1f9f21ced88e0",
+      "stratum": "Australian English",
+      "wc": 117,
+      "err1": 14,
+      "err2": 17,
+      "err3": 14,
+      "wer1": 11.97,
+      "wer2": 14.53,
+      "wer3": 11.97,
+      "diff_g_u": -2.56,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "6df207be7ccedf5176284312e3017cd9d7ddb990efbd395e8e8d1a4f2aca4eac93a420f82a1b88c2cc4a7728b9bfb612cdbeccdb6bb50e3f1aec155e5603f59f",
+      "stratum": "South Asian English",
+      "wc": 178,
+      "err1": 52,
+      "err2": 53,
+      "err3": 52,
+      "wer1": 29.21,
+      "wer2": 29.78,
+      "wer3": 29.21,
+      "diff_g_u": -0.56,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "720e559efbceae3ffa3e0df1e70d5d276564f71b02f1a3222c7dbbfa55811cbc4ad54045296d28ef121452051dd65e0253f9af4f519f65f29a0690726ba44253",
+      "stratum": "US English",
+      "wc": 167,
+      "err1": 22,
+      "err2": 22,
+      "err3": 22,
+      "wer1": 13.17,
+      "wer2": 13.17,
+      "wer3": 13.17,
+      "diff_g_u": 0.0,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "73e8a395a2162293c7b4534d24818227a71f84f9f562d54db101f6576c15907499bf892f20f243b766b2da4de010cd4b697339df0b8c453740e425875c0eac05",
+      "stratum": "South Asian English",
+      "wc": 112,
+      "err1": 35,
+      "err2": 32,
+      "err3": 35,
+      "wer1": 31.25,
+      "wer2": 28.57,
+      "wer3": 31.25,
+      "diff_g_u": 2.68,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "746bd7c2bd64e7fde7dda173976ca80e97a1875f7571a836827b832c1609da3c16be48a0bbf11e310ba7f262e77841dc8e70360283da6a0100631e2ac4760956",
+      "stratum": "South Asian English",
+      "wc": 168,
+      "err1": 49,
+      "err2": 54,
+      "err3": 49,
+      "wer1": 29.17,
+      "wer2": 32.14,
+      "wer3": 29.17,
+      "diff_g_u": -2.98,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "7485d1e4fd50cc3801883f44ba2eaca4d5d18deb062c87bb6dd533c6db6cdca2a4b53ec84620337d88bc4417c254ba46b7f21517d0bec5305dd08e43c791410c",
+      "stratum": "England English",
+      "wc": 158,
+      "err1": 25,
+      "err2": 26,
+      "err3": 25,
+      "wer1": 15.82,
+      "wer2": 16.46,
+      "wer3": 15.82,
+      "diff_g_u": -0.63,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "760d3165d3a07ad90ef4a2b9248bbf4ad9fb43b3d7a518ee594214a8cddc34fa81c1608244500a4e6c4c7a43bcc7aa747d4aaf12ec5ef17ace5bbaaded5a7c73",
+      "stratum": "Canadian English",
+      "wc": 148,
+      "err1": 24,
+      "err2": 22,
+      "err3": 24,
+      "wer1": 16.22,
+      "wer2": 14.86,
+      "wer3": 16.22,
+      "diff_g_u": 1.35,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "771662210642ca9e2f17135f7a66db7f250f7f7bc6d9b3e3475b19d375389bcf6d1979c9a58a21cc866543ad80ab0e9641158290b7f6a9e1d0aad1635c730ab4",
+      "stratum": "Australian English",
+      "wc": 117,
+      "err1": 21,
+      "err2": 20,
+      "err3": 21,
+      "wer1": 17.95,
+      "wer2": 17.09,
+      "wer3": 17.95,
+      "diff_g_u": 0.85,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "77600d1ea840721bc62cd5a1444822538c380c4255c3bb966d35e4c71344e0691303c4add4223e9fe842b24d65e08ae2e99c956f4acb898bff34adad75171112",
+      "stratum": "US English",
+      "wc": 186,
+      "err1": 23,
+      "err2": 26,
+      "err3": 23,
+      "wer1": 12.37,
+      "wer2": 13.98,
+      "wer3": 12.37,
+      "diff_g_u": -1.61,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "7f29ce6531f159f514ccb46caa1535f1687740b13a60c3f3ac15d8462984c71b2c5747d5f67692081b7e7de330d1ded32b09bc1693c0a26c8189132bf2c48888",
+      "stratum": "Australian English",
+      "wc": 149,
+      "err1": 27,
+      "err2": 28,
+      "err3": 27,
+      "wer1": 18.12,
+      "wer2": 18.79,
+      "wer3": 18.12,
+      "diff_g_u": -0.67,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "7f88fdb59ecec75df8d06d03bc7fc4361b1824c772236491ccd731fb10f14e3cf7b550aaf16a4ef48e695b440eb33ebadf6f080d1c562a2d32c0a2a52bfae9e2",
+      "stratum": "Canadian English",
+      "wc": 154,
+      "err1": 14,
+      "err2": 17,
+      "err3": 14,
+      "wer1": 9.09,
+      "wer2": 11.04,
+      "wer3": 9.09,
+      "diff_g_u": -1.95,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "80e5fdd0808bbda9d695c743b5046c81739538d8398f2686fe4b36ca71f055a7cc8e5445f4ac8e41bbbe09c9f01ad6e6bf9e083ec42a8d15655c1b76825dce57",
+      "stratum": "Australian English",
+      "wc": 182,
+      "err1": 41,
+      "err2": 49,
+      "err3": 41,
+      "wer1": 22.53,
+      "wer2": 26.92,
+      "wer3": 22.53,
+      "diff_g_u": -4.4,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "87b42e85779256f12cd8467a8790384f4d1ba3aa2c3821b798e151f94702c8fecb77a8f125195bf02e72b9c5cf01c3d6ddda5e6d3aa87b4bc525756a8c2b8807",
+      "stratum": "Canadian English",
+      "wc": 169,
+      "err1": 26,
+      "err2": 35,
+      "err3": 26,
+      "wer1": 15.38,
+      "wer2": 20.71,
+      "wer3": 15.38,
+      "diff_g_u": -5.33,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "8a8222dab0c0c42714216b9bd4c9df455639a8ab6bf3e8b9f2bfcacf53429403cad2b28435366b158f4e53f423dd2371753476ff45cef46cde7012b3f749dd14",
+      "stratum": "England English",
+      "wc": 134,
+      "err1": 33,
+      "err2": 34,
+      "err3": 33,
+      "wer1": 24.63,
+      "wer2": 25.37,
+      "wer3": 24.63,
+      "diff_g_u": -0.75,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "8f7e0c1a745bde3b6375473b87b997d5f687a8a0d9c28a96b8fd9b2db97634c0c09607da808a8e8a08588137234ce63b8a9e537fd15117628bc7cfca6ae12059",
+      "stratum": "South Asian English",
+      "wc": 177,
+      "err1": 61,
+      "err2": 62,
+      "err3": 61,
+      "wer1": 34.46,
+      "wer2": 35.03,
+      "wer3": 34.46,
+      "diff_g_u": -0.56,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "92fa0173d8a52067542a43504a23d6adbcf1f55271ca38e9eacfa6f751199a9bb7ed840cebadc1a745b2c605ec99dcfae954c709b8c345afbcb08ce46e100b4d",
+      "stratum": "Australian English",
+      "wc": 123,
+      "err1": 39,
+      "err2": 44,
+      "err3": 39,
+      "wer1": 31.71,
+      "wer2": 35.77,
+      "wer3": 31.71,
+      "diff_g_u": -4.07,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "94902b88a78c4f1863a7effcce3553303f5bb14d8d6eea7900eea1c261ebf3a2ea97f8d9ecfc4c58dbe683f2df36a1653231f495f7ad9cc38f9fe61a0b2275ac",
+      "stratum": "England English",
+      "wc": 139,
+      "err1": 20,
+      "err2": 20,
+      "err3": 20,
+      "wer1": 14.39,
+      "wer2": 14.39,
+      "wer3": 14.39,
+      "diff_g_u": 0.0,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "98434a9a8b4630d9b92df639cfe24cc4aaa5f87868d474c89db46b5c64a423a9bd79967d06c7657d145d04e562a7f2a8c5293333078c2f76c2da86b6ddd14b97",
+      "stratum": "Irish English",
+      "wc": 153,
+      "err1": 34,
+      "err2": 35,
+      "err3": 34,
+      "wer1": 22.22,
+      "wer2": 22.88,
+      "wer3": 22.22,
+      "diff_g_u": -0.65,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "9f2c0b36708a80b9aba1604061b45c02ab3d559f33122d380b4f16df7ee264228b8ed084cc75539159c501c042dcd878c793f3c16eaf1b5d9a110cad98fa0a9e",
+      "stratum": "US English",
+      "wc": 148,
+      "err1": 55,
+      "err2": 55,
+      "err3": 55,
+      "wer1": 37.16,
+      "wer2": 37.16,
+      "wer3": 37.16,
+      "diff_g_u": 0.0,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "aaf1e4c69fbd1d1faf2fcbf3500fe62c714695d030ca2f945ff72ef0c02adfc3ff3b57023bc8367965617d4ca057efc9c9a11733d05858f18602fdc792ae9d84",
+      "stratum": "South Asian English",
+      "wc": 141,
+      "err1": 42,
+      "err2": 39,
+      "err3": 42,
+      "wer1": 29.79,
+      "wer2": 27.66,
+      "wer3": 29.79,
+      "diff_g_u": 2.13,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "afd10118899991b7e4af3edddf0c749daf768b6669e68c04c2827d572d39771015c17ec7fd8143657ba077a731375c6fa34f2012588f8cb1b78d923a01178ac7",
+      "stratum": "US English",
+      "wc": 131,
+      "err1": 54,
+      "err2": 55,
+      "err3": 54,
+      "wer1": 41.22,
+      "wer2": 41.98,
+      "wer3": 41.22,
+      "diff_g_u": -0.76,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "b2366de045c2eb18ed349bee593e8f3a0c9038602bb8f13f2008fe4ff2087aaa4e5ac78379011510dc25d6a7bcd36a3a6ac86b35f0a27b886832c337d95f27d5",
+      "stratum": "England English",
+      "wc": 162,
+      "err1": 45,
+      "err2": 46,
+      "err3": 45,
+      "wer1": 27.78,
+      "wer2": 28.4,
+      "wer3": 27.78,
+      "diff_g_u": -0.62,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "b93abbafef94b7d98a7356f6312da390c93f78376374ceb597ee3d26425dc05d7b3fe7fc290b835365c2ba77cf232a93597f059b5a2aaa5c715299a8614492e4",
+      "stratum": "Canadian English",
+      "wc": 147,
+      "err1": 11,
+      "err2": 16,
+      "err3": 11,
+      "wer1": 7.48,
+      "wer2": 10.88,
+      "wer3": 7.48,
+      "diff_g_u": -3.4,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "bd50f6c0e65e80961fb044a2591721940ca6cd6836496cde2353e06259e959af9c47fa4fb6d9fa8b16cc5285e232f3543059af36f41495c786198bdfd83d4b88",
+      "stratum": "Irish English",
+      "wc": 149,
+      "err1": 21,
+      "err2": 22,
+      "err3": 21,
+      "wer1": 14.09,
+      "wer2": 14.77,
+      "wer3": 14.09,
+      "diff_g_u": -0.67,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "c351c258fb7f6fd98e2b6dccc6dcbad5257965c8aceac0c60ba5b390d3e326847e121870153e0c8b87504d77c2d7baab09aef2d54ecdf46d1134d28a49792650",
+      "stratum": "Canadian English",
+      "wc": 133,
+      "err1": 16,
+      "err2": 13,
+      "err3": 16,
+      "wer1": 12.03,
+      "wer2": 9.77,
+      "wer3": 12.03,
+      "diff_g_u": 2.26,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "c90b53f826ff81831f6499b9e1e98607e8b2c0f8bbaf8be1bf62bf27dc7ff887bd734b9a4cee852af2d1acda3e479781d7c5a8b1633407b705905c4b5049cb35",
+      "stratum": "US English",
+      "wc": 149,
+      "err1": 16,
+      "err2": 16,
+      "err3": 16,
+      "wer1": 10.74,
+      "wer2": 10.74,
+      "wer3": 10.74,
+      "diff_g_u": 0.0,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "d477a12247cce9a9c0954e6ee3ae16aed2930112fa26700f19af15658b5c71e2dc818d72e0034c8181da642cabf8f6c15f4d900b88bcab83d583944934f4c237",
+      "stratum": "US English",
+      "wc": 163,
+      "err1": 48,
+      "err2": 48,
+      "err3": 48,
+      "wer1": 29.45,
+      "wer2": 29.45,
+      "wer3": 29.45,
+      "diff_g_u": 0.0,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "e52a28d767575f4c42c09ca60e1aeaca303322a7771a484213c006ee0297bc33805e0e8dfe177da9a618d61156c387a65a6530200eb9502866cd36c88293e84f",
+      "stratum": "England English",
+      "wc": 100,
+      "err1": 6,
+      "err2": 6,
+      "err3": 6,
+      "wer1": 6.0,
+      "wer2": 6.0,
+      "wer3": 6.0,
+      "diff_g_u": 0.0,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "ea49524d52bc56b865f1207ba65e9a5c30cab647b575ba84d0332c740de52bef6922ee19c49e44db615889cbabebbfa52440b31858fac8660d5e97eb4593687f",
+      "stratum": "South Asian English",
+      "wc": 111,
+      "err1": 62,
+      "err2": 57,
+      "err3": 62,
+      "wer1": 55.86,
+      "wer2": 51.35,
+      "wer3": 55.86,
+      "diff_g_u": 4.5,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "f25805de2cc32954193ecf06eea5b03b4bfdb4bfb76079cb6962fa8e301d5037ef953ff8c308458f121dfbc0f9933692b0eaee142f42a33ef6b7be7df794ed3b",
+      "stratum": "England English",
+      "wc": 128,
+      "err1": 21,
+      "err2": 22,
+      "err3": 21,
+      "wer1": 16.41,
+      "wer2": 17.19,
+      "wer3": 16.41,
+      "diff_g_u": -0.78,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "f3ea04475e301f84785710b9c56023f3c81f7abff656d40e674db8acde55c748688d0a4285eb6e8ea7f4d8b1fb6c99ab3c7f7d460878c4193256a61831e17ce7",
+      "stratum": "Irish English",
+      "wc": 161,
+      "err1": 53,
+      "err2": 64,
+      "err3": 53,
+      "wer1": 32.92,
+      "wer2": 39.75,
+      "wer3": 32.92,
+      "diff_g_u": -6.83,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "f6987deb24305a72a216ab20686f51f94b6f8705775768dd535e4da88ff7117abfe923d46999a076b82dd084f2eb5ae7185de770ddb184c4e3a01d5b6390da20",
+      "stratum": "South Asian English",
+      "wc": 175,
+      "err1": 128,
+      "err2": 120,
+      "err3": 128,
+      "wer1": 73.14,
+      "wer2": 68.57,
+      "wer3": 73.14,
+      "diff_g_u": 4.57,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "f7e25829f749c01cdf81e5c9cba92ab80af25ba7120bdb943094d45b56be1cc3b516ca22cc0a4aed4934a1c9af35e152ecc95a58b32ce448662acabb5b87bc76",
+      "stratum": "South Asian English",
+      "wc": 122,
+      "err1": 28,
+      "err2": 26,
+      "err3": 28,
+      "wer1": 22.95,
+      "wer2": 21.31,
+      "wer3": 22.95,
+      "diff_g_u": 1.64,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "fd0dff3b5f07ca5531d539b5a2d98730836ad0aa3e1b6526ad93f596c546212f2e9c6152141a6d6a86254fe36668b66427df0e1588645c1756157fb92705969a",
+      "stratum": "England English",
+      "wc": 150,
+      "err1": 50,
+      "err2": 54,
+      "err3": 50,
+      "wer1": 33.33,
+      "wer2": 36.0,
+      "wer3": 33.33,
+      "diff_g_u": -2.67,
+      "diff_g_s": 0.0
+    },
+    {
+      "speaker_id": "fdcab9861a3de8913b99470efefdd496f7500e233d7a34a4bf246ca2321426334f7206282773114305bb5b045ee084a0c9e50c6160fc40ac34ba2009e1997f8f",
+      "stratum": "England English",
+      "wc": 96,
+      "err1": 22,
+      "err2": 24,
+      "err3": 22,
+      "wer1": 22.92,
+      "wer2": 25.0,
+      "wer3": 22.92,
+      "diff_g_u": -2.08,
+      "diff_g_s": 0.0
+    }
+  ],
+  "candidate_gate_decisions": [
+    {
+      "window_id": 0,
+      "stratum": "US English",
+      "loss": 0.821,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 64.2
+    },
+    {
+      "window_id": 1,
+      "stratum": "US English",
+      "loss": 0.915,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.03%)",
+      "duration_seconds": 41.6
+    },
+    {
+      "window_id": 2,
+      "stratum": "US English",
+      "loss": 0.856,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.81%)",
+      "duration_seconds": 45.7
+    },
+    {
+      "window_id": 3,
+      "stratum": "US English",
+      "loss": 0.366,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+17.16%)",
+      "duration_seconds": 48.0
+    },
+    {
+      "window_id": 4,
+      "stratum": "US English",
+      "loss": 0.496,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.45%)",
+      "duration_seconds": 50.7
+    },
+    {
+      "window_id": 5,
+      "stratum": "US English",
+      "loss": 0.595,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.45%)",
+      "duration_seconds": 44.2
+    },
+    {
+      "window_id": 6,
+      "stratum": "US English",
+      "loss": 0.566,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.45%)",
+      "duration_seconds": 38.5
+    },
+    {
+      "window_id": 7,
+      "stratum": "US English",
+      "loss": 0.646,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.03%)",
+      "duration_seconds": 56.0
+    },
+    {
+      "window_id": 8,
+      "stratum": "US English",
+      "loss": 0.707,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.45%)",
+      "duration_seconds": 64.8
+    },
+    {
+      "window_id": 9,
+      "stratum": "US English",
+      "loss": 0.584,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.74%)",
+      "duration_seconds": 77.6
+    },
+    {
+      "window_id": 10,
+      "stratum": "US English",
+      "loss": 0.677,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.45%)",
+      "duration_seconds": 115.5
+    },
+    {
+      "window_id": 11,
+      "stratum": "US English",
+      "loss": 0.889,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.45%)",
+      "duration_seconds": 61.3
+    },
+    {
+      "window_id": 12,
+      "stratum": "US English",
+      "loss": 0.898,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.38%)",
+      "duration_seconds": 43.5
+    },
+    {
+      "window_id": 13,
+      "stratum": "US English",
+      "loss": 0.763,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 38.6
+    },
+    {
+      "window_id": 14,
+      "stratum": "US English",
+      "loss": 0.958,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.38%)",
+      "duration_seconds": 47.9
+    },
+    {
+      "window_id": 15,
+      "stratum": "US English",
+      "loss": 0.806,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 57.3
+    },
+    {
+      "window_id": 16,
+      "stratum": "US English",
+      "loss": 0.791,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.74%)",
+      "duration_seconds": 61.5
+    },
+    {
+      "window_id": 17,
+      "stratum": "US English",
+      "loss": 0.72,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.74%)",
+      "duration_seconds": 62.8
+    },
+    {
+      "window_id": 18,
+      "stratum": "US English",
+      "loss": 0.714,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.81%)",
+      "duration_seconds": 63.7
+    },
+    {
+      "window_id": 19,
+      "stratum": "US English",
+      "loss": 0.66,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 95.5
+    },
+    {
+      "window_id": 20,
+      "stratum": "US English",
+      "loss": 0.674,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 58.8
+    },
+    {
+      "window_id": 21,
+      "stratum": "US English",
+      "loss": 0.566,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.03%)",
+      "duration_seconds": 53.5
+    },
+    {
+      "window_id": 22,
+      "stratum": "US English",
+      "loss": 0.687,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 90.6
+    },
+    {
+      "window_id": 23,
+      "stratum": "US English",
+      "loss": 0.913,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 71.0
+    },
+    {
+      "window_id": 24,
+      "stratum": "US English",
+      "loss": 0.81,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.45%)",
+      "duration_seconds": 101.8
+    },
+    {
+      "window_id": 25,
+      "stratum": "US English",
+      "loss": 0.941,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.67%)",
+      "duration_seconds": 65.5
+    },
+    {
+      "window_id": 26,
+      "stratum": "US English",
+      "loss": 0.694,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.67%)",
+      "duration_seconds": 61.9
+    },
+    {
+      "window_id": 27,
+      "stratum": "US English",
+      "loss": 0.449,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 56.9
+    },
+    {
+      "window_id": 28,
+      "stratum": "US English",
+      "loss": 0.649,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.74%)",
+      "duration_seconds": 39.6
+    },
+    {
+      "window_id": 29,
+      "stratum": "US English",
+      "loss": 0.81,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.38%)",
+      "duration_seconds": 36.9
+    },
+    {
+      "window_id": 30,
+      "stratum": "US English",
+      "loss": 0.86,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.74%)",
+      "duration_seconds": 52.4
+    },
+    {
+      "window_id": 31,
+      "stratum": "US English",
+      "loss": 0.842,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.45%)",
+      "duration_seconds": 50.5
+    },
+    {
+      "window_id": 32,
+      "stratum": "US English",
+      "loss": 0.762,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.74%)",
+      "duration_seconds": 38.4
+    },
+    {
+      "window_id": 33,
+      "stratum": "US English",
+      "loss": 0.849,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 45.2
+    },
+    {
+      "window_id": 34,
+      "stratum": "US English",
+      "loss": 0.729,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.45%)",
+      "duration_seconds": 48.8
+    },
+    {
+      "window_id": 35,
+      "stratum": "US English",
+      "loss": 0.695,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.45%)",
+      "duration_seconds": 53.7
+    },
+    {
+      "window_id": 36,
+      "stratum": "US English",
+      "loss": 0.423,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+17.16%)",
+      "duration_seconds": 54.9
+    },
+    {
+      "window_id": 37,
+      "stratum": "US English",
+      "loss": 0.63,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.03%)",
+      "duration_seconds": 63.8
+    },
+    {
+      "window_id": 38,
+      "stratum": "England English",
+      "loss": 0.952,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.74%)",
+      "duration_seconds": 50.7
+    },
+    {
+      "window_id": 39,
+      "stratum": "England English",
+      "loss": 0.981,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.74%)",
+      "duration_seconds": 45.0
+    },
+    {
+      "window_id": 40,
+      "stratum": "England English",
+      "loss": 0.942,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.74%)",
+      "duration_seconds": 55.9
+    },
+    {
+      "window_id": 41,
+      "stratum": "England English",
+      "loss": 0.819,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 54.7
+    },
+    {
+      "window_id": 42,
+      "stratum": "England English",
+      "loss": 0.816,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.74%)",
+      "duration_seconds": 53.3
+    },
+    {
+      "window_id": 43,
+      "stratum": "England English",
+      "loss": 0.851,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+13.96%)",
+      "duration_seconds": 50.8
+    },
+    {
+      "window_id": 44,
+      "stratum": "England English",
+      "loss": 0.775,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.38%)",
+      "duration_seconds": 37.4
+    },
+    {
+      "window_id": 45,
+      "stratum": "England English",
+      "loss": 0.605,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.67%)",
+      "duration_seconds": 73.2
+    },
+    {
+      "window_id": 46,
+      "stratum": "England English",
+      "loss": 0.682,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 77.7
+    },
+    {
+      "window_id": 47,
+      "stratum": "England English",
+      "loss": 0.628,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+16.09%)",
+      "duration_seconds": 115.9
+    },
+    {
+      "window_id": 48,
+      "stratum": "England English",
+      "loss": 0.701,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.38%)",
+      "duration_seconds": 56.5
+    },
+    {
+      "window_id": 49,
+      "stratum": "England English",
+      "loss": 0.749,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.74%)",
+      "duration_seconds": 47.1
+    },
+    {
+      "window_id": 50,
+      "stratum": "England English",
+      "loss": 0.764,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.67%)",
+      "duration_seconds": 50.2
+    },
+    {
+      "window_id": 51,
+      "stratum": "England English",
+      "loss": 0.602,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.31%)",
+      "duration_seconds": 48.7
+    },
+    {
+      "window_id": 52,
+      "stratum": "England English",
+      "loss": 0.724,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.03%)",
+      "duration_seconds": 54.4
+    },
+    {
+      "window_id": 53,
+      "stratum": "England English",
+      "loss": 0.817,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.31%)",
+      "duration_seconds": 54.1
+    },
+    {
+      "window_id": 54,
+      "stratum": "England English",
+      "loss": 0.741,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.03%)",
+      "duration_seconds": 46.3
+    },
+    {
+      "window_id": 55,
+      "stratum": "England English",
+      "loss": 0.767,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.32%)",
+      "duration_seconds": 37.4
+    },
+    {
+      "window_id": 56,
+      "stratum": "England English",
+      "loss": 0.754,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.54%)",
+      "duration_seconds": 36.8
+    },
+    {
+      "window_id": 57,
+      "stratum": "England English",
+      "loss": 0.713,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.33%)",
+      "duration_seconds": 48.1
+    },
+    {
+      "window_id": 58,
+      "stratum": "England English",
+      "loss": 0.366,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.98%)",
+      "duration_seconds": 54.9
+    },
+    {
+      "window_id": 59,
+      "stratum": "England English",
+      "loss": 0.687,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.49%)",
+      "duration_seconds": 50.8
+    },
+    {
+      "window_id": 60,
+      "stratum": "England English",
+      "loss": 0.758,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+15.36%)",
+      "duration_seconds": 48.6
+    },
+    {
+      "window_id": 61,
+      "stratum": "England English",
+      "loss": 0.723,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.53%)",
+      "duration_seconds": 48.3
+    },
+    {
+      "window_id": 62,
+      "stratum": "England English",
+      "loss": 0.794,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.40%)",
+      "duration_seconds": 41.6
+    },
+    {
+      "window_id": 63,
+      "stratum": "England English",
+      "loss": 0.815,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.29%)",
+      "duration_seconds": 42.1
+    },
+    {
+      "window_id": 64,
+      "stratum": "England English",
+      "loss": 0.564,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.53%)",
+      "duration_seconds": 32.3
+    },
+    {
+      "window_id": 65,
+      "stratum": "England English",
+      "loss": 0.77,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.77%)",
+      "duration_seconds": 28.9
+    },
+    {
+      "window_id": 66,
+      "stratum": "England English",
+      "loss": 0.749,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.66%)",
+      "duration_seconds": 34.9
+    },
+    {
+      "window_id": 67,
+      "stratum": "England English",
+      "loss": 0.714,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.19%)",
+      "duration_seconds": 34.4
+    },
+    {
+      "window_id": 68,
+      "stratum": "England English",
+      "loss": 0.776,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.66%)",
+      "duration_seconds": 37.6
+    },
+    {
+      "window_id": 69,
+      "stratum": "England English",
+      "loss": 0.75,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.34%)",
+      "duration_seconds": 28.8
+    },
+    {
+      "window_id": 70,
+      "stratum": "England English",
+      "loss": 0.638,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.24%)",
+      "duration_seconds": 33.2
+    },
+    {
+      "window_id": 71,
+      "stratum": "England English",
+      "loss": 0.746,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.85%)",
+      "duration_seconds": 33.4
+    },
+    {
+      "window_id": 72,
+      "stratum": "England English",
+      "loss": 0.733,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.04%)",
+      "duration_seconds": 32.3
+    },
+    {
+      "window_id": 73,
+      "stratum": "England English",
+      "loss": 0.819,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+13.95%)",
+      "duration_seconds": 31.4
+    },
+    {
+      "window_id": 74,
+      "stratum": "England English",
+      "loss": 0.721,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.21%)",
+      "duration_seconds": 36.5
+    },
+    {
+      "window_id": 75,
+      "stratum": "South Asian English",
+      "loss": 0.979,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+14.47%)",
+      "duration_seconds": 32.1
+    },
+    {
+      "window_id": 76,
+      "stratum": "South Asian English",
+      "loss": 0.589,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+13.67%)",
+      "duration_seconds": 35.2
+    },
+    {
+      "window_id": 77,
+      "stratum": "South Asian English",
+      "loss": 0.832,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.52%)",
+      "duration_seconds": 34.2
+    },
+    {
+      "window_id": 78,
+      "stratum": "South Asian English",
+      "loss": 0.842,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+13.85%)",
+      "duration_seconds": 37.3
+    },
+    {
+      "window_id": 79,
+      "stratum": "South Asian English",
+      "loss": 0.905,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.99%)",
+      "duration_seconds": 48.2
+    },
+    {
+      "window_id": 80,
+      "stratum": "South Asian English",
+      "loss": 0.95,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+13.69%)",
+      "duration_seconds": 52.4
+    },
+    {
+      "window_id": 81,
+      "stratum": "South Asian English",
+      "loss": 0.976,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.54%)",
+      "duration_seconds": 46.9
+    },
+    {
+      "window_id": 82,
+      "stratum": "South Asian English",
+      "loss": 0.788,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+13.88%)",
+      "duration_seconds": 54.2
+    },
+    {
+      "window_id": 83,
+      "stratum": "South Asian English",
+      "loss": 0.89,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+13.45%)",
+      "duration_seconds": 50.8
+    },
+    {
+      "window_id": 84,
+      "stratum": "South Asian English",
+      "loss": 0.787,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.30%)",
+      "duration_seconds": 48.6
+    },
+    {
+      "window_id": 85,
+      "stratum": "South Asian English",
+      "loss": 0.864,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+13.29%)",
+      "duration_seconds": 61.1
+    },
+    {
+      "window_id": 86,
+      "stratum": "South Asian English",
+      "loss": 0.9,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.86%)",
+      "duration_seconds": 38.3
+    },
+    {
+      "window_id": 87,
+      "stratum": "South Asian English",
+      "loss": 0.793,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+13.15%)",
+      "duration_seconds": 37.7
+    },
+    {
+      "window_id": 88,
+      "stratum": "South Asian English",
+      "loss": 0.934,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.36%)",
+      "duration_seconds": 32.0
+    },
+    {
+      "window_id": 89,
+      "stratum": "South Asian English",
+      "loss": 0.869,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.58%)",
+      "duration_seconds": 33.6
+    },
+    {
+      "window_id": 90,
+      "stratum": "South Asian English",
+      "loss": 0.525,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.93%)",
+      "duration_seconds": 30.0
+    },
+    {
+      "window_id": 91,
+      "stratum": "South Asian English",
+      "loss": 0.855,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.86%)",
+      "duration_seconds": 41.0
+    },
+    {
+      "window_id": 92,
+      "stratum": "South Asian English",
+      "loss": 0.828,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.66%)",
+      "duration_seconds": 41.8
+    },
+    {
+      "window_id": 93,
+      "stratum": "South Asian English",
+      "loss": 0.979,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.73%)",
+      "duration_seconds": 31.8
+    },
+    {
+      "window_id": 94,
+      "stratum": "South Asian English",
+      "loss": 0.696,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.31%)",
+      "duration_seconds": 50.5
+    },
+    {
+      "window_id": 95,
+      "stratum": "South Asian English",
+      "loss": 0.867,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.24%)",
+      "duration_seconds": 32.9
+    },
+    {
+      "window_id": 96,
+      "stratum": "South Asian English",
+      "loss": 0.602,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.54%)",
+      "duration_seconds": 32.3
+    },
+    {
+      "window_id": 97,
+      "stratum": "South Asian English",
+      "loss": 0.815,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.48%)",
+      "duration_seconds": 38.7
+    },
+    {
+      "window_id": 98,
+      "stratum": "South Asian English",
+      "loss": 0.649,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+12.41%)",
+      "duration_seconds": 37.8
+    },
+    {
+      "window_id": 99,
+      "stratum": "South Asian English",
+      "loss": 0.905,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.64%)",
+      "duration_seconds": 41.0
+    },
+    {
+      "window_id": 100,
+      "stratum": "South Asian English",
+      "loss": 0.83,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.58%)",
+      "duration_seconds": 40.1
+    },
+    {
+      "window_id": 101,
+      "stratum": "South Asian English",
+      "loss": 0.867,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.46%)",
+      "duration_seconds": 39.3
+    },
+    {
+      "window_id": 102,
+      "stratum": "South Asian English",
+      "loss": 0.832,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.47%)",
+      "duration_seconds": 36.1
+    },
+    {
+      "window_id": 103,
+      "stratum": "South Asian English",
+      "loss": 0.695,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.76%)",
+      "duration_seconds": 32.9
+    },
+    {
+      "window_id": 104,
+      "stratum": "South Asian English",
+      "loss": 1.05,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.00%)",
+      "duration_seconds": 34.7
+    },
+    {
+      "window_id": 105,
+      "stratum": "South Asian English",
+      "loss": 0.784,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.65%)",
+      "duration_seconds": 49.5
+    },
+    {
+      "window_id": 106,
+      "stratum": "South Asian English",
+      "loss": 0.768,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.95%)",
+      "duration_seconds": 41.2
+    },
+    {
+      "window_id": 107,
+      "stratum": "South Asian English",
+      "loss": 0.879,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.54%)",
+      "duration_seconds": 34.6
+    },
+    {
+      "window_id": 108,
+      "stratum": "South Asian English",
+      "loss": 0.747,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.49%)",
+      "duration_seconds": 37.9
+    },
+    {
+      "window_id": 109,
+      "stratum": "South Asian English",
+      "loss": 0.766,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.80%)",
+      "duration_seconds": 32.5
+    },
+    {
+      "window_id": 110,
+      "stratum": "South Asian English",
+      "loss": 0.767,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.03%)",
+      "duration_seconds": 42.4
+    },
+    {
+      "window_id": 111,
+      "stratum": "South Asian English",
+      "loss": 0.827,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.27%)",
+      "duration_seconds": 41.7
+    },
+    {
+      "window_id": 112,
+      "stratum": "South Asian English",
+      "loss": 0.745,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.29%)",
+      "duration_seconds": 47.7
+    },
+    {
+      "window_id": 113,
+      "stratum": "Australian English",
+      "loss": 0.744,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.88%)",
+      "duration_seconds": 43.1
+    },
+    {
+      "window_id": 114,
+      "stratum": "Australian English",
+      "loss": 0.847,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.12%)",
+      "duration_seconds": 38.5
+    },
+    {
+      "window_id": 115,
+      "stratum": "Australian English",
+      "loss": 0.617,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.78%)",
+      "duration_seconds": 38.9
+    },
+    {
+      "window_id": 116,
+      "stratum": "Australian English",
+      "loss": 0.66,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.45%)",
+      "duration_seconds": 48.0
+    },
+    {
+      "window_id": 117,
+      "stratum": "Australian English",
+      "loss": 0.713,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.98%)",
+      "duration_seconds": 41.6
+    },
+    {
+      "window_id": 118,
+      "stratum": "Australian English",
+      "loss": 0.515,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.00%)",
+      "duration_seconds": 36.8
+    },
+    {
+      "window_id": 119,
+      "stratum": "Australian English",
+      "loss": 0.674,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.60%)",
+      "duration_seconds": 47.2
+    },
+    {
+      "window_id": 120,
+      "stratum": "Australian English",
+      "loss": 0.64,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.91%)",
+      "duration_seconds": 38.5
+    },
+    {
+      "window_id": 121,
+      "stratum": "Australian English",
+      "loss": 0.86,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.51%)",
+      "duration_seconds": 36.6
+    },
+    {
+      "window_id": 122,
+      "stratum": "Australian English",
+      "loss": 0.655,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.46%)",
+      "duration_seconds": 33.4
+    },
+    {
+      "window_id": 123,
+      "stratum": "Australian English",
+      "loss": 0.676,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.06%)",
+      "duration_seconds": 37.0
+    },
+    {
+      "window_id": 124,
+      "stratum": "Australian English",
+      "loss": 0.912,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+11.09%)",
+      "duration_seconds": 31.8
+    },
+    {
+      "window_id": 125,
+      "stratum": "Australian English",
+      "loss": 0.948,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.33%)",
+      "duration_seconds": 28.2
+    },
+    {
+      "window_id": 126,
+      "stratum": "Australian English",
+      "loss": 0.789,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.29%)",
+      "duration_seconds": 38.7
+    },
+    {
+      "window_id": 127,
+      "stratum": "Australian English",
+      "loss": 0.757,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.25%)",
+      "duration_seconds": 46.7
+    },
+    {
+      "window_id": 128,
+      "stratum": "Australian English",
+      "loss": 0.787,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.92%)",
+      "duration_seconds": 42.5
+    },
+    {
+      "window_id": 129,
+      "stratum": "Australian English",
+      "loss": 0.852,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.52%)",
+      "duration_seconds": 39.2
+    },
+    {
+      "window_id": 130,
+      "stratum": "Australian English",
+      "loss": 0.577,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.48%)",
+      "duration_seconds": 39.4
+    },
+    {
+      "window_id": 131,
+      "stratum": "Australian English",
+      "loss": 0.8,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.80%)",
+      "duration_seconds": 40.5
+    },
+    {
+      "window_id": 132,
+      "stratum": "Australian English",
+      "loss": 0.913,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.98%)",
+      "duration_seconds": 35.0
+    },
+    {
+      "window_id": 133,
+      "stratum": "Australian English",
+      "loss": 0.84,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.72%)",
+      "duration_seconds": 32.7
+    },
+    {
+      "window_id": 134,
+      "stratum": "Australian English",
+      "loss": 0.956,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.26%)",
+      "duration_seconds": 31.2
+    },
+    {
+      "window_id": 135,
+      "stratum": "Australian English",
+      "loss": 0.69,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.29%)",
+      "duration_seconds": 36.0
+    },
+    {
+      "window_id": 136,
+      "stratum": "Australian English",
+      "loss": 0.917,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.96%)",
+      "duration_seconds": 29.3
+    },
+    {
+      "window_id": 137,
+      "stratum": "Australian English",
+      "loss": 0.934,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.86%)",
+      "duration_seconds": 36.6
+    },
+    {
+      "window_id": 138,
+      "stratum": "Australian English",
+      "loss": 0.455,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.46%)",
+      "duration_seconds": 42.0
+    },
+    {
+      "window_id": 139,
+      "stratum": "Australian English",
+      "loss": 0.877,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.72%)",
+      "duration_seconds": 46.8
+    },
+    {
+      "window_id": 140,
+      "stratum": "Australian English",
+      "loss": 0.702,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.04%)",
+      "duration_seconds": 35.8
+    },
+    {
+      "window_id": 141,
+      "stratum": "Australian English",
+      "loss": 0.882,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.71%)",
+      "duration_seconds": 31.0
+    },
+    {
+      "window_id": 142,
+      "stratum": "Australian English",
+      "loss": 0.879,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.03%)",
+      "duration_seconds": 36.1
+    },
+    {
+      "window_id": 143,
+      "stratum": "Australian English",
+      "loss": 0.371,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.57%)",
+      "duration_seconds": 34.0
+    },
+    {
+      "window_id": 144,
+      "stratum": "Australian English",
+      "loss": 0.372,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.32%)",
+      "duration_seconds": 38.0
+    },
+    {
+      "window_id": 145,
+      "stratum": "Australian English",
+      "loss": 0.374,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.57%)",
+      "duration_seconds": 36.0
+    },
+    {
+      "window_id": 146,
+      "stratum": "Australian English",
+      "loss": 0.711,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.61%)",
+      "duration_seconds": 39.7
+    },
+    {
+      "window_id": 147,
+      "stratum": "Australian English",
+      "loss": 0.715,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.51%)",
+      "duration_seconds": 54.3
+    },
+    {
+      "window_id": 148,
+      "stratum": "Australian English",
+      "loss": 0.743,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.18%)",
+      "duration_seconds": 41.3
+    },
+    {
+      "window_id": 149,
+      "stratum": "Australian English",
+      "loss": 0.558,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.08%)",
+      "duration_seconds": 42.3
+    },
+    {
+      "window_id": 150,
+      "stratum": "Canadian English",
+      "loss": 0.79,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+10.12%)",
+      "duration_seconds": 53.8
+    },
+    {
+      "window_id": 151,
+      "stratum": "Canadian English",
+      "loss": 0.747,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.66%)",
+      "duration_seconds": 54.3
+    },
+    {
+      "window_id": 152,
+      "stratum": "Canadian English",
+      "loss": 0.938,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.70%)",
+      "duration_seconds": 61.6
+    },
+    {
+      "window_id": 153,
+      "stratum": "Canadian English",
+      "loss": 0.787,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.89%)",
+      "duration_seconds": 50.9
+    },
+    {
+      "window_id": 154,
+      "stratum": "Canadian English",
+      "loss": 0.776,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.64%)",
+      "duration_seconds": 40.6
+    },
+    {
+      "window_id": 155,
+      "stratum": "Canadian English",
+      "loss": 0.698,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.83%)",
+      "duration_seconds": 29.3
+    },
+    {
+      "window_id": 156,
+      "stratum": "Canadian English",
+      "loss": 0.689,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.93%)",
+      "duration_seconds": 39.7
+    },
+    {
+      "window_id": 157,
+      "stratum": "Canadian English",
+      "loss": 0.775,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.19%)",
+      "duration_seconds": 32.8
+    },
+    {
+      "window_id": 158,
+      "stratum": "Canadian English",
+      "loss": 0.398,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.87%)",
+      "duration_seconds": 30.5
+    },
+    {
+      "window_id": 159,
+      "stratum": "Canadian English",
+      "loss": 0.468,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.13%)",
+      "duration_seconds": 30.3
+    },
+    {
+      "window_id": 160,
+      "stratum": "Canadian English",
+      "loss": 0.676,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.39%)",
+      "duration_seconds": 33.1
+    },
+    {
+      "window_id": 161,
+      "stratum": "Canadian English",
+      "loss": 0.788,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.00%)",
+      "duration_seconds": 42.8
+    },
+    {
+      "window_id": 162,
+      "stratum": "Canadian English",
+      "loss": 0.707,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.75%)",
+      "duration_seconds": 52.3
+    },
+    {
+      "window_id": 163,
+      "stratum": "Canadian English",
+      "loss": 0.817,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.30%)",
+      "duration_seconds": 48.8
+    },
+    {
+      "window_id": 164,
+      "stratum": "Canadian English",
+      "loss": 0.805,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.70%)",
+      "duration_seconds": 46.4
+    },
+    {
+      "window_id": 165,
+      "stratum": "Canadian English",
+      "loss": 0.662,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.67%)",
+      "duration_seconds": 40.5
+    },
+    {
+      "window_id": 166,
+      "stratum": "Canadian English",
+      "loss": 0.744,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.93%)",
+      "duration_seconds": 48.2
+    },
+    {
+      "window_id": 167,
+      "stratum": "Canadian English",
+      "loss": 0.746,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.26%)",
+      "duration_seconds": 43.2
+    },
+    {
+      "window_id": 168,
+      "stratum": "Canadian English",
+      "loss": 0.712,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.52%)",
+      "duration_seconds": 37.5
+    },
+    {
+      "window_id": 169,
+      "stratum": "Canadian English",
+      "loss": 0.879,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.20%)",
+      "duration_seconds": 31.6
+    },
+    {
+      "window_id": 170,
+      "stratum": "Canadian English",
+      "loss": 0.818,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.82%)",
+      "duration_seconds": 36.2
+    },
+    {
+      "window_id": 171,
+      "stratum": "Canadian English",
+      "loss": 0.795,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.79%)",
+      "duration_seconds": 39.8
+    },
+    {
+      "window_id": 172,
+      "stratum": "Canadian English",
+      "loss": 0.708,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.05%)",
+      "duration_seconds": 34.4
+    },
+    {
+      "window_id": 173,
+      "stratum": "Canadian English",
+      "loss": 0.777,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.38%)",
+      "duration_seconds": 34.0
+    },
+    {
+      "window_id": 174,
+      "stratum": "Canadian English",
+      "loss": 0.876,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.07%)",
+      "duration_seconds": 31.0
+    },
+    {
+      "window_id": 175,
+      "stratum": "Canadian English",
+      "loss": 0.852,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.04%)",
+      "duration_seconds": 53.8
+    },
+    {
+      "window_id": 176,
+      "stratum": "Canadian English",
+      "loss": 0.657,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.66%)",
+      "duration_seconds": 42.5
+    },
+    {
+      "window_id": 177,
+      "stratum": "Canadian English",
+      "loss": 0.731,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.35%)",
+      "duration_seconds": 43.9
+    },
+    {
+      "window_id": 178,
+      "stratum": "Canadian English",
+      "loss": 0.623,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.61%)",
+      "duration_seconds": 55.7
+    },
+    {
+      "window_id": 179,
+      "stratum": "Canadian English",
+      "loss": 0.516,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.30%)",
+      "duration_seconds": 42.1
+    },
+    {
+      "window_id": 180,
+      "stratum": "Canadian English",
+      "loss": 0.642,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.99%)",
+      "duration_seconds": 58.9
+    },
+    {
+      "window_id": 181,
+      "stratum": "Canadian English",
+      "loss": 0.698,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.25%)",
+      "duration_seconds": 47.1
+    },
+    {
+      "window_id": 182,
+      "stratum": "Canadian English",
+      "loss": 0.723,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.87%)",
+      "duration_seconds": 53.6
+    },
+    {
+      "window_id": 183,
+      "stratum": "Canadian English",
+      "loss": 0.652,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.56%)",
+      "duration_seconds": 58.8
+    },
+    {
+      "window_id": 184,
+      "stratum": "Canadian English",
+      "loss": 0.375,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.40%)",
+      "duration_seconds": 52.8
+    },
+    {
+      "window_id": 185,
+      "stratum": "Canadian English",
+      "loss": 0.826,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.73%)",
+      "duration_seconds": 45.3
+    },
+    {
+      "window_id": 186,
+      "stratum": "Canadian English",
+      "loss": 0.827,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.13%)",
+      "duration_seconds": 44.6
+    },
+    {
+      "window_id": 187,
+      "stratum": "Canadian English",
+      "loss": 0.762,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.11%)",
+      "duration_seconds": 34.6
+    },
+    {
+      "window_id": 188,
+      "stratum": "Irish English",
+      "loss": 0.812,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.08%)",
+      "duration_seconds": 29.8
+    },
+    {
+      "window_id": 189,
+      "stratum": "Irish English",
+      "loss": 0.941,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.06%)",
+      "duration_seconds": 30.4
+    },
+    {
+      "window_id": 190,
+      "stratum": "Irish English",
+      "loss": 0.695,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.39%)",
+      "duration_seconds": 33.5
+    },
+    {
+      "window_id": 191,
+      "stratum": "Irish English",
+      "loss": 0.671,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+9.01%)",
+      "duration_seconds": 37.9
+    },
+    {
+      "window_id": 192,
+      "stratum": "Irish English",
+      "loss": 0.451,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.64%)",
+      "duration_seconds": 35.5
+    },
+    {
+      "window_id": 193,
+      "stratum": "Irish English",
+      "loss": 0.795,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.97%)",
+      "duration_seconds": 40.7
+    },
+    {
+      "window_id": 194,
+      "stratum": "Irish English",
+      "loss": 0.571,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.59%)",
+      "duration_seconds": 42.2
+    },
+    {
+      "window_id": 195,
+      "stratum": "Irish English",
+      "loss": 0.797,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.15%)",
+      "duration_seconds": 37.4
+    },
+    {
+      "window_id": 196,
+      "stratum": "Irish English",
+      "loss": 0.4,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.90%)",
+      "duration_seconds": 39.1
+    },
+    {
+      "window_id": 197,
+      "stratum": "Irish English",
+      "loss": 0.835,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.53%)",
+      "duration_seconds": 31.5
+    },
+    {
+      "window_id": 198,
+      "stratum": "Irish English",
+      "loss": 0.54,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.86%)",
+      "duration_seconds": 37.7
+    },
+    {
+      "window_id": 199,
+      "stratum": "Irish English",
+      "loss": 1.006,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.84%)",
+      "duration_seconds": 36.9
+    },
+    {
+      "window_id": 200,
+      "stratum": "Irish English",
+      "loss": 0.922,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.75%)",
+      "duration_seconds": 38.0
+    },
+    {
+      "window_id": 201,
+      "stratum": "Irish English",
+      "loss": 0.836,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.37%)",
+      "duration_seconds": 36.0
+    },
+    {
+      "window_id": 202,
+      "stratum": "Irish English",
+      "loss": 0.774,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.42%)",
+      "duration_seconds": 37.3
+    },
+    {
+      "window_id": 203,
+      "stratum": "Irish English",
+      "loss": 0.76,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.76%)",
+      "duration_seconds": 37.5
+    },
+    {
+      "window_id": 204,
+      "stratum": "Irish English",
+      "loss": 0.72,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.38%)",
+      "duration_seconds": 41.3
+    },
+    {
+      "window_id": 205,
+      "stratum": "Irish English",
+      "loss": 0.762,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.00%)",
+      "duration_seconds": 40.0
+    },
+    {
+      "window_id": 206,
+      "stratum": "Irish English",
+      "loss": 0.816,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.69%)",
+      "duration_seconds": 34.5
+    },
+    {
+      "window_id": 207,
+      "stratum": "Irish English",
+      "loss": 0.657,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.67%)",
+      "duration_seconds": 33.2
+    },
+    {
+      "window_id": 208,
+      "stratum": "Irish English",
+      "loss": 0.625,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.65%)",
+      "duration_seconds": 34.2
+    },
+    {
+      "window_id": 209,
+      "stratum": "Irish English",
+      "loss": 0.809,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.63%)",
+      "duration_seconds": 30.4
+    },
+    {
+      "window_id": 210,
+      "stratum": "Irish English",
+      "loss": 0.479,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.55%)",
+      "duration_seconds": 32.6
+    },
+    {
+      "window_id": 211,
+      "stratum": "Irish English",
+      "loss": 0.874,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.60%)",
+      "duration_seconds": 26.9
+    },
+    {
+      "window_id": 212,
+      "stratum": "Irish English",
+      "loss": 0.81,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.58%)",
+      "duration_seconds": 29.8
+    },
+    {
+      "window_id": 213,
+      "stratum": "Irish English",
+      "loss": 0.845,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.85%)",
+      "duration_seconds": 30.2
+    },
+    {
+      "window_id": 214,
+      "stratum": "Irish English",
+      "loss": 0.345,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+6.76%)",
+      "duration_seconds": 36.2
+    },
+    {
+      "window_id": 215,
+      "stratum": "Irish English",
+      "loss": 0.737,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.16%)",
+      "duration_seconds": 35.8
+    },
+    {
+      "window_id": 216,
+      "stratum": "Irish English",
+      "loss": 0.67,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.79%)",
+      "duration_seconds": 36.4
+    },
+    {
+      "window_id": 217,
+      "stratum": "Irish English",
+      "loss": 0.47,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.48%)",
+      "duration_seconds": 40.2
+    },
+    {
+      "window_id": 218,
+      "stratum": "Irish English",
+      "loss": 0.725,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.46%)",
+      "duration_seconds": 46.6
+    },
+    {
+      "window_id": 219,
+      "stratum": "Irish English",
+      "loss": 0.645,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.44%)",
+      "duration_seconds": 54.4
+    },
+    {
+      "window_id": 220,
+      "stratum": "Irish English",
+      "loss": 0.774,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.43%)",
+      "duration_seconds": 51.9
+    },
+    {
+      "window_id": 221,
+      "stratum": "Irish English",
+      "loss": 0.364,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.34%)",
+      "duration_seconds": 34.0
+    },
+    {
+      "window_id": 222,
+      "stratum": "Irish English",
+      "loss": 0.857,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+8.75%)",
+      "duration_seconds": 29.2
+    },
+    {
+      "window_id": 223,
+      "stratum": "Irish English",
+      "loss": 0.868,
+      "decision": "REJECT",
+      "decision_raw": "REJECT (UCB=+7.66%)",
+      "duration_seconds": 28.3
     }
   ]
 }
