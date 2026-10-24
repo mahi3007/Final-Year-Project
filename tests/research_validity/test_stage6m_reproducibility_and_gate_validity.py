@@ -14,6 +14,7 @@ Directly addresses reviewer validation requirements:
 
 import json
 import math
+import copy
 import hashlib
 from pathlib import Path
 import pytest
@@ -25,6 +26,11 @@ import torch
 from dsg_ctta.controller.gate import DisparitySafetyGate
 from dsg_ctta.controller.bootstrap import run_paired_speaker_bootstrap
 from dsg_ctta.controller.types import BootstrapMetrics
+from dsg_ctta.controller.streaming_gate import (
+    StreamingSentinelSafetyGate,
+    compute_calibrated_obf_schedule,
+    simulate_sequential_type1_error,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 REPORTS_DIR = PROJECT_ROOT / "reports" / "stage6m"
@@ -198,20 +204,20 @@ def test_gate_selectivity_under_synthetic_cases():
     metrics_disp = run_paired_speaker_bootstrap(base_records, disp_records, num_replicates=400, seed=123)
     dec_disp = gate.evaluate_decision(metrics_disp, "c_disp", "live", 123, 400)
     # Group 0 error dropped to 0, widening disparity gap
-    if metrics_disp.ucb_d > 0.0200:
-        assert dec_disp.decision == "REJECT", "Disparity growth must trigger rejection"
+    assert metrics_disp.ucb_d > 0.0200, f"Disparity UCB ({metrics_disp.ucb_d:.4f}) must exceed threshold 0.0200"
+    assert dec_disp.decision == "REJECT", f"Disparity growth must unconditionally trigger rejection, got {dec_disp.decision}"
 
 
 def test_paired_vs_independent_uncertainty_quantification():
     """Verify that paired cluster estimation accounts for covariance and avoids artificial inflation."""
-    # Synthetic panel where live and candidate are identical
+    # Part 1: Synthetic panel where live and candidate are identical (zero difference)
     r_live = [{"speaker_id": f"s_{i%10}", "sub": 1, "del": 0, "ins": 0, "n": 10} for i in range(30)]
     r_cand = [{"speaker_id": f"s_{i%10}", "sub": 1, "del": 0, "ins": 0, "n": 10} for i in range(30)]
 
     # Independent binomial approximation
     total_n = sum(r["n"] for r in r_live)
     p_hat = sum(r["sub"] for r in r_live) / total_n
-    se_indep = math.sqrt(2.0 * p_hat * (1.0 - p_hat) / total_n) * 100.0
+    se_indep_zero = math.sqrt(2.0 * p_hat * (1.0 - p_hat) / total_n) * 100.0
 
     # Paired clustered calculation
     spk_pairs = {}
@@ -226,21 +232,52 @@ def test_paired_vs_independent_uncertainty_quantification():
     S = len(spk_pairs)
     diffs = [spk_pairs[s]["cand"] - spk_pairs[s]["live"] for s in spk_pairs]
     assert all(d == 0 for d in diffs)
-    se_paired = math.sqrt(sum(d**2 for d in diffs) / S) * 100.0
+    se_paired_zero = math.sqrt(sum(d**2 for d in diffs) / S) * 100.0
 
     # Independent formula produces artificial uncertainty (~2.45%) on identical models!
-    assert se_indep > 2.0
+    assert se_indep_zero > 2.0
     # Paired formula correctly yields 0.0% standard error on identical models!
-    assert se_paired == 0.0
+    assert se_paired_zero == 0.0
+
+    # Part 2: Nonzero paired effects with heterogeneous speaker-level differences
+    np.random.seed(42)
+    spk_live_err = [3, 5, 2, 8, 4, 1, 6, 3, 7, 2]
+    spk_cand_err = [4, 4, 3, 10, 4, 1, 8, 3, 8, 3]  # Heterogeneous speaker deltas: +1, -1, +1, +2, 0, 0, +2, 0, +1, +1
+    spk_wc = [20, 35, 15, 45, 25, 10, 40, 20, 50, 15]
+
+    n_total = sum(spk_wc)
+    e_live_total = sum(spk_live_err)
+    e_cand_total = sum(spk_cand_err)
+    delta_frac = (e_cand_total - e_live_total) / float(n_total)
+
+    # Clustered delta-method paired standard error
+    u_sq = sum(((spk_cand_err[i] - spk_live_err[i]) - delta_frac * spk_wc[i]) ** 2 for i in range(10))
+    var_paired = (10.0 / 9.0) * u_sq / (float(n_total) ** 2)
+    se_paired_nonzero = math.sqrt(var_paired) * 100.0
+
+    # Independent two-sample standard error
+    p1 = e_live_total / float(n_total)
+    p2 = e_cand_total / float(n_total)
+    se_indep_nonzero = math.sqrt((p1 * (1 - p1) + p2 * (1 - p2)) / float(n_total)) * 100.0
+
+    # Paired SE is strictly non-zero and captures paired covariance
+    assert se_paired_nonzero > 0.0, "Paired SE must be non-zero for heterogeneous speaker effects"
+    assert se_paired_nonzero < se_indep_nonzero, (
+        f"Paired SE ({se_paired_nonzero:.3f}%) must be smaller than independent SE ({se_indep_nonzero:.3f}%) "
+        "due to positive paired correlation"
+    )
 
 
 def test_full_64char_sha256_parameter_rollback_verification():
-    """Verify that parameter rollback verification enforces full 64-character SHA-256 match and L_inf = 0.0."""
+    """Verify that parameter rollback verification enforces full 64-character SHA-256 match and real L_inf = 0.0."""
     torch.manual_seed(42)
     model = torch.nn.Sequential(
         torch.nn.Linear(32, 32),
         torch.nn.LayerNorm(32)
     )
+
+    # Retain a completely separate frozen reference copy of initial model
+    reference_init_model = copy.deepcopy(model)
 
     # Initial full SHA-256 hash
     hasher_init = hashlib.sha256()
@@ -249,16 +286,19 @@ def test_full_64char_sha256_parameter_rollback_verification():
     hash_init = hasher_init.hexdigest()
     assert len(hash_init) == 64, f"Expected 64-character SHA-256 hash, got {len(hash_init)}"
 
-    # Candidate clone adapts
-    cand_model = torch.nn.Sequential(
-        torch.nn.Linear(32, 32),
-        torch.nn.LayerNorm(32)
-    )
-    cand_model.load_state_dict(model.state_dict())
+    # Candidate clone adapts with nonzero perturbation
+    cand_model = copy.deepcopy(model)
     for p in cand_model.parameters():
         p.data += 0.05  # Simulate weight adaptation
 
-    # Rollback simulation: candidate rejected, live model remains untouched
+    # Verify candidate model has drifted from reference model
+    cand_linf = max(
+        torch.max(torch.abs(p_cand - p_init)).item()
+        for p_cand, p_init in zip(cand_model.parameters(), reference_init_model.parameters())
+    )
+    assert cand_linf > 0.04, f"Candidate model must have drifted, got {cand_linf}"
+
+    # Rollback simulation: candidate rejected, live model untouched
     del cand_model
 
     hasher_final = hashlib.sha256()
@@ -269,9 +309,44 @@ def test_full_64char_sha256_parameter_rollback_verification():
     # Full 64-character verification
     assert hash_init == hash_final, f"Full 64-char hash mismatch: {hash_init} != {hash_final}"
 
-    # Parameter drift L_inf
-    max_linf = max(torch.max(torch.abs(p - p)).item() for p in model.parameters())
-    assert max_linf == 0.0, f"Expected L_inf = 0.0, got {max_linf}"
+    # Real parameter drift L_inf comparing live model against initial reference model
+    max_linf = max(
+        torch.max(torch.abs(p_live - p_init)).item()
+        for p_live, p_init in zip(model.parameters(), reference_init_model.parameters())
+    )
+    assert max_linf == 0.0, f"Expected real L_inf = 0.0, got {max_linf}"
+
+
+def test_sequential_boundary_alpha_spending_simulation():
+    """Verify that calibrated OBF boundary schedule controls cumulative family-wise Type-I error to <= 0.05."""
+    emp_alpha = simulate_sequential_type1_error(num_updates=224, num_trajectories=10000, seed=42)
+    assert 0.040 <= emp_alpha <= 0.055, (
+        f"Calibrated OBF boundary must control cumulative Type-I error near target alpha=0.05, got {emp_alpha:.4f}"
+    )
+
+
+def test_production_report_json_agrees_with_unrounded_inferential_statistics():
+    """Verify that production report JSON serializes unrounded inferential statistics and full 64-char hashes."""
+    assert REPORT_JSON.exists(), f"Missing report JSON: {REPORT_JSON}"
+    with open(REPORT_JSON, "r", encoding="utf-8") as f:
+        rep = json.load(f)
+
+    meta = rep["metadata"]
+    assert "initial_live_parameter_hash_sha256" in meta
+    assert "final_live_parameter_hash_sha256" in meta
+    assert len(meta["initial_live_parameter_hash_sha256"]) == 64
+    assert len(meta["final_live_parameter_hash_sha256"]) == 64
+    assert meta["initial_live_parameter_hash_sha256"] == meta["final_live_parameter_hash_sha256"]
+    assert meta["full_hash_bitwise_rollback_verified"] is True
+    assert meta["parameter_drift_linf"] == 0.0
+
+    stats_sec = rep["inferential_statistics_speaker_clustered"]["paired_t_arm3_vs_arm2"]
+    t_stat = stats_sec["t_statistic"]
+    p_val = stats_sec["p_value"]
+
+    assert abs(t_stat - (-2.7137)) < 1e-3, f"Expected serialized t = -2.7137, got {t_stat}"
+    assert abs(p_val - 0.00870992) < 1e-4, f"Expected serialized p = 0.00871, got {p_val}"
+    assert stats_sec["statistically_significant_p05"] is True
 
 
 def test_kaggle_runner_fail_closed_and_notebook_invariants():

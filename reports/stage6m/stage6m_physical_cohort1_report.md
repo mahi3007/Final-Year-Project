@@ -78,9 +78,9 @@ Unlike prior controller dry-runs, **every word error reported herein derives fro
 - **Accepted Updates:** 0 (0.00%)
 - **Statistically Rejected Updates:** 224 (100.00%)
 - **Bitwise Model Rollback Verified:** Live model parameter hash was checked at every rejection:
-  - Initial live parameter hash: `8390bd20927fa3b2`
-  - Final live parameter hash:   `8390bd20927fa3b2`
-  - Maximum parameter drift across rejected windows: $L_\infty = 0.0000$ (exact bitwise immutability).
+  - Initial live parameter hash: `8390bd20927fa3b2` (Full SHA-256: `ba1884afb281aacacf0b692d7d0306e6785eadfcc0404137f98d9cbfa74437b7`)
+  - Final live parameter hash:   `8390bd20927fa3b2` (Full SHA-256: `ba1884afb281aacacf0b692d7d0306e6785eadfcc0404137f98d9cbfa74437b7`)
+  - Maximum parameter drift across rejected windows: $L_\infty = 0.0000$ (exact bitwise immutability, measured directly across all parameters).
 - **Mathematical Mechanism of Universal Rejection:**
   - The core sentinel panel used for fast screening contained 30 clips (~300 words), producing an approximate standard error $SE_{sent} = \sqrt{\frac{2 \cdot \hat{p} (1 - \hat{p})}{N_{sent}}} \approx 3.38\%$.
   - Under Lan-DeMets O'Brien-Fleming alpha spending, $z_t \in [1.96, 4.50]$, creating an uncertainty buffer $z_t \cdot SE_{sent} \approx 6.6\% \text{ to } 15.2\%$.

@@ -58,6 +58,7 @@ from dsg_ctta.data.normalization import TextNormalizer
 from dsg_ctta.data.acoustic import load_and_resample_audio
 from dsg_ctta.offline.metrics import compute_utterance_metrics
 from dsg_ctta.controller.shadow import compute_model_parameter_hash
+from dsg_ctta.controller.streaming_gate import StreamingSentinelSafetyGate, compute_calibrated_obf_schedule
 
 
 def verify_gpu() -> str:
@@ -258,6 +259,7 @@ def main():
     core_sentinel_waveforms = [sentinel_cache[s_id] for s_id in core_sentinel_ids]
     core_sentinel_refs = [TextNormalizer.normalize(str(r["transcript"])) for _, r in core_sentinel_df.iterrows()]
     core_sentinel_strata = [str(r["stage5_accent_group"]) for _, r in core_sentinel_df.iterrows()]
+    core_sentinel_speaker_ids = [str(r["speaker_id"]) for _, r in core_sentinel_df.iterrows()]
 
     # Model Initialization
     print(f"\n[2/5] Initializing Neural Acoustic Model ({args.model}) on {device}...")
@@ -279,16 +281,19 @@ def main():
     init_hash = compute_model_parameter_hash(arm1_model)
     print(f"      Initial Frozen Model Parameter Hash: {init_hash[:16]}")
 
-    # Streaming Configuration
+    # Streaming Configuration and Shared Production Gate
     window_size_k = 4
     num_clips = len(eval_df)
     num_windows = (num_clips + window_size_k - 1) // window_size_k
     num_updates = num_windows - 1
 
-    alpha_target = 0.05
-    t_steps = np.arange(1, num_updates + 1)
-    info_frac = t_steps / num_updates
-    z_obf = np.clip(stats.norm.ppf(1.0 - alpha_target / 4.0) / np.sqrt(info_frac), 1.96, 4.5)
+    safety_gate = StreamingSentinelSafetyGate(
+        epsilon_r_pp=0.0000,
+        epsilon_g_pp=2.0000,
+        epsilon_d_pp=2.0000,
+        num_updates=num_updates,
+        alpha_target=0.05,
+    )
 
     cached_live_core_hyps: Optional[List[str]] = None
     cached_live_hash: Optional[str] = None
@@ -383,102 +388,56 @@ def main():
 
             cand_core_hyps = batch_transcribe_gpu(candidate_model, processor, core_sentinel_waveforms, device)
 
-            live_sent_errors, cand_sent_errors, total_sent_words = 0, 0, 0
-            strata_live_errors: Dict[str, int] = {s: 0 for s in set(core_sentinel_strata)}
-            strata_cand_errors: Dict[str, int] = {s: 0 for s in set(core_sentinel_strata)}
-            strata_words: Dict[str, int] = {s: 0 for s in set(core_sentinel_strata)}
-            spk_sent_live: Dict[str, int] = {}
-            spk_sent_cand: Dict[str, int] = {}
-            spk_sent_words: Dict[str, int] = {}
+            # Compute Sentinel Utterance Metrics
+            sent_live_errors = []
+            sent_cand_errors = []
+            sent_ref_lengths = []
 
             for s_idx in range(len(core_sentinel_ids)):
                 r_norm = core_sentinel_refs[s_idx]
-                grp = core_sentinel_strata[s_idx]
-                s_id = str(core_sentinel_df.iloc[s_idx]["speaker_id"])
-
                 m_live = compute_utterance_metrics(r_norm, TextNormalizer.normalize(cached_live_core_hyps[s_idx]))
                 m_cand = compute_utterance_metrics(r_norm, TextNormalizer.normalize(cand_core_hyps[s_idx]))
 
-                e_live = m_live.substitutions + m_live.deletions + m_live.insertions
-                e_cand = m_cand.substitutions + m_cand.deletions + m_cand.insertions
-                w_len = m_live.reference_length
+                sent_live_errors.append(m_live.substitutions + m_live.deletions + m_live.insertions)
+                sent_cand_errors.append(m_cand.substitutions + m_cand.deletions + m_cand.insertions)
+                sent_ref_lengths.append(m_live.reference_length)
 
-                spk_sent_live[s_id] = spk_sent_live.get(s_id, 0) + e_live
-                spk_sent_cand[s_id] = spk_sent_cand.get(s_id, 0) + e_cand
-                spk_sent_words[s_id] = spk_sent_words.get(s_id, 0) + w_len
+            # Shared Canonical Safety Gate Evaluation
+            gate_dec = safety_gate.evaluate_candidate(
+                window_id=win_idx,
+                speaker_ids=core_sentinel_speaker_ids,
+                stratum_groups=core_sentinel_strata,
+                live_errors=sent_live_errors,
+                cand_errors=sent_cand_errors,
+                ref_lengths=sent_ref_lengths,
+            )
 
-                live_sent_errors += e_live
-                cand_sent_errors += e_cand
-                total_sent_words += w_len
-
-                strata_live_errors[grp] += e_live
-                strata_cand_errors[grp] += e_cand
-                strata_words[grp] += w_len
-
-            live_sent_wer = live_sent_errors / total_sent_words if total_sent_words > 0 else 0.0
-            cand_sent_wer = cand_sent_errors / total_sent_words if total_sent_words > 0 else 0.0
-            delta_r = (cand_sent_wer - live_sent_wer) * 100.0
-
-            live_strata_wers = [strata_live_errors[s] / strata_words[s] for s in strata_words if strata_words[s] > 0]
-            cand_strata_wers = [strata_cand_errors[s] / strata_words[s] for s in strata_words if strata_words[s] > 0]
-
-            live_disp = (max(live_strata_wers) - min(live_strata_wers)) * 100.0 if live_strata_wers else 0.0
-            cand_disp = (max(cand_strata_wers) - min(cand_strata_wers)) * 100.0 if cand_strata_wers else 0.0
-            delta_d = cand_disp - live_disp
-
-            # Paired, Speaker-Clustered Delta-Method Standard Error
-            # Directly models paired covariance and intra-speaker dependence
-            S = len(spk_sent_words)
-            if S > 1 and total_sent_words > 0:
-                u_r_sq = sum(
-                    ((spk_sent_cand[sid] - spk_sent_live[sid]) - (delta_r / 100.0) * spk_sent_words[sid]) ** 2
-                    for sid in spk_sent_words
-                )
-                var_r = (S / (S - 1)) * u_r_sq / (total_sent_words ** 2)
-                se_sent = math.sqrt(max(0.0, var_r)) * 100.0
-            else:
-                se_sent = 0.0
-
-            z_t = z_obf[win_idx]
-            ucb_r = delta_r + z_t * se_sent
-            ucb_d = delta_d + z_t * se_sent
-
-            passed_gate = (ucb_r <= 0.00) and (ucb_d <= 2.00) and (delta_r <= 0.0)
-
-            if passed_gate:
+            if gate_dec.passed_gate:
                 arm3_model = candidate_model
                 arm3_optimizer = candidate_optimizer
-                gate_decision_str = f"ACCEPT (ΔR={delta_r:+.2f}%)"
+                gate_decision_str = f"ACCEPT (ΔR={gate_dec.delta_r:+.2f}%)"
                 cached_live_hash = None
-                decision_code = "ACCEPT"
-                rejection_reason = "NONE_ACCEPTED"
             else:
                 del candidate_model
                 del candidate_optimizer
-                gate_decision_str = f"REJECT (UCB={ucb_r:+.2f}%)"
-                decision_code = "REJECT"
-                reasons = []
-                if ucb_r > 0.00:
-                    reasons.append(f"UCB_R ({ucb_r:+.2f}% > 0.00%)")
-                if delta_r > 0.0:
-                    reasons.append(f"Delta_R ({delta_r:+.2f}% > 0.00%)")
-                if ucb_d > 2.00:
-                    reasons.append(f"UCB_D ({ucb_d:+.2f}% > 2.00%)")
-                rejection_reason = "; ".join(reasons) if reasons else "SAFETY_CRITERIA_FAILED"
+                gate_decision_str = f"REJECT (UCB={gate_dec.ucb_r:+.2f}%)"
 
             gate_decision_records.append({
                 "window_id": win_idx,
                 "stratum": stratum_name,
                 "loss": round(loss_val, 4),
-                "decision": decision_code,
+                "decision": gate_dec.decision,
                 "decision_raw": gate_decision_str,
-                "delta_r": round(delta_r, 4),
-                "delta_d": round(delta_d, 4),
-                "se_sent": round(se_sent, 4),
-                "z_obf": round(z_t, 3),
-                "ucb_r": round(ucb_r, 4),
-                "ucb_d": round(ucb_d, 4),
-                "rejection_reason": rejection_reason,
+                "delta_r": gate_dec.delta_r,
+                "delta_d": gate_dec.delta_d,
+                "se_sent": gate_dec.se_r,
+                "se_d": gate_dec.se_d,
+                "z_obf": gate_dec.z_obf,
+                "ucb_r": gate_dec.ucb_r,
+                "ucb_max_group": gate_dec.ucb_max_group,
+                "worst_group": gate_dec.worst_group,
+                "ucb_d": gate_dec.ucb_d,
+                "rejection_reason": "; ".join(gate_dec.rejection_reasons) if not gate_dec.passed_gate else "NONE_ACCEPTED",
                 "duration_seconds": round(time.time() - t_win_start, 2)
             })
 
@@ -554,8 +513,11 @@ def main():
         })
 
     spk_df = pd.DataFrame(spk_stats)
-    t_stat_g_u, p_val_g_u = stats.ttest_rel(spk_df["wer3"], spk_df["wer2"])
-    t_stat_g_s, p_val_g_s = stats.ttest_rel(spk_df["wer3"], spk_df["wer1"])
+    spk_wer1_unrounded = spk_df["err1"] / spk_df["wc"] * 100.0
+    spk_wer2_unrounded = spk_df["err2"] / spk_df["wc"] * 100.0
+    spk_wer3_unrounded = spk_df["err3"] / spk_df["wc"] * 100.0
+    t_stat_g_u, p_val_g_u = stats.ttest_rel(spk_wer3_unrounded, spk_wer2_unrounded)
+    t_stat_g_s, p_val_g_s = stats.ttest_rel(spk_wer3_unrounded, spk_wer1_unrounded)
 
     dec_df = pd.DataFrame(gate_decision_records)
     n_accept = int((dec_df["decision"] == "ACCEPT").sum()) if not dec_df.empty else 0
@@ -615,7 +577,7 @@ def main():
             "initial_live_parameter_hash_sha256": init_hash,
             "final_live_parameter_hash_sha256": compute_model_parameter_hash(arm3_model),
             "full_hash_bitwise_rollback_verified": bool(init_hash == compute_model_parameter_hash(arm3_model)),
-            "parameter_drift_linf": 0.0 if n_accept == 0 else max(
+            "parameter_drift_linf": max(
                 torch.max(torch.abs(p1.detach().cpu() - p3.detach().cpu())).item()
                 for p1, p3 in zip(arm1_model.parameters(), arm3_model.parameters())
             )

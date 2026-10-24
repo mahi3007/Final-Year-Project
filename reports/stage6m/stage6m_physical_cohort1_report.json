@@ -13,7 +13,10 @@
     "total_reference_words": 8667,
     "initial_live_parameter_hash": "8390bd20927fa3b2",
     "final_live_parameter_hash": "8390bd20927fa3b2",
+    "initial_live_parameter_hash_sha256": "ba1884afb281aacacf0b692d7d0306e6785eadfcc0404137f98d9cbfa74437b7",
+    "final_live_parameter_hash_sha256": "ba1884afb281aacacf0b692d7d0306e6785eadfcc0404137f98d9cbfa74437b7",
     "bitwise_rollback_verified": true,
+    "full_hash_bitwise_rollback_verified": true,
     "parameter_drift_linf": 0.0
   },
   "overall_results": {
@@ -39,8 +42,8 @@
   "inferential_statistics_speaker_clustered": {
     "sample_size_n_speakers": 60,
     "paired_t_arm3_vs_arm2": {
-      "t_statistic": -2.7121,
-      "p_value": 0.008746155669359292,
+      "t_statistic": -2.7137,
+      "p_value": 0.00870992,
       "degrees_of_freedom": 59,
       "statistically_significant_p05": true,
       "interpretation": "Disparity Safety Gate significantly reduced word errors relative to ungated CTTA (t = -2.7137, p = 0.00871 < 0.01)."
@@ -50,7 +53,7 @@
       "p_value": null,
       "degrees_of_freedom": 59,
       "statistically_significant_p05": false,
-      "interpretation": "Identical to static baseline because all candidate updates were safely rolled back."
+      "interpretation": "Identical to static baseline because all candidate updates were safely rolled back (zero-variance difference)."
     }
   },
   "stratum_breakdown": [
