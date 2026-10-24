@@ -150,14 +150,14 @@ def test_stratum_level_reproducibility_and_subgroup_nuance():
     assert strata_wers["Canadian English"]["delta_21"] == 1.65
 
 
-def test_gate_selectivity_under_synthetic_cases():
+def test_legacy_disparity_safety_gate_selectivity():
     """
-    Test the DisparitySafetyGate on synthetic candidate updates covering:
+    Test the legacy offline DisparitySafetyGate on synthetic candidate updates covering:
     (1) Harmful updates -> REJECT
     (2) Neutral updates -> ACCEPT / STABILITY
     (3) Beneficial updates across all strata -> ACCEPT
     (4) Disparity-widening updates -> REJECT
-    Proves gate is capable of selective adaptation when updates are safe.
+    Validates backward compatibility of the offline bootstrap evaluator.
     """
     gate = DisparitySafetyGate(epsilon_r=0.0000, epsilon_g=0.0200, epsilon_d=0.0200)
 
@@ -206,6 +206,91 @@ def test_gate_selectivity_under_synthetic_cases():
     # Group 0 error dropped to 0, widening disparity gap
     assert metrics_disp.ucb_d > 0.0200, f"Disparity UCB ({metrics_disp.ucb_d:.4f}) must exceed threshold 0.0200"
     assert dec_disp.decision == "REJECT", f"Disparity growth must unconditionally trigger rejection, got {dec_disp.decision}"
+
+
+def test_production_streaming_sentinel_safety_gate_selectivity():
+    """
+    Directly tests the production StreamingSentinelSafetyGate.evaluate_candidate method
+    across 5 distinct synthetic update regimes:
+    (1) Harmful update -> REJECT with overall risk violation and point degradation.
+    (2) Neutral update (identical model) -> ACCEPT with exact zero deltas and bounds.
+    (3) Beneficial update across all strata -> ACCEPT with negative delta_r and ucb_r <= 0.
+    (4) Disparity-widening update (benefits only stratum 0) -> REJECT with disparity growth violation.
+    (5) Subgroup regression update (overall improvement, but one protected stratum degrades) ->
+        REJECT with subgroup regression violation in worst group (tripartite rule verification).
+    """
+    gate = StreamingSentinelSafetyGate(
+        epsilon_r_pp=0.0000,
+        epsilon_g_pp=2.0000,
+        epsilon_d_pp=2.0000,
+        num_updates=224,
+        alpha_target=0.05,
+    )
+
+    # Core sentinel panel: 30 speakers, 6 strata (5 speakers each), 15 words per speaker (450 total)
+    speaker_ids = [f"spk_{i}" for i in range(30)]
+    stratum_groups = [f"grp_{i // 5}" for i in range(30)]
+    ref_lengths = [15] * 30
+    live_errors = [3] * 30  # Baseline: 3/15 = 20.0% WER in every stratum
+
+    # Case 1: Harmful update (+2 errors per speaker across stream)
+    cand_harmful = [e + 2 for e in live_errors]
+    dec_harm = gate.evaluate_candidate(0, speaker_ids, stratum_groups, live_errors, cand_harmful, ref_lengths)
+    assert dec_harm.decision == "REJECT", f"Expected REJECT for harmful update, got {dec_harm.decision}"
+    assert dec_harm.passed_gate is False
+    assert dec_harm.delta_r > 0.0
+    assert dec_harm.ucb_r > 0.0
+    assert any("Overall risk violation" in r for r in dec_harm.rejection_reasons)
+    assert any("Point degradation" in r for r in dec_harm.rejection_reasons)
+
+    # Case 2: Neutral update (bitwise identical candidate)
+    cand_neutral = list(live_errors)
+    dec_neu = gate.evaluate_candidate(0, speaker_ids, stratum_groups, live_errors, cand_neutral, ref_lengths)
+    assert dec_neu.decision == "ACCEPT", f"Expected ACCEPT for neutral update, got {dec_neu.decision}"
+    assert dec_neu.passed_gate is True
+    assert dec_neu.delta_r == 0.0
+    assert dec_neu.se_r == 0.0
+    assert dec_neu.ucb_r == 0.0
+    assert dec_neu.max_delta_g == 0.0
+    assert dec_neu.ucb_max_group == 0.0
+    assert dec_neu.delta_d == 0.0
+    assert dec_neu.se_d == 0.0
+    assert dec_neu.ucb_d == 0.0
+    assert len(dec_neu.rejection_reasons) == 0
+
+    # Case 3: Universally Beneficial update (reduces errors across all strata)
+    cand_beneficial = [max(0, e - 1) for e in live_errors]
+    dec_ben = gate.evaluate_candidate(0, speaker_ids, stratum_groups, live_errors, cand_beneficial, ref_lengths)
+    assert dec_ben.decision == "ACCEPT", f"Expected ACCEPT for beneficial update, got {dec_ben.decision}"
+    assert dec_ben.passed_gate is True
+    assert dec_ben.delta_r < 0.0
+    assert dec_ben.ucb_r <= 0.0
+    assert dec_ben.ucb_max_group <= 2.0
+    assert dec_ben.ucb_d <= 2.0
+    assert len(dec_ben.rejection_reasons) == 0
+
+    # Case 4: Disparity-Widening update (benefits only stratum 0, leaving others unchanged)
+    cand_disp = [0 if stratum_groups[i] == "grp_0" else live_errors[i] for i in range(30)]
+    dec_disp = gate.evaluate_candidate(0, speaker_ids, stratum_groups, live_errors, cand_disp, ref_lengths)
+    assert dec_disp.decision == "REJECT", f"Expected REJECT for disparity-widening update, got {dec_disp.decision}"
+    assert dec_disp.passed_gate is False
+    assert dec_disp.delta_d > 2.0
+    assert dec_disp.ucb_d > 2.0
+    assert any("Disparity growth violation" in r for r in dec_disp.rejection_reasons)
+
+    # Case 5: Worst Subgroup Regression update (improves overall, but severely degrades grp_5)
+    cand_subgroup = [
+        live_errors[i] - 2 if stratum_groups[i] in ["grp_0", "grp_1"]
+        else (live_errors[i] + 3 if stratum_groups[i] == "grp_5" else live_errors[i])
+        for i in range(30)
+    ]
+    dec_sub = gate.evaluate_candidate(0, speaker_ids, stratum_groups, live_errors, cand_subgroup, ref_lengths)
+    assert dec_sub.delta_r < 0.0, "Overall risk point estimate should be negative (improved)"
+    assert dec_sub.worst_group == "grp_5"
+    assert dec_sub.ucb_max_group > 2.00
+    assert dec_sub.decision == "REJECT", f"Expected REJECT for subgroup regression, got {dec_sub.decision}"
+    assert dec_sub.passed_gate is False
+    assert any("Subgroup regression violation in [grp_5]" in r for r in dec_sub.rejection_reasons)
 
 
 def test_paired_vs_independent_uncertainty_quantification():
@@ -318,11 +403,20 @@ def test_full_64char_sha256_parameter_rollback_verification():
 
 
 def test_sequential_boundary_alpha_spending_simulation():
-    """Verify that calibrated OBF boundary schedule controls cumulative family-wise Type-I error to <= 0.05."""
-    emp_alpha = simulate_sequential_type1_error(num_updates=224, num_trajectories=10000, seed=42)
-    assert 0.040 <= emp_alpha <= 0.055, (
-        f"Calibrated OBF boundary must control cumulative Type-I error near target alpha=0.05, got {emp_alpha:.4f}"
-    )
+    """Verify that calibrated OBF boundary schedule controls cumulative family-wise Type-I error to <= alpha."""
+    # Test primary alpha_target = 0.05 across 20,000 trajectories
+    res05 = simulate_sequential_type1_error(num_updates=224, num_trajectories=20000, seed=42, alpha_target=0.05)
+    assert res05["c_star"] == 1.9600
+    assert res05["empirical_fwer"] <= 0.0500, f"Empirical FWER ({res05['empirical_fwer']:.4f}) must be <= 0.0500"
+    assert res05["ci_95"][1] <= 0.0500, f"Upper 95% Wilson CI ({res05['ci_95'][1]:.4f}) must be <= 0.0500"
+    assert res05["statistically_controlled"] is True
+
+    # Test dynamic sensitivity under stricter alpha_target = 0.01
+    res01 = simulate_sequential_type1_error(num_updates=224, num_trajectories=20000, seed=42, alpha_target=0.01)
+    assert res01["c_star"] == 2.5758
+    assert res01["empirical_fwer"] <= 0.0100, f"Empirical FWER ({res01['empirical_fwer']:.4f}) must scale to <= 0.0100"
+    assert res01["ci_95"][1] <= 0.0110
+    assert res01["statistically_controlled"] is True
 
 
 def test_production_report_json_agrees_with_unrounded_inferential_statistics():

@@ -17,7 +17,10 @@
     "final_live_parameter_hash_sha256": "ba1884afb281aacacf0b692d7d0306e6785eadfcc0404137f98d9cbfa74437b7",
     "bitwise_rollback_verified": true,
     "full_hash_bitwise_rollback_verified": true,
-    "parameter_drift_linf": 0.0
+    "parameter_drift_linf": 0.0,
+    "provenance_status": "HISTORICAL_BASELINE_RUN",
+    "tested_commit_sha": "706ea99cd1b16d935a0ead891e7df0f09c1517a0",
+    "historical_run_note": "Physical execution conducted on 2026-10-23 under legacy gate implementation. Demonstrates physical acoustic inference feasibility, +79 error ungated degradation, and fail-safe universal rejection. Does not represent an empirical physical re-evaluation under the post-audit StreamingSentinelSafetyGate."
   },
   "overall_results": {
     "arm1_static_wer_pct": 22.85,

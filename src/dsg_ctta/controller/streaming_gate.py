@@ -31,46 +31,44 @@ def compute_calibrated_obf_schedule(
     num_updates: int = 224,
     alpha_target: float = 0.05,
     max_clip: float = 4.5,
-    min_clip: float = 1.96,
 ) -> np.ndarray:
     """
     Computes the calibrated Lan-DeMets O'Brien-Fleming critical boundary schedule.
     
     The critical value schedule scales with 1 / sqrt(t) where t = u / U is the
-    information fraction. For U = 224 looks and family-wise alpha = 0.05, the exact
-    calibrated one-sided constant C* = 1.914 controls false-positive crossings to <= 0.05.
-    Derived from the reflection principle of standard Brownian motion with Siegmund's
-    discrete monitoring continuity correction: C* ~ Phi^{-1}(1 - alpha/2) - 0.5826 / sqrt(U).
+    information fraction. The critical constant C*(alpha) = Phi^{-1}(1 - alpha / 2)
+    is derived directly from the reflection principle of standard Brownian motion:
+        P(max_{k=1..U} B(t_k) >= C*) <= P(sup_{t in [0, 1]} B(t) >= C*) = 2(1 - Phi(C*)) = alpha.
+    
+    For alpha=0.05, C* = 1.9600; for alpha=0.01, C* = 2.5758. The schedule scales
+    strictly with the user's configured alpha_target, guaranteeing that cumulative
+    Type-I error across all U looks is bounded above by alpha_target.
     """
     t_steps = np.arange(1, num_updates + 1)
     info_frac = t_steps / float(num_updates)
     
-    # Calibrated OBF critical constant for family-wise alpha=0.05 across U=224 looks
-    # Derived from Brownian motion boundary-crossing Monte Carlo calibration
-    c_star = 1.914
-    
+    c_star = float(stats.norm.ppf(1.0 - alpha_target / 2.0))
+    min_clip = c_star
     raw_schedule = c_star / np.sqrt(info_frac)
     return np.clip(raw_schedule, min_clip, max_clip)
 
 
 def simulate_sequential_type1_error(
     num_updates: int = 224,
-    num_trajectories: int = 10000,
+    num_trajectories: int = 20000,
     seed: int = 42,
     alpha_target: float = 0.05,
-    min_clip: float = 1.96,
     max_clip: float = 4.5,
-) -> float:
+) -> Dict[str, Any]:
     """
     Monte Carlo simulation of cumulative family-wise Type-I error across all sequential looks.
     Generates standardized Gaussian random walks under the null hypothesis (zero drift)
-    and evaluates the empirical boundary crossing probability across all update opportunities.
+    and evaluates the empirical boundary crossing probability with a 95% Wilson score confidence interval.
     """
     rng = np.random.default_rng(seed)
     sched = compute_calibrated_obf_schedule(
         num_updates=num_updates,
         alpha_target=alpha_target,
-        min_clip=min_clip,
         max_clip=max_clip,
     )
     increments = rng.standard_normal((num_trajectories, num_updates))
@@ -78,7 +76,26 @@ def simulate_sequential_type1_error(
     k_vals = np.arange(1, num_updates + 1)
     z_vals = scores / np.sqrt(k_vals)
     crossings = np.any(z_vals >= sched, axis=1)
-    return float(np.mean(crossings))
+    k_cross = int(np.sum(crossings))
+    p_hat = k_cross / float(num_trajectories)
+
+    # 95% Wilson score confidence interval for binomial proportion
+    z_crit = 1.95996
+    denom = 1.0 + z_crit**2 / num_trajectories
+    center = (p_hat + z_crit**2 / (2.0 * num_trajectories)) / denom
+    half = z_crit * math.sqrt((p_hat * (1.0 - p_hat) + z_crit**2 / (4.0 * num_trajectories)) / num_trajectories) / denom
+    ci_low = max(0.0, center - half)
+    ci_high = min(1.0, center + half)
+
+    return {
+        "alpha_target": float(alpha_target),
+        "c_star": round(float(stats.norm.ppf(1.0 - alpha_target / 2.0)), 4),
+        "num_trajectories": int(num_trajectories),
+        "crossings": k_cross,
+        "empirical_fwer": round(p_hat, 4),
+        "ci_95": (round(ci_low, 4), round(ci_high, 4)),
+        "statistically_controlled": bool(p_hat <= alpha_target and ci_high <= alpha_target + 0.005),
+    }
 
 
 @dataclass(frozen=True)
@@ -237,7 +254,7 @@ class StreamingSentinelSafetyGate:
         worst_group = max(group_ucbs, key=group_ucbs.get) if group_ucbs else "NONE"
         ucb_max_group = group_ucbs[worst_group] if group_ucbs else 0.0
 
-        # 3. Disparity Change Delta_D and Paired SE
+        # 3. Disparity Change Delta_D and Stratified Paired Speaker-Cluster Bootstrap
         live_strata_wers = {g: (strata_live_err[g] / float(strata_words[g]) * 100.0) for g in strata_names}
         cand_strata_wers = {g: (strata_cand_err[g] / float(strata_words[g]) * 100.0) for g in strata_names}
 
@@ -245,10 +262,42 @@ class StreamingSentinelSafetyGate:
         disp_cand = max(cand_strata_wers.values()) - min(cand_strata_wers.values())
         delta_d = disp_cand - disp_live
 
-        # Variance of disparity difference bounded by sum of variances of extreme strata
-        g_max_cand = max(cand_strata_wers, key=cand_strata_wers.get)
-        g_min_cand = min(cand_strata_wers, key=cand_strata_wers.get)
-        se_d = math.sqrt(group_ses.get(g_max_cand, 0.0) ** 2 + group_ses.get(g_min_cand, 0.0) ** 2)
+        # If live and candidate model predictions are identical across all speakers, delta_d is identically 0.0 with 0.0 variance
+        all_identical = all(v["cand_err"] == v["live_err"] for v in spk_data.values())
+        if all_identical:
+            se_d = 0.0
+        else:
+            # Stratified paired cluster bootstrap: resamples speakers within each stratum
+            # Recomputes the complete disparity statistic (max_g - min_g) for each replicate,
+            # correctly capturing shifts in the extreme strata and multi-stratum covariance
+            spks_by_group = {g: [v for v in spk_data.values() if v["group"] == g] for g in strata_names}
+            rng_boot = np.random.default_rng(12345 + window_id)
+            B = 200
+            boot_delta_d = []
+
+            for _ in range(B):
+                rep_live_wers = []
+                rep_cand_wers = []
+                for g in strata_names:
+                    cluster = spks_by_group[g]
+                    S_g = len(cluster)
+                    if S_g > 0:
+                        idxs = rng_boot.integers(0, S_g, size=S_g)
+                        rep_live_err = sum(cluster[j]["live_err"] for j in idxs)
+                        rep_cand_err = sum(cluster[j]["cand_err"] for j in idxs)
+                        rep_words = sum(cluster[j]["words"] for j in idxs)
+                        rep_live_wers.append((rep_live_err / float(rep_words) * 100.0) if rep_words > 0 else 0.0)
+                        rep_cand_wers.append((rep_cand_err / float(rep_words) * 100.0) if rep_words > 0 else 0.0)
+                    else:
+                        rep_live_wers.append(0.0)
+                        rep_cand_wers.append(0.0)
+
+                rep_disp_live = max(rep_live_wers) - min(rep_live_wers)
+                rep_disp_cand = max(rep_cand_wers) - min(rep_cand_wers)
+                boot_delta_d.append(rep_disp_cand - rep_disp_live)
+
+            se_d = float(np.std(boot_delta_d, ddof=1))
+
         ucb_d = delta_d + z_t * se_d
 
         # 4. Tripartite Decision Rule

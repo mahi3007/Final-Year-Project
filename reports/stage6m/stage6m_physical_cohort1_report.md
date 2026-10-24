@@ -5,6 +5,15 @@
 **Execution Mode:** Physical PyTorch Neural Forward Passes (`facebook/wav2vec2-base-960h`)  
 **Scale:** 900 physical audio clips | 60 speakers | 6 strata | 225 windows ($K=4$)  
 **Total Stream Duration:** 164.8 minutes (10.990s / clip)  
+**Evaluated Commit:** `706ea99cd1b16d935a0ead891e7df0f09c1517a0`  
+**Provenance Status:** `HISTORICAL_BASELINE_RUN` (Legacy Gate Physical Stream)  
+
+---
+
+> [!NOTE]
+> **Provenance & Epistemic Status (Historical Baseline Artifact):**  
+> This report documents the physical baseline execution conducted on **2026-10-23** under the legacy gate implementation. It serves as empirical physical benchmark evidence demonstrating that unconstrained continuous test-time adaptation deteriorated overall accuracy (+79 word errors) and induced severe localized regression on Irish English (+2.93 pp), while conservative gating prevented degradation through universal candidate rollback.  
+> **Important Scientific Qualification:** This artifact does NOT represent a physical re-execution under the revised post-audit `StreamingSentinelSafetyGate` (which introduces stratified paired cluster bootstrap for disparity and dynamic alpha-spending). The revised production controller is validated via unit and synthetic integration tests; physical re-execution on Cohort 1 remains a distinct prerequisite before full Cohort 2 execution.
 
 ---
 
