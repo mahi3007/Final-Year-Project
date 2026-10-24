@@ -22,8 +22,8 @@ Metrics:
   - Paired speaker-clustered t-test & Wilcoxon signed-rank test
 """
 
-from __future__ import annotations
-
+import argparse
+import subprocess
 import builtins
 import copy
 import gc
@@ -181,8 +181,31 @@ def suta_adaptation_step(
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Stage 6M: Physical Cohort 1 Three-Arm Streaming Experiment")
+    parser.add_argument(
+        "--output-prefix",
+        type=str,
+        default="stage6m_physical_cohort1_revised_gate",
+        help="Output prefix for report JSON/MD and CSV artifacts",
+    )
+    args, _ = parser.parse_known_args()
+
+    try:
+        current_commit_sha = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=str(PROJECT_ROOT)
+        ).decode("utf-8").strip()
+    except Exception:
+        current_commit_sha = "UNKNOWN"
+
+    out_report_json = REPORTS_DIR / f"{args.output_prefix}_report.json"
+    out_report_md = REPORTS_DIR / f"{args.output_prefix}_report.md"
+    out_predictions_csv = REPORTS_DIR / f"{args.output_prefix}_predictions.csv"
+    out_speakers_csv = REPORTS_DIR / f"{args.output_prefix}_speaker_records.csv"
+    out_gate_csv = REPORTS_DIR / f"{args.output_prefix}_gate_decisions.csv"
+
     print("=" * 88)
     print("STAGE 6M: PHYSICAL COHORT 1 THREE-ARM STREAMING EXPERIMENT")
+    print(f"Commit: {current_commit_sha} | Output Prefix: {args.output_prefix}")
     print("Standard: ADR-005 | Protocol: v1.3.4 | Hardware: PyTorch CPU Engine")
     print("=" * 88)
 
@@ -550,10 +573,6 @@ def main():
     total_duration = time.time() - t_global_start
 
     # Export CSV artifacts for complete auditability
-    OUT_PREDICTIONS_CSV = REPORTS_DIR / "stage6m_physical_cohort1_predictions.csv"
-    OUT_SPEAKERS_CSV = REPORTS_DIR / "stage6m_physical_cohort1_speaker_records.csv"
-    OUT_GATE_CSV = REPORTS_DIR / "stage6m_physical_cohort1_gate_decisions.csv"
-
     pred_records = []
     for idx in range(len(arm1_records)):
         r1 = arm1_records[idx]
@@ -573,12 +592,16 @@ def main():
             "err_arm3": r3["sub"] + r3["del"] + r3["ins"],
             "words": r1["n"]
         })
-    pd.DataFrame(pred_records).to_csv(OUT_PREDICTIONS_CSV, index=False)
-    spk_df.to_csv(OUT_SPEAKERS_CSV, index=False)
-    dec_df.to_csv(OUT_GATE_CSV, index=False)
+    pd.DataFrame(pred_records).to_csv(out_predictions_csv, index=False)
+    spk_df.to_csv(out_speakers_csv, index=False)
+    dec_df.to_csv(out_gate_csv, index=False)
 
     report_payload = {
         "metadata": {
+            "provenance_status": "POST_AUDIT_PHYSICAL_BENCHMARK_RUN",
+            "tested_commit_sha": current_commit_sha,
+            "tested_controller": "StreamingSentinelSafetyGate (Unclipped OBF Schedule + Stratified Bootstrap B=500)",
+            "output_prefix": args.output_prefix,
             "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
             "execution_scope": "Cohort 1 Physical Prequential Stream (Stage 5B/6M Replication)",
             "execution_mode": "Physical PyTorch wav2vec2-base-960h Acoustic Inference",
@@ -643,23 +666,27 @@ def main():
         "candidate_gate_decisions": gate_decision_records
     }
 
-    with open(OUT_REPORT_JSON, "w", encoding="utf-8") as f:
+    with open(out_report_json, "w", encoding="utf-8") as f:
         json.dump(report_payload, f, indent=2)
 
     # Markdown Report
-    md_content = f"""# Stage 6M: Physical Cohort 1 Three-Arm Streaming Experiment Report
+    md_content = f"""# Stage 6M: Physical Cohort 1 Three-Arm Streaming Experiment Report (Post-Audit Benchmark)
 
-**Execution Timestamp:** `{start_exec_time}`  
-**Protocol Version:** `v1.3.4-stage6m-self-authorization-amendment`  
-**Execution Mode:** Physical PyTorch Neural Forward Passes (`facebook/wav2vec2-base-960h`)  
-**Scale:** 900 physical audio clips | 60 speakers | 6 strata | 225 windows ($K=4$)  
-**Total Stream Duration:** {total_duration/60.0:.1f} minutes ({total_duration/num_clips:.3f}s / clip)  
+> [!NOTE]
+> **Provenance Status:** `POST_AUDIT_PHYSICAL_BENCHMARK_RUN`  
+> **Tested Commit SHA:** `{current_commit_sha}`  
+> **Tested Controller:** `StreamingSentinelSafetyGate` (Unclipped OBF Schedule + Stratified Cluster Bootstrap $B=500$)  
+> **Execution Timestamp:** `{start_exec_time}`  
+> **Protocol Version:** `v1.3.4-stage6m-self-authorization-amendment`  
+> **Execution Mode:** Physical PyTorch Neural Forward Passes (`facebook/wav2vec2-base-960h`)  
+> **Scale:** 900 physical audio clips | 60 speakers | 6 strata | 225 windows ($K=4$)  
+> **Total Stream Duration:** {total_duration/60.0:.1f} minutes ({total_duration/num_clips:.3f}s / clip)  
 
 ---
 
 ## 1. Executive Summary & Epistemic Status
 
-This report documents the **physical execution of the matched three-arm streaming experiment on Cohort 1** (`datasets/splits/stage5_external_eval.csv`), computing genuine Levenshtein edit distance word error rates against ground truth text.
+This report documents the **physical execution of the matched three-arm streaming experiment on Cohort 1** (`datasets/splits/stage5_external_eval.csv`) using the revised `StreamingSentinelSafetyGate`.
 
 Unlike prior controller dry-runs, **every word error reported herein derives from deep neural network forward passes on 16 kHz audio waveforms**.
 
@@ -705,12 +732,15 @@ Unlike prior controller dry-runs, **every word error reported herein derives fro
 - **Model State Consistency:** Live model parameter rollback verified on all rejections ($L_\\infty = 0.0$).
 """
 
-    with open(OUT_REPORT_MD, "w", encoding="utf-8") as f:
+    with open(out_report_md, "w", encoding="utf-8") as f:
         f.write(md_content)
 
     print(f"\n[OK] Artifacts generated successfully:")
-    print(f"  - Report JSON: {OUT_REPORT_JSON}")
-    print(f"  - Report MD  : {OUT_REPORT_MD}")
+    print(f"  - Report JSON    : {out_report_json}")
+    print(f"  - Report MD      : {out_report_md}")
+    print(f"  - Predictions CSV: {out_predictions_csv}")
+    print(f"  - Speakers CSV   : {out_speakers_csv}")
+    print(f"  - Gate CSV       : {out_gate_csv}")
     print(f"Total Physical Execution Time: {total_duration:.1f}s ({total_duration/60.0:.2f} min).")
 
 

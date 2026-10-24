@@ -30,6 +30,7 @@ from dsg_ctta.controller.streaming_gate import (
     StreamingSentinelSafetyGate,
     compute_calibrated_obf_schedule,
     simulate_sequential_type1_error,
+    simulate_multicriterion_streaming_gate_null,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -403,20 +404,67 @@ def test_full_64char_sha256_parameter_rollback_verification():
 
 
 def test_sequential_boundary_alpha_spending_simulation():
-    """Verify that calibrated OBF boundary schedule controls cumulative family-wise Type-I error to <= alpha."""
-    # Test primary alpha_target = 0.05 across 20,000 trajectories
-    res05 = simulate_sequential_type1_error(num_updates=224, num_trajectories=20000, seed=42, alpha_target=0.05)
+    """Verify that unclipped OBF boundary schedule strictly controls cumulative Type-I error to <= alpha."""
+    # Test primary alpha_target = 0.05 across 50,000 trajectories
+    res05 = simulate_sequential_type1_error(num_updates=224, num_trajectories=50000, seed=42, alpha_target=0.05)
     assert res05["c_star"] == 1.9600
-    assert res05["empirical_fwer"] <= 0.0500, f"Empirical FWER ({res05['empirical_fwer']:.4f}) must be <= 0.0500"
-    assert res05["ci_95"][1] <= 0.0500, f"Upper 95% Wilson CI ({res05['ci_95'][1]:.4f}) must be <= 0.0500"
+    assert res05["empirical_fwer"] <= 0.0500, f"Empirical FWER ({res05['empirical_fwer']:.5f}) must be <= 0.0500"
+    assert res05["ci_95"][1] <= 0.0500, f"Upper 95% Wilson CI ({res05['ci_95'][1]:.5f}) must be strictly <= 0.0500"
     assert res05["statistically_controlled"] is True
 
     # Test dynamic sensitivity under stricter alpha_target = 0.01
-    res01 = simulate_sequential_type1_error(num_updates=224, num_trajectories=20000, seed=42, alpha_target=0.01)
+    res01 = simulate_sequential_type1_error(num_updates=224, num_trajectories=50000, seed=42, alpha_target=0.01)
     assert res01["c_star"] == 2.5758
-    assert res01["empirical_fwer"] <= 0.0100, f"Empirical FWER ({res01['empirical_fwer']:.4f}) must scale to <= 0.0100"
-    assert res01["ci_95"][1] <= 0.0110
+    assert res01["empirical_fwer"] <= 0.0100, f"Empirical FWER ({res01['empirical_fwer']:.5f}) must scale to <= 0.0100"
+    assert res01["ci_95"][1] <= 0.0100, f"Upper 95% Wilson CI ({res01['ci_95'][1]:.5f}) must be strictly <= 0.0100"
     assert res01["statistically_controlled"] is True
+
+
+def test_bootstrap_stability_and_replicate_convergence():
+    """Verify that stratified paired bootstrap disparity SE converges stably across replicate counts B=200, 500, 1000."""
+    rng = np.random.default_rng(42)
+    speaker_ids = [f"spk_{i}" for i in range(30)]
+    stratum_groups = [f"grp_{i // 5}" for i in range(30)]
+    ref_lengths = [15] * 30
+    live_errors = [int(rng.integers(1, 5)) for _ in range(30)]
+    cand_errors = [int(rng.integers(1, 6)) for _ in range(30)]
+
+    ses = {}
+    decisions = {}
+    for B in [200, 500, 1000]:
+        gate = StreamingSentinelSafetyGate(
+            epsilon_r_pp=0.0000,
+            epsilon_g_pp=2.0000,
+            epsilon_d_pp=2.0000,
+            num_updates=224,
+            alpha_target=0.05,
+            num_boot_replicates=B,
+        )
+        dec = gate.evaluate_candidate(10, speaker_ids, stratum_groups, live_errors, cand_errors, ref_lengths)
+        ses[B] = dec.se_d
+        decisions[B] = dec.decision
+
+    # Decisions must be 100% consistent across replicate depths
+    assert len(set(decisions.values())) == 1, f"Decisions must be consistent across B, got {decisions}"
+    # Standard error estimate must be stable (CV < 5% between B=200, 500, 1000)
+    se_vals = list(ses.values())
+    cv = (float(np.std(se_vals)) / float(np.mean(se_vals))) * 100.0
+    assert cv < 5.0, f"Bootstrap SE CV across replicate counts must be < 5.0%, got {cv:.2f}%"
+
+
+def test_multicriterion_streaming_gate_joint_null_safety():
+    """Verify that tripartite gate maintains joint false-acceptance rate <= alpha under null streams."""
+    null_res = simulate_multicriterion_streaming_gate_null(
+        num_streams=50,
+        num_updates=224,
+        alpha_target=0.05,
+        num_boot_replicates=100,
+        seed=42,
+    )
+    assert null_res["joint_control_demonstrated"] is True
+    assert null_res["empirical_joint_fwer"] <= 0.0500, (
+        f"Joint empirical FWER ({null_res['empirical_joint_fwer']}) must not exceed 0.0500"
+    )
 
 
 def test_production_report_json_agrees_with_unrounded_inferential_statistics():
