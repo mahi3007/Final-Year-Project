@@ -3,8 +3,8 @@
 > [!WARNING]
 > **Overall Preflight Status:** `HOLD`  
 > **Summary:** MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Confirmatory data prerequisites not yet materialized on disk.  
-> **Timestamp:** 2026-10-25T10:22:09.028006+00:00  
-> **Git Commit:** `01271c3429`  
+> **Timestamp:** 2026-10-25T10:44:08.147191+00:00  
+> **Git Commit:** `59c9c9a3fe`  
 > **Protocol:** `v1.3.4-stage6m-self-authorization-amendment` (ADR-005)
 
 ---
