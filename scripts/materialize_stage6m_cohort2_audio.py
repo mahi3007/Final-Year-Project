@@ -111,6 +111,7 @@ class ThreadedResilientGzipStream(io.RawIOBase):
         self._stop_event = threading.Event()
         self._producer_thread: Optional[threading.Thread] = None
         self._uc_buf = bytearray()
+        self._offset = 0
 
         self._refresh_url()
         self._start_producer()
@@ -167,31 +168,47 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                     except Exception:
                         pass
 
+        # Signal EOF to consumer
+        self._queue.put(None)
+
     def _start_producer(self):
         self._producer_thread = threading.Thread(target=self._producer_loop, daemon=True)
         self._producer_thread.start()
 
+    def readable(self) -> bool:
+        return True
+
+    def seekable(self) -> bool:
+        return False
+
+    def writable(self) -> bool:
+        return False
+
     def readinto(self, b: bytearray | memoryview) -> int:
-        while len(self._uc_buf) < len(b):
+        while len(self._uc_buf) == self._offset:
             try:
-                item = self._queue.get(timeout=60)
+                chunk = self._queue.get(timeout=120)
             except queue.Empty:
                 print("[STREAM] Stall waiting for chunk from producer. Retrying...", flush=True)
                 continue
 
-            if item is None:
-                if self._uc_buf:
-                    break
+            if chunk is None:
+                flushed = self._decompressor.flush()
+                if flushed:
+                    self._uc_buf = bytearray(flushed)
+                    self._offset = 0
                 return 0
 
-            self.compressed_bytes_read += len(item)
-            out = self._decompressor.decompress(item)
-            if out:
-                self._uc_buf.extend(out)
+            self.compressed_bytes_read += len(chunk)
+            decomp = self._decompressor.decompress(chunk)
+            if decomp:
+                self._uc_buf = bytearray(decomp)
+                self._offset = 0
 
-        n = min(len(b), len(self._uc_buf))
-        b[:n] = self._uc_buf[:n]
-        del self._uc_buf[:n]
+        avail = len(self._uc_buf) - self._offset
+        n = min(len(b), avail)
+        b[:n] = self._uc_buf[self._offset : self._offset + n]
+        self._offset += n
         return n
 
     def close(self):
