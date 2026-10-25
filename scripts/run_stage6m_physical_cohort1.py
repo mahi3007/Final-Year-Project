@@ -82,6 +82,15 @@ OUT_REPORT_JSON = REPORTS_DIR / "stage6m_physical_cohort1_report.json"
 OUT_REPORT_MD = REPORTS_DIR / "stage6m_physical_cohort1_report.md"
 
 
+def compute_file_sha256(filepath: Path) -> str:
+    """Computes exact SHA-256 hex digest of a file on disk."""
+    h = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        while chunk := f.read(65536):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def preload_waveforms(file_list: List[Tuple[str, Path]], sample_rate: int = 16000) -> Dict[str, np.ndarray]:
     """Preloads audio files into memory as 16kHz float32 numpy arrays."""
     cache = {}
@@ -213,6 +222,8 @@ def main():
         else f"{args.output_prefix}_gate_decisions.csv"
     )
     out_gate_csv = REPORTS_DIR / gate_csv_name
+    out_report_json.parent.mkdir(parents=True, exist_ok=True)
+    out_gate_csv.parent.mkdir(parents=True, exist_ok=True)
 
     print("=" * 88)
     print("STAGE 6M: PHYSICAL COHORT 1 THREE-ARM STREAMING EXPERIMENT")
@@ -664,7 +675,18 @@ def main():
             "parameter_drift_linf": max(
                 torch.max(torch.abs(p1.detach().cpu() - p3.detach().cpu())).item()
                 for p1, p3 in zip(arm1_model.parameters(), arm3_model.parameters())
-            )
+            ),
+            "eval_split_csv_sha256": compute_file_sha256(EVAL_CSV) if EVAL_CSV.exists() else "NONE",
+            "sentinel_panel_csv_sha256": compute_file_sha256(SENTINEL_CSV) if SENTINEL_CSV.exists() else "NONE",
+            "gate_configuration": {
+                "epsilon_r_pp": safety_gate.epsilon_r,
+                "epsilon_g_pp": safety_gate.epsilon_g,
+                "epsilon_d_pp": safety_gate.epsilon_d,
+                "num_updates": safety_gate.num_updates,
+                "alpha_target": safety_gate.alpha_target,
+                "num_boot_replicates": safety_gate.num_boot_replicates,
+                "se_r_floor_pp": round((1.0 / float(total_ref_words)) * 100.0, 4) if total_ref_words > 0 else 0.0,
+            }
         },
         "overall_results": {
             "arm1_static_wer_pct": round(wer_arm1, 2),
