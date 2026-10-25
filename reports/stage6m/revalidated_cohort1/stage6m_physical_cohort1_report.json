@@ -63,6 +63,7 @@
     "sample_size_n_speakers": 60,
     "estimand_description": "Unweighted speaker-average paired difference in percentage points ((1/S) * sum_s (WER_{3,s} - WER_{comparator,s})). Note: Distinct from corpus-word-weighted WER difference.",
     "paired_t_arm3_vs_arm2": {
+      "test_status": "COMPLETED",
       "t_statistic": -2.4536,
       "p_value": 0.0171155694666455,
       "degrees_of_freedom": 59,
@@ -70,10 +71,11 @@
       "interpretation": "Disparity Safety Gate significantly reduced word errors relative to ungated CTTA (t = -2.4536, p = 0.01712 < 0.05)."
     },
     "paired_t_arm3_vs_arm1": {
+      "test_status": "NOT_ESTIMABLE_ZERO_VARIANCE",
       "t_statistic": null,
       "p_value": null,
       "degrees_of_freedom": 59,
-      "statistically_significant_p05": false,
+      "statistically_significant_p05": null,
       "interpretation": "Not estimable because the observed paired differences have zero variance. Arm 3 predictions match Arm 1 on all 900 clips, but this sample identity does not establish population-level equivalence.",
       "tost_equivalence": {
         "status": "NOT_ESTIMABLE_ZERO_VARIANCE",

@@ -469,17 +469,19 @@ def generate_and_save_reports(
             "sample_size_n_speakers": n_spk,
             "estimand_description": "Unweighted speaker-average paired difference in percentage points ((1/S) * sum_s (WER_{3,s} - WER_{comparator,s})). Note: Distinct from corpus-word-weighted WER difference.",
             "paired_t_arm3_vs_arm2": {
+                "test_status": "NOT_ESTIMABLE_ZERO_VARIANCE" if np.isnan(t_stat_g_u) else "COMPLETED",
                 "t_statistic": round(float(t_stat_g_u), 4) if not np.isnan(t_stat_g_u) else None,
                 "p_value": float(p_val_g_u) if not np.isnan(p_val_g_u) else None,
                 "degrees_of_freedom": df_spk,
-                "statistically_significant_p05": bool(p_val_g_u < 0.05) if not np.isnan(p_val_g_u) else False,
+                "statistically_significant_p05": bool(p_val_g_u < 0.05) if not np.isnan(p_val_g_u) else None,
                 "interpretation": f"Disparity Safety Gate significantly reduced word errors relative to ungated CTTA (t = {t_stat_g_u:.4f}, p = {p_val_g_u:.5f} < 0.05)."
             },
             "paired_t_arm3_vs_arm1": {
+                "test_status": "NOT_ESTIMABLE_ZERO_VARIANCE" if (np.isnan(t_stat_g_s) or se_diff_s == 0.0) else "COMPLETED",
                 "t_statistic": round(float(t_stat_g_s), 4) if not np.isnan(t_stat_g_s) else None,
                 "p_value": float(p_val_g_s) if not np.isnan(p_val_g_s) else None,
                 "degrees_of_freedom": df_spk,
-                "statistically_significant_p05": bool(p_val_g_s < 0.05) if not np.isnan(p_val_g_s) else False,
+                "statistically_significant_p05": bool(p_val_g_s < 0.05) if not np.isnan(p_val_g_s) else None,
                 "interpretation": (
                     f"No statistically significant difference detected from static baseline under standard paired t-test (t = {t_stat_g_s:.4f}, p = {p_val_g_s:.4f} > 0.05)."
                     if (not np.isnan(t_stat_g_s) and n_accept > 0) else
@@ -505,8 +507,31 @@ def generate_and_save_reports(
         min_change = min_stratum["wer_arm2_ungated"] - min_stratum["wer_arm1_static"]
         max_change = max_stratum["wer_arm2_ungated"] - max_stratum["wer_arm1_static"]
 
-        max_desc = "an improvement" if max_change < 0 else "a regression"
-        min_desc = "a regression" if min_change > 0 else "an improvement"
+        max_desc = "an improvement" if max_change < 0 else ("a regression" if max_change > 0 else "no change")
+        min_desc = "a regression" if min_change > 0 else ("an improvement" if min_change < 0 else "no change")
+
+        disp_change = disp_arm2 - disp_arm1
+        if disp_change < -0.001:
+            disp_verb = "reduced"
+            if max_change < 0 and min_change > 0:
+                synthesis_sentence = "The disparity reduction therefore combines an observed improvement in the worst-performing stratum with a leveling-down effect on the best-performing stratum."
+            elif max_change < 0 and min_change <= 0:
+                synthesis_sentence = "The disparity reduction was driven primarily by an improvement in the worst-performing stratum without degrading the best-performing stratum."
+            elif max_change >= 0 and min_change > 0:
+                synthesis_sentence = "The disparity reduction was driven entirely by a leveling-down effect (regression in the best-performing stratum) rather than uplifting disadvantaged groups."
+            else:
+                synthesis_sentence = "The disparity reduction reflects shifting stratum error profiles under ungated adaptation."
+        elif disp_change > 0.001:
+            disp_verb = "increased"
+            if max_change > 0 and min_change <= 0:
+                synthesis_sentence = "The disparity increase was driven primarily by performance regression in the worst-performing stratum."
+            elif min_change < 0 and max_change >= 0:
+                synthesis_sentence = "The disparity increase was driven by improvements concentrated in the best-performing stratum, widening the gap with disadvantaged groups."
+            else:
+                synthesis_sentence = "The disparity increase reflects widening performance gaps across strata under ungated adaptation."
+        else:
+            disp_verb = "maintained"
+            synthesis_sentence = "The observed cross-accent disparity remained identical under ungated adaptation."
 
         gated_disp_desc = (
             "Gated SUTA rejected all candidate updates and retained baseline predictions."
@@ -515,10 +540,10 @@ def generate_and_save_reports(
         )
 
         disparity_narrative_text = (
-            f"Ungated SUTA reduced the observed cross-accent WER range from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
+            f"Ungated SUTA {disp_verb} the observed cross-accent WER range from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
             f"This reflected both {max_desc} in {max_name} WER ({max_change:+.2f} pp) and "
             f"{min_desc} in {min_name} WER ({min_change:+.2f} pp). "
-            f"The disparity reduction therefore combines an observed improvement in the worst-performing stratum with a leveling-down effect on the best-performing stratum. "
+            f"{synthesis_sentence} "
             f"{gated_disp_desc}"
         )
     else:

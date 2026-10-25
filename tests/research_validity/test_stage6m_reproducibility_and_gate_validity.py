@@ -722,10 +722,15 @@ def test_revalidated_cohort1_zero_variance_tost_representation():
         data = json.load(f)
 
     # Paired t-test JSON verification
+    pt_arm2_sec = data["inferential_statistics_speaker_clustered"]["paired_t_arm3_vs_arm2"]
+    assert pt_arm2_sec["test_status"] == "COMPLETED"
+    assert pt_arm2_sec["statistically_significant_p05"] is True
+
     pt_sec = data["inferential_statistics_speaker_clustered"]["paired_t_arm3_vs_arm1"]
+    assert pt_sec["test_status"] == "NOT_ESTIMABLE_ZERO_VARIANCE"
     assert pt_sec["t_statistic"] is None
     assert pt_sec["p_value"] is None
-    assert pt_sec["statistically_significant_p05"] is False
+    assert pt_sec["statistically_significant_p05"] is None
     assert "not estimable because the observed paired differences have zero variance" in pt_sec["interpretation"].lower()
     assert "does not establish population-level equivalence" in pt_sec["interpretation"].lower()
 
