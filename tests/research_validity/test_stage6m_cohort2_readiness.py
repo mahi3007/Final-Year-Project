@@ -1293,6 +1293,14 @@ def test_deterministic_sentinel_sampling_is_reproducible_and_stratified():
     assert sorted(core_strata) == sorted(EXPECTED_STRATA_NAMES)
     assert sorted(non_core_strata) == sorted(EXPECTED_STRATA_NAMES)
 
+    # 6. Assert strict 1:1 balance for operational preflight default n_samples=20
+    sample_20 = select_deterministic_sentinel_samples(df, n_samples=20)
+    assert len(sample_20) == 20
+    core_20 = [s for s in sample_20 if s in core_ids]
+    non_core_20 = [s for s in sample_20 if s not in core_ids]
+    assert len(core_20) == 10, f"Expected 10 core clips in 20-clip sample, got {len(core_20)}"
+    assert len(non_core_20) == 10, f"Expected 10 non-core clips in 20-clip sample, got {len(non_core_20)}"
+
 
 def test_cohort2_and_cohort1_preflight_record_stratified_sampling_metadata(base_validator):
     """

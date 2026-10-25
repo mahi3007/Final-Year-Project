@@ -119,21 +119,22 @@ def select_deterministic_sentinel_samples(
 ) -> List[str]:
     """
     Select a deterministic, stratified sample of sentinel clip IDs covering all strata
-    and balancing across both core and non-core clip partitions.
+    with exact 1:1 partition balance between core and non-core clips (for even n_samples).
 
     Guarantees:
     1. Deterministic & permutation-invariant: Sorts by [stratum, speaker, clip_id]
        prior to selection, ensuring identical sample output across Python processes
        and regardless of row shuffling or set hashing.
     2. Representative stratification: Allocates samples round-robin across all detected
-       strata, guaranteeing that if n_samples >= len(strata), every stratum is represented.
-    3. Partition balance: Interleaves core clips (first clip per speaker) and non-core clips
-       in alternating round-robin passes across strata.
+       strata within both core and non-core pools.
+    3. Exact partition balance: Allocates n_samples // 2 to core clips and
+       n_samples - (n_samples // 2) to non-core clips, interleaving them pairwise.
+       For the preflight check default of n_samples=20, this guarantees an exact 10:10 split.
+       For the sentinel check default of n_samples=12, this guarantees an exact 6:6 split.
 
     Args:
         sent_df: Sentinel panel DataFrame.
-        n_samples: Target number of clips to select (default: 12, yielding 2 clips per stratum
-                   for 6 strata: 1 core clip and 1 non-core clip).
+        n_samples: Target number of clips to select (default: 12).
         id_col: Optional clip ID column name (auto-detected if None).
         stratum_col: Optional stratum column name (auto-detected if None).
         speaker_col: Optional speaker ID column name (auto-detected if None).
@@ -179,38 +180,43 @@ def select_deterministic_sentinel_samples(
         else:
             non_core_by_stratum[s].append(clip_id)
 
-    # Stratified, balanced round-robin selection across all strata:
-    # Round 1: 1 core clip from each stratum
-    # Round 2: 1 non-core clip from each stratum
-    # Subsequent rounds: alternate core and non-core passes until n_samples reached or pool exhausted
+    # Exact 1:1 partition allocation (equal split for even n_samples, with quota spillover if pool exhausted)
+    n_samples = min(n_samples, len(sent_df))
+    n_core_avail = sum(len(clips) for clips in core_by_stratum.values())
+    n_non_core_avail = sum(len(clips) for clips in non_core_by_stratum.values())
+
+    n_core_target = min(n_samples // 2, n_core_avail)
+    n_non_core_target = min(n_samples - n_core_target, n_non_core_avail)
+    if n_core_target + n_non_core_target < n_samples:
+        n_core_target = min(n_samples - n_non_core_target, n_core_avail)
+
+    def _round_robin_sample(pool_by_stratum: Dict[str, List[str]], target_count: int) -> List[str]:
+        chosen: List[str] = []
+        indices = {s: 0 for s in strata}
+        while len(chosen) < target_count:
+            added = False
+            for s in strata:
+                if len(chosen) >= target_count:
+                    break
+                if indices[s] < len(pool_by_stratum[s]):
+                    chosen.append(pool_by_stratum[s][indices[s]])
+                    indices[s] += 1
+                    added = True
+            if not added:
+                break
+        return chosen
+
+    core_selected = _round_robin_sample(core_by_stratum, n_core_target)
+    non_core_selected = _round_robin_sample(non_core_by_stratum, n_non_core_target)
+
+    # Interleave core and non-core clips pairwise for balanced stream evaluation
     selected: List[str] = []
-    core_idx = {s: 0 for s in strata}
-    non_core_idx = {s: 0 for s in strata}
-
-    while len(selected) < n_samples:
-        added_in_cycle = False
-        # Pass 1: core clips across strata
-        for s in strata:
-            if len(selected) >= n_samples:
-                break
-            if core_idx[s] < len(core_by_stratum[s]):
-                selected.append(core_by_stratum[s][core_idx[s]])
-                core_idx[s] += 1
-                added_in_cycle = True
-        if len(selected) >= n_samples:
-            break
-
-        # Pass 2: non-core clips across strata
-        for s in strata:
-            if len(selected) >= n_samples:
-                break
-            if non_core_idx[s] < len(non_core_by_stratum[s]):
-                selected.append(non_core_by_stratum[s][non_core_idx[s]])
-                non_core_idx[s] += 1
-                added_in_cycle = True
-
-        if not added_in_cycle:
-            break
+    for c, nc in zip(core_selected, non_core_selected):
+        selected.extend([c, nc])
+    if len(core_selected) > len(non_core_selected):
+        selected.extend(core_selected[len(non_core_selected):])
+    elif len(non_core_selected) > len(core_selected):
+        selected.extend(non_core_selected[len(core_selected):])
 
     return selected
 
