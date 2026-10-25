@@ -261,6 +261,103 @@ def _paired_t_arm3_vs_arm1_interpretation(
     )
 
 
+
+def synthesize_disparity_narrative(
+    strata_results: List[Dict[str, Any]],
+    disp_arm1: float,
+    disp_arm2: float,
+    disp_arm3: float = 0.0,
+    n_accept: int = 0,
+    acc_rate: float = 0.0,
+) -> str:
+    """
+    Synthesize the natural-language cross-accent disparity narrative comparing
+    ungated SUTA (Arm 2) to static baseline (Arm 1), and contextualizing gated
+    SUTA (Arm 3) decisions.
+
+    This side-effect-free helper is used by the physical benchmark report generator
+    and directly tested across all combinations of stratum changes and disparity signs.
+    """
+    if not strata_results:
+        return (
+            f"Ungated SUTA reduced cross-accent disparity from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
+            f"Gated SUTA maintained disparity at {disp_arm3:.2f} pp."
+        )
+
+    min_stratum = min(strata_results, key=lambda r: r["wer_arm1_static"])
+    max_stratum = max(strata_results, key=lambda r: r["wer_arm1_static"])
+    min_name = min_stratum["stratum"]
+    max_name = max_stratum["stratum"]
+    min_change = min_stratum["wer_arm2_ungated"] - min_stratum["wer_arm1_static"]
+    max_change = max_stratum["wer_arm2_ungated"] - max_stratum["wer_arm1_static"]
+
+    max_desc = "an improvement" if max_change < 0 else ("a regression" if max_change > 0 else "no change")
+    min_desc = "a regression" if min_change > 0 else ("an improvement" if min_change < 0 else "no change")
+
+    disp_change = disp_arm2 - disp_arm1
+    if disp_change < -0.001:
+        disp_verb = "reduced"
+        if max_change < 0 and min_change > 0:
+            synthesis_sentence = (
+                "The disparity reduction therefore combines an observed improvement in the "
+                "worst-performing stratum with a leveling-down effect on the best-performing stratum."
+            )
+        elif max_change < 0 and min_change <= 0:
+            synthesis_sentence = (
+                "The disparity reduction was driven primarily by an improvement in the "
+                "worst-performing stratum without degrading the best-performing stratum."
+            )
+        elif max_change >= 0 and min_change > 0:
+            synthesis_sentence = (
+                "The disparity reduction was driven entirely by a leveling-down effect "
+                "(regression in the best-performing stratum) rather than uplifting disadvantaged groups."
+            )
+        else:
+            synthesis_sentence = (
+                "The disparity reduction reflects shifting stratum error profiles under ungated adaptation."
+            )
+    elif disp_change > 0.001:
+        disp_verb = "increased"
+        if max_change > 0 and min_change < 0:
+            synthesis_sentence = (
+                "The disparity increase combines performance regression in the worst-performing stratum "
+                "with improvements in the best-performing stratum."
+            )
+        elif max_change > 0 and min_change >= 0:
+            synthesis_sentence = (
+                "The disparity increase was driven primarily by performance regression in the "
+                "worst-performing stratum."
+            )
+        elif min_change < 0 and max_change <= 0:
+            synthesis_sentence = (
+                "The disparity increase was driven by improvements concentrated in the best-performing "
+                "stratum, widening the gap with disadvantaged groups."
+            )
+        else:
+            synthesis_sentence = (
+                "The disparity increase reflects widening performance gaps across strata under ungated adaptation."
+            )
+    else:
+        disp_verb = "maintained"
+        synthesis_sentence = (
+            "The observed cross-accent disparity remained identical under ungated adaptation."
+        )
+
+    gated_disp_desc = (
+        "Gated SUTA rejected all candidate updates and retained baseline predictions."
+        if n_accept == 0 else
+        f"Gated SUTA accepted {n_accept} candidate updates ({acc_rate:.1f}%)."
+    )
+
+    return (
+        f"Ungated SUTA {disp_verb} the observed cross-accent WER range from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
+        f"This reflected both {max_desc} in {max_name} WER ({max_change:+.2f} pp) and "
+        f"{min_desc} in {min_name} WER ({min_change:+.2f} pp). "
+        f"{synthesis_sentence} "
+        f"{gated_disp_desc}"
+    )
+
+
 def generate_and_save_reports(
     out_report_json: Path,
     out_report_md: Path,
@@ -572,58 +669,14 @@ def generate_and_save_reports(
         json.dump(report_payload, f, indent=2)
 
     # Disparity Comparators and Stratum Analysis
-    if strata_results:
-        min_stratum = min(strata_results, key=lambda r: r["wer_arm1_static"])
-        max_stratum = max(strata_results, key=lambda r: r["wer_arm1_static"])
-        min_name = min_stratum["stratum"]
-        max_name = max_stratum["stratum"]
-        min_change = min_stratum["wer_arm2_ungated"] - min_stratum["wer_arm1_static"]
-        max_change = max_stratum["wer_arm2_ungated"] - max_stratum["wer_arm1_static"]
-
-        max_desc = "an improvement" if max_change < 0 else ("a regression" if max_change > 0 else "no change")
-        min_desc = "a regression" if min_change > 0 else ("an improvement" if min_change < 0 else "no change")
-
-        disp_change = disp_arm2 - disp_arm1
-        if disp_change < -0.001:
-            disp_verb = "reduced"
-            if max_change < 0 and min_change > 0:
-                synthesis_sentence = "The disparity reduction therefore combines an observed improvement in the worst-performing stratum with a leveling-down effect on the best-performing stratum."
-            elif max_change < 0 and min_change <= 0:
-                synthesis_sentence = "The disparity reduction was driven primarily by an improvement in the worst-performing stratum without degrading the best-performing stratum."
-            elif max_change >= 0 and min_change > 0:
-                synthesis_sentence = "The disparity reduction was driven entirely by a leveling-down effect (regression in the best-performing stratum) rather than uplifting disadvantaged groups."
-            else:
-                synthesis_sentence = "The disparity reduction reflects shifting stratum error profiles under ungated adaptation."
-        elif disp_change > 0.001:
-            disp_verb = "increased"
-            if max_change > 0 and min_change <= 0:
-                synthesis_sentence = "The disparity increase was driven primarily by performance regression in the worst-performing stratum."
-            elif min_change < 0 and max_change >= 0:
-                synthesis_sentence = "The disparity increase was driven by improvements concentrated in the best-performing stratum, widening the gap with disadvantaged groups."
-            else:
-                synthesis_sentence = "The disparity increase reflects widening performance gaps across strata under ungated adaptation."
-        else:
-            disp_verb = "maintained"
-            synthesis_sentence = "The observed cross-accent disparity remained identical under ungated adaptation."
-
-        gated_disp_desc = (
-            "Gated SUTA rejected all candidate updates and retained baseline predictions."
-            if n_accept == 0 else
-            f"Gated SUTA accepted {n_accept} candidate updates ({acc_rate:.1f}%)."
-        )
-
-        disparity_narrative_text = (
-            f"Ungated SUTA {disp_verb} the observed cross-accent WER range from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
-            f"This reflected both {max_desc} in {max_name} WER ({max_change:+.2f} pp) and "
-            f"{min_desc} in {min_name} WER ({min_change:+.2f} pp). "
-            f"{synthesis_sentence} "
-            f"{gated_disp_desc}"
-        )
-    else:
-        disparity_narrative_text = (
-            f"Ungated SUTA reduced cross-accent disparity from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
-            f"Gated SUTA maintained disparity at {disp_arm3:.2f} pp."
-        )
+    disparity_narrative_text = synthesize_disparity_narrative(
+        strata_results=strata_results,
+        disp_arm1=disp_arm1,
+        disp_arm2=disp_arm2,
+        disp_arm3=disp_arm3,
+        n_accept=n_accept,
+        acc_rate=acc_rate,
+    )
 
     # Secondary Stability Hypothesis Conclusion (Markdown) — derived from the same
     # helper as the JSON field so the two representations are always in sync.

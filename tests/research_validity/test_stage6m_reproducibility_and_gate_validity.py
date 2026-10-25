@@ -766,6 +766,7 @@ _sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 from run_stage6m_physical_cohort1 import (  # noqa: E402
     _paired_t_arm3_vs_arm2_interpretation,
     _paired_t_arm3_vs_arm1_interpretation,
+    synthesize_disparity_narrative,
 )
 
 
@@ -878,130 +879,116 @@ def _make_strata_results(max_wer1, max_wer2, min_wer1, min_wer2,
     ]
 
 
-def _run_disparity_narrative(strata_results, disp_arm1, disp_arm2, n_accept, acc_rate):
-    """
-    Faithful reimplementation of the disparity narrative logic from
-    generate_and_save_reports for branch-coverage unit testing.
-    No physical inference is invoked.
-    """
-    if not strata_results:
-        return (
-            f"Ungated SUTA reduced cross-accent disparity from {disp_arm1:.2f} pp "
-            f"to {disp_arm2:.2f} pp. "
-        )
-    min_stratum = min(strata_results, key=lambda r: r["wer_arm1_static"])
-    max_stratum = max(strata_results, key=lambda r: r["wer_arm1_static"])
-    min_name = min_stratum["stratum"]
-    max_name = max_stratum["stratum"]
-    min_change = min_stratum["wer_arm2_ungated"] - min_stratum["wer_arm1_static"]
-    max_change = max_stratum["wer_arm2_ungated"] - max_stratum["wer_arm1_static"]
-    max_desc = "an improvement" if max_change < 0 else ("a regression" if max_change > 0 else "no change")
-    min_desc = "a regression" if min_change > 0 else ("an improvement" if min_change < 0 else "no change")
-    disp_change = disp_arm2 - disp_arm1
-    if disp_change < -0.001:
-        disp_verb = "reduced"
-        if max_change < 0 and min_change > 0:
-            synthesis = (
-                "The disparity reduction therefore combines an observed improvement in the "
-                "worst-performing stratum with a leveling-down effect on the best-performing stratum."
-            )
-        elif max_change < 0 and min_change <= 0:
-            synthesis = (
-                "The disparity reduction was driven primarily by an improvement in the "
-                "worst-performing stratum without degrading the best-performing stratum."
-            )
-        elif max_change >= 0 and min_change > 0:
-            synthesis = (
-                "The disparity reduction was driven entirely by a leveling-down effect "
-                "(regression in the best-performing stratum) rather than uplifting disadvantaged groups."
-            )
-        else:
-            synthesis = "The disparity reduction reflects shifting stratum error profiles under ungated adaptation."
-    elif disp_change > 0.001:
-        disp_verb = "increased"
-        if max_change > 0 and min_change <= 0:
-            synthesis = "The disparity increase was driven primarily by performance regression in the worst-performing stratum."
-        elif min_change < 0 and max_change >= 0:
-            synthesis = (
-                "The disparity increase was driven by improvements concentrated in the best-performing "
-                "stratum, widening the gap with disadvantaged groups."
-            )
-        else:
-            synthesis = "The disparity increase reflects widening performance gaps across strata under ungated adaptation."
-    else:
-        disp_verb = "maintained"
-        synthesis = "The observed cross-accent disparity remained identical under ungated adaptation."
-    gated_desc = (
-        "Gated SUTA rejected all candidate updates and retained baseline predictions."
-        if n_accept == 0 else
-        f"Gated SUTA accepted {n_accept} candidate updates ({acc_rate:.1f}%)."
-    )
-    return (
-        f"Ungated SUTA {disp_verb} the observed cross-accent WER range "
-        f"from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
-        f"This reflected both {max_desc} in {max_name} WER ({max_change:+.2f} pp) and "
-        f"{min_desc} in {min_name} WER ({min_change:+.2f} pp). "
-        f"{synthesis} "
-        f"{gated_desc}"
-    )
-
-
 @pytest.mark.parametrize(
-    "scenario,max_wer1,max_wer2,min_wer1,min_wer2,expected_verb,fragment",
+    "scenario,max_wer1,max_wer2,min_wer1,min_wer2,disp1,disp2,expected_verb,fragment",
     [
-        # --- Disparity NARROWING ---
-        ("narrowing_worst_improved_best_leveled_down",
-         40.0, 39.0, 12.0, 13.0, "reduced",
+        # =========================================================================
+        # 1. Disparity NARROWING (disp2 - disp1 < -0.001 -> 'reduced')
+        # =========================================================================
+        # 1a. Worst improved (-1.0 pp), best regressed (+1.0 pp) -> both drive narrowing
+        ("narrowing_worst_improved_best_regressed",
+         40.0, 39.0, 12.0, 13.0, 28.0, 26.0, "reduced",
          "combines an observed improvement in the worst-performing stratum with a leveling-down effect"),
+
+        # 1b. Worst improved (-2.0 pp), best unchanged (0.0 pp)
         ("narrowing_worst_improved_best_unchanged",
-         40.0, 38.0, 12.0, 12.0, "reduced",
+         40.0, 38.0, 12.0, 12.0, 28.0, 26.0, "reduced",
          "driven primarily by an improvement in the worst-performing stratum without degrading"),
-        ("narrowing_worst_unchanged_best_leveled_down",
-         40.0, 40.0, 12.0, 13.5, "reduced",
+
+        # 1c. Both improved, worst improved more (-4.0 pp vs -1.0 pp)
+        ("narrowing_both_improved_worst_more",
+         40.0, 36.0, 12.0, 11.0, 28.0, 25.0, "reduced",
+         "driven primarily by an improvement in the worst-performing stratum without degrading"),
+
+        # 1d. Worst unchanged (0.0 pp), best regressed (+2.0 pp) -> leveling-down
+        ("narrowing_worst_unchanged_best_regressed",
+         40.0, 40.0, 12.0, 14.0, 28.0, 26.0, "reduced",
          "driven entirely by a leveling-down effect"),
-        # worst slightly worsens (+0.5 pp) AND best worsens harder (+2.0 pp) -> net narrowing.
-        # Hits elif max_change >= 0 and min_change > 0 -> leveling-down effect.
-        ("narrowing_both_regress_best_harder",
-         40.0, 40.5, 12.0, 14.0, "reduced",
+
+        # 1e. Both regressed, best regressed more (+1.0 pp vs +3.0 pp) -> leveling-down
+        ("narrowing_both_regressed_best_more",
+         40.0, 41.0, 12.0, 15.0, 28.0, 26.0, "reduced",
          "driven entirely by a leveling-down effect"),
-        # Note: the 'shifting stratum error profiles' else-branch inside the narrowing block
-        # fires when max_change >= 0 AND min_change <= 0 with disp_change < -0.001. This
-        # combination cannot occur when disp_arm1/disp_arm2 are derived from the same
-        # max/min strata (that would require min_change <= 0 while disp narrows, which needs
-        # max_change to drive the narrowing -- and max_change < 0 triggers an earlier branch).
-        # A dedicated test below exercises this branch directly with synthetic disp values.
-        # --- Disparity WIDENING ---
-        ("widening_worst_regressed_best_stable",
-         40.0, 43.0, 12.0, 12.0, "increased",
+
+        # 1f. Intermediate strata narrowing (extrema unchanged, but disp narrows)
+        ("narrowing_intermediate_strata_shifting",
+         40.0, 40.0, 12.0, 12.0, 28.0, 26.0, "reduced",
+         "reflects shifting stratum error profiles under ungated adaptation"),
+
+        # =========================================================================
+        # 2. Disparity WIDENING (disp2 - disp1 > +0.001 -> 'increased')
+        # =========================================================================
+        # 2a. Worst regressed (+2.0 pp), best improved (-2.0 pp) -> both drive widening
+        ("widening_worst_regressed_best_improved",
+         40.0, 42.0, 12.0, 10.0, 28.0, 32.0, "increased",
+         "combines performance regression in the worst-performing stratum with improvements in the best-performing stratum"),
+
+        # 2b. Worst regressed (+3.0 pp), best unchanged (0.0 pp)
+        ("widening_worst_regressed_best_unchanged",
+         40.0, 43.0, 12.0, 12.0, 28.0, 31.0, "increased",
          "driven primarily by performance regression in the worst-performing stratum"),
-        ("widening_best_improved_worst_stable",
-         40.0, 40.0, 12.0, 10.0, "increased",
+
+        # 2c. Both regressed, worst regressed more (+4.0 pp vs +1.0 pp)
+        ("widening_both_regressed_worst_more",
+         40.0, 44.0, 12.0, 13.0, 28.0, 31.0, "increased",
+         "driven primarily by performance regression in the worst-performing stratum"),
+
+        # 2d. Worst unchanged (0.0 pp), best improved (-2.0 pp)
+        ("widening_worst_unchanged_best_improved",
+         40.0, 40.0, 12.0, 10.0, 28.0, 30.0, "increased",
          "driven by improvements concentrated in the best-performing stratum, widening the gap"),
-        ("widening_both_worsen_unequally",
-         40.0, 43.0, 12.0, 14.0, "increased",
-         "widening performance gaps"),
-        # --- Disparity UNCHANGED ---
-        ("unchanged_disparity",
-         40.0, 40.5, 12.0, 12.5, "maintained",
+
+        # 2e. Both improved, best improved more (-1.0 pp vs -3.0 pp)
+        ("widening_both_improved_best_more",
+         40.0, 39.0, 12.0, 9.0, 28.0, 30.0, "increased",
+         "driven by improvements concentrated in the best-performing stratum, widening the gap"),
+
+        # 2f. Intermediate strata widening (extrema unchanged, but disp widens)
+        ("widening_intermediate_strata",
+         40.0, 40.0, 12.0, 12.0, 28.0, 30.0, "increased",
+         "widening performance gaps across strata under ungated adaptation"),
+
+        # =========================================================================
+        # 3. Disparity MAINTAINED (|disp2 - disp1| <= 0.001 -> 'maintained')
+        # =========================================================================
+        # 3a. Both extrema unchanged (0.0 pp, 0.0 pp)
+        ("maintained_both_unchanged",
+         40.0, 40.0, 12.0, 12.0, 28.0, 28.0, "maintained",
+         "remained identical under ungated adaptation"),
+
+        # 3b. Both improved equally (-2.0 pp, -2.0 pp)
+        ("maintained_both_improved_equally",
+         40.0, 38.0, 12.0, 10.0, 28.0, 28.0, "maintained",
+         "remained identical under ungated adaptation"),
+
+        # 3c. Both regressed equally (+2.0 pp, +2.0 pp)
+        ("maintained_both_regressed_equally",
+         40.0, 42.0, 12.0, 14.0, 28.0, 28.0, "maintained",
          "remained identical under ungated adaptation"),
     ],
 )
-def test_disparity_narrative_branch(scenario, max_wer1, max_wer2, min_wer1, min_wer2,
-                                     expected_verb, fragment):
+def test_production_synthesize_disparity_narrative_all_mathematical_cases(
+    scenario, max_wer1, max_wer2, min_wer1, min_wer2, disp1, disp2, expected_verb, fragment
+):
     """
-    Every sign combination of (max_stratum_change, min_stratum_change) must
-    produce the expected disparity verb and synthesis sentence.
-    No physical inference is invoked.
+    Directly invokes the production helper synthesize_disparity_narrative across
+    all mathematically possible cases of (sign(max_change), sign(min_change), sign(disp_change)).
+    Verifies that the narrative verb and qualitative synthesis match the mathematical outcome.
     """
     strata = _make_strata_results(max_wer1, max_wer2, min_wer1, min_wer2)
-    disp1 = max_wer1 - min_wer1
-    disp2 = max_wer2 - min_wer2
-    narrative = _run_disparity_narrative(strata, disp1, disp2, 0, 0.0)
+    narrative = synthesize_disparity_narrative(
+        strata_results=strata,
+        disp_arm1=disp1,
+        disp_arm2=disp2,
+        disp_arm3=disp1,
+        n_accept=0,
+        acc_rate=0.0,
+    )
     assert expected_verb in narrative, (
-        f"[{scenario}] Missing verb '{expected_verb}'.\nGot: {narrative}"
+        f"[{scenario}] Missing expected verb '{expected_verb}'.\nGot:\n{narrative}"
     )
     assert fragment in narrative, (
-        f"[{scenario}] Missing fragment.\nExpected: {fragment!r}\nGot: {narrative}"
+        f"[{scenario}] Missing expected fragment '{fragment}'.\nGot:\n{narrative}"
     )
 
 
@@ -1010,49 +997,63 @@ def test_disparity_narrative_branch(scenario, max_wer1, max_wer2, min_wer1, min_
     (15,  6.7,   "accepted 15 candidate updates (6.7%)"),
     (224, 100.0, "accepted 224 candidate updates (100.0%)"),
 ])
-def test_disparity_narrative_gated_description(n_accept, acc_rate, expected_fragment):
-    """Gated SUTA description reflects the actual acceptance count."""
+def test_production_synthesize_disparity_narrative_gated_acceptance_descriptions(
+    n_accept, acc_rate, expected_fragment
+):
+    """Production helper accurately formats gate acceptance count and percentage."""
     strata = _make_strata_results(40.0, 39.0, 12.0, 13.0)
-    narrative = _run_disparity_narrative(strata, 28.0, 26.0, n_accept, acc_rate)
+    narrative = synthesize_disparity_narrative(
+        strata_results=strata,
+        disp_arm1=28.0,
+        disp_arm2=26.0,
+        disp_arm3=28.0,
+        n_accept=n_accept,
+        acc_rate=acc_rate,
+    )
     assert expected_fragment in narrative, (
-        f"Expected {expected_fragment!r}\nGot: {narrative}"
+        f"Expected {expected_fragment!r} in narrative.\nGot: {narrative}"
     )
 
 
-def test_disparity_narrative_empty_strata_fallback():
-    """Empty strata list must not raise — falls back to simplified narrative."""
-    narrative = _run_disparity_narrative([], 28.0, 26.0, 0, 0.0)
-    assert "26.00 pp" in narrative
-    assert "28.00 pp" in narrative
+def test_production_synthesize_disparity_narrative_empty_strata_fallback():
+    """Empty strata list returns the concise fallback narrative without raising."""
+    narrative = synthesize_disparity_narrative(
+        strata_results=[],
+        disp_arm1=27.13,
+        disp_arm2=24.29,
+        disp_arm3=27.13,
+        n_accept=0,
+        acc_rate=0.0,
+    )
+    assert "27.13 pp" in narrative
+    assert "24.29 pp" in narrative
+    assert "Gated SUTA maintained disparity at 27.13 pp." in narrative
 
 
-def test_disparity_narrative_narrowing_shifting_profiles_branch():
+def test_production_synthesize_disparity_narrative_exact_cohort1_match():
     """
-    The 'shifting stratum error profiles' else-branch inside the narrowing block fires when
-    max_change >= 0 AND min_change <= 0 AND disp_change < -0.001.  This requires the disparity
-    to narrow even though neither the worst-performing stratum improved nor the best-performing
-    stratum regressed -- which can arise when intermediate strata drive the apparent disparity
-    reduction in the full report generator.  We test the branch directly by calling
-    _run_disparity_narrative with synthetic strata where max_change=0 and min_change=0 but
-    supplying disp_arm2 < disp_arm1.
+    Verifies that passing the revalidated Cohort 1 stratum data to the production
+    helper reproduces the exact disparity narrative published in the physical report.
     """
-    # max_stratum: unchanged (max_change = 0.0)
-    # min_stratum: unchanged (min_change = 0.0)
-    # synthetic disp: 28.00 -> 26.00  (narrowed by 2 pp, from intermediate strata)
     strata = [
-        {"stratum": "MaxStratum", "ref_words": 1000,
-         "wer_arm1_static": 40.0, "wer_arm2_ungated": 40.0, "wer_arm3_gated": 40.0,
-         "delta_g_arm3_vs_arm1": 0.0, "delta_g_arm3_vs_arm2": 0.0},
-        {"stratum": "MinStratum", "ref_words": 1000,
-         "wer_arm1_static": 12.0, "wer_arm2_ungated": 12.0, "wer_arm3_gated": 12.0,
-         "delta_g_arm3_vs_arm1": 0.0, "delta_g_arm3_vs_arm2": 0.0},
-        {"stratum": "MidStratum", "ref_words": 1000,
-         "wer_arm1_static": 25.0, "wer_arm2_ungated": 23.0, "wer_arm3_gated": 25.0,
-         "delta_g_arm3_vs_arm1": 0.0, "delta_g_arm3_vs_arm2": 2.0},
+        {"stratum": "South Asian English", "wer_arm1_static": 40.00, "wer_arm2_ungated": 39.02, "wer_arm3_gated": 40.00},
+        {"stratum": "Canadian English", "wer_arm1_static": 12.87, "wer_arm2_ungated": 14.73, "wer_arm3_gated": 12.87},
+        {"stratum": "British English", "wer_arm1_static": 25.00, "wer_arm2_ungated": 25.00, "wer_arm3_gated": 25.00},
     ]
-    # Pass synthetic disparity values that differ from the max-min pair span
-    narrative = _run_disparity_narrative(strata, 28.0, 26.0, 0, 0.0)
-    assert "reduced" in narrative
-    assert "shifting stratum error profiles" in narrative, (
-        "Expected else-branch synthesis sentence.\nGot: " + narrative
+    narrative = synthesize_disparity_narrative(
+        strata_results=strata,
+        disp_arm1=27.13,
+        disp_arm2=24.29,
+        disp_arm3=27.13,
+        n_accept=0,
+        acc_rate=0.0,
     )
+    expected_exact = (
+        "Ungated SUTA reduced the observed cross-accent WER range from 27.13 pp to 24.29 pp. "
+        "This reflected both an improvement in South Asian English WER (-0.98 pp) and "
+        "a regression in Canadian English WER (+1.86 pp). "
+        "The disparity reduction therefore combines an observed improvement in the worst-performing "
+        "stratum with a leveling-down effect on the best-performing stratum. "
+        "Gated SUTA rejected all candidate updates and retained baseline predictions."
+    )
+    assert narrative == expected_exact, f"Cohort 1 narrative mismatch:\nGot:      {narrative!r}\nExpected: {expected_exact!r}"
