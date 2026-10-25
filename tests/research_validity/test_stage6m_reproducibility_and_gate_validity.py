@@ -953,7 +953,7 @@ def _make_strata_results(max_wer1, max_wer2, min_wer1, min_wer2,
         #     Arm 2 range: max(40,12,46) - min(40,12,46) = 34.0 pp (+6.0 pp)
         ("widening_intermediate_stratum_exceeds_extremes",
          40.0, 40.0, 12.0, 12.0, 25.0, 46.0, "increased",
-         "widening performance gaps across strata under ungated adaptation"),
+         "overtook MaxStratum as the new worst-performing stratum"),
 
         # =========================================================================
         # 3. Disparity MAINTAINED (|D2 - D1| <= 0.001 -> 'maintained')
@@ -1003,19 +1003,29 @@ def test_production_synthesize_disparity_narrative_all_mathematical_cases(
     assert fragment in narrative, (
         f"[{scenario}] Missing expected fragment '{fragment}'.\nGot:\n{narrative}"
     )
+    if scenario == "widening_intermediate_stratum_exceeds_extremes":
+        # Specifically assert that the narrative names the stratum responsible for the new maximum
+        assert "MidStratum" in narrative
+        assert "overtook MaxStratum as the new worst-performing stratum" in narrative
 
 
 def test_production_synthesize_disparity_narrative_inconsistent_input_validation():
     """
     Validates that explicitly providing disparity values that contradict
-    the stratum-derived range by > 0.10 pp raises a clear ValueError.
+    the stratum-derived range by > 0.02 pp raises a clear ValueError, while
+    tolerating differences within the theoretical rounding bound (<= 0.02 pp).
     """
-    strata = _make_strata_results(40.0, 40.0, 12.0, 12.0)  # range = 28.0 pp
+    strata = _make_strata_results(40.0, 40.0, 12.0, 12.0)  # range = 28.00 pp
+    # 28.05 deviates by 0.05 pp (> 0.02 pp bound) -> must raise ValueError
     with pytest.raises(ValueError, match="Supplied disp_arm1 .* is inconsistent with stratum-derived range"):
-        synthesize_disparity_narrative(strata_results=strata, disp_arm1=35.0)
+        synthesize_disparity_narrative(strata_results=strata, disp_arm1=28.05)
 
     with pytest.raises(ValueError, match="Supplied disp_arm2 .* is inconsistent with stratum-derived range"):
-        synthesize_disparity_narrative(strata_results=strata, disp_arm2=20.0)
+        synthesize_disparity_narrative(strata_results=strata, disp_arm2=28.05)
+
+    # 28.01 deviates by 0.01 pp (within <= 0.02 pp rounding bound) -> must succeed
+    ok_narrative = synthesize_disparity_narrative(strata_results=strata, disp_arm1=28.01, disp_arm2=28.01)
+    assert "28.01 pp" in ok_narrative
 
 
 def test_production_synthesize_disparity_narrative_defensive_narrowing_fallback():
@@ -1076,24 +1086,32 @@ def test_production_synthesize_disparity_narrative_empty_strata_fallback():
 
 def test_production_synthesize_disparity_narrative_exact_cohort1_match():
     """
-    Verifies that passing the revalidated Cohort 1 stratum data to the production
-    helper reproduces the exact disparity narrative published in the physical report.
+    Verifies that passing the actual six revalidated Cohort 1 stratum records
+    to the production helper reproduces the exact disparity narrative published
+    in the physical report (reports/stage6m/revalidated_cohort1/stage6m_physical_cohort1_report.md).
     """
     strata = [
-        {"stratum": "South Asian English", "wer_arm1_static": 40.00, "wer_arm2_ungated": 39.02, "wer_arm3_gated": 40.00},
-        {"stratum": "Canadian English", "wer_arm1_static": 12.87, "wer_arm2_ungated": 14.73, "wer_arm3_gated": 12.87},
-        {"stratum": "British English", "wer_arm1_static": 25.00, "wer_arm2_ungated": 25.00, "wer_arm3_gated": 25.00},
+        {"stratum": "Australian English", "ref_words": 1493, "wer_arm1_static": 23.58, "wer_arm2_ungated": 25.85, "wer_arm3_gated": 23.58},
+        {"stratum": "Canadian English", "ref_words": 1500, "wer_arm1_static": 12.87, "wer_arm2_ungated": 14.73, "wer_arm3_gated": 12.87},
+        {"stratum": "England English", "ref_words": 1393, "wer_arm1_static": 21.25, "wer_arm2_ungated": 22.04, "wer_arm3_gated": 21.25},
+        {"stratum": "Irish English", "ref_words": 1383, "wer_arm1_static": 15.76, "wer_arm2_ungated": 17.79, "wer_arm3_gated": 15.76},
+        {"stratum": "South Asian English", "ref_words": 1430, "wer_arm1_static": 42.66, "wer_arm2_ungated": 41.68, "wer_arm3_gated": 42.66},
+        {"stratum": "US English", "ref_words": 1468, "wer_arm1_static": 21.19, "wer_arm2_ungated": 21.39, "wer_arm3_gated": 21.19},
     ]
+    # Cohort 1 physical report recorded values:
+    disp_arm1 = 29.79
+    disp_arm2 = 26.94
+    disp_arm3 = 29.79
     narrative = synthesize_disparity_narrative(
         strata_results=strata,
-        disp_arm1=27.13,
-        disp_arm2=24.29,
-        disp_arm3=27.13,
+        disp_arm1=disp_arm1,
+        disp_arm2=disp_arm2,
+        disp_arm3=disp_arm3,
         n_accept=0,
         acc_rate=0.0,
     )
     expected_exact = (
-        "Ungated SUTA reduced the observed cross-accent WER range from 27.13 pp to 24.29 pp. "
+        "Ungated SUTA reduced the observed cross-accent WER range from 29.79 pp to 26.94 pp. "
         "This reflected both an improvement in South Asian English WER (-0.98 pp) and "
         "a regression in Canadian English WER (+1.86 pp). "
         "The disparity reduction therefore combines an observed improvement in the worst-performing "
@@ -1101,3 +1119,8 @@ def test_production_synthesize_disparity_narrative_exact_cohort1_match():
         "Gated SUTA rejected all candidate updates and retained baseline predictions."
     )
     assert narrative == expected_exact, f"Cohort 1 narrative mismatch:\nGot:      {narrative!r}\nExpected: {expected_exact!r}"
+
+    # Also assert that this exact string is present in the published Markdown report
+    report_md_path = PROJECT_ROOT / "reports" / "stage6m" / "revalidated_cohort1" / "stage6m_physical_cohort1_report.md"
+    report_text = report_md_path.read_text(encoding="utf-8")
+    assert narrative in report_text, "Synthesized narrative must match the published physical report markdown."

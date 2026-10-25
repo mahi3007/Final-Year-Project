@@ -292,15 +292,18 @@ def synthesize_disparity_narrative(
     derived_disp_arm1 = max(r["wer_arm1_static"] for r in strata_results) - min(r["wer_arm1_static"] for r in strata_results)
     derived_disp_arm2 = max(r["wer_arm2_ungated"] for r in strata_results) - min(r["wer_arm2_ungated"] for r in strata_results)
 
-    # Validate consistency if explicitly supplied (allowing 0.10 pp tolerance for corpus-level rounding)
+    # Validate consistency if explicitly supplied.
+    # Theoretical rounding bound: stratum endpoints rounded to 2 decimal places carry at most +/-0.005 pp
+    # rounding error each, so the range difference |(round(a,2) - round(b,2)) - (a - b)| is bounded by
+    # 0.005 + 0.005 = 0.010 pp. We enforce a tight tolerance of 0.02 pp (0.010 pp theoretical bound + float epsilon).
     if validate_consistency:
-        if disp_arm1 is not None and abs(disp_arm1 - derived_disp_arm1) > 0.10:
+        if disp_arm1 is not None and abs(disp_arm1 - derived_disp_arm1) > 0.02:
             raise ValueError(
                 f"Supplied disp_arm1 ({disp_arm1:.2f} pp) is inconsistent with stratum-derived range "
                 f"({derived_disp_arm1:.2f} pp; max={max(r['wer_arm1_static'] for r in strata_results):.2f}, "
                 f"min={min(r['wer_arm1_static'] for r in strata_results):.2f})."
             )
-        if disp_arm2 is not None and abs(disp_arm2 - derived_disp_arm2) > 0.10:
+        if disp_arm2 is not None and abs(disp_arm2 - derived_disp_arm2) > 0.02:
             raise ValueError(
                 f"Supplied disp_arm2 ({disp_arm2:.2f} pp) is inconsistent with stratum-derived range "
                 f"({derived_disp_arm2:.2f} pp; max={max(r['wer_arm2_ungated'] for r in strata_results):.2f}, "
@@ -310,12 +313,15 @@ def synthesize_disparity_narrative(
     effective_disp_arm1 = disp_arm1 if disp_arm1 is not None else derived_disp_arm1
     effective_disp_arm2 = disp_arm2 if disp_arm2 is not None else derived_disp_arm2
 
-    min_stratum = min(strata_results, key=lambda r: r["wer_arm1_static"])
-    max_stratum = max(strata_results, key=lambda r: r["wer_arm1_static"])
-    min_name = min_stratum["stratum"]
-    max_name = max_stratum["stratum"]
-    min_change = min_stratum["wer_arm2_ungated"] - min_stratum["wer_arm1_static"]
-    max_change = max_stratum["wer_arm2_ungated"] - max_stratum["wer_arm1_static"]
+    min_stratum_arm1 = min(strata_results, key=lambda r: r["wer_arm1_static"])
+    max_stratum_arm1 = max(strata_results, key=lambda r: r["wer_arm1_static"])
+    min_stratum_arm2 = min(strata_results, key=lambda r: r["wer_arm2_ungated"])
+    max_stratum_arm2 = max(strata_results, key=lambda r: r["wer_arm2_ungated"])
+
+    min_name = min_stratum_arm1["stratum"]
+    max_name = max_stratum_arm1["stratum"]
+    min_change = min_stratum_arm1["wer_arm2_ungated"] - min_stratum_arm1["wer_arm1_static"]
+    max_change = max_stratum_arm1["wer_arm2_ungated"] - max_stratum_arm1["wer_arm1_static"]
 
     max_desc = "an improvement" if max_change < 0 else ("a regression" if max_change > 0 else "no change")
     min_desc = "a regression" if min_change > 0 else ("an improvement" if min_change < 0 else "no change")
@@ -344,7 +350,23 @@ def synthesize_disparity_narrative(
             )
     elif disp_change > 0.001:
         disp_verb = "increased"
-        if max_change > 0 and min_change < 0:
+        if max_stratum_arm2["stratum"] != max_stratum_arm1["stratum"]:
+            new_worst_name = max_stratum_arm2["stratum"]
+            new_worst_change = max_stratum_arm2["wer_arm2_ungated"] - max_stratum_arm2["wer_arm1_static"]
+            synthesis_sentence = (
+                f"The disparity increase was driven by severe regression in {new_worst_name} "
+                f"({new_worst_change:+.2f} pp, from {max_stratum_arm2['wer_arm1_static']:.2f}% to {max_stratum_arm2['wer_arm2_ungated']:.2f}%), "
+                f"which overtook {max_name} as the new worst-performing stratum."
+            )
+        elif min_stratum_arm2["stratum"] != min_stratum_arm1["stratum"]:
+            new_best_name = min_stratum_arm2["stratum"]
+            new_best_change = min_stratum_arm2["wer_arm2_ungated"] - min_stratum_arm2["wer_arm1_static"]
+            synthesis_sentence = (
+                f"The disparity increase was driven by outsized gains in {new_best_name} "
+                f"({new_best_change:+.2f} pp, from {min_stratum_arm2['wer_arm1_static']:.2f}% to {min_stratum_arm2['wer_arm2_ungated']:.2f}%), "
+                f"which overtook {min_name} as the new best-performing stratum."
+            )
+        elif max_change > 0 and min_change < 0:
             synthesis_sentence = (
                 "The disparity increase combines performance regression in the worst-performing stratum "
                 "with improvements in the best-performing stratum."
