@@ -251,7 +251,10 @@ def test_production_streaming_sentinel_safety_gate_selectivity():
     assert dec_neu.decision == "REJECT", f"Expected REJECT for tied candidate, got {dec_neu.decision}"
     assert dec_neu.passed_gate is False
     assert dec_neu.delta_r == 0.0
-    assert abs(dec_neu.se_r - (1.0 / 450.0 * 100.0)) < 1e-3  # Regularized by cluster sensitivity floor
+    assert dec_neu.se_r_raw == 0.0  # Raw empirical SE is exactly zero for identical error counts
+    assert abs(dec_neu.se_r_floor - (1.0 / 450.0 * 100.0)) < 1e-3  # Cluster floor safeguard
+    assert dec_neu.se_r_adjusted == dec_neu.se_r_floor  # Regularized by floor safeguard
+    assert dec_neu.se_r == dec_neu.se_r_adjusted  # Backward compatible alias
     assert dec_neu.ucb_r > 0.0  # z_0 * se_floor > 0
     assert any("Non-improvement / tie rejection" in r for r in dec_neu.rejection_reasons)
     assert any("Degenerate zero-variance tie" in r for r in dec_neu.rejection_reasons)
@@ -303,9 +306,11 @@ def test_production_streaming_sentinel_safety_gate_selectivity():
     assert any("Non-improvement / tie rejection" in r for r in dec_zero_net.rejection_reasons)
 
     # Case 7: Cluster single-token sensitivity floor verification
-    # Verifies that se_r is bounded below by 1 / total_words * 100% (0.2222 pp for 450 words)
+    # Verifies that se_r_adjusted is bounded below by 1 / total_words * 100% (0.2222 pp for 450 words)
     expected_floor = (1.0 / 450.0) * 100.0
-    assert dec_neu.se_r == round(expected_floor, 4), f"Expected se_r = {expected_floor:.4f}, got {dec_neu.se_r}"
+    assert dec_neu.se_r_floor == round(expected_floor, 4), f"Expected se_r_floor = {expected_floor:.4f}, got {dec_neu.se_r_floor}"
+    assert dec_neu.se_r_adjusted == round(expected_floor, 4), f"Expected se_r_adjusted = {expected_floor:.4f}, got {dec_neu.se_r_adjusted}"
+    assert dec_neu.se_r_raw == 0.0, f"Expected se_r_raw = 0.0, got {dec_neu.se_r_raw}"
 
 
 
@@ -484,7 +489,7 @@ def test_multicriterion_streaming_gate_joint_null_safety():
 
 
 def test_shared_panel_null_simulation_artifact_verification():
-    """Verify that committed 1,000-stream shared-panel simulation artifact establishes FWER <= alpha_target."""
+    """Verify that committed shared-panel simulation artifact establishes FWER <= alpha_target and documents qualifications."""
     sim_artifact = PROJECT_ROOT / "reports" / "stage6m" / "stage6m_shared_panel_null_simulation_results.json"
     assert sim_artifact.exists(), f"Missing shared panel null simulation artifact: {sim_artifact}"
     with open(sim_artifact, "r", encoding="utf-8") as f:
@@ -492,16 +497,30 @@ def test_shared_panel_null_simulation_artifact_verification():
 
     meta = data["metadata"]
     res = data["simulation_results"]
-    assert meta["num_streams"] == 1000
+    assert meta["num_streams_scenario_a"] == 1000
     assert meta["num_updates_per_stream"] == 224
-    assert meta["total_candidate_evaluations"] == 224000
+    assert meta["total_candidate_evaluations_scenario_a"] == 224000
     assert meta["random_seed"] == 42
     assert meta["sentinel_speakers"] == 30
+    assert "methodological_qualification" in meta
 
+    # Scenario A verification (Baseline Stochastic Null)
     assert res["false_acceptances"] == 0
     assert res["empirical_fwer"] == 0.0
-    assert res["one_sided_95_upper_bound"] < 0.005, f"Wilson upper bound must be < 0.5%, got {res['one_sided_95_upper_bound']}"
+    assert res["two_sided_95_wilson_upper"] < 0.005, f"Two-sided Wilson upper bound must be < 0.5%, got {res['two_sided_95_wilson_upper']}"
+    assert res["one_sided_95_wilson_upper"] < 0.003, f"One-sided Wilson upper bound must be < 0.3%, got {res['one_sided_95_wilson_upper']}"
     assert res["fwer_statistically_controlled"] is True
+
+    # Scenario B (Autoregressive candidate error persistence stress test)
+    scen_b = res["scenario_b_autoregressive_persistence"]
+    assert scen_b["false_acceptances"] == 0
+    assert scen_b["fwer_statistically_controlled"] is True
+
+    # Scenario C (Deterministic zero-variance tie stress test)
+    scen_c = res["scenario_c_deterministic_ties"]
+    assert scen_c["false_acceptances"] == 0
+    assert scen_c["tie_rejection_rate_pct"] == 100.0
+    assert scen_c["fail_closed_guarantee_maintained"] is True
 
 
 def test_tost_equivalence_and_student_t_confidence_intervals():

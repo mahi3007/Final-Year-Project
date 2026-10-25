@@ -1,28 +1,71 @@
 {
   "metadata": {
     "protocol": "v1.3.4-stage6m-audit-reproducibility",
-    "timestamp_utc": "2026-10-24T19:32:43.612178+00:00",
+    "timestamp_utc": "2026-10-25T01:38:27.703794+00:00",
     "random_seed": 42,
-    "total_execution_seconds": 89.11,
-    "num_streams": 1000,
+    "total_execution_seconds": 117.48,
+    "num_streams_scenario_a": 1000,
     "num_updates_per_stream": 224,
-    "total_candidate_evaluations": 224000,
+    "total_candidate_evaluations_scenario_a": 224000,
     "sentinel_speakers": 30,
     "sentinel_strata": 6,
     "sentinel_words_per_speaker": 15,
     "sentinel_total_words": 450,
-    "bootstrap_replicates": 50
+    "bootstrap_replicates": 50,
+    "methodological_qualification": "This Monte Carlo simulation evaluates stochastic null processes (Binomial candidate draws with fixed speaker baseline probabilities and autoregressive error persistence). It does not model deterministic acoustic model parameter drift or acoustic feature correlations across sequential adaptation windows on identical physical audio waveforms. Consequently, zero false acceptances in this simulation establish error control for the specified stochastic null processes, but do not provide a universal empirical guarantee for the deployed physical system under continuous adaptation drift."
   },
   "simulation_results": {
+    "scenario_a_baseline_stochastic_null": {
+      "description": "Fixed 30-speaker sentinel panel with independent Binomial draws under H0",
+      "num_streams": 1000,
+      "num_updates": 224,
+      "false_acceptances": 0,
+      "empirical_fwer": 0.0,
+      "two_sided_95_wilson_ci": [
+        0.0,
+        0.003827
+      ],
+      "two_sided_95_wilson_upper": 0.003827,
+      "one_sided_95_wilson_upper": 0.002698,
+      "alpha_target": 0.05,
+      "fwer_statistically_controlled": true
+    },
+    "scenario_b_autoregressive_persistence": {
+      "description": "Autoregressive candidate error persistence (rho = 0.80) across sequential looks",
+      "num_streams": 200,
+      "num_updates": 224,
+      "false_acceptances": 0,
+      "empirical_fwer": 0.0,
+      "two_sided_95_wilson_ci": [
+        0.0,
+        0.018845
+      ],
+      "two_sided_95_wilson_upper": 0.018845,
+      "one_sided_95_wilson_upper": 0.013347,
+      "alpha_target": 0.05,
+      "fwer_statistically_controlled": true
+    },
+    "scenario_c_deterministic_ties": {
+      "description": "Exact zero-variance tie candidates (Delta_R == 0, SE == 0) across all looks",
+      "num_streams": 200,
+      "total_candidate_evaluations": 44800,
+      "false_acceptances": 0,
+      "empirical_fwer": 0.0,
+      "two_sided_95_wilson_upper": 0.018845,
+      "tie_rejection_rate_pct": 100.0,
+      "fail_closed_guarantee_maintained": true
+    },
     "false_acceptances": 0,
     "empirical_fwer": 0.0,
-    "wilson_95_ci": [
+    "two_sided_95_wilson_ci": [
       0.0,
       0.003827
     ],
+    "two_sided_95_wilson_upper": 0.003827,
+    "one_sided_95_upper_bound": 0.003827,
+    "one_sided_95_wilson_upper": 0.002698,
     "alpha_target": 0.05,
     "fwer_statistically_controlled": true,
-    "one_sided_95_upper_bound": 0.003827,
-    "interpretation": "Statistical guarantee verified: across 1,000 streams (224,000 looks), the empirical FWER is 0.0000 with 95% Wilson upper bound 0.0038 <= 0.0500."
+    "interpretation": "Statistical simulation results across 1,000 stochastic null streams (224,000 looks): empirical FWER is 0.0000 with two-sided 95% Wilson upper bound 0.0038 <= 0.0500 and one-sided 95% upper bound 0.0027 <= 0.0500. Zero false acceptances were observed under autoregressive error persistence (Scenario B) and 100% of ties were rejected under fail-closed safety (Scenario C)."
   }
 }

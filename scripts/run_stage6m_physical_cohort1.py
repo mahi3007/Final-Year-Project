@@ -465,6 +465,9 @@ def main():
                 "decision_raw": gate_decision_str,
                 "delta_r": gate_dec.delta_r,
                 "delta_d": gate_dec.delta_d,
+                "se_r_raw": gate_dec.se_r_raw,
+                "se_r_adjusted": gate_dec.se_r_adjusted,
+                "se_r_floor": gate_dec.se_r_floor,
                 "se_sent": gate_dec.se_r,
                 "se_d": gate_dec.se_d,
                 "z_obf": gate_dec.z_obf,
@@ -704,7 +707,7 @@ def main():
                 "statistically_significant_p05": bool(p_val_g_s < 0.05) if not np.isnan(p_val_g_s) else False,
                 "interpretation": (
                     f"No statistically significant difference detected from static baseline under standard paired t-test (t = {t_stat_g_s:.4f}, p = {p_val_g_s:.4f} > 0.05). "
-                    f"Formal equivalence established via Two One-Sided Tests (TOST) within +/-{tost_margin:.2f} pp margin "
+                    f"Formal equivalence established via Two One-Sided Tests (TOST) within exploratory +/-{tost_margin:.2f} pp margin "
                     f"(p_TOST = {p_tost:.4e} < 0.001; 90% t-CI: [{ci_90_s[0]:+.4f}, {ci_90_s[1]:+.4f}] pp; 95% t-CI: [{ci_95_s[0]:+.4f}, {ci_95_s[1]:+.4f}] pp)."
                     if n_accept > 0 else
                     "Identical to static baseline because all candidate updates were safely rolled back (zero-variance paired difference across all 60 speakers)."
@@ -796,7 +799,7 @@ Unlike prior controller dry-runs, **every word error reported herein derives fro
   - Conclusion: No statistically significant difference detected at $\\alpha = 0.05$.
 
 - **Formal Two One-Sided Tests (TOST) Equivalence Analysis:**
-  - Pre-specified Practical Equivalence Margin: $\\Delta_{{\\text{{equiv}}}} = \\pm {tost_margin:.2f}\\text{{ pp}}$
+  - Exploratory Equivalence Margin: $\\Delta_{{\\text{{equiv}}}} = \\pm {tost_margin:.2f}\\text{{ pp}}$ (exploratory equivalence analysis using a $\\pm {tost_margin:.2f}$ percentage-point margin)
   - Unweighted Mean Paired Difference: {mean_diff_s:+.4f} pp ($SE = {se_diff_s:.4f}\\text{{ pp}}$)
   - 90% Student $t$-interval: [{ci_90_s[0]:+.4f}, {ci_90_s[1]:+.4f}] pp
   - 95% Student $t$-interval: [{ci_95_s[0]:+.4f}, {ci_95_s[1]:+.4f}] pp (using $t_{{{df_spk}}}$ critical value {t_crit_95:.4f})

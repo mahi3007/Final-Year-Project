@@ -69,14 +69,14 @@ Arm 3 produced lower WER than the Static Baseline in **4 out of 6 strata** (Aust
 - **Standard Paired $t$-test:** $t(59) = -0.2574, p = 0.7978$ (two-tailed).
   - *Interpretation:* The standard paired $t$-test finds **no statistically significant difference** between Arm 3 and the Static Baseline at the $\alpha = 0.05$ level.
 - **Formal Equivalence Testing (Two One-Sided Tests — TOST):**
-  - Pre-specified Practical Equivalence Margin: $\Delta_{\text{equiv}} = \pm 0.50\text{ pp}$ ($\pm 0.5\%$ absolute WER).
+  - Exploratory Equivalence Margin: $\Delta_{\text{equiv}} = \pm 0.50\text{ pp}$ (exploratory equivalence analysis using a $\pm 0.50$ percentage-point margin).
   - Unweighted mean paired difference ($\text{Arm 3} - \text{Arm 1}$): $-0.0310\text{ pp}$ ($SE = 0.1204\text{ pp}$).
   - 90% Confidence Interval: $[-0.2321, +0.1702]\text{ pp}$ (falls entirely inside $[-0.50, +0.50]\text{ pp}$).
   - 95% Confidence Interval: $[-0.2719, +0.2099]\text{ pp}$ (using Student $t_{59}$ critical value $t = 2.0010$, falling entirely inside $[-0.50, +0.50]\text{ pp}$).
   - Lower bound test ($H_{01}: \Delta \le -0.50\text{ pp}$): $t_1 = +3.8963, p_1 = 1.26 \times 10^{-4} < 0.001$.
   - Upper bound test ($H_{02}: \Delta \ge +0.50\text{ pp}$): $t_2 = -4.4111, p_2 = 2.21 \times 10^{-5} < 0.001$.
   - Equivalence Conclusion: $p_{\text{TOST}} = \max(p_1, p_2) = 1.26 \times 10^{-4} < 0.001$.
-  - *Conclusion:* Arm 3 is **statistically equivalent to the Static Baseline within the pre-specified $\pm 0.50\text{ pp}$ equivalence margin**.
+  - *Conclusion:* Arm 3 is **statistically equivalent to the Static Baseline within the exploratory $\pm 0.50\text{ pp}$ equivalence margin**.
 
 ---
 

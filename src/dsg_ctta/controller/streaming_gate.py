@@ -182,8 +182,11 @@ class StreamingGateDecision:
     decision: str                      # "ACCEPT" or "REJECT"
     passed_gate: bool
     delta_r: float                     # Percentage points
-    se_r: float                        # Paired speaker-cluster SE for Delta_R (pp)
-    ucb_r: float                       # Delta_R + z_t * se_r (pp)
+    se_r_raw: float                    # Unadjusted empirical cluster SE for Delta_R (pp)
+    se_r_adjusted: float               # Regularized cluster SE with sensitivity floor applied (pp)
+    se_r_floor: float                  # Cluster single-token sensitivity floor safeguard (pp)
+    se_r: float                        # Regularized cluster SE (alias to se_r_adjusted for backward compatibility)
+    ucb_r: float                       # Delta_R + z_t * se_r_adjusted (pp)
     max_delta_g: float                 # Worst empirical subgroup change (pp)
     ucb_max_group: float               # Worst subgroup UCB (pp)
     worst_group: str                   # Stratum with worst UCB_g
@@ -290,20 +293,23 @@ class StreamingSentinelSafetyGate:
                 for v in spk_data.values()
             )
             var_r = (float(S) / (S - 1)) * u_r_sq / (float(total_words) ** 2)
-            se_r = math.sqrt(max(0.0, var_r)) * 100.0
+            se_r_raw = math.sqrt(max(0.0, var_r)) * 100.0
         else:
-            se_r = 0.0
+            se_r_raw = 0.0
 
-        # Calibrated single-token cluster sensitivity floor:
+        # Conservative engineering safeguard:
         # Minimum physical resolution of 1 edit distance error across the clustered panel.
-        # Prevents finite-sample sample SE from collapsing to zero and bypassing the sequential multiplier.
-        se_floor_cluster = (1.0 / float(total_words)) * 100.0 if total_words > 0 else 0.0
-        se_r_regularized = max(se_r, se_floor_cluster)
+        # Regularizes the standard error to prevent finite-sample sample SE from collapsing to zero
+        # when candidate hypotheses differ from live hypotheses.
+        # NOTE: This floor is an engineering safeguard, not a statistically derived standard error
+        # of a paired, speaker-clustered WER difference.
+        se_r_floor = (1.0 / float(total_words)) * 100.0 if total_words > 0 else 0.0
+        se_r_adjusted = max(se_r_raw, se_r_floor)
 
         # OBF multiplier for current look
         look_idx = min(window_id, len(self.z_schedule) - 1)
         z_t = float(self.z_schedule[look_idx])
-        ucb_r = delta_r + z_t * se_r_regularized
+        ucb_r = delta_r + z_t * se_r_adjusted
 
         # 2. Per-Stratum Risk Change Delta_g, SE_g, and Worst Subgroup UCB
         group_deltas: Dict[str, float] = {}
@@ -425,7 +431,10 @@ class StreamingSentinelSafetyGate:
             decision=decision_str,
             passed_gate=passed,
             delta_r=round(delta_r, 4),
-            se_r=round(se_r_regularized, 4),
+            se_r_raw=round(se_r_raw, 4),
+            se_r_adjusted=round(se_r_adjusted, 4),
+            se_r_floor=round(se_r_floor, 4),
+            se_r=round(se_r_adjusted, 4),
             ucb_r=round(ucb_r, 4),
             max_delta_g=round(max_delta_g, 4),
             ucb_max_group=round(ucb_max_group, 4),
