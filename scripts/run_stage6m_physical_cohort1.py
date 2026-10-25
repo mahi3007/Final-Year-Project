@@ -481,9 +481,9 @@ def generate_and_save_reports(
                 "degrees_of_freedom": df_spk,
                 "statistically_significant_p05": bool(p_val_g_s < 0.05) if not np.isnan(p_val_g_s) else False,
                 "interpretation": (
-                    f"No statistically significant difference detected from static baseline under standard paired t-test (t = {t_stat_g_s:.4f}, p = {p_val_g_s:.4f} > 0.05). "
-                    if n_accept > 0 else
-                    "Identical to static baseline because all candidate updates were safely rolled back (zero-variance paired difference across all 60 speakers)."
+                    f"No statistically significant difference detected from static baseline under standard paired t-test (t = {t_stat_g_s:.4f}, p = {p_val_g_s:.4f} > 0.05)."
+                    if (not np.isnan(t_stat_g_s) and n_accept > 0) else
+                    f"Not estimable because the observed paired differences have zero variance. Arm 3 predictions match Arm 1 on all {metadata['num_clips']} clips, but this sample identity does not establish population-level equivalence."
                 ),
                 "tost_equivalence": tost_payload
             }
@@ -496,20 +496,49 @@ def generate_and_save_reports(
     with open(out_report_json, "w", encoding="utf-8") as f:
         json.dump(report_payload, f, indent=2)
 
-    # Disparity Comparators and Leveling Down Narrative
-    can_result = next((r for r in strata_results if "Canadian" in r["stratum"]), None)
-    if can_result:
-        can_w1 = can_result["wer_arm1_static"]
-        can_w2 = can_result["wer_arm2_ungated"]
-        can_w3 = can_result["wer_arm3_gated"]
-        can_deg = can_w2 - can_w1
-        leveling_down_text = (
-            f"ungated SUTA degrades the best-performing accent "
-            f"(Canadian English degrades from {can_w1:.2f}% to {can_w2:.2f}%, {can_deg:+.2f} pp) rather than lifting disadvantaged groups. "
-            f"Arm 3 preserved Canadian English accuracy ({can_w3:.2f}%), refusing to achieve lower disparity through degradation of advantaged speakers."
+    # Disparity Comparators and Stratum Analysis
+    if strata_results:
+        min_stratum = min(strata_results, key=lambda r: r["wer_arm1_static"])
+        max_stratum = max(strata_results, key=lambda r: r["wer_arm1_static"])
+        min_name = min_stratum["stratum"]
+        max_name = max_stratum["stratum"]
+        min_change = min_stratum["wer_arm2_ungated"] - min_stratum["wer_arm1_static"]
+        max_change = max_stratum["wer_arm2_ungated"] - max_stratum["wer_arm1_static"]
+
+        max_desc = "an improvement" if max_change < 0 else "a regression"
+        min_desc = "a regression" if min_change > 0 else "an improvement"
+
+        gated_disp_desc = (
+            "Gated SUTA rejected all candidate updates and retained baseline predictions."
+            if n_accept == 0 else
+            f"Gated SUTA accepted {n_accept} candidate updates ({acc_rate:.1f}%)."
+        )
+
+        disparity_narrative_text = (
+            f"Ungated SUTA reduced the observed cross-accent WER range from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
+            f"This reflected both {max_desc} in {max_name} WER ({max_change:+.2f} pp) and "
+            f"{min_desc} in {min_name} WER ({min_change:+.2f} pp). "
+            f"The disparity reduction therefore combines an observed improvement in the worst-performing stratum with a leveling-down effect on the best-performing stratum. "
+            f"{gated_disp_desc}"
         )
     else:
-        leveling_down_text = "ungated SUTA degrades best-performing accents rather than lifting disadvantaged groups."
+        disparity_narrative_text = (
+            f"Ungated SUTA reduced cross-accent disparity from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
+            f"Gated SUTA maintained disparity at {disp_arm3:.2f} pp."
+        )
+
+    # Secondary Stability Hypothesis Conclusion
+    if np.isnan(t_stat_g_s) or se_diff_s == 0.0:
+        paired_t_arm1_conclusion_md = (
+            f"Not estimable because the observed paired differences have zero variance. "
+            f"Arm 3 predictions match Arm 1 on all {metadata['num_clips']} clips, but this sample identity does not establish population-level equivalence."
+        )
+    else:
+        paired_t_arm1_conclusion_md = (
+            "Statistically significant difference (p < 0.05)"
+            if p_val_g_s < 0.05 else
+            "No statistically significant difference detected at $\\alpha = 0.05$."
+        )
 
     # Markdown TOST Section
     if se_diff_s > 0.0:
@@ -563,7 +592,7 @@ Unlike prior controller dry-runs, **every word error reported herein derives fro
 
 ### Disparity Comparators and Leveling Down
 - **Relative to Static Baseline:** Arm 3 reduces cross-accent disparity from **{disp_arm1:.2f} pp** to **{disp_arm3:.2f} pp** ({disp_arm3-disp_arm1:+.2f} pp).
-- **Relative to Ungated SUTA:** Ungated SUTA exhibits a numerically lower disparity ({disp_arm2:.2f} pp vs. {disp_arm1:.2f} pp), but this reduction is an artifact of **leveling down**: {leveling_down_text}
+- **Relative to Ungated SUTA:** {disparity_narrative_text}
 
 ---
 
@@ -592,7 +621,7 @@ Unlike prior controller dry-runs, **every word error reported herein derives fro
 - **Secondary Stability Hypothesis (Arm 3 vs. Arm 1):**
   - Paired $t$-statistic: $t = {t_stat_g_s:.4f}$ ($df = {df_spk}$)
   - Two-tailed $p$-value: $p = {p_val_g_s:.4e}$
-  - Conclusion: No statistically significant difference detected at $\\alpha = 0.05$.
+  - Conclusion: {paired_t_arm1_conclusion_md}
 
 {tost_md}
 

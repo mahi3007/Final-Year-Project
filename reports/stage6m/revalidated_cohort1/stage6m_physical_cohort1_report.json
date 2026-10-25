@@ -74,7 +74,7 @@
       "p_value": null,
       "degrees_of_freedom": 59,
       "statistically_significant_p05": false,
-      "interpretation": "Identical to static baseline because all candidate updates were safely rolled back (zero-variance paired difference across all 60 speakers).",
+      "interpretation": "Not estimable because the observed paired differences have zero variance. Arm 3 predictions match Arm 1 on all 900 clips, but this sample identity does not establish population-level equivalence.",
       "tost_equivalence": {
         "status": "NOT_ESTIMABLE_ZERO_VARIANCE",
         "equivalence_margin_pp": 0.5,

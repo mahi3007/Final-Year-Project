@@ -669,7 +669,7 @@ def test_revalidated_cohort1_gate_floor_provenance_and_word_counts():
 
 
 def test_revalidated_cohort1_markdown_report_narrative_consistency():
-    """Verify Markdown report disparity commentary is dynamically consistent with computed stratum results."""
+    """Verify Markdown report disparity commentary is dynamically consistent with computed stratum results and balanced."""
     reval_dir = PROJECT_ROOT / "reports" / "stage6m" / "revalidated_cohort1"
     md_path = reval_dir / "stage6m_physical_cohort1_report.md"
     json_path = reval_dir / "stage6m_physical_cohort1_report.json"
@@ -681,7 +681,7 @@ def test_revalidated_cohort1_markdown_report_narrative_consistency():
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    # Canadian English metrics from JSON
+    # Canadian English metrics from JSON (lowest WER / best-performing)
     can_entry = next(s for s in data["stratum_breakdown"] if s["stratum"] == "Canadian English")
     wer_arm1 = can_entry["wer_arm1_static"]
     wer_arm2 = can_entry["wer_arm2_ungated"]
@@ -691,18 +691,29 @@ def test_revalidated_cohort1_markdown_report_narrative_consistency():
     assert wer_arm2 == 14.73
     assert wer_arm3 == 12.87
 
-    # Markdown narrative must contain current run numbers
-    assert "14.73%" in md_text
-    assert "Arm 3 preserved Canadian English accuracy (12.87%)" in md_text
+    # South Asian English metrics from JSON (highest WER / worst-performing)
+    sa_entry = next(s for s in data["stratum_breakdown"] if s["stratum"] == "South Asian English")
+    sa_wer_arm1 = sa_entry["wer_arm1_static"]
+    sa_wer_arm2 = sa_entry["wer_arm2_ungated"]
+    assert sa_wer_arm1 == 42.66
+    assert sa_wer_arm2 == 41.68
 
-    # Markdown must NOT contain stale numbers from previous runs
+    # Markdown narrative must reflect both minimum and maximum strata
+    assert "South Asian English WER (-0.98 pp)" in md_text
+    assert "Canadian English WER (+1.86 pp)" in md_text
+    assert "combines an observed improvement in the worst-performing stratum with a leveling-down effect on the best-performing stratum" in md_text
+    assert "Gated SUTA rejected all candidate updates and retained baseline predictions." in md_text
+
+    # Markdown must NOT contain overstatements or stale numbers from previous runs
+    assert "rather than lifting disadvantaged groups" not in md_text
+    assert "refusing to achieve lower disparity through degradation of advantaged speakers" not in md_text
     assert "14.07%" not in md_text
     assert "+1.20 pp" not in md_text
     assert "13.13%" not in md_text
 
 
 def test_revalidated_cohort1_zero_variance_tost_representation():
-    """Verify zero-variance TOST output is represented as not estimable under zero sample variance."""
+    """Verify zero-variance TOST and paired t-test output are represented as not estimable under zero sample variance."""
     reval_dir = PROJECT_ROOT / "reports" / "stage6m" / "revalidated_cohort1"
     json_path = reval_dir / "stage6m_physical_cohort1_report.json"
     md_path = reval_dir / "stage6m_physical_cohort1_report.md"
@@ -710,7 +721,16 @@ def test_revalidated_cohort1_zero_variance_tost_representation():
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    tost_sec = data["inferential_statistics_speaker_clustered"]["paired_t_arm3_vs_arm1"]["tost_equivalence"]
+    # Paired t-test JSON verification
+    pt_sec = data["inferential_statistics_speaker_clustered"]["paired_t_arm3_vs_arm1"]
+    assert pt_sec["t_statistic"] is None
+    assert pt_sec["p_value"] is None
+    assert pt_sec["statistically_significant_p05"] is False
+    assert "not estimable because the observed paired differences have zero variance" in pt_sec["interpretation"].lower()
+    assert "does not establish population-level equivalence" in pt_sec["interpretation"].lower()
+
+    # TOST JSON verification
+    tost_sec = pt_sec["tost_equivalence"]
     assert tost_sec["status"] == "NOT_ESTIMABLE_ZERO_VARIANCE"
     assert tost_sec["observed_sample_difference_pp"] == 0.0
     assert tost_sec["standard_error_pp"] == 0.0
@@ -721,9 +741,12 @@ def test_revalidated_cohort1_zero_variance_tost_representation():
     assert tost_sec["statistically_equivalent"] is False
     assert "degenerate" in tost_sec["note"].lower()
 
-    # Markdown must state Not Estimable and explain sample identity vs population equivalence
+    # Markdown verification
     md_text = md_path.read_text(encoding="utf-8")
+    assert "Conclusion: Not estimable because the observed paired differences have zero variance. Arm 3 predictions match Arm 1 on all 900 clips, but this sample identity does not establish population-level equivalence." in md_text
+    assert "No statistically significant difference detected at $\\alpha = 0.05$." not in md_text
     assert "Not Estimable" in md_text
     assert "degenerate under zero observed sample variance" in md_text
     assert "Equivalence within margin not established" in md_text
+
 

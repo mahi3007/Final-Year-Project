@@ -29,7 +29,7 @@ Unlike prior controller dry-runs, **every word error reported herein derives fro
 
 ### Disparity Comparators and Leveling Down
 - **Relative to Static Baseline:** Arm 3 reduces cross-accent disparity from **29.79 pp** to **29.79 pp** (+0.00 pp).
-- **Relative to Ungated SUTA:** Ungated SUTA exhibits a numerically lower disparity (26.94 pp vs. 29.79 pp), but this reduction is an artifact of **leveling down**: ungated SUTA degrades the best-performing accent (Canadian English degrades from 12.87% to 14.73%, +1.86 pp) rather than lifting disadvantaged groups. Arm 3 preserved Canadian English accuracy (12.87%), refusing to achieve lower disparity through degradation of advantaged speakers.
+- **Relative to Ungated SUTA:** Ungated SUTA reduced the observed cross-accent WER range from 29.79 pp to 26.94 pp. This reflected both an improvement in South Asian English WER (-0.98 pp) and a regression in Canadian English WER (+1.86 pp). The disparity reduction therefore combines an observed improvement in the worst-performing stratum with a leveling-down effect on the best-performing stratum. Gated SUTA rejected all candidate updates and retained baseline predictions.
 
 ---
 
@@ -59,7 +59,7 @@ Unlike prior controller dry-runs, **every word error reported herein derives fro
 - **Secondary Stability Hypothesis (Arm 3 vs. Arm 1):**
   - Paired $t$-statistic: $t = nan$ ($df = 59$)
   - Two-tailed $p$-value: $p = nan$
-  - Conclusion: No statistically significant difference detected at $\alpha = 0.05$.
+  - Conclusion: Not estimable because the observed paired differences have zero variance. Arm 3 predictions match Arm 1 on all 900 clips, but this sample identity does not establish population-level equivalence.
 
 - **Formal Two One-Sided Tests (TOST) Equivalence Analysis:**
   - Exploratory Equivalence Margin: $\Delta_{\text{equiv}} = \pm 0.50\text{ pp}$ (exploratory equivalence analysis using a $\pm 0.50$ percentage-point margin)
