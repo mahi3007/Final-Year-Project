@@ -3,8 +3,8 @@
 > [!WARNING]
 > **Overall Preflight Status:** `HOLD`  
 > **Summary:** MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Confirmatory data prerequisites not yet materialized on disk.  
-> **Timestamp:** 2026-10-25T07:36:21.999962+00:00  
-> **Git Commit:** `7969f0a49a`  
+> **Timestamp:** 2026-10-25T08:03:59.014463+00:00  
+> **Git Commit:** `62a3611b15`  
 > **Protocol:** `v1.3.4-stage6m-self-authorization-amendment` (ADR-005)
 
 ---
@@ -19,11 +19,11 @@ Passing technical preflight checks establishes scientific feasibility; it does N
 
 | Checklist Item | Scope | Status | Key Metrics / Evidence |
 | :--- | :--- | :---: | :--- |
-| **1. Manifest Integrity & Schema** | `stage6m_locked_candidate_manifest.json` | `PASS` | SHA-256 locked; 468 speakers across 6 strata (78/stratum); Option 1B reserve pool verified. |
-| **2. Manifest <-> CSV Agreement** | `stage6m_cohort2_audio.csv` | `HOLD` | 0 duplicate clip IDs; 7,020 clips (1,170/stratum); prefix mapping complete. |
-| **3. Audio Materialization & Decodability** | `cohort2_audio/*.mp3` | `HOLD` | 7,020 physical 16 kHz audio files materialized and decodable. |
-| **4. Sentinel Panel Completeness & Isolation** | `stage5_sentinel_panel.csv` | `PASS` | 30 core clips (281 words, uncertainty floor = 0.3559 pp); 0 speaker overlap (zero leakage). |
-| **5. Configuration & Budget Freeze** | Prequential Lan-DeMets Gating | `PASS` | Model, thresholds, alpha spending, 1,754 candidate updates, and compute budget frozen. |
+| **1. Manifest Integrity & Schema** | `stage6m_locked_candidate_manifest.json` | `PASS` | SHA-256 locked (610649e8f6...); 468 speakers across 6 strata (78/stratum); Option 1B reserve verified (27 reserve); authority reconciled (RECONCILED_AMENDMENT_V134). |
+| **2. Manifest <-> CSV Agreement** | `stage6m_cohort2_audio.csv` | `HOLD` | Validation could not be completed: evaluation CSV not materialized on disk (prerequisite missing). |
+| **3. Audio Materialization & Decodability** | `cohort2_audio/*.mp3` | `HOLD` | Validation could not be completed: physical audio files not materialized (MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio). |
+| **4. Sentinel Panel Completeness & Isolation** | `stage5_sentinel_panel.csv` | `PASS` | 30 core clips (281 words, uncertainty floor = 0.3559 pp); sampled audio decodability verified; 0 speaker overlap (zero leakage). |
+| **5. Configuration & Budget Freeze** | Prequential Lan-DeMets Gating | `PASS` | Model (wav2vec2_base), thresholds, Lan-DeMets spending, 1754 candidate updates, and compute budget frozen. |
 
 ---
 

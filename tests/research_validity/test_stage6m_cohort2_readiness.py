@@ -401,3 +401,241 @@ def test_cohort2_benchmark_runner_preflight_only_cli():
     assert proc.returncode == 1
     assert "PREFLIGHT AUDIT VERDICT: HOLD" in proc.stdout
     assert "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD" in proc.stdout
+
+
+def test_cohort1_benchmark_runner_preflight_only_cli_exits_before_model_initialization():
+    """Verify that runner CLI with --cohort cohort1 --preflight-only exits cleanly with code 0 without model loading."""
+    cmd = [
+        sys.executable,
+        str(PROJECT_ROOT / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py"),
+        "--cohort",
+        "cohort1",
+        "--preflight-only",
+    ]
+    proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    assert proc.returncode == 0, f"Cohort 1 preflight-only failed with stderr:\n{proc.stderr}"
+    assert "PREFLIGHT AUDIT VERDICT: READY FOR AUTHORIZED EXECUTION (COHORT 1)" in proc.stdout
+    assert "Initializing Neural Acoustic Model" not in proc.stdout
+    assert "Preloading" not in proc.stdout
+    assert "Executing Continuous Stream" not in proc.stdout
+
+
+# =============================================================================
+# 6. Authority Model & Governance Provenance Tests (Finding 4)
+# =============================================================================
+
+def test_cohort2_manifest_fails_on_unauthorized_token_in_lock(tmp_path):
+    """Modified or unauthorized authorization token in lock file must fail closed."""
+    real_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    real_lock = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.lock.json"
+
+    with open(real_lock, "r", encoding="utf-8") as f:
+        lock_data = json.load(f)
+
+    # Tamper token
+    lock_data["authorization_record"]["token"] = "UNAUTHORIZED-TOKEN-XYZ"
+    tampered_lock = tmp_path / "tampered_lock.json"
+    with open(tampered_lock, "w", encoding="utf-8") as f:
+        json.dump(lock_data, f)
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        manifest_path=real_manifest,
+        lock_path=tampered_lock,
+    )
+    result = validator.validate_manifest()
+    assert result["status"] == "FAIL"
+    assert any("authorization token in lock record" in err for err in result["errors"])
+
+
+def test_cohort2_manifest_fails_on_non_allowlisted_digest_in_lock(tmp_path):
+    """Lock file specifying a hash outside the canonical allowlist must fail closed."""
+    real_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    real_lock = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.lock.json"
+
+    with open(real_lock, "r", encoding="utf-8") as f:
+        lock_data = json.load(f)
+
+    # Mutate to arbitrary digest
+    lock_data["sha256"] = "1111111111111111111111111111111111111111111111111111111111111111"
+    lock_data["sha256_lf"] = "2222222222222222222222222222222222222222222222222222222222222222"
+    tampered_lock = tmp_path / "tampered_lock.json"
+    with open(tampered_lock, "w", encoding="utf-8") as f:
+        json.dump(lock_data, f)
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        manifest_path=real_manifest,
+        lock_path=tampered_lock,
+    )
+    result = validator.validate_manifest()
+    assert result["status"] == "FAIL"
+    assert any("unauthorized SHA-256 digest" in err for err in result["errors"])
+
+
+def test_cohort2_manifest_fails_on_contradictory_governance_metadata(tmp_path):
+    """Contradictory execution_authorized metadata in lock file must fail closed."""
+    real_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    real_lock = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.lock.json"
+
+    with open(real_lock, "r", encoding="utf-8") as f:
+        lock_data = json.load(f)
+
+    lock_data["execution_authorized"] = False
+    tampered_lock = tmp_path / "tampered_lock.json"
+    with open(tampered_lock, "w", encoding="utf-8") as f:
+        json.dump(lock_data, f)
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        manifest_path=real_manifest,
+        lock_path=tampered_lock,
+    )
+    result = validator.validate_manifest()
+    assert result["status"] == "FAIL"
+    assert any("execution_authorized mismatch" in err for err in result["errors"])
+
+
+# =============================================================================
+# 7. Speaker Stratum Preservation & Clip Lock Tests (Finding 3)
+# =============================================================================
+
+def test_cohort2_eval_csv_fails_on_stratum_swapping(tmp_path):
+    """
+    Deliberately swapping speaker stratum assignments between strata while preserving
+    aggregate stratum counts (1,170 each) and active prefix matching must fail closed.
+    """
+    manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+
+    df = _generate_synthetic_cohort2_df(manifest_data)
+
+    # Pick one speaker from Irish English and one from Canadian English
+    irish_spk = df[df["stage5_accent_group"] == "Irish English"]["speaker_id"].iloc[0]
+    canada_spk = df[df["stage5_accent_group"] == "Canadian English"]["speaker_id"].iloc[0]
+
+    # Swap their strata in the evaluation CSV
+    df.loc[df["speaker_id"] == irish_spk, "stage5_accent_group"] = "Canadian English"
+    df.loc[df["speaker_id"] == irish_spk, "stratum_code"] = "canada"
+    df.loc[df["speaker_id"] == canada_spk, "stage5_accent_group"] = "Irish English"
+    df.loc[df["speaker_id"] == canada_spk, "stratum_code"] = "ireland"
+
+    # Verify counts remain 1170 per stratum
+    assert (df.groupby("stage5_accent_group")["recording_id"].count() == 1170).all()
+    assert len(df) == 7020
+
+    csv_path = tmp_path / "swapped_stage6m_cohort2_audio.csv"
+    df.to_csv(csv_path, index=False)
+
+    validator = Cohort2PreflightValidator(project_root=PROJECT_ROOT, eval_csv_path=csv_path)
+    result = validator.validate_eval_csv(manifest_data)
+    assert result["status"] == "FAIL"
+    assert any("Speaker stratum preservation violation" in err for err in result["errors"])
+
+
+def test_cohort2_eval_csv_clip_lock_exact_set_equality(tmp_path):
+    """Clip lock file must enforce exact clip-set equality with evaluation CSV."""
+    manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+
+    df = _generate_synthetic_cohort2_df(manifest_data)
+    csv_path = tmp_path / "stage6m_cohort2_audio.csv"
+    df.to_csv(csv_path, index=False)
+
+    # 1. Matching clip lock -> PASS
+    clip_lock_path = tmp_path / "stage6m_cohort2_audio.lock.json"
+    all_rec_ids = list(df["recording_id"])
+    with open(clip_lock_path, "w", encoding="utf-8") as f:
+        json.dump({"recording_ids": all_rec_ids}, f)
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT, eval_csv_path=csv_path, clip_lock_path=clip_lock_path
+    )
+    res_pass = validator.validate_eval_csv(manifest_data)
+    assert res_pass["status"] == "PASS"
+    assert res_pass["details"]["clip_lock_verified"] is True
+
+    # 2. Mismatched clip lock (omit one clip ID, add one bogus ID) -> FAIL
+    all_rec_ids_tampered = all_rec_ids[:-1] + ["bogus_extra_clip_99999"]
+    with open(clip_lock_path, "w", encoding="utf-8") as f:
+        json.dump({"recording_ids": all_rec_ids_tampered}, f)
+
+    res_fail = validator.validate_eval_csv(manifest_data)
+    assert res_fail["status"] == "FAIL"
+    assert any("Clip-set exact equality failed" in err for err in res_fail["errors"])
+
+
+# =============================================================================
+# 8. Audio Materialization Invariants (Finding 5)
+# =============================================================================
+
+def test_cohort2_audio_fails_on_zero_byte_file(tmp_path):
+    """Audio materialization must reject empty (zero-byte) files."""
+    audio_dir = tmp_path / "cohort2_audio"
+    audio_dir.mkdir()
+
+    # Create 7019 valid 1-byte files and 1 zero-byte file
+    for i in range(7019):
+        (audio_dir / f"clip_{i:05d}.mp3").write_bytes(b"x")
+    zero_file = audio_dir / "clip_07019.mp3"
+    zero_file.write_bytes(b"")  # 0 bytes
+
+    validator = Cohort2PreflightValidator(project_root=PROJECT_ROOT, audio_dir=audio_dir)
+    result = validator.validate_audio_materialization(check_samples=1)
+    assert result["status"] == "FAIL"
+    assert any("zero bytes" in err for err in result["errors"])
+
+
+def test_cohort2_audio_fails_on_extraneous_files(tmp_path):
+    """Audio directory containing extra MP3 files not listed in CSV must fail closed."""
+    manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+
+    df = _generate_synthetic_cohort2_df(manifest_data)
+    audio_dir = tmp_path / "cohort2_audio"
+    audio_dir.mkdir()
+
+    import soundfile as sf
+    dummy_wav = np.zeros(16000, dtype=np.float32)
+    sample_file = audio_dir / "sample.wav"
+    sf.write(sample_file, dummy_wav, 16000)
+    sample_bytes = sample_file.read_bytes()
+
+    for rec_id in df["recording_id"]:
+        (audio_dir / f"{rec_id}.mp3").write_bytes(sample_bytes)
+
+    # Inject an extraneous MP3 file
+    (audio_dir / "extraneous_unlisted_clip.mp3").write_bytes(sample_bytes)
+
+    validator = Cohort2PreflightValidator(project_root=PROJECT_ROOT, audio_dir=audio_dir)
+    result = validator.validate_audio_materialization(eval_df=df, check_samples=5)
+    assert result["status"] == "FAIL"
+    assert any("extraneous audio files" in err for err in result["errors"])
+
+
+# =============================================================================
+# 9. Truthful Markdown Reporting (Finding 1)
+# =============================================================================
+
+def test_cohort2_markdown_report_avoids_contradictory_claims_under_hold(base_validator, tmp_path):
+    """
+    Under HOLD, the checklist matrix must state that validation could not be completed
+    and never claim completed decodability or clip counts.
+    """
+    report = base_validator.run_preflight()
+    assert report["overall_status"] == "HOLD"
+
+    _, md_p = base_validator.save_reports(report, output_dir=tmp_path)
+    md_text = md_p.read_text(encoding="utf-8")
+
+    # Positive assertions: must state validation could not be completed
+    assert "Validation could not be completed: evaluation CSV not materialized on disk (prerequisite missing)." in md_text
+    assert "Validation could not be completed: physical audio files not materialized" in md_text
+
+    # Negative assertions: must NOT make false success claims
+    assert "7,020 physical 16 kHz audio files materialized and decodable" not in md_text
+    assert "0 duplicate clip IDs; 7,020 clips (1,170/stratum); prefix mapping complete." not in md_text
+

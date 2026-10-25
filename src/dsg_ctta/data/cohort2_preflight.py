@@ -93,6 +93,7 @@ class Cohort2PreflightValidator:
         project_root: Optional[Path] = None,
         manifest_path: Optional[Path] = None,
         lock_path: Optional[Path] = None,
+        clip_lock_path: Optional[Path] = None,
         eval_csv_path: Optional[Path] = None,
         audio_dir: Optional[Path] = None,
         sentinel_csv_path: Optional[Path] = None,
@@ -102,6 +103,7 @@ class Cohort2PreflightValidator:
         self.root = project_root or Path(__file__).resolve().parent.parent.parent.parent
         self.manifest_path = manifest_path or (self.root / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json")
         self.lock_path = lock_path or (self.root / "datasets" / "splits" / "stage6m_locked_candidate_manifest.lock.json")
+        self.clip_lock_path = clip_lock_path or (self.root / "datasets" / "splits" / "stage6m_cohort2_audio.lock.json")
         self.eval_csv_path = eval_csv_path or (self.root / "datasets" / "splits" / "stage6m_cohort2_audio.csv")
         self.audio_dir = audio_dir or (self.root / "datasets" / "external" / "common_voice_27" / "cohort2_audio")
         self.sentinel_csv_path = sentinel_csv_path or (self.root / "datasets" / "splits" / "stage5_sentinel_panel.csv")
@@ -112,6 +114,7 @@ class Cohort2PreflightValidator:
         """
         Check 1: Manifest Integrity & Schema.
         Validates cryptographic hash against lock file, protocol version, and exact stratum allocation.
+        Reconciles historical immutable manifest state against the v1.3.4 authorization amendment.
         """
         result: Dict[str, Any] = {
             "check_name": "manifest_integrity_and_schema",
@@ -131,19 +134,33 @@ class Cohort2PreflightValidator:
             result["errors"].append(f"Manifest lock file missing: {self.lock_path}")
             return result
 
-        # Cryptographic Hash Check
-        manifest_hash = compute_sha256(self.manifest_path)
+        # Cryptographic Hash & Lock Authorization Check
         with open(self.lock_path, "r", encoding="utf-8") as f:
-            lock_data = json.load(f)
+            try:
+                lock_data = json.load(f)
+            except Exception as e:
+                result["status"] = "FAIL"
+                result["errors"].append(f"Malformed manifest lock JSON: {e}")
+                return result
 
-        lock_valid_hashes = {lock_data.get("sha256"), lock_data.get("sha256_lf")}
-        if manifest_hash not in VALID_MANIFEST_SHA256 and manifest_hash not in lock_valid_hashes:
+        # Enforce that lock file digests match the canonical repository allowlist
+        lock_sha256 = lock_data.get("sha256")
+        lock_sha256_lf = lock_data.get("sha256_lf")
+        lock_hashes = {h for h in [lock_sha256, lock_sha256_lf] if h}
+        if not lock_hashes.intersection(VALID_MANIFEST_SHA256):
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Manifest lock file records unauthorized SHA-256 digest '{lock_sha256}' not in canonical allowlist {VALID_MANIFEST_SHA256}."
+            )
+
+        manifest_hash = compute_sha256(self.manifest_path)
+        if manifest_hash not in VALID_MANIFEST_SHA256 or (lock_hashes and manifest_hash not in lock_hashes):
             result["status"] = "FAIL"
             result["errors"].append(
                 f"Manifest SHA-256 mismatch! Computed '{manifest_hash}' not in authorized digests {VALID_MANIFEST_SHA256}."
             )
 
-        # Schema Validation
+        # Parse Manifest
         try:
             with open(self.manifest_path, "r", encoding="utf-8") as f:
                 manifest = json.load(f)
@@ -155,14 +172,72 @@ class Cohort2PreflightValidator:
         meta = manifest.get("metadata", {})
         strata = manifest.get("strata", {})
 
-        protocol_ver = meta.get("protocol_version", "")
-        if "stage6m" not in protocol_ver:
-            result["status"] = "FAIL"
-            result["errors"].append(f"Unexpected protocol version in manifest: '{protocol_ver}'")
+        # Reconcile Authority Model: Immutable Historical Manifest vs. Lock Amendment
+        hist_protocol = meta.get("protocol_version", "")
+        hist_standard = meta.get("governing_standard", "")
+        hist_gov_status = meta.get("governance_status", "")
+        hist_exec_auth = meta.get("execution_authorized")
 
-        if meta.get("governing_standard") != "ADR-005":
+        if hist_gov_status != "LOCKED_CANDIDATE_HOLD_NOT_AUTHORIZED":
             result["status"] = "FAIL"
-            result["errors"].append(f"Unexpected governing standard: '{meta.get('governing_standard')}'")
+            result["errors"].append(
+                f"Historical manifest governance_status mismatch: expected 'LOCKED_CANDIDATE_HOLD_NOT_AUTHORIZED', got '{hist_gov_status}'."
+            )
+
+        if hist_exec_auth is not False:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Historical manifest execution_authorized mismatch: expected False, got {hist_exec_auth}."
+            )
+
+        if "stage6m" not in hist_protocol:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Unexpected historical protocol version in manifest: '{hist_protocol}'")
+
+        if hist_standard != "ADR-005":
+            result["status"] = "FAIL"
+            result["errors"].append(f"Unexpected historical governing standard in manifest: '{hist_standard}'")
+
+        # Validate Lock Amendment Authorization Record
+        lock_protocol = lock_data.get("protocol_version", "")
+        lock_standard = lock_data.get("governing_standard", "")
+        lock_gov_status = lock_data.get("governance_status", "")
+        lock_exec_auth = lock_data.get("execution_authorized")
+        auth_record = lock_data.get("authorization_record", {})
+
+        if "v1.3.4" not in lock_protocol:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Lock file protocol version mismatch: expected v1.3.4 amendment, got '{lock_protocol}'.")
+
+        if "AMENDMENT-001" not in lock_standard:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Lock file governing standard mismatch: expected AMENDMENT-001 reference, got '{lock_standard}'.")
+
+        if lock_gov_status != "AUTHORIZED_UNDER_AMENDMENT_v1.3.4":
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Lock file governance_status mismatch: expected 'AUTHORIZED_UNDER_AMENDMENT_v1.3.4', got '{lock_gov_status}'."
+            )
+
+        if lock_exec_auth is not True:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Lock file execution_authorized mismatch: expected True under amendment, got {lock_exec_auth}."
+            )
+
+        expected_token = "AUTH-20261020-STAGE6M-AMEND-V134-EXECUTE-PERMITTED"
+        actual_token = auth_record.get("token")
+        if actual_token != expected_token:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Invalid or missing authorization token in lock record: expected '{expected_token}', got '{actual_token}'."
+            )
+
+        if auth_record.get("authorizing_authority") != "Designated Project Lead":
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Invalid authorizing authority in lock record: '{auth_record.get('authorizing_authority')}'."
+            )
 
         total_active_spk = meta.get("total_active_speakers")
         if total_active_spk != 468:
@@ -220,19 +295,28 @@ class Cohort2PreflightValidator:
 
         result["details"] = {
             "manifest_sha256": manifest_hash,
-            "protocol_version": protocol_ver,
-            "governing_standard": meta.get("governing_standard"),
             "total_active_speakers": total_active_spk,
             "total_clips_allocated": 468 * 15,
             "strata_summary": strata_summary,
             "irish_reserve_total": irish.get("total_reserve_count", 0),
+            "provenance_reconciliation": {
+                "historical_manifest_protocol": hist_protocol,
+                "historical_governance_status": hist_gov_status,
+                "historical_execution_authorized": hist_exec_auth,
+                "amendment_protocol_version": lock_protocol,
+                "amendment_governance_status": lock_gov_status,
+                "amendment_execution_authorized": lock_exec_auth,
+                "authorization_token": actual_token,
+                "authority_reconciliation_verdict": "RECONCILED_AMENDMENT_V134",
+            },
         }
         return result
 
     def validate_eval_csv(self, manifest_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Check 2: Manifest <-> Evaluation CSV Agreement.
-        Checks duplicate clip IDs, speaker counts, strata breakdown, and prefix consistency.
+        Checks duplicate clip IDs, speaker counts, strata breakdown, speaker-stratum preservation,
+        and optional clip-level manifest/lock equality.
         """
         result: Dict[str, Any] = {
             "check_name": "evaluation_csv_manifest_agreement",
@@ -309,23 +393,87 @@ class Cohort2PreflightValidator:
                 result["status"] = "FAIL"
                 result["errors"].append(f"Stratum '{s_key}' has {count} clips (expected 1,170 = 78*15).")
 
-        # Match speaker IDs against manifest active speaker prefixes
+        # Speaker-to-Stratum Mapping & Locked Stratum Preservation
         strata_manifest = manifest_data.get("strata", {})
-        active_prefixes: Set[str] = set()
+        prefix_to_stratum: Dict[str, Tuple[str, str]] = {}
         for s_name, s_info in strata_manifest.items():
+            s_code = s_info.get("stratum_code", "")
             for spk in s_info.get("active_speakers", []):
-                active_prefixes.add(spk["speaker_id_prefix"].rstrip("…"))
+                pref = spk["speaker_id_prefix"].rstrip("…")
+                prefix_to_stratum[pref] = (s_name, s_code)
 
         unmatched_spks: List[str] = []
-        for spk_id in df["speaker_id"].unique():
-            if not any(str(spk_id).startswith(pref) for pref in active_prefixes):
-                unmatched_spks.append(str(spk_id))
+        stratum_swaps: List[str] = []
+
+        for spk_id, spk_df in df.groupby("speaker_id"):
+            spk_str = str(spk_id)
+            matched_prefix = None
+            for pref in prefix_to_stratum:
+                if spk_str.startswith(pref):
+                    matched_prefix = pref
+                    break
+
+            if matched_prefix is None:
+                unmatched_spks.append(spk_str)
+                continue
+
+            expected_s_name, expected_s_code = prefix_to_stratum[matched_prefix]
+            assigned_strata = set(spk_df[stratum_col].unique())
+            # Check if assigned stratum matches expected name or code
+            matches_expected = (expected_s_name in assigned_strata) or (expected_s_code in assigned_strata)
+            if not matches_expected or len(assigned_strata) != 1:
+                stratum_swaps.append(
+                    f"Speaker '{spk_str[:12]}...' (prefix '{matched_prefix[:10]}...'): "
+                    f"locked to '{expected_s_name}', but assigned to {list(assigned_strata)} in CSV."
+                )
 
         if unmatched_spks:
             result["status"] = "FAIL"
             result["errors"].append(
                 f"{len(unmatched_spks)} speakers in evaluation CSV do not match any candidate manifest active prefix."
             )
+
+        if stratum_swaps:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Speaker stratum preservation violation! {len(stratum_swaps)} speakers were redistributed/swapped between strata: {stratum_swaps[:3]}"
+            )
+
+        # Clip-Level Lock / Manifest Agreement Check
+        clip_lock_verified = False
+        if self.clip_lock_path.exists():
+            try:
+                with open(self.clip_lock_path, "r", encoding="utf-8") as f:
+                    clip_lock_data = json.load(f)
+
+                if "recording_ids" in clip_lock_data:
+                    expected_rec_ids = set(clip_lock_data["recording_ids"])
+                    actual_rec_ids = set(df["recording_id"])
+                    missing_rec_ids = expected_rec_ids - actual_rec_ids
+                    extra_rec_ids = actual_rec_ids - expected_rec_ids
+                    if missing_rec_ids or extra_rec_ids:
+                        result["status"] = "FAIL"
+                        result["errors"].append(
+                            f"Clip-set exact equality failed! {len(missing_rec_ids)} missing clips, {len(extra_rec_ids)} extra clips compared to locked clip manifest."
+                        )
+
+                if "csv_sha256" in clip_lock_data:
+                    csv_hash = compute_sha256(self.eval_csv_path)
+                    allowlist = {
+                        clip_lock_data.get("csv_sha256"),
+                        clip_lock_data.get("crlf_sha256"),
+                        clip_lock_data.get("lf_sha256"),
+                    }
+                    if csv_hash not in allowlist:
+                        result["status"] = "FAIL"
+                        result["errors"].append(
+                            f"Evaluation CSV SHA-256 '{csv_hash}' not in clip lock allowlist {allowlist}."
+                        )
+
+                clip_lock_verified = True
+            except Exception as e:
+                result["status"] = "FAIL"
+                result["errors"].append(f"Failed to parse clip lock file '{self.clip_lock_path}': {e}")
 
         result["details"] = {
             "total_clips": total_clips,
@@ -335,6 +483,8 @@ class Cohort2PreflightValidator:
             "manifest_prefix_match_rate_pct": round(
                 100.0 * (unique_speakers - len(unmatched_spks)) / max(1, unique_speakers), 2
             ),
+            "speaker_stratum_preservation_verified": len(stratum_swaps) == 0 and len(unmatched_spks) == 0,
+            "clip_lock_verified": clip_lock_verified,
         }
         return result
 
@@ -343,7 +493,8 @@ class Cohort2PreflightValidator:
     ) -> Dict[str, Any]:
         """
         Check 3: Audio Materialization & 16 kHz Decodability.
-        Verifies existence on disk and tests audio decoding / resampling to 16 kHz mono float32.
+        Verifies existence on disk, enforces non-empty files, rejects missing/extra clips,
+        and tests sampled 16 kHz mono float32 decoding.
         """
         result: Dict[str, Any] = {
             "check_name": "audio_materialization_and_decodability",
@@ -369,19 +520,32 @@ class Cohort2PreflightValidator:
             result["details"] = {"files_present": len(mp3_files), "files_required": 7020}
             return result
 
-        # If evaluation DataFrame is provided, check exact file existence for all clips
+        # Enforce Non-Empty Files
+        empty_files = [f.name for f in mp3_files if f.stat().st_size == 0]
+        if empty_files:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Materialization integrity failure: {len(empty_files)} audio files have zero bytes (e.g. {empty_files[:3]})."
+            )
+
+        # Exact Audio File Set Verification Against Evaluation CSV
         missing_clips: List[str] = []
+        extra_clips: List[str] = []
         if eval_df is not None:
-            for rec_id in eval_df["recording_id"]:
-                clip_path = self.audio_dir / f"{rec_id}.mp3"
-                if not clip_path.exists():
-                    missing_clips.append(str(rec_id))
+            expected_names = set(f"{rec_id}.mp3" for rec_id in eval_df["recording_id"])
+            actual_names = set(f.name for f in mp3_files)
+            missing_clips = list(expected_names - actual_names)
+            extra_clips = list(actual_names - expected_names)
 
             if missing_clips:
                 result["status"] = "FAIL"
-                result["errors"].append(f"{len(missing_clips)} clips in evaluation CSV lack matching audio files.")
+                result["errors"].append(f"{len(missing_clips)} clips in evaluation CSV lack matching physical audio files.")
 
-        # Sample decode & resample test to verify genuine acoustic integrity
+            if extra_clips:
+                result["status"] = "FAIL"
+                result["errors"].append(f"{len(extra_clips)} extraneous audio files found in audio directory not listed in evaluation CSV.")
+
+        # Sample decode & resample test to verify genuine acoustic decodability
         decode_tested = 0
         decode_failed = 0
         sample_files = mp3_files[:check_samples]
@@ -402,10 +566,18 @@ class Cohort2PreflightValidator:
 
         result["details"] = {
             "total_audio_files": len(mp3_files),
+            "expected_audio_files": 7020,
+            "empty_files_count": len(empty_files),
             "missing_clip_count": len(missing_clips),
+            "extra_clip_count": len(extra_clips),
+            "decodability_audit_type": "PREFLIGHT_SAMPLE_AUDIT",
             "decode_sample_tested": decode_tested,
             "decode_sample_failed": decode_failed,
             "target_sample_rate_hz": 16000,
+            "decodability_scope_note": (
+                f"Preflight validates sampled decodability ({decode_tested} files tested). "
+                "Full-corpus decodability is verified during waveform preloading before model initialization."
+            ),
         }
         return result
 
@@ -414,8 +586,8 @@ class Cohort2PreflightValidator:
     ) -> Dict[str, Any]:
         """
         Check 4: Sentinel Panel Completeness & Zero-Exposure Speaker Isolation.
-        Validates core panel (30 clips, 281 words, uncertainty floor = 0.3559 pp) and asserts
-        that sentinel speakers are strictly disjoint from Cohort 2 evaluation speakers.
+        Validates core panel (30 clips, 281 words, uncertainty floor = 0.3559 pp), audio decodability,
+        and asserts that sentinel speakers are strictly disjoint from Cohort 2 evaluation speakers.
         """
         result: Dict[str, Any] = {
             "check_name": "sentinel_panel_completeness_and_isolation",
@@ -471,8 +643,10 @@ class Cohort2PreflightValidator:
                 f"Core sentinel panel reference word count is {core_word_count} (expected {CORE_SENTINEL_WORDS})."
             )
 
-        # Sentinel audio decodability
+        # Sentinel audio existence and preflight decodability
         missing_sent_audio = 0
+        sent_decode_tested = 0
+        sent_decode_failed = 0
         for _, row in core_sentinel_df.iterrows():
             s_id = str(row.get("sentinel_id") or row.get("recording_id"))
             p = self.sentinel_audio_dir / f"{s_id}.mp3"
@@ -480,10 +654,24 @@ class Cohort2PreflightValidator:
                 p = self.root / str(row.get("audio_filepath", ""))
             if not p.exists():
                 missing_sent_audio += 1
+            else:
+                if sent_decode_tested < 5:
+                    try:
+                        wf, sr = load_and_resample_audio(p, target_sr=16000)
+                        sent_decode_tested += 1
+                        if sr != 16000 or len(wf) == 0 or np.isnan(wf).any():
+                            sent_decode_failed += 1
+                    except Exception:
+                        sent_decode_tested += 1
+                        sent_decode_failed += 1
 
         if missing_sent_audio > 0:
             result["status"] = "FAIL"
             result["errors"].append(f"{missing_sent_audio}/30 core sentinel audio clips are missing on disk.")
+
+        if sent_decode_failed > 0:
+            result["status"] = "FAIL"
+            result["errors"].append(f"{sent_decode_failed}/{sent_decode_tested} sampled sentinel audio clips failed 16 kHz decoding.")
 
         # STRICT SPEAKER ISOLATION / ZERO EXPOSURE CHECK
         sentinel_prefixes = set(s[:24] for s in sent_df["speaker_id"].unique())
@@ -521,6 +709,8 @@ class Cohort2PreflightValidator:
             "uncertainty_floor_pp": uncertainty_floor,
             "speaker_isolation_verified": bool(len(active_overlap) == 0 and len(csv_overlap) == 0),
             "sentinel_active_overlap_count": len(active_overlap),
+            "sentinel_decode_sample_tested": sent_decode_tested,
+            "sentinel_decode_sample_failed": sent_decode_failed,
         }
         return result
 
@@ -667,6 +857,63 @@ class Cohort2PreflightValidator:
         }
         return report
 
+    @staticmethod
+    def _format_checklist_metrics(check_key: str, check_data: Dict[str, Any]) -> str:
+        status = check_data.get("status", "UNKNOWN")
+        errors = check_data.get("errors", [])
+        details = check_data.get("details", {})
+
+        if check_key == "manifest_integrity_and_schema":
+            if status == "PASS":
+                sha = details.get("manifest_sha256", "")[:10]
+                reconciled = details.get("provenance_reconciliation", {}).get("authority_reconciliation_verdict", "RECONCILED")
+                return (
+                    f"SHA-256 locked ({sha}...); 468 speakers across 6 strata (78/stratum); "
+                    f"Option 1B reserve verified ({details.get('irish_reserve_total', 27)} reserve); "
+                    f"authority reconciled ({reconciled})."
+                )
+            return f"Manifest check failed: {errors[0] if errors else 'Integrity violation detected'}."
+
+        elif check_key == "evaluation_csv_manifest_agreement":
+            if status == "PASS":
+                return (
+                    f"0 duplicate clip IDs; {details.get('total_clips', 7020):,} clips across 6 strata "
+                    f"(1,170/stratum); 468 speakers mapped to locked strata (zero swaps)."
+                )
+            elif status == "HOLD":
+                return "Validation could not be completed: evaluation CSV not materialized on disk (prerequisite missing)."
+            return f"CSV agreement failed: {errors[0] if errors else 'Integrity violation detected'}."
+
+        elif check_key == "audio_materialization_and_decodability":
+            if status == "PASS":
+                return (
+                    f"{details.get('total_audio_files', 7020):,} physical audio files materialized; "
+                    f"sampled 16 kHz decodability verified ({details.get('decode_sample_tested', 0)} tested, 0 errors). "
+                    "Full-corpus preloading required prior to model execution."
+                )
+            elif status == "HOLD":
+                err_msg = errors[0] if errors else "audio directory not materialized on disk"
+                return f"Validation could not be completed: physical audio files not materialized ({err_msg})."
+            return f"Audio validation failed: {errors[0] if errors else 'Materialization error'}."
+
+        elif check_key == "sentinel_panel_completeness_and_isolation":
+            if status == "PASS":
+                return (
+                    f"30 core clips (281 words, uncertainty floor = {details.get('uncertainty_floor_pp', 0.3559):.4f} pp); "
+                    "sampled audio decodability verified; 0 speaker overlap (zero leakage)."
+                )
+            return f"Sentinel validation failed: {errors[0] if errors else 'Integrity violation detected'}."
+
+        elif check_key == "execution_configuration_freeze":
+            if status == "PASS":
+                return (
+                    f"Model ({details.get('model_architecture', 'wav2vec2_base')}), thresholds, Lan-DeMets spending, "
+                    f"{details.get('stream_geometry', {}).get('adaptation_updates_u', 1754)} candidate updates, and compute budget frozen."
+                )
+            return f"Configuration freeze failed: {errors[0] if errors else 'Freeze error'}."
+
+        return f"Status: {status}"
+
     def save_reports(
         self, report: Dict[str, Any], output_dir: Optional[Path] = None
     ) -> Tuple[Path, Path]:
@@ -685,6 +932,12 @@ class Cohort2PreflightValidator:
         # Build Markdown
         status = report["overall_status"]
         alert_type = "NOTE" if status == "READY FOR AUTHORIZED EXECUTION" else "WARNING"
+
+        desc_1 = self._format_checklist_metrics("manifest_integrity_and_schema", report["checks"]["manifest_integrity_and_schema"])
+        desc_2 = self._format_checklist_metrics("evaluation_csv_manifest_agreement", report["checks"]["evaluation_csv_manifest_agreement"])
+        desc_3 = self._format_checklist_metrics("audio_materialization_and_decodability", report["checks"]["audio_materialization_and_decodability"])
+        desc_4 = self._format_checklist_metrics("sentinel_panel_completeness_and_isolation", report["checks"]["sentinel_panel_completeness_and_isolation"])
+        desc_5 = self._format_checklist_metrics("execution_configuration_freeze", report["checks"]["execution_configuration_freeze"])
 
         md_content = f"""# Stage 6M Confirmatory Cohort 2 Preflight Readiness Report
 
@@ -707,11 +960,11 @@ class Cohort2PreflightValidator:
 
 | Checklist Item | Scope | Status | Key Metrics / Evidence |
 | :--- | :--- | :---: | :--- |
-| **1. Manifest Integrity & Schema** | `stage6m_locked_candidate_manifest.json` | `{report['checks']['manifest_integrity_and_schema']['status']}` | SHA-256 locked; 468 speakers across 6 strata (78/stratum); Option 1B reserve pool verified. |
-| **2. Manifest <-> CSV Agreement** | `stage6m_cohort2_audio.csv` | `{report['checks']['evaluation_csv_manifest_agreement']['status']}` | 0 duplicate clip IDs; 7,020 clips (1,170/stratum); prefix mapping complete. |
-| **3. Audio Materialization & Decodability** | `cohort2_audio/*.mp3` | `{report['checks']['audio_materialization_and_decodability']['status']}` | 7,020 physical 16 kHz audio files materialized and decodable. |
-| **4. Sentinel Panel Completeness & Isolation** | `stage5_sentinel_panel.csv` | `{report['checks']['sentinel_panel_completeness_and_isolation']['status']}` | 30 core clips (281 words, uncertainty floor = 0.3559 pp); 0 speaker overlap (zero leakage). |
-| **5. Configuration & Budget Freeze** | Prequential Lan-DeMets Gating | `{report['checks']['execution_configuration_freeze']['status']}` | Model, thresholds, alpha spending, 1,754 candidate updates, and compute budget frozen. |
+| **1. Manifest Integrity & Schema** | `stage6m_locked_candidate_manifest.json` | `{report['checks']['manifest_integrity_and_schema']['status']}` | {desc_1} |
+| **2. Manifest <-> CSV Agreement** | `stage6m_cohort2_audio.csv` | `{report['checks']['evaluation_csv_manifest_agreement']['status']}` | {desc_2} |
+| **3. Audio Materialization & Decodability** | `cohort2_audio/*.mp3` | `{report['checks']['audio_materialization_and_decodability']['status']}` | {desc_3} |
+| **4. Sentinel Panel Completeness & Isolation** | `stage5_sentinel_panel.csv` | `{report['checks']['sentinel_panel_completeness_and_isolation']['status']}` | {desc_4} |
+| **5. Configuration & Budget Freeze** | Prequential Lan-DeMets Gating | `{report['checks']['execution_configuration_freeze']['status']}` | {desc_5} |
 
 ---
 

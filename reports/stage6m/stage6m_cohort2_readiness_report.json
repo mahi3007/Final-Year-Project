@@ -6,8 +6,8 @@
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Evaluation CSV not materialized: datasets/splits/stage6m_cohort2_audio.csv",
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio"
   ],
-  "timestamp_utc": "2026-10-25T07:36:21.999962+00:00",
-  "git_commit": "7969f0a49a01bb2b5f6668dc8136d8059171fc01",
+  "timestamp_utc": "2026-10-25T08:03:59.014463+00:00",
+  "git_commit": "62a3611b1503ddd248e6f39fc2ccc2043e95e417",
   "governing_standard": "ADR-005",
   "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
   "checks": {
@@ -18,8 +18,6 @@
       "warnings": [],
       "details": {
         "manifest_sha256": "610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895",
-        "protocol_version": "v1.3.3-stage6m-reconciled-decision-pack",
-        "governing_standard": "ADR-005",
         "total_active_speakers": 468,
         "total_clips_allocated": 7020,
         "strata_summary": {
@@ -54,7 +52,17 @@
             "clips_allocated": 1170
           }
         },
-        "irish_reserve_total": 27
+        "irish_reserve_total": 27,
+        "provenance_reconciliation": {
+          "historical_manifest_protocol": "v1.3.3-stage6m-reconciled-decision-pack",
+          "historical_governance_status": "LOCKED_CANDIDATE_HOLD_NOT_AUTHORIZED",
+          "historical_execution_authorized": false,
+          "amendment_protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+          "amendment_governance_status": "AUTHORIZED_UNDER_AMENDMENT_v1.3.4",
+          "amendment_execution_authorized": true,
+          "authorization_token": "AUTH-20261020-STAGE6M-AMEND-V134-EXECUTE-PERMITTED",
+          "authority_reconciliation_verdict": "RECONCILED_AMENDMENT_V134"
+        }
       }
     },
     "evaluation_csv_manifest_agreement": {
@@ -87,7 +95,9 @@
         "core_sentinel_reference_words": 281,
         "uncertainty_floor_pp": 0.3559,
         "speaker_isolation_verified": true,
-        "sentinel_active_overlap_count": 0
+        "sentinel_active_overlap_count": 0,
+        "sentinel_decode_sample_tested": 5,
+        "sentinel_decode_sample_failed": 0
       }
     },
     "execution_configuration_freeze": {
