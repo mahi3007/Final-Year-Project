@@ -330,8 +330,12 @@ def main():
     ]
     eval_cache = preload_waveforms(eval_file_list, sample_rate=16000)
 
+    # Core Stratified Sentinel Panel: 1 clip per sentinel speaker (30 clips, exactly 5/stratum)
+    core_sentinel_df = sentinel_df.groupby("speaker_id").first().reset_index()
+    core_sentinel_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_sentinel_df.iterrows()]
+
     sentinel_file_list = []
-    for _, row in sentinel_df.iterrows():
+    for _, row in core_sentinel_df.iterrows():
         s_id = str(row.get("sentinel_id") or row.get("recording_id"))
         p = sentinel_audio_dir / f"{s_id}.mp3"
         if not p.exists():
@@ -339,9 +343,6 @@ def main():
         sentinel_file_list.append((s_id, p))
     sentinel_cache = preload_waveforms(sentinel_file_list, sample_rate=16000)
 
-    # Core Stratified Sentinel Panel: 1 clip per sentinel speaker (30 clips, exactly 5/stratum)
-    core_sentinel_df = sentinel_df.groupby("speaker_id").first().reset_index()
-    core_sentinel_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_sentinel_df.iterrows()]
     core_sentinel_waveforms = [sentinel_cache[s_id] for s_id in core_sentinel_ids]
     core_sentinel_refs = [TextNormalizer.normalize(str(r["transcript"])) for _, r in core_sentinel_df.iterrows()]
     core_sentinel_strata = [str(r["stage5_accent_group"]) for _, r in core_sentinel_df.iterrows()]

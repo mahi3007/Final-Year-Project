@@ -753,7 +753,7 @@ class Cohort2PreflightValidator:
         return result
 
     def validate_sentinel_panel_and_isolation(
-        self, manifest_data: Dict[str, Any], eval_df: Optional[pd.DataFrame] = None
+        self, manifest_data: Dict[str, Any], eval_df: Optional[pd.DataFrame] = None, check_samples: int = 10
     ) -> Dict[str, Any]:
         """
         Check 4: Sentinel Panel Completeness & Zero-Exposure Speaker Isolation.
@@ -850,35 +850,69 @@ class Cohort2PreflightValidator:
                 f"Core sentinel panel reference word count is {core_word_count} (expected {CORE_SENTINEL_WORDS})."
             )
 
-        # Sentinel audio existence and preflight decodability
-        missing_sent_audio = 0
+        # Sentinel audio materialization, completeness, zero-byte, exact set, and decodability checks across all 300 clips
+        if not self.sentinel_audio_dir.exists():
+            result["status"] = "FAIL"
+            result["errors"].append(f"Sentinel audio directory missing: {self.sentinel_audio_dir}")
+            return result
+
+        actual_sent_files = list(self.sentinel_audio_dir.glob("*.mp3"))
+        if len(actual_sent_files) != 300:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Sentinel audio directory contains {len(actual_sent_files)} files (expected exactly 300).")
+
+        empty_sent_files = [f.name for f in actual_sent_files if f.stat().st_size == 0]
+        if empty_sent_files:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"{len(empty_sent_files)}/300 sentinel audio files have zero bytes (e.g. {empty_sent_files[:3]})."
+            )
+
+        expected_sent_names = set(f"{str(row.get('sentinel_id') or row.get('recording_id'))}.mp3" for _, row in sent_df.iterrows())
+        actual_sent_names = set(f.name for f in actual_sent_files)
+        missing_sent_clips = list(expected_sent_names - actual_sent_names)
+        extra_sent_clips = list(actual_sent_names - expected_sent_names)
+
+        if missing_sent_clips:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"{len(missing_sent_clips)}/300 clips in sentinel CSV lack physical audio files (e.g. {missing_sent_clips[:3]})."
+            )
+
+        if extra_sent_clips:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"{len(extra_sent_clips)} extraneous audio files found in sentinel audio directory not listed in sentinel CSV (e.g. {extra_sent_clips[:3]})."
+            )
+
+        # Sample decode & resample test across both core and non-core clips
+        core_ids = set(str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_sentinel_df.iterrows())
+        all_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in sent_df.iterrows()]
+        non_core_ids = [s for s in all_ids if s not in core_ids]
+
+        n_core = min(check_samples // 2, len(core_ids))
+        n_non_core = min(check_samples - n_core, len(non_core_ids))
+        sampled_ids = list(core_ids)[:n_core] + non_core_ids[:n_non_core]
+
         sent_decode_tested = 0
         sent_decode_failed = 0
-        for _, row in core_sentinel_df.iterrows():
-            s_id = str(row.get("sentinel_id") or row.get("recording_id"))
+        for s_id in sampled_ids:
             p = self.sentinel_audio_dir / f"{s_id}.mp3"
-            if not p.exists():
-                p = self.root / str(row.get("audio_filepath", ""))
-            if not p.exists():
-                missing_sent_audio += 1
-            else:
-                if sent_decode_tested < 5:
-                    try:
-                        wf, sr = load_and_resample_audio(p, target_sr=16000)
-                        sent_decode_tested += 1
-                        if sr != 16000 or len(wf) == 0 or np.isnan(wf).any():
-                            sent_decode_failed += 1
-                    except Exception:
-                        sent_decode_tested += 1
+            if p.exists() and p.stat().st_size > 0:
+                try:
+                    wf, sr = load_and_resample_audio(p, target_sr=16000)
+                    sent_decode_tested += 1
+                    if sr != 16000 or len(wf) == 0 or np.isnan(wf).any() or np.isinf(wf).any():
                         sent_decode_failed += 1
-
-        if missing_sent_audio > 0:
-            result["status"] = "FAIL"
-            result["errors"].append(f"{missing_sent_audio}/30 core sentinel audio clips are missing on disk.")
+                except Exception:
+                    sent_decode_tested += 1
+                    sent_decode_failed += 1
 
         if sent_decode_failed > 0:
             result["status"] = "FAIL"
-            result["errors"].append(f"{sent_decode_failed}/{sent_decode_tested} sampled sentinel audio clips failed 16 kHz decoding.")
+            result["errors"].append(
+                f"Sentinel audio decoding failure: {sent_decode_failed}/{sent_decode_tested} sampled sentinel audio clips failed 16 kHz decoding."
+            )
 
         # STRICT SPEAKER ISOLATION / ZERO EXPOSURE CHECK
         sentinel_prefixes = set(s[:24] for s in sent_df["speaker_id"].unique())
@@ -1020,7 +1054,9 @@ class Cohort2PreflightValidator:
         audio_res = self.validate_audio_materialization(eval_df=eval_df, check_samples=check_audio_samples)
 
         # 4. Sentinel Panel & Isolation
-        sent_res = self.validate_sentinel_panel_and_isolation(manifest_data=manifest_data, eval_df=eval_df)
+        sent_res = self.validate_sentinel_panel_and_isolation(
+            manifest_data=manifest_data, eval_df=eval_df, check_samples=check_audio_samples
+        )
 
         # 5. Configuration Freeze
         cfg_res = self.freeze_execution_configuration(model_name=model_name)
@@ -1430,9 +1466,9 @@ class Cohort1PreflightValidator:
             return result
 
         mp3_files = list(self.audio_dir.glob("*.mp3"))
-        if len(mp3_files) < 900:
+        if len(mp3_files) != 900:
             result["status"] = "FAIL"
-            result["errors"].append(f"Cohort 1 audio directory contains {len(mp3_files)} files (expected >= 900).")
+            result["errors"].append(f"Cohort 1 audio directory contains {len(mp3_files)} files (expected exactly 900).")
 
         # Zero-byte file check
         empty_files = [f.name for f in mp3_files if f.stat().st_size == 0]
@@ -1440,17 +1476,24 @@ class Cohort1PreflightValidator:
             result["status"] = "FAIL"
             result["errors"].append(f"{len(empty_files)} Cohort 1 audio files have zero bytes (e.g. {empty_files[:3]}).")
 
-        # Missing clips from evaluation CSV
+        # Exact Audio File Set Verification Against Evaluation CSV
         missing_clips: List[str] = []
+        extra_clips: List[str] = []
         if eval_df is not None:
+            expected_names = set(f"{rec_id}.mp3" for rec_id in eval_df["recording_id"])
             actual_names = set(f.name for f in mp3_files)
-            for rec_id in eval_df["recording_id"]:
-                if f"{rec_id}.mp3" not in actual_names:
-                    missing_clips.append(str(rec_id))
+            missing_clips = list(expected_names - actual_names)
+            extra_clips = list(actual_names - expected_names)
 
             if missing_clips:
                 result["status"] = "FAIL"
                 result["errors"].append(f"{len(missing_clips)} clips in Cohort 1 CSV lack physical audio files (e.g. {missing_clips[:3]}).")
+
+            if extra_clips:
+                result["status"] = "FAIL"
+                result["errors"].append(
+                    f"{len(extra_clips)} extraneous audio files found in Cohort 1 audio directory not listed in evaluation CSV (e.g. {extra_clips[:3]})."
+                )
 
         # Sample decode & resample test
         decode_tested = 0
@@ -1476,13 +1519,14 @@ class Cohort1PreflightValidator:
             "expected_audio_files": 900,
             "empty_files_count": len(empty_files),
             "missing_clip_count": len(missing_clips),
+            "extra_clip_count": len(extra_clips),
             "decode_sample_tested": decode_tested,
             "decode_sample_failed": decode_failed,
         }
         return result
 
     def validate_sentinel_panel_and_isolation(
-        self, eval_df: Optional[pd.DataFrame] = None
+        self, eval_df: Optional[pd.DataFrame] = None, check_samples: int = 10
     ) -> Dict[str, Any]:
         """
         Check 3: Sentinel Panel Integrity & Zero Speaker Leakage against Cohort 1.
@@ -1574,6 +1618,70 @@ class Cohort1PreflightValidator:
                 f"Core sentinel panel reference word count is {core_word_count} (expected {CORE_SENTINEL_WORDS})."
             )
 
+        # Sentinel audio materialization, completeness, zero-byte, exact set, and decodability checks across all 300 clips
+        if not self.sentinel_audio_dir.exists():
+            result["status"] = "FAIL"
+            result["errors"].append(f"Sentinel audio directory missing: {self.sentinel_audio_dir}")
+            return result
+
+        actual_sent_files = list(self.sentinel_audio_dir.glob("*.mp3"))
+        if len(actual_sent_files) != 300:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Sentinel audio directory contains {len(actual_sent_files)} files (expected exactly 300).")
+
+        empty_sent_files = [f.name for f in actual_sent_files if f.stat().st_size == 0]
+        if empty_sent_files:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"{len(empty_sent_files)}/300 sentinel audio files have zero bytes (e.g. {empty_sent_files[:3]})."
+            )
+
+        expected_sent_names = set(f"{str(row.get('sentinel_id') or row.get('recording_id'))}.mp3" for _, row in sent_df.iterrows())
+        actual_sent_names = set(f.name for f in actual_sent_files)
+        missing_sent_clips = list(expected_sent_names - actual_sent_names)
+        extra_sent_clips = list(actual_sent_names - expected_sent_names)
+
+        if missing_sent_clips:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"{len(missing_sent_clips)}/300 clips in sentinel CSV lack physical audio files (e.g. {missing_sent_clips[:3]})."
+            )
+
+        if extra_sent_clips:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"{len(extra_sent_clips)} extraneous audio files found in sentinel audio directory not listed in sentinel CSV (e.g. {extra_sent_clips[:3]})."
+            )
+
+        # Sample decode & resample test across both core and non-core clips
+        core_ids = set(str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_sentinel_df.iterrows())
+        all_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in sent_df.iterrows()]
+        non_core_ids = [s for s in all_ids if s not in core_ids]
+
+        n_core = min(check_samples // 2, len(core_ids))
+        n_non_core = min(check_samples - n_core, len(non_core_ids))
+        sampled_ids = list(core_ids)[:n_core] + non_core_ids[:n_non_core]
+
+        sent_decode_tested = 0
+        sent_decode_failed = 0
+        for s_id in sampled_ids:
+            p = self.sentinel_audio_dir / f"{s_id}.mp3"
+            if p.exists() and p.stat().st_size > 0:
+                try:
+                    wf, sr = load_and_resample_audio(p, target_sr=16000)
+                    sent_decode_tested += 1
+                    if sr != 16000 or len(wf) == 0 or np.isnan(wf).any() or np.isinf(wf).any():
+                        sent_decode_failed += 1
+                except Exception:
+                    sent_decode_tested += 1
+                    sent_decode_failed += 1
+
+        if sent_decode_failed > 0:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Sentinel audio decoding failure: {sent_decode_failed}/{sent_decode_tested} sampled sentinel audio clips failed 16 kHz decoding."
+            )
+
         # Strict Speaker Isolation against Cohort 1
         overlap: Set[str] = set()
         if eval_df is not None:
@@ -1590,6 +1698,12 @@ class Cohort1PreflightValidator:
             "total_sentinel_records": len(sent_df),
             "core_sentinel_speakers": sent_spk_count,
             "core_sentinel_reference_words": core_word_count,
+            "total_sentinel_audio_files": len(actual_sent_files),
+            "missing_sentinel_audio_count": len(missing_sent_clips),
+            "extra_sentinel_audio_count": len(extra_sent_clips),
+            "empty_sentinel_audio_count": len(empty_sent_files),
+            "sentinel_decode_tested": sent_decode_tested,
+            "sentinel_decode_failed": sent_decode_failed,
             "speaker_isolation_verified": len(overlap) == 0,
             "speaker_leakage_count": len(overlap),
         }
@@ -1637,7 +1751,9 @@ class Cohort1PreflightValidator:
         audio_res = self.validate_audio_materialization(eval_df=eval_df, check_samples=check_audio_samples)
 
         # 3. Sentinel Panel & Isolation
-        sent_res = self.validate_sentinel_panel_and_isolation(eval_df=eval_df)
+        sent_res = self.validate_sentinel_panel_and_isolation(
+            eval_df=eval_df, check_samples=check_audio_samples
+        )
 
         # 4. Config Freeze
         cfg_res = self.freeze_execution_configuration(model_name=model_name)

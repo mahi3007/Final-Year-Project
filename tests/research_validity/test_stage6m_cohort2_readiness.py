@@ -1131,3 +1131,116 @@ sys.exit(0 if rep["overall_status"] == "READY FOR AUTHORIZED EXECUTION (COHORT 1
     assert "READY FOR AUTHORIZED EXECUTION" not in proc.stdout
 
 
+def test_cohort2_sentinel_fails_on_missing_non_core_audio(tmp_path):
+    """Cohort 2 sentinel check must fail closed when a non-core sentinel clip is missing from disk."""
+    real_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    with open(real_manifest, "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+
+    sent_df = pd.read_csv(PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv")
+    core_df = sent_df.groupby("speaker_id").first().reset_index()
+    core_ids = set(str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_df.iterrows())
+    all_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in sent_df.iterrows()]
+    non_core_ids = [s for s in all_ids if s not in core_ids]
+
+    # Create mock sentinel dir with 299 files, deliberately omitting the first non-core clip
+    mock_sent = tmp_path / "mock_sentinel_missing_non_core"
+    mock_sent.mkdir()
+    for s_id in all_ids:
+        if s_id != non_core_ids[0]:
+            (mock_sent / f"{s_id}.mp3").write_bytes(b"dummy")
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        sentinel_audio_dir=mock_sent,
+    )
+    result = validator.validate_sentinel_panel_and_isolation(manifest_data)
+    assert result["status"] == "FAIL"
+    assert any("lack physical audio files" in err or "expected exactly 300" in err for err in result["errors"])
+
+
+def test_cohort2_sentinel_fails_on_corrupt_non_core_audio(tmp_path):
+    """Cohort 2 sentinel check must fail closed when a sampled non-core sentinel clip fails 16 kHz decoding."""
+    real_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    with open(real_manifest, "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+
+    sent_df = pd.read_csv(PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv")
+    core_df = sent_df.groupby("speaker_id").first().reset_index()
+    core_ids = set(str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_df.iterrows())
+    all_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in sent_df.iterrows()]
+    non_core_ids = [s for s in all_ids if s not in core_ids]
+
+    import soundfile as sf
+    dummy_wav = np.zeros(16000, dtype=np.float32)
+    dummy_wav[10] = 0.25
+    sample_wav = tmp_path / "valid_sample.wav"
+    sf.write(sample_wav, dummy_wav, 16000)
+    valid_bytes = sample_wav.read_bytes()
+
+    mock_sent = tmp_path / "mock_sentinel_corrupt_non_core"
+    mock_sent.mkdir()
+    for s_id in all_ids:
+        (mock_sent / f"{s_id}.mp3").write_bytes(valid_bytes)
+
+    # Corrupt the first non-core clip (which is included in the sampled decode test)
+    (mock_sent / f"{non_core_ids[0]}.mp3").write_bytes(b"corrupt_non_core_audio_bytes")
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        sentinel_audio_dir=mock_sent,
+    )
+    result = validator.validate_sentinel_panel_and_isolation(manifest_data, check_samples=10)
+    assert result["status"] == "FAIL"
+    assert any("failed 16 kHz decoding" in err for err in result["errors"])
+
+
+def test_cohort1_preflight_fails_on_missing_or_corrupt_sentinel_audio(tmp_path):
+    """Cohort 1 preflight validator must fail closed when sentinel panel audio is missing or corrupted."""
+    real_sent_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
+    sent_df = pd.read_csv(real_sent_csv)
+    core_df = sent_df.groupby("speaker_id").first().reset_index()
+    core_ids = set(str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_df.iterrows())
+    all_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in sent_df.iterrows()]
+    non_core_ids = [s for s in all_ids if s not in core_ids]
+
+    mock_sent = tmp_path / "mock_sentinel_cohort1"
+    mock_sent.mkdir()
+    # Provide only 299 files (missing a non-core sentinel clip)
+    for s_id in all_ids:
+        if s_id != non_core_ids[0]:
+            (mock_sent / f"{s_id}.mp3").write_bytes(b"x")
+
+    validator = Cohort1PreflightValidator(
+        project_root=PROJECT_ROOT,
+        sentinel_audio_dir=mock_sent,
+    )
+    res = validator.validate_sentinel_panel_and_isolation()
+    assert res["status"] == "FAIL"
+    assert any("lack physical audio files" in err or "expected exactly 300" in err for err in res["errors"])
+
+
+def test_cohort1_preflight_fails_on_extraneous_audio_files(tmp_path):
+    """Cohort 1 audio validation must fail closed when unlisted extraneous MP3 files are present."""
+    real_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_external_eval.csv"
+    eval_df = pd.read_csv(real_csv)
+
+    mock_audio = tmp_path / "mock_audio_extraneous"
+    mock_audio.mkdir()
+    for rec_id in eval_df["recording_id"]:
+        (mock_audio / f"{rec_id}.mp3").write_bytes(b"dummy_clip_bytes")
+
+    # Inject 1 extraneous unlisted clip
+    (mock_audio / "unlisted_extra_clip.mp3").write_bytes(b"unlisted_content")
+
+    validator = Cohort1PreflightValidator(
+        project_root=PROJECT_ROOT,
+        audio_dir=mock_audio,
+    )
+    result = validator.validate_audio_materialization(eval_df=eval_df, check_samples=1)
+    assert result["status"] == "FAIL"
+    assert any("extraneous audio files" in err for err in result["errors"])
+    assert any("expected exactly 900" in err for err in result["errors"])
+
+
+
