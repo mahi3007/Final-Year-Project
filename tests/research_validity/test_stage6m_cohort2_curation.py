@@ -428,7 +428,7 @@ def test_curation_lock_records_schema_and_exact_recording_ids(tmp_path):
     assert expected_cols.issubset(set(df.columns))
 
 
-def test_historical_v133_manifest_identifies_four_south_asian_shortfall_speakers():
+def test_historical_v133_manifest_identifies_four_south_asian_shortfall_speakers(tmp_path):
     """Validates that historical v1.3.3 manifest fails closed and catches the 4 South Asian shortfall speakers."""
     hist_manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.v1.3.3.historical.json"
     val_tsv = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "validated.tsv"
@@ -445,9 +445,9 @@ def test_historical_v133_manifest_identifies_four_south_asian_shortfall_speakers
         val_tsv=val_tsv,
         ext_eval_csv=ext_eval,
         sentinel_csv=sentinel,
-        output_csv=PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.csv",
-        output_lock=PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.lock.json",
-        reports_dir=PROJECT_ROOT / "reports" / "stage6m",
+        output_csv=tmp_path / "stage6m_cohort2_audio.csv",
+        output_lock=tmp_path / "stage6m_cohort2_audio.lock.json",
+        reports_dir=tmp_path / "reports",
         seed=DEFAULT_SEED,
         generate=False,
     )
@@ -472,7 +472,7 @@ def test_historical_v133_manifest_identifies_four_south_asian_shortfall_speakers
         assert shortfall[p]["strict_count"] in (13, 14)
 
 
-def test_corrected_option_a_manifest_passes_strict_curation_audit():
+def test_corrected_option_a_manifest_passes_strict_curation_audit(tmp_path):
     """Validates that corrected Option A candidate manifest achieves full 468/468 PASS on validated.tsv."""
     manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
     val_tsv = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "validated.tsv"
@@ -487,9 +487,9 @@ def test_corrected_option_a_manifest_passes_strict_curation_audit():
         val_tsv=val_tsv,
         ext_eval_csv=ext_eval,
         sentinel_csv=sentinel,
-        output_csv=PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.csv",
-        output_lock=PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.lock.json",
-        reports_dir=PROJECT_ROOT / "reports" / "stage6m",
+        output_csv=tmp_path / "stage6m_cohort2_audio.csv",
+        output_lock=tmp_path / "stage6m_cohort2_audio.lock.json",
+        reports_dir=tmp_path / "reports",
         seed=DEFAULT_SEED,
         generate=False,
     )

@@ -186,6 +186,18 @@ def parse_args():
         action="store_true",
         help="Run comprehensive preflight integrity checks and generate readiness reports without executing neural acoustic inference."
     )
+    parser.add_argument(
+        "--reports-dir",
+        type=Path,
+        default=PROJECT_ROOT / "reports" / "stage6m",
+        help="Directory to save preflight readiness reports."
+    )
+    parser.add_argument(
+        "--results-dir",
+        type=Path,
+        default=PROJECT_ROOT / "results" / "stage6m_kaggle",
+        help="Directory to save benchmark execution results."
+    )
     return parser.parse_args()
 
 
@@ -197,8 +209,8 @@ def main():
     sentinel_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
     sentinel_lock = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.lock.json"
     sentinel_audio_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "sentinel_audio"
-    results_dir = PROJECT_ROOT / "results" / "stage6m_kaggle"
-    reports_dir = PROJECT_ROOT / "reports" / "stage6m"
+    results_dir = Path(args.results_dir)
+    reports_dir = Path(args.reports_dir)
     results_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
 

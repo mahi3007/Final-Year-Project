@@ -471,7 +471,7 @@ def test_cohort2_full_preflight_reaches_ready_state_on_mock_materialized_dataset
     assert report["checks"]["execution_configuration_freeze"]["status"] == "PASS"
 
 
-def test_cohort2_benchmark_runner_preflight_only_cli():
+def test_cohort2_benchmark_runner_preflight_only_cli(tmp_path):
     """Verify that runner CLI with --preflight-only runs cleanly and exits with code 1 under current HOLD."""
     cmd = [
         sys.executable,
@@ -479,6 +479,8 @@ def test_cohort2_benchmark_runner_preflight_only_cli():
         "--cohort",
         "cohort2",
         "--preflight-only",
+        "--reports-dir",
+        str(tmp_path / "reports"),
     ]
     proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     assert proc.returncode == 1
