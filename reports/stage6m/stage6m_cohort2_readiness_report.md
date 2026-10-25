@@ -3,8 +3,8 @@
 > [!WARNING]
 > **Overall Preflight Status:** `HOLD`  
 > **Summary:** MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Confirmatory data prerequisites not yet materialized on disk.  
-> **Timestamp:** 2026-10-25T12:15:49.137651+00:00  
-> **Git Commit:** `95d4dde797`  
+> **Timestamp:** 2026-10-25T13:13:30.244595+00:00  
+> **Git Commit:** `09996472a2`  
 > **Protocol:** `v1.3.4-stage6m-self-authorization-amendment` (ADR-005)
 
 ---
@@ -19,7 +19,7 @@ Passing technical preflight checks establishes scientific feasibility; it does N
 
 | Checklist Item | Scope | Status | Key Metrics / Evidence |
 | :--- | :--- | :---: | :--- |
-| **1. Manifest Integrity & Schema** | `stage6m_locked_candidate_manifest.json` | `PASS` | SHA-256 locked (610649e8f6...); 468 speakers across 6 strata (78/stratum); Option 1B reserve verified (27 reserve); authority reconciled (RECONCILED_AMENDMENT_V134). |
+| **1. Manifest Integrity & Schema** | `stage6m_locked_candidate_manifest.json` | `PASS` | SHA-256 locked (7dcf8d5812...); 468 speakers across 6 strata (78/stratum); Option 1B reserve verified (27 reserve); authority reconciled (RECONCILED_AMENDMENT_V134). |
 | **2. Manifest <-> CSV Agreement** | `stage6m_cohort2_audio.csv` | `HOLD` | Validation could not be completed: evaluation CSV not materialized on disk (prerequisite missing). |
 | **3. Audio Materialization & Decodability** | `cohort2_audio/*.mp3` | `HOLD` | Validation could not be completed: physical audio files not materialized (MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio). |
 | **4. Sentinel Panel Completeness & Isolation** | `stage5_sentinel_panel.csv` | `PASS` | 30 core clips (281 words, uncertainty floor = 0.3559 pp); deterministic stratified decodability verified (20 clips across 6 strata); 0 speaker overlap (zero leakage). |

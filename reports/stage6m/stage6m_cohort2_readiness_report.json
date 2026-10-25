@@ -7,8 +7,8 @@
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Authoritative clip lock file not materialized: datasets/splits/stage6m_cohort2_audio.lock.json",
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio"
   ],
-  "timestamp_utc": "2026-10-25T12:15:49.137651+00:00",
-  "git_commit": "95d4dde79782de141854725bd3cc1138e3bd14ac",
+  "timestamp_utc": "2026-10-25T13:13:30.244595+00:00",
+  "git_commit": "09996472a269c13376fb34a18f9b12d5d5c4c4ad",
   "governing_standard": "ADR-005",
   "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
   "checks": {
@@ -18,7 +18,7 @@
       "errors": [],
       "warnings": [],
       "details": {
-        "manifest_sha256": "610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895",
+        "manifest_sha256": "7dcf8d5812ce8b555d1f4c0b1a1f2d63263e83c81120bd811cc8fcb427cfbd95",
         "total_active_speakers": 468,
         "total_clips_allocated": 7020,
         "strata_summary": {
@@ -55,7 +55,7 @@
         },
         "irish_reserve_total": 27,
         "provenance_reconciliation": {
-          "historical_manifest_protocol": "v1.3.3-stage6m-reconciled-decision-pack",
+          "historical_manifest_protocol": "v1.3.4-stage6m-self-authorization-amendment",
           "historical_governance_status": "LOCKED_CANDIDATE_HOLD_NOT_AUTHORIZED",
           "historical_execution_authorized": false,
           "amendment_protocol_version": "v1.3.4-stage6m-self-authorization-amendment",

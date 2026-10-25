@@ -1,14 +1,53 @@
 {
   "metadata": {
-    "protocol_version": "v1.3.3-stage6m-reconciled-decision-pack",
+    "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
     "governing_standard": "ADR-005",
     "supervisory_decision": "Option 1B (Variable-Clip Reserve) + Option 2A (Continuous Stream)",
-    "generated_timestamp_utc": "2026-10-20T07:00:24.413670+00:00",
+    "selection_predicate": "STRICT (B0 \u2227 V: locale=='en', up_votes>=2, down_votes<2, C_strict >= 15)",
+    "generated_timestamp_utc": "2026-10-25T13:02:02.312807+00:00",
     "governance_status": "LOCKED_CANDIDATE_HOLD_NOT_AUTHORIZED",
     "execution_authorized": false,
     "total_active_speakers": 468,
     "active_speakers_per_stratum": 78,
-    "total_strata": 6
+    "total_strata": 6,
+    "manifest_version": "v2.0-option-a-corrected",
+    "supersedes": {
+      "manifest_path": "stage6m_locked_candidate_manifest.v1.3.3.historical.json",
+      "historical_manifest_sha256_crlf": "610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895",
+      "historical_manifest_sha256_lf": "2e59a75c40abd165ee1689773c1a95409be29636079c0f714d51236dd54dcef0",
+      "superseded_protocol_version": "v1.3.3-stage6m-reconciled-decision-pack",
+      "reason": "Option A manifest correction: enforce strict quality predicate V (C_strict >= 15) to eliminate South Asian shortfall (4 speakers). Replaces 4 active South Asian speakers with deterministic unexposed strictly-eligible candidates.",
+      "replaced_speakers": [
+        {
+          "stratum": "South Asian English",
+          "old_prefix": "07004fed5c5e5b0eec54cada\u2026",
+          "old_strict_count": 14,
+          "new_prefix": "0913c1a50ccfbc71b57416c7\u2026",
+          "new_strict_count": 77
+        },
+        {
+          "stratum": "South Asian English",
+          "old_prefix": "25949e8d7229d181418b78ad\u2026",
+          "old_strict_count": 13,
+          "new_prefix": "24f4118fa06f6ebbe906780b\u2026",
+          "new_strict_count": 19
+        },
+        {
+          "stratum": "South Asian English",
+          "old_prefix": "6cd7653404104d87053bcef6\u2026",
+          "old_strict_count": 13,
+          "new_prefix": "652c7033fef1554f73eb9d2a\u2026",
+          "new_strict_count": 40
+        },
+        {
+          "stratum": "South Asian English",
+          "old_prefix": "a7a33ab5ac9181d03e49a22a\u2026",
+          "old_strict_count": 14,
+          "new_prefix": "6a01c0a08b4d8aa7b61113f1\u2026",
+          "new_strict_count": 18
+        }
+      ]
+    }
   },
   "strata": {
     "Irish English": {
@@ -20,468 +59,546 @@
           "speaker_id_prefix": "0ab0b4681f04abb280c27268\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 60,
+          "clips_available_strict": 60,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "998c0a9317bf0b096eb8eb62\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 66,
+          "clips_available_strict": 65,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b7a61d12e5df27da729ede26\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 64,
+          "clips_available_strict": 64,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b0cb200b16812f60c7de9c1f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 142,
+          "clips_available_strict": 142,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "59de81d6d5b122523be7be18\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "98aa96f9593415a14b383444\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 43,
+          "clips_available_strict": 43,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3605f1397b42e98b20961e22\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d3db215e9633f878c7da965a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 23,
+          "clips_available_strict": 23,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "830e361595b3ab9dd2c1de2a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "662f4b22ffca9da0a305a4ee\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "58729219b29642dee2d0e454\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "fe045d361b28301554bafbd7\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "51f6d7bfd151230e24824202\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 956,
+          "clips_available_strict": 955,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7a3a314e38034b1ddf9b92cb\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 71,
+          "clips_available_strict": 71,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "abd30813fef9d483d767b02e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 32,
+          "clips_available_strict": 32,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "44646075aa46221962006867\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 63,
+          "clips_available_strict": 63,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3414be85903dad77ba4af5f0\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 38,
+          "clips_available_strict": 38,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "febfa9170cb04861bd7edb12\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 1294,
+          "clips_available_strict": 1294,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f5a76af72b8696c951712d2a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 145,
+          "clips_available_strict": 145,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e862b40d4a583bf89f876b2f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 104,
+          "clips_available_strict": 101,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "97c3103d95081cdd2d477e09\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "55f2a37e918a9f82923110c3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7de088282fda8e2196a5e071\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 25,
+          "clips_available_strict": 25,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "dd1fbe11bee9a77e00571efa\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 84,
+          "clips_available_strict": 82,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c8c7f848a4c91d4f3f235c1c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "25fa409389143296ea768fe4\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 45,
+          "clips_available_strict": 45,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "688bf0257801f329a2baf0ed\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0a0f98c5fb5bef528a71a83b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3beff0b8d96834c2c63e188f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 68,
+          "clips_available_strict": 67,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1c4f5cb282025349a1948e02\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 321,
+          "clips_available_strict": 320,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c35542c1ec68c2d2578c005d\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 34,
+          "clips_available_strict": 34,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a5ce984b990c9962f6e394e1\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 16,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c24e02c207bc0a98be7e02d5\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 45,
+          "clips_available_strict": 45,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "6f1e1b0fde97fbc527d121f6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3a6a1adc52127dbe6bf65f75\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e90e4f564c63a74e1e0e6bcf\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 44,
+          "clips_available_strict": 44,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "70cc264d0733cfcabbf84376\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 22,
+          "clips_available_strict": 22,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1a922227ae3147d84b70c210\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 126,
+          "clips_available_strict": 126,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "bd3a04f4d1f1e2e4da8e2f34\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 116,
+          "clips_available_strict": 116,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e41f197ac5cb5cfce90ddcdd\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 23,
+          "clips_available_strict": 23,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0b06298e6ca36b01573a4456\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 224,
+          "clips_available_strict": 223,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5133c8b1008a6bff031f2771\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7d9e644e7f28d0a377509ecd\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 155,
+          "clips_available_strict": 155,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5eb140121b70b7ce201ed129\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "71117b0ec4c2239327b10273\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "841316621bead8dadba8aaea\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 49,
+          "clips_available_strict": 49,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e40432c607380771bd8a770e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 133,
+          "clips_available_strict": 132,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "dfdf5b24937e645ae08d7ea6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 52,
+          "clips_available_strict": 52,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ee6fb335a8606954dbb4a94f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 63,
+          "clips_available_strict": 63,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f795de2ff31915fb136c3024\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 33,
+          "clips_available_strict": 33,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c1eccc85c3d52e5db2c10f03\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 369,
+          "clips_available_strict": 368,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "af3acb2416c8746fce74ef79\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 120,
+          "clips_available_strict": 115,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e33aa919ee9e8443af3c2ecb\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 35,
+          "clips_available_strict": 35,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "2c0875458cea5bf7aa07fb49\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "eeb4cdd7043531f8b61cdae1\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 61,
+          "clips_available_strict": 61,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3074179766a4bb229c15e2d0\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 37,
+          "clips_available_strict": 37,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "14dfdc91e501f6d540916b8c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 282,
+          "clips_available_strict": 282,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a317d4dec2ac7c987dbf01f9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 33,
+          "clips_available_strict": 33,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b88743c65870fef7319b18e6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 64,
+          "clips_available_strict": 64,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7e89eeff4cec4c90b5702af1\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "02dce8fb4569893456d8c190\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 305,
+          "clips_available_strict": 305,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f388d7e4d31442c244ef5193\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c51d80fd0c539bed8a3d6ebd\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "cb10039326bbca402cae8da5\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 71,
+          "clips_available_strict": 68,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "953e4e8cf93441b8a29961fc\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 23,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "977736dc88a35160e2448b9d\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 58,
+          "clips_available_strict": 58,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1976e82e1bbaefb3fd386f55\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 38,
+          "clips_available_strict": 38,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a40029e1f34924fe49b26bd7\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 32,
+          "clips_available_strict": 31,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "69fb9ad6ce75856cb59cc141\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 64,
+          "clips_available_strict": 64,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "59c2c641bba601e49e0dd72e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 22,
+          "clips_available_strict": 22,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3e6ce773541549eb2e39e9d3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 35,
+          "clips_available_strict": 35,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3ce9fbff2dbb3ddf83e09e29\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4ab5a5fba62f426cdfab4867\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 36,
+          "clips_available_strict": 36,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ea7fa3986328da47ddeb47e3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 32,
+          "clips_available_strict": 32,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7937b65dfff80b3a44d6d41a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 46,
+          "clips_available_strict": 46,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "558b3346ddec03f77f10b292\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "58b088e69f143848c76270a6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 332,
+          "clips_available_strict": 331,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "56d9419eaa778a3e9f165d6f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 62,
+          "clips_available_strict": 60,
           "tier": "active"
         }
       ],
@@ -690,472 +807,550 @@
           "speaker_id_prefix": "6b85eadf155dc5ffb9b206c0\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 61,
+          "clips_available_strict": 61,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5566f3e5b6f464b7951a4eb8\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3e8199611dbeec4571407ba9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 35,
+          "clips_available_strict": 35,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e7799090a60a707984725fb3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 144,
+          "clips_available_strict": 125,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4ce90dfb8a8cb0947a051a33\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e4c1f9e82e01ee79af50ada4\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4da7e0d9bff514889010bd85\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 33,
+          "clips_available_strict": 33,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e575283e213a75f6fdb1ba64\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "957e237182429d18a2386060\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "98f0c0c42616d160ee79a738\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 45,
+          "clips_available_strict": 44,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b0b25bcd03ea5fb51003590f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 22,
+          "clips_available_strict": 22,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "386ffce2d025c70036bbb601\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 31,
+          "clips_available_strict": 31,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "2b2ce509f346ee3eb7107d05\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ed94c2f5fe4ccda236d77a0b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 17,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "26119d8875376e9919a93ab6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 547,
+          "clips_available_strict": 547,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3c385c6e0ec5f44edf089882\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "59a350ba345823f7b516bbf0\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 144,
+          "clips_available_strict": 144,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "53cdaa3b5002c77a2d9b0cb7\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 258,
+          "clips_available_strict": 247,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "22375c66b69d4f07c6a2e903\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 96,
+          "clips_available_strict": 96,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "2a66b494a387c21e0e0dade3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 51,
+          "clips_available_strict": 51,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f65f6f7eb20257c0c7551e01\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 129,
+          "clips_available_strict": 129,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f303784caaf70496db39108c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 51,
+          "clips_available_strict": 50,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4193ffe3cdfcb7c00e37da77\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 99,
+          "clips_available_strict": 99,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3d4645ad563d70702a452594\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 59,
+          "clips_available_strict": 59,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d6d8d4bf397c2b1824b43ce5\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "03ac926a15e7695d5c933f46\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 74,
+          "clips_available_strict": 74,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7b87ec951ccd0cf89bde96fd\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "88073d27cbc43466f01b45d2\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 49,
+          "clips_available_strict": 49,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9a04bcba72f1eaa756250be1\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b425a44b4134e5d8af7c0a31\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 56,
+          "clips_available_strict": 56,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b31374d1ecc336902127763b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 143,
+          "clips_available_strict": 143,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "aa01443a7ec842617c9dcd86\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 294,
+          "clips_available_strict": 294,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "94d10d73ea83a282d77602f4\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 50,
+          "clips_available_strict": 49,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c6e59eed5dad38761e244a11\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 225,
+          "clips_available_strict": 225,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b12498e0e279a13c08afb5fc\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 59,
+          "clips_available_strict": 59,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a3dd5c99ac626f3d03aaf310\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 29,
+          "clips_available_strict": 29,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d539bf0aa70f7c95e39649ef\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 388,
+          "clips_available_strict": 357,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5cc035f26fb319600c3d88cf\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e492fdf34ec7ba28396c208a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 236,
+          "clips_available_strict": 235,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f423e3bcaa299c37a2651009\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 204,
+          "clips_available_strict": 204,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "df807b4f7a26861fbc880f48\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 50,
+          "clips_available_strict": 50,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7d584e8019a3adc8715d9c93\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c03b4763906e669a0cfa32ac\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 28,
+          "clips_available_strict": 28,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ea850c724f088530c41fe1c5\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 135,
+          "clips_available_strict": 134,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f64efdead095df4ee7cab077\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 339,
+          "clips_available_strict": 337,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "478c06f2dc0d4726f93187e8\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a22721fa679ec702c9306f00\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 703,
+          "clips_available_strict": 703,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f915452439a6139f44046859\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 27,
+          "clips_available_strict": 27,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ac5fc0cc78c008366ea32c07\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 27,
+          "clips_available_strict": 27,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f3b9c255f9d2fff77f789f43\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 318,
+          "clips_available_strict": 317,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "8bdd1750c4c379a5c9d9c2df\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 16,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "09c5eb68d13f1df2d0fd11f3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0e319d4cecc97b38f52d3d2b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 38,
+          "clips_available_strict": 38,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d1813b3a39bbd5d6f35e04e8\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 1227,
+          "clips_available_strict": 1226,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "30b700d07c98c8a313d6ea19\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4084e0cf2e63ca96d94d6da0\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 141,
+          "clips_available_strict": 141,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "777c014d742cdcc2e612ea2a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 1025,
+          "clips_available_strict": 1024,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b4114163d201648cf53ce6a9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 164,
+          "clips_available_strict": 164,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c0e911f6c9a36df008eb7d85\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 67,
+          "clips_available_strict": 67,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "2a719ce079517bfcbbd02a7c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 240,
+          "clips_available_strict": 224,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b66717ccdc7904e2076d43cd\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 39,
+          "clips_available_strict": 39,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f9a1625985b3359a938e3917\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 35,
+          "clips_available_strict": 35,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e99957f1cbac6eb604397514\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 238,
+          "clips_available_strict": 238,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "6696dbd92a25020660c2185f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "13d0538687f067a9958c0721\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 144,
+          "clips_available_strict": 144,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0bb48abaf24bc75258bb3d55\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "21e9e0128cafe8441ceba07e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 40,
+          "clips_available_strict": 40,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9cda5525285e24b3e83fdd34\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 46,
+          "clips_available_strict": 44,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "80452854411211fb5de11623\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3294186a191056dceac15367\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 69,
+          "clips_available_strict": 69,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d7ae3bbaad800a5e5f67f25f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 59,
+          "clips_available_strict": 58,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ab94d8ac3a0649acf657ad2c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 472,
+          "clips_available_strict": 472,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "acda0520059ab20ae181e0f3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 139,
+          "clips_available_strict": 139,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "8ae8e297468ae417ccad6311\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 23,
+          "clips_available_strict": 23,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e02ffe55357061a9fcb24d26\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 43,
+          "clips_available_strict": 43,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5de424a68012cf2938d0651d\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 62,
+          "clips_available_strict": 62,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1edef8cbf1e616f3a351ca1f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b4cbf884d481af77376d0203\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 23,
+          "clips_available_strict": 23,
           "tier": "active"
         }
       ],
-      "reserve_policy": "Standard Invariant (C >= 15)",
+      "reserve_policy": "Standard Invariant (C_strict >= 15)",
       "total_reserve_count": 15,
       "reserve_speakers": [
         {
@@ -1163,6 +1358,7 @@
           "speaker_id_prefix": "6657f621ac638f7cc7cdb9d6\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 243,
+          "clips_available_strict": 242,
           "tier": "standard_ge15"
         },
         {
@@ -1170,6 +1366,7 @@
           "speaker_id_prefix": "9f52a3afd4f7b9af2a21c1c2\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "standard_ge15"
         },
         {
@@ -1177,6 +1374,7 @@
           "speaker_id_prefix": "28b2bbb5b0600312ebc47e14\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "standard_ge15"
         },
         {
@@ -1184,6 +1382,7 @@
           "speaker_id_prefix": "924e5e5d88a0180fb95cdc61\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 39,
+          "clips_available_strict": 39,
           "tier": "standard_ge15"
         },
         {
@@ -1191,6 +1390,7 @@
           "speaker_id_prefix": "cbd36925b0fc4a3e9d453e54\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "standard_ge15"
         },
         {
@@ -1198,6 +1398,7 @@
           "speaker_id_prefix": "3e322ee41be675879ed9c704\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 90,
+          "clips_available_strict": 90,
           "tier": "standard_ge15"
         },
         {
@@ -1205,6 +1406,7 @@
           "speaker_id_prefix": "9371842eb0a999f5f90c7238\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 718,
+          "clips_available_strict": 717,
           "tier": "standard_ge15"
         },
         {
@@ -1212,6 +1414,7 @@
           "speaker_id_prefix": "ea2160302202d3a88f0caef6\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 22,
+          "clips_available_strict": 20,
           "tier": "standard_ge15"
         },
         {
@@ -1219,6 +1422,7 @@
           "speaker_id_prefix": "47e6c9ad4731a3ad9ff3ba98\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 28,
+          "clips_available_strict": 28,
           "tier": "standard_ge15"
         },
         {
@@ -1226,6 +1430,7 @@
           "speaker_id_prefix": "53bd153036e6a2b6237ceabe\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 27,
+          "clips_available_strict": 27,
           "tier": "standard_ge15"
         },
         {
@@ -1233,6 +1438,7 @@
           "speaker_id_prefix": "7574732380d022d91792f927\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 28,
+          "clips_available_strict": 26,
           "tier": "standard_ge15"
         },
         {
@@ -1240,6 +1446,7 @@
           "speaker_id_prefix": "e888dfdeda8575dd6baaad85\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 65,
+          "clips_available_strict": 59,
           "tier": "standard_ge15"
         },
         {
@@ -1247,6 +1454,7 @@
           "speaker_id_prefix": "5e012743c3ee6623e1073256\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 383,
+          "clips_available_strict": 382,
           "tier": "standard_ge15"
         },
         {
@@ -1254,6 +1462,7 @@
           "speaker_id_prefix": "f0d66b1635181a3cb2baf622\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 119,
+          "clips_available_strict": 119,
           "tier": "standard_ge15"
         },
         {
@@ -1261,6 +1470,7 @@
           "speaker_id_prefix": "e9990c63827bbda61573f6a5\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 23,
+          "clips_available_strict": 21,
           "tier": "standard_ge15"
         }
       ]
@@ -1274,472 +1484,550 @@
           "speaker_id_prefix": "1da91e25efd76cff86bded4b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 285,
+          "clips_available_strict": 285,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "55f6bb20a0c69ca6af9d4381\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 148,
+          "clips_available_strict": 147,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "bd2a40f9ab15de674b6d71df\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 75,
+          "clips_available_strict": 75,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ac8383de61de99e2726c0135\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 36,
+          "clips_available_strict": 36,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "520fdda8f7f6b91be9fa4f8e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "be2ff569cbdf4688864e3aa7\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a2576ccf04ad8c0dbe2b29f3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 14801,
+          "clips_available_strict": 14792,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1bc428df7feef7c5191e884c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 64,
+          "clips_available_strict": 64,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e14e67c5c8833e3ffba487ed\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 39,
+          "clips_available_strict": 31,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1c344e70c79e558566bc688c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 113,
+          "clips_available_strict": 113,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "25bc1fb5e8fb8c59df9cdb4d\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 277,
+          "clips_available_strict": 277,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f2019c1804b18ef9c849ffc7\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e9c90b7ef648efb10b3f170c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 16,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ee790789728c01269668b55b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 107,
+          "clips_available_strict": 106,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "902c7603b7df0a124300b562\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 40,
+          "clips_available_strict": 40,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c8559eb5eaa7f33082a03d57\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 35,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1dc52d8c32b6186508588df9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 131,
+          "clips_available_strict": 131,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "43a51f37b61799b1c1e40797\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "bdde3969049e54b39619b71a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 477,
+          "clips_available_strict": 476,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b87dd0680063cbd3dc57f5b9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 10527,
+          "clips_available_strict": 9766,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "394130d7e8553b60d1026fc2\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4d9375bfa93addd7afde1661\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 34,
+          "clips_available_strict": 34,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "57be72ac136f7a948065cfff\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1dff59d07c4718b02238d94f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 88,
+          "clips_available_strict": 88,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f71fa5667f402961b2c69288\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 42,
+          "clips_available_strict": 42,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f74d880c5ad4c5917f314a60\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 58,
+          "clips_available_strict": 58,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ea58a6a1a4d126baf4167861\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 107,
+          "clips_available_strict": 106,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "03775a0322e9b6d1ddc55335\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 276,
+          "clips_available_strict": 276,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a7f4aedfc48bd53b2451afd5\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4d25a814abf402e8383e5ee5\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 54,
+          "clips_available_strict": 54,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "694f653ba2431188dd9e70a4\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ee3ac7744c02eea3e64128ab\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 181,
+          "clips_available_strict": 181,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "16b7769e15832bd1b70339dc\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 94,
+          "clips_available_strict": 94,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1061f5acd424342c6a3e78af\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 191,
+          "clips_available_strict": 191,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7b3aabbf2b6dedf3089a32ff\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1bc3dc0bc84f16ba31209af3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 695,
+          "clips_available_strict": 695,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "277cc7d0b069d397f9d6baf6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 106,
+          "clips_available_strict": 106,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "166032d1842dc93de594cb53\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 111,
+          "clips_available_strict": 105,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "494cf403866e7cf818ffeefe\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4dd092547992c4146c3d6467\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 94,
+          "clips_available_strict": 94,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b2f837ab03cd0fa7349dd37b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 89,
+          "clips_available_strict": 87,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a11a25dea4fd92d7973f778b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 107,
+          "clips_available_strict": 101,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9a073ef61d8e3c5d236eb5e0\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "6a6236a9bc1d2c811e5082f8\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 53,
+          "clips_available_strict": 53,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "43ae9b5e619bba009c4cb9de\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 102,
+          "clips_available_strict": 101,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0d3485184affec8ace46018c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 33,
+          "clips_available_strict": 33,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "17dcd55a0e0d9bd3df84ea9d\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 87,
+          "clips_available_strict": 87,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1dcc55fc6d2181afa676665c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "fdf639ebb01299345dcc612c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 229,
+          "clips_available_strict": 229,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "51f67439a26da3caed47b6fc\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 184,
+          "clips_available_strict": 183,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "739dad3f7991939c8efd750b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 27,
+          "clips_available_strict": 27,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "56ef273221603cffc45864b0\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d161bb2f97a3772fa7f6d0c7\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "926fd21ee67e50582f801666\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 26,
+          "clips_available_strict": 26,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a6b9f8e65441068915451e09\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 51,
+          "clips_available_strict": 49,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9376fbb291905b062ec4ada6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 35,
+          "clips_available_strict": 35,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3bb3a36c57cda41bf756f074\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 101,
+          "clips_available_strict": 101,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9a70b0d67a7f44741b874bcc\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 36,
+          "clips_available_strict": 36,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "2f5baec923e6c50d5537fc8e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1d6a501a96c5b8e7dc7c6a75\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 188,
+          "clips_available_strict": 188,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9116e5c333ffc3b3459e7215\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 70,
+          "clips_available_strict": 70,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3b6461acf4d89c65caece336\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "120ac332bef668233ecb1525\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 277,
+          "clips_available_strict": 276,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "45386ac0e401e71c1e0cc418\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "8a17eeffb45203029fe6c457\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 27,
+          "clips_available_strict": 27,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b8e6a206b5dd57db50c80b3a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0dcda1be10de72e03100e13f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e92c7c036c8f70b42e670238\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 61,
+          "clips_available_strict": 61,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d2b5f2284a9e3782c1e4b634\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 82,
+          "clips_available_strict": 82,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "54b86c65535062a6587f9aaf\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 327,
+          "clips_available_strict": 326,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f43ec7f4e494aa0dc253a409\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 25,
+          "clips_available_strict": 25,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "07ea9f611d1c20a420c53a9e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a16595cc191d6c4539e91096\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "357208a91f3bd8871a315736\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d452e4b5f4dece0312ca3297\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 16,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "eca55078e4934c55e1a780b8\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "51573d137764ccf250c88949\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 31,
+          "clips_available_strict": 31,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "01aed7c251d5e52aa0862400\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         }
       ],
-      "reserve_policy": "Standard Invariant (C >= 15)",
+      "reserve_policy": "Standard Invariant (C_strict >= 15)",
       "total_reserve_count": 15,
       "reserve_speakers": [
         {
@@ -1747,6 +2035,7 @@
           "speaker_id_prefix": "a38e78f08a84d4e8f5c0e18b\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "standard_ge15"
         },
         {
@@ -1754,6 +2043,7 @@
           "speaker_id_prefix": "8b66869c8a71c0a0ed985339\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "standard_ge15"
         },
         {
@@ -1761,6 +2051,7 @@
           "speaker_id_prefix": "366a753846275be279eda9ca\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 162,
+          "clips_available_strict": 151,
           "tier": "standard_ge15"
         },
         {
@@ -1768,6 +2059,7 @@
           "speaker_id_prefix": "95cba68bcea413193daf400f\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 84,
+          "clips_available_strict": 84,
           "tier": "standard_ge15"
         },
         {
@@ -1775,6 +2067,7 @@
           "speaker_id_prefix": "f75512b68c74ebdb62b5b911\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 48,
+          "clips_available_strict": 48,
           "tier": "standard_ge15"
         },
         {
@@ -1782,6 +2075,7 @@
           "speaker_id_prefix": "3f98aea7a9489e819c9cae88\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 47,
+          "clips_available_strict": 47,
           "tier": "standard_ge15"
         },
         {
@@ -1789,6 +2083,7 @@
           "speaker_id_prefix": "3ad69e3764a52a42ac929e98\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 99,
+          "clips_available_strict": 99,
           "tier": "standard_ge15"
         },
         {
@@ -1796,6 +2091,7 @@
           "speaker_id_prefix": "7beab13f31288c5fe14a14fb\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 295,
+          "clips_available_strict": 295,
           "tier": "standard_ge15"
         },
         {
@@ -1803,6 +2099,7 @@
           "speaker_id_prefix": "ca5105b381a177c5e6928bc5\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 881,
+          "clips_available_strict": 881,
           "tier": "standard_ge15"
         },
         {
@@ -1810,6 +2107,7 @@
           "speaker_id_prefix": "16f3ca7223ced7c0d5ac0b5a\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 44,
+          "clips_available_strict": 44,
           "tier": "standard_ge15"
         },
         {
@@ -1817,6 +2115,7 @@
           "speaker_id_prefix": "af906e3adfaab5288b58da0d\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 17,
+          "clips_available_strict": 17,
           "tier": "standard_ge15"
         },
         {
@@ -1824,6 +2123,7 @@
           "speaker_id_prefix": "7917b388a5f08f70f002a01a\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 17,
           "tier": "standard_ge15"
         },
         {
@@ -1831,6 +2131,7 @@
           "speaker_id_prefix": "c27c6e16c2a2d2670c56653e\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 50,
+          "clips_available_strict": 50,
           "tier": "standard_ge15"
         },
         {
@@ -1838,6 +2139,7 @@
           "speaker_id_prefix": "0612fef8c84210685f5c5479\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 143,
+          "clips_available_strict": 143,
           "tier": "standard_ge15"
         },
         {
@@ -1845,6 +2147,7 @@
           "speaker_id_prefix": "b26466e216cd2e3f47c3ca97\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 43,
+          "clips_available_strict": 43,
           "tier": "standard_ge15"
         }
       ]
@@ -1858,472 +2161,550 @@
           "speaker_id_prefix": "6d9075f05819658b13640f57\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0fc85447a65211ec9fcc3247\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "999d8d4719ca0f0ce1500e98\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 40,
+          "clips_available_strict": 40,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4b2efc2350efb28f0f5209d0\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 27,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "07e8ffadbf68e630826b16a6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 38,
+          "clips_available_strict": 38,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4b948a9c5efbc870af2d7666\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5b9b3c1dbce5a24235f5f8df\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 125,
+          "clips_available_strict": 125,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "215af7dcc3afcafb6f3f4679\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 28,
+          "clips_available_strict": 26,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7522f369af381fddfc570bf4\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "bcf8f2dc2718a9b62619722d\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 69,
+          "clips_available_strict": 69,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "8f2e121f476a5cf52c2a5b29\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 157,
+          "clips_available_strict": 157,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "884c887b14572fe3d2cbc190\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 22,
+          "clips_available_strict": 22,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "47bfaebf860c54a9b4b59cdb\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 91,
+          "clips_available_strict": 91,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "66a3784228333ced27b62daa\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 29,
+          "clips_available_strict": 29,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "273dbc98471a3d12cad2db9b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 39,
+          "clips_available_strict": 39,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "8ffe1e07b763eb8619178379\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 34,
+          "clips_available_strict": 34,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d593a89157e45185058f4c89\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 133,
+          "clips_available_strict": 133,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "bdf46d517efe74d6e8b6f6d2\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 29,
+          "clips_available_strict": 29,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "6a2f9b251c8f220691125b50\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0db465d830e651a7dd317154\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 228,
+          "clips_available_strict": 228,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f7e94a3504c890618866b892\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ee18b6a99ca8a17c61258c38\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 32,
+          "clips_available_strict": 32,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4c922f65df814ef0a5567651\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "dc6adb8fdf9768b70286e54e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 62,
+          "clips_available_strict": 62,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "bafaffdc35320c5cb6f9a110\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 28,
+          "clips_available_strict": 28,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9d3e2a6ae787ab0c7795f18e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 36,
+          "clips_available_strict": 36,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "550d4cf3e358b328079d6c14\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 54,
+          "clips_available_strict": 53,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9c6565b3bf75dcc1260cf3fa\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 40,
+          "clips_available_strict": 40,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9b03c2618565b778a76778f9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "774c34e1d47fea7998c4c7cc\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 23,
+          "clips_available_strict": 23,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0d4895c706373555d65399f8\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "59730a4d2eaf7a0ffd5afd06\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "99ff1aff5b52355df609c126\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 23,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f3e455ac7676a99e9aa80143\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f00d8e53e47fb885805b2744\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 27,
+          "clips_available_strict": 27,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a87ee22ab21c01cf6a16f4f4\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 39,
+          "clips_available_strict": 39,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "8cfc422d49e3e199ab65e611\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 28,
+          "clips_available_strict": 28,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "966409e2b901274ed09f4699\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 83,
+          "clips_available_strict": 83,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "aed94d1c3f4986d95635fe51\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 55,
+          "clips_available_strict": 55,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5be997e1b0c7c296baf030a8\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 48,
+          "clips_available_strict": 48,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "28f2583a95856e753fdc84be\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 16,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "098cd4ae227dc09b21c09e4c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 23,
+          "clips_available_strict": 23,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9a2186af232bbc862686f9b1\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 42,
+          "clips_available_strict": 42,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ad95e92260ba9aeb54daba0b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 103,
+          "clips_available_strict": 103,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "6eefa6fed987206182f18c8c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c184db00920edd1673bb9543\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 63,
+          "clips_available_strict": 63,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9e06b0915da2d9767291320d\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 392,
+          "clips_available_strict": 392,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3dae503fba1f88c3c8adc8a3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "befad7802768602b65a025d9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 168,
+          "clips_available_strict": 168,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "70ecaaccdf61fc1fffe24d83\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 56,
+          "clips_available_strict": 56,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "036d6531c59cc0d65c7bf9b6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 23,
+          "clips_available_strict": 23,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7cb2687e25d7b6d09d994a60\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "98659ac1da11ab68e524e877\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 17,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "cf20a39943b7a02ce78fa98e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 60,
+          "clips_available_strict": 60,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "670e1d6197ff11a4ab9e765e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b5100bd14202023e9f3d142e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 16,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9465496d2dbd6c85ab97e309\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "6baad24ab95ead4b63785bc8\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 73,
+          "clips_available_strict": 71,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "00e2b3f397c42ff5d9504ddd\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 71,
+          "clips_available_strict": 71,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4b17c03c0bb1ff68195391c8\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a9dba633240e857269453f93\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 45,
+          "clips_available_strict": 44,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e4922b258851cf5cc16f15cd\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 72,
+          "clips_available_strict": 72,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "99675ca9d5d92277163ef9f6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 63,
+          "clips_available_strict": 63,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4eaccca03a6d685a8a115669\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "82557ed50b74bac49d5fb53a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 64,
+          "clips_available_strict": 64,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "87c37ac8f79802cd859b6edf\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 131,
+          "clips_available_strict": 122,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "67cb18ba2db9d95cf9a0d9ae\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 31,
+          "clips_available_strict": 31,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "943a7053e36b1c55424e8b53\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 29,
+          "clips_available_strict": 29,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f4b6e4c00ef69abe9cdd092b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 16,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9db305175f78cb274af0ef15\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 29,
+          "clips_available_strict": 29,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d7485d8940154b344c6ee583\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 74,
+          "clips_available_strict": 74,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "011395b92511f75faf566b2f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 25,
+          "clips_available_strict": 25,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "47ef064f89607072de4e1403\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f11bbaf10dbb365a81e9cebe\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 103,
+          "clips_available_strict": 103,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9ea8a6a192d17ddb4bf01a91\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b4b26fbfc9f858c46eeed33f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "63cf30b62eb97a124a87e674\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 127,
+          "clips_available_strict": 127,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "21061a982dde360ab68e331c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 97,
+          "clips_available_strict": 97,
           "tier": "active"
         }
       ],
-      "reserve_policy": "Standard Invariant (C >= 15)",
+      "reserve_policy": "Standard Invariant (C_strict >= 15)",
       "total_reserve_count": 15,
       "reserve_speakers": [
         {
@@ -2331,6 +2712,7 @@
           "speaker_id_prefix": "389c482a8681e30e2fa521cc\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "standard_ge15"
         },
         {
@@ -2338,6 +2720,7 @@
           "speaker_id_prefix": "f9abdbc4e2806ff8bc118e26\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 88,
+          "clips_available_strict": 88,
           "tier": "standard_ge15"
         },
         {
@@ -2345,6 +2728,7 @@
           "speaker_id_prefix": "8e3e0051dfa6c1b005904b4a\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 29,
+          "clips_available_strict": 29,
           "tier": "standard_ge15"
         },
         {
@@ -2352,6 +2736,7 @@
           "speaker_id_prefix": "c72f9e351f9a7f818eaaccd2\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 51,
+          "clips_available_strict": 48,
           "tier": "standard_ge15"
         },
         {
@@ -2359,6 +2744,7 @@
           "speaker_id_prefix": "643a91c531a85a93303df6e4\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 48,
+          "clips_available_strict": 47,
           "tier": "standard_ge15"
         },
         {
@@ -2366,6 +2752,7 @@
           "speaker_id_prefix": "e11b708a4d79e3d849549f6c\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 16,
           "tier": "standard_ge15"
         },
         {
@@ -2373,6 +2760,7 @@
           "speaker_id_prefix": "f8b37ea5de2af94103936579\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 68,
+          "clips_available_strict": 60,
           "tier": "standard_ge15"
         },
         {
@@ -2380,6 +2768,7 @@
           "speaker_id_prefix": "d2781ef07c7da34b33120691\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "standard_ge15"
         },
         {
@@ -2387,6 +2776,7 @@
           "speaker_id_prefix": "54284ff47eb191b25a25d188\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 26,
+          "clips_available_strict": 25,
           "tier": "standard_ge15"
         },
         {
@@ -2394,6 +2784,7 @@
           "speaker_id_prefix": "2184ee1973b37b0c2ebf0898\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 46,
+          "clips_available_strict": 46,
           "tier": "standard_ge15"
         },
         {
@@ -2401,6 +2792,7 @@
           "speaker_id_prefix": "a5c8f0c4e3acb854b994a6e9\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "standard_ge15"
         },
         {
@@ -2408,6 +2800,7 @@
           "speaker_id_prefix": "83954d65b0b851975052e3cf\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 53,
+          "clips_available_strict": 53,
           "tier": "standard_ge15"
         },
         {
@@ -2415,6 +2808,7 @@
           "speaker_id_prefix": "4da31e87577b3a62deead74b\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 48,
+          "clips_available_strict": 47,
           "tier": "standard_ge15"
         },
         {
@@ -2422,6 +2816,7 @@
           "speaker_id_prefix": "912d7bdaa82bb2dcf098ac27\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 25,
+          "clips_available_strict": 24,
           "tier": "standard_ge15"
         },
         {
@@ -2429,6 +2824,7 @@
           "speaker_id_prefix": "545f7a37f1a8073151467439\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 16,
           "tier": "standard_ge15"
         }
       ]
@@ -2442,577 +2838,670 @@
           "speaker_id_prefix": "c8ffe7c4a34c316583ede16f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 50,
+          "clips_available_strict": 50,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5eb089d0174fcd185ef14ee7\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 26,
+          "clips_available_strict": 26,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "734d2c2280785641a4b9967b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 47,
+          "clips_available_strict": 47,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "90645556e15ed55ccddbd189\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 25,
+          "clips_available_strict": 25,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3dbb15be45bbb6a44cee0c71\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 23,
-          "tier": "active"
-        },
-        {
-          "speaker_id_prefix": "07004fed5c5e5b0eec54cada\u2026",
-          "clips_allocated": 15,
-          "clips_available_baseline": 15,
+          "clips_available_strict": 23,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c6eb6062f5ff532fb5b78215\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 40,
+          "clips_available_strict": 40,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "be1acd5832628f37b5347a37\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 22,
+          "clips_available_strict": 22,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "83459a81b95feaab353e89a6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 16,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "619f08dd806f9ccce744ffcf\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 46,
+          "clips_available_strict": 46,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "cd9b3e456c68144b73f3f982\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3b97a91b90f6143c6691d6c2\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5664e285d9de27119b16207e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 51,
+          "clips_available_strict": 51,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0b3d55acf115fdf88131d732\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 2330,
+          "clips_available_strict": 2317,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "54cf4ee3899847bd13620072\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 32,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "77c7033d2ed3ee0d37b4f778\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 45,
+          "clips_available_strict": 45,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1e4387c8023d88e9028da74f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 43,
+          "clips_available_strict": 43,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "fd7c05b323d00f38c381bd67\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 48,
+          "clips_available_strict": 48,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7992ee59c8a9af9b74fd6f0c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 1439,
+          "clips_available_strict": 1432,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ea34f395c288abccb22c6e25\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 43,
-          "tier": "active"
-        },
-        {
-          "speaker_id_prefix": "6cd7653404104d87053bcef6\u2026",
-          "clips_allocated": 15,
-          "clips_available_baseline": 15,
+          "clips_available_strict": 43,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4322c47c95771ee69b2b68ce\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 32,
+          "clips_available_strict": 32,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "225d33c2d8a19c7d9194ff7a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 50,
+          "clips_available_strict": 50,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "48681f5130163687194536c3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 28,
+          "clips_available_strict": 28,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "15f4b2d89fd6ef677ad0cf16\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 2273,
+          "clips_available_strict": 2259,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b1544dd62710516ffe8ee563\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 65,
+          "clips_available_strict": 64,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1950c0c96b18c615514bb59b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 191,
+          "clips_available_strict": 191,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ef4b5ccb8620955265c71b79\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 17,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "147cef3bfa8142de3dc7a5b6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 390,
+          "clips_available_strict": 390,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "87b8e1aed99e40c947f64d00\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "78899c686b3bdef6619b63f9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 46,
+          "clips_available_strict": 42,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1a0975b1ae84607ddf4d5c1c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7b8dc15a6df174df3e09c96a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 31,
+          "clips_available_strict": 31,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "78e67a34deebfed9ef9d7209\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 338,
+          "clips_available_strict": 337,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ac50d5964e22bc8474ef9786\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 125,
+          "clips_available_strict": 119,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "07d156d3f6b5c3b73df12610\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 44,
+          "clips_available_strict": 44,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f6462410c1b2266a4dc2c897\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 147,
+          "clips_available_strict": 144,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ea03678a2d5acb403392528f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 113,
+          "clips_available_strict": 90,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c3b879809a9ebf0d819103be\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 45,
+          "clips_available_strict": 45,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "177ffc33dcd5c5e9471fe693\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 23,
+          "clips_available_strict": 23,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1da450b6301a8d238e035854\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 185,
+          "clips_available_strict": 183,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "dafdb6964fb9310877634877\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d8248cc7b44b79f0d91afa66\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 42,
+          "clips_available_strict": 42,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0663aeb40f5d5ea46610cac3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 31,
+          "clips_available_strict": 31,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1981114be2dbaa96703ba1c3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "717ce094736b71bc4a671a31\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a6fe3b7fdd1a0521b78c2eab\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5b4c07865008f8674dda670e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 106,
+          "clips_available_strict": 106,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e251205f83c803d292d5b083\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 35,
+          "clips_available_strict": 34,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c71d0f75c91220c9661a645e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 26,
+          "clips_available_strict": 25,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4fcdd17805b736cac2dc9209\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 55,
+          "clips_available_strict": 54,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5b92ae13436fa98be2f18794\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c1c511b20c1d5df7070413b2\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 153,
+          "clips_available_strict": 152,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c42aa2bd7fa8f60c8ad3f615\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "030f9b7172b8bcf6cec5d3ac\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 25,
+          "clips_available_strict": 25,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "aef539556f10a5774e3a3809\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f7e69faf5f7a90f1a50358ac\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "73a25eaf141b23dc7a5cf38a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "37c2e0450c5a7d36ced35190\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5633df4160c8d2cb81536438\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 101,
+          "clips_available_strict": 101,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5d11b952e9611a75d83a6b37\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 27,
+          "clips_available_strict": 27,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7568d1ffde31d7917f7e0a9a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 27,
+          "clips_available_strict": 27,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "38daa2cca9a58efc9319ff94\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "14b5240a09d7a3d584704423\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 38,
+          "clips_available_strict": 38,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "097ecdda9d45e386c0fa9614\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 74,
+          "clips_available_strict": 74,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d0b62ac1e57e267f16088ee6\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 653,
+          "clips_available_strict": 653,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4e48b9ce49792978fabe0537\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 28,
-          "tier": "active"
-        },
-        {
-          "speaker_id_prefix": "25949e8d7229d181418b78ad\u2026",
-          "clips_allocated": 15,
-          "clips_available_baseline": 15,
+          "clips_available_strict": 28,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b78c13d540a86fd606866813\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "378f878bcfed1dc653373dfd\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c1f88403a5c342a85936b30c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 42,
+          "clips_available_strict": 41,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "70c96a46f6827039223782fe\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 465,
+          "clips_available_strict": 462,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0a85d6a1db5d95e352af45bb\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "64b5e90b4a328f7deb156cf4\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
-          "tier": "active"
-        },
-        {
-          "speaker_id_prefix": "a7a33ab5ac9181d03e49a22a\u2026",
-          "clips_allocated": 15,
-          "clips_available_baseline": 17,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9e91ae93bf0e7d12a7f8065c\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "72299c3e24b2139a2a1ae2b4\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 44,
+          "clips_available_strict": 44,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1e4d46ff7520c2edddaafc83\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
+          "tier": "active"
+        },
+        {
+          "speaker_id_prefix": "0913c1a50ccfbc71b57416c7\u2026",
+          "clips_allocated": 15,
+          "clips_available_baseline": 77,
+          "clips_available_strict": 77,
+          "tier": "active"
+        },
+        {
+          "speaker_id_prefix": "24f4118fa06f6ebbe906780b\u2026",
+          "clips_allocated": 15,
+          "clips_available_baseline": 19,
+          "clips_available_strict": 19,
+          "tier": "active"
+        },
+        {
+          "speaker_id_prefix": "6a01c0a08b4d8aa7b61113f1\u2026",
+          "clips_allocated": 15,
+          "clips_available_baseline": 18,
+          "clips_available_strict": 18,
+          "tier": "active"
+        },
+        {
+          "speaker_id_prefix": "652c7033fef1554f73eb9d2a\u2026",
+          "clips_allocated": 15,
+          "clips_available_baseline": 40,
+          "clips_available_strict": 40,
           "tier": "active"
         }
       ],
-      "reserve_policy": "Standard Invariant (C >= 15)",
+      "reserve_policy": "Standard Invariant (C_strict >= 15)",
       "total_reserve_count": 15,
       "reserve_speakers": [
         {
           "priority_rank": 1,
-          "speaker_id_prefix": "0913c1a50ccfbc71b57416c7\u2026",
+          "speaker_id_prefix": "bff76140b57133d7f568ac98\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 77,
+          "clips_available_baseline": 38,
+          "clips_available_strict": 38,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 2,
-          "speaker_id_prefix": "24f4118fa06f6ebbe906780b\u2026",
+          "speaker_id_prefix": "761d22ef48dfd9b136666009\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 19,
+          "clips_available_baseline": 200,
+          "clips_available_strict": 200,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 3,
-          "speaker_id_prefix": "6a01c0a08b4d8aa7b61113f1\u2026",
+          "speaker_id_prefix": "28f9ad0f6d38c1c39ab7185b\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 18,
+          "clips_available_baseline": 29,
+          "clips_available_strict": 29,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 4,
-          "speaker_id_prefix": "652c7033fef1554f73eb9d2a\u2026",
+          "speaker_id_prefix": "a49dc86b3139949cc8b9da6c\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 40,
+          "clips_available_baseline": 118,
+          "clips_available_strict": 98,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 5,
-          "speaker_id_prefix": "bff76140b57133d7f568ac98\u2026",
+          "speaker_id_prefix": "ba84cd94c7343927c55a2ee8\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 38,
+          "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 6,
-          "speaker_id_prefix": "761d22ef48dfd9b136666009\u2026",
+          "speaker_id_prefix": "39610faa9ae3147631df64e9\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 200,
+          "clips_available_baseline": 22,
+          "clips_available_strict": 22,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 7,
-          "speaker_id_prefix": "28f9ad0f6d38c1c39ab7185b\u2026",
+          "speaker_id_prefix": "57e30d78bf216f961563ed55\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 29,
+          "clips_available_baseline": 136,
+          "clips_available_strict": 136,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 8,
-          "speaker_id_prefix": "a49dc86b3139949cc8b9da6c\u2026",
+          "speaker_id_prefix": "93f71918fbe69cad830cb492\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 118,
+          "clips_available_baseline": 27,
+          "clips_available_strict": 27,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 9,
-          "speaker_id_prefix": "ba84cd94c7343927c55a2ee8\u2026",
+          "speaker_id_prefix": "c11ff62e3f3f63af7082c64f\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 20,
+          "clips_available_baseline": 28,
+          "clips_available_strict": 27,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 10,
-          "speaker_id_prefix": "39610faa9ae3147631df64e9\u2026",
+          "speaker_id_prefix": "676d29d2fc1a12027b77e7b9\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 22,
+          "clips_available_baseline": 29,
+          "clips_available_strict": 29,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 11,
-          "speaker_id_prefix": "57e30d78bf216f961563ed55\u2026",
+          "speaker_id_prefix": "d3ee18613851faa3e0a202e3\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 136,
+          "clips_available_baseline": 38,
+          "clips_available_strict": 38,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 12,
-          "speaker_id_prefix": "93f71918fbe69cad830cb492\u2026",
+          "speaker_id_prefix": "67c3b8cbb8ba99102521654c\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 27,
+          "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 13,
-          "speaker_id_prefix": "c11ff62e3f3f63af7082c64f\u2026",
+          "speaker_id_prefix": "41f89d7d5bdf75da4cbd3c14\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 28,
+          "clips_available_baseline": 75,
+          "clips_available_strict": 66,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 14,
-          "speaker_id_prefix": "676d29d2fc1a12027b77e7b9\u2026",
+          "speaker_id_prefix": "4ad1f2d153f25219c9a39747\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 29,
+          "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "standard_ge15"
         },
         {
           "priority_rank": 15,
-          "speaker_id_prefix": "d3ee18613851faa3e0a202e3\u2026",
+          "speaker_id_prefix": "3745ec4346612a3a70da3429\u2026",
           "usable_clips": 15,
-          "clips_available_baseline": 38,
+          "clips_available_baseline": 65,
+          "clips_available_strict": 65,
           "tier": "standard_ge15"
         }
       ]
@@ -3026,472 +3515,550 @@
           "speaker_id_prefix": "552a4bd8aa5c2466c0f25308\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 127,
+          "clips_available_strict": 127,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "d8829b98666ea53ef2ffd9d8\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ddbe47affb6dbfa908dcae44\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 50,
+          "clips_available_strict": 50,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "52d533d8e84d42645bb929b2\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 16,
+          "clips_available_strict": 16,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "82a373b5c1e91542c9be9f89\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 87,
+          "clips_available_strict": 87,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c052c5fc64aaa39ddf673246\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1ffd1a9933b407f9f9387b82\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 91,
+          "clips_available_strict": 89,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "78616d469e7e77405a03bde1\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "5ec6273f434cc93af78a5f27\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 131,
+          "clips_available_strict": 131,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "2d181e6813a8af108025eef0\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 29,
+          "clips_available_strict": 29,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "8d730a3e00a296c6af5e6b31\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 114,
+          "clips_available_strict": 114,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "6c774212f9c8f01c32f049a1\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 99,
+          "clips_available_strict": 99,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "cbe5ebf5c32d8ebeb1894e7d\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 1322,
+          "clips_available_strict": 1322,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4e3755916e960b131279c3f3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 32,
+          "clips_available_strict": 32,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b362aa7fa5407ee02c69bcee\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 54,
+          "clips_available_strict": 54,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "2abbfe4ac20ff2fbeb9a112f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 72,
+          "clips_available_strict": 72,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "54eeac8ea3badf2cc01f117f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 39,
+          "clips_available_strict": 39,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9b36d25d5ca61875b52aa5ac\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 140,
+          "clips_available_strict": 140,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7dc614bc22e18236a9a39468\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 25,
+          "clips_available_strict": 25,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b6b032977640a9d9615be13f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 55,
+          "clips_available_strict": 54,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "99c56632a9826deac9b2bad1\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 84,
+          "clips_available_strict": 84,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "16c4d595dc9574177290c4bb\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "3dc96094f97daf2480e974d3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 22,
+          "clips_available_strict": 22,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "52aa80e4d2f163293d06a4e1\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "08e6b8d21d01affd083238c9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "338482eafddb09144e292938\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f29073569dd3297d0b2d2668\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b484ee8e6d227b801554408b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 33,
+          "clips_available_strict": 33,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "acf86c57c5c5ebb70d85dc70\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 63,
+          "clips_available_strict": 63,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "72b3a315118e58820b1c7fbc\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 29,
+          "clips_available_strict": 29,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "897fcbe3091b3f74015d85ff\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 106,
+          "clips_available_strict": 105,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4250c585c865b3545ca30411\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 17,
+          "clips_available_strict": 17,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "9062128a88e1e719b5c8ff1a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 291,
+          "clips_available_strict": 253,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4d5dfc40220dd1436e17ad5f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 89,
+          "clips_available_strict": 89,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "12a8849d8f2e0d14506c46b1\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 592,
+          "clips_available_strict": 591,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f86623298d3dbab0187cbb05\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 1767,
+          "clips_available_strict": 1767,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "8026a7a3a14716f4be622ac4\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 61,
+          "clips_available_strict": 61,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "228d0ff37ef3656c0a469feb\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b632fb667ffdf6adb03be672\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "406c2c523baadda67bea5059\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 29,
+          "clips_available_strict": 27,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1b0f1efa2131edbae6def5bd\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 22,
+          "clips_available_strict": 22,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c43ab0023333254e7299ba83\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 55,
+          "clips_available_strict": 55,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f0d246b76f2cbae374f47162\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f677ad599864b6390e760bed\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 52,
+          "clips_available_strict": 52,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a4d71f2ae56f88b444da40e9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "848e28812a58fec782e7a2ad\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 17,
+          "clips_available_strict": 17,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1c673b0209f32b4203637065\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 291,
+          "clips_available_strict": 291,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "65b74f58b14b412b18018277\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 17,
+          "clips_available_strict": 17,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "daff1bd7b4077635f6843c18\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a2b1954a88eb044141ab4ba9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 462,
+          "clips_available_strict": 462,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "61d4a96f2dd5494366f0480a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 49,
+          "clips_available_strict": 49,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "2e4f8bab70659ce163749e7a\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 18,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "30d8532cb4eaf720f5b7b5be\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 40,
+          "clips_available_strict": 38,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "42f6c40796cda7411152c7c9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1a7affcdbc38b0b348af446d\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 357,
+          "clips_available_strict": 352,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f4f0c4eaaef29d18086f7869\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 59,
+          "clips_available_strict": 59,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "2a4698fdef9d5e565aba3ac7\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 55,
+          "clips_available_strict": 54,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c5e6fd979dbd161abf0a0609\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 536,
+          "clips_available_strict": 534,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "4bf179520c8a951ebc731c96\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 22,
+          "clips_available_strict": 22,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7ccace0eec8b1a643dae87c1\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "04971038f08f335d6ff6aa6b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "f3013beabfc804724a479499\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 52,
+          "clips_available_strict": 52,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7968b79cb716da6f508d7b32\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 281,
+          "clips_available_strict": 281,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b0849e02b2546dda9082345b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 62,
+          "clips_available_strict": 62,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7d7e991821f232c20234a128\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 30,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "b1385a0cd241100399f0c75f\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 260,
+          "clips_available_strict": 259,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c462c003811725b796fd2fa9\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 36,
+          "clips_available_strict": 36,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "6b3dea408fa18a20674ac661\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 208,
+          "clips_available_strict": 208,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "e2ae9dd2a15f61f479fb8e3e\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 25,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "c47ad152d02840e46f9a46d8\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 20,
+          "clips_available_strict": 20,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "2077b1d531e6609581ffc32b\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "0760007937bb3a9ba37c8b23\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 21,
+          "clips_available_strict": 21,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "fa26b8b900c448470b5ea9c3\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 29,
+          "clips_available_strict": 29,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "7aa83f58dc5c2a0eb075195d\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 215,
+          "clips_available_strict": 212,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "12146d1ee29a4c4c4b4dbadd\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "ae8b4178829ab4b9b3954535\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 24,
+          "clips_available_strict": 24,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "1636b4d665deda1424705843\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 40,
+          "clips_available_strict": 38,
           "tier": "active"
         },
         {
           "speaker_id_prefix": "a1e18446cae199638e690eed\u2026",
           "clips_allocated": 15,
           "clips_available_baseline": 22,
+          "clips_available_strict": 22,
           "tier": "active"
         }
       ],
-      "reserve_policy": "Standard Invariant (C >= 15)",
+      "reserve_policy": "Standard Invariant (C_strict >= 15)",
       "total_reserve_count": 15,
       "reserve_speakers": [
         {
@@ -3499,6 +4066,7 @@
           "speaker_id_prefix": "f8d81a9fd09432db6c223195\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 110,
+          "clips_available_strict": 110,
           "tier": "standard_ge15"
         },
         {
@@ -3506,6 +4074,7 @@
           "speaker_id_prefix": "4a77497b9c4d55169ef296b5\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 15,
+          "clips_available_strict": 15,
           "tier": "standard_ge15"
         },
         {
@@ -3513,6 +4082,7 @@
           "speaker_id_prefix": "8dedbb834edcf721fe25cce4\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 36,
+          "clips_available_strict": 36,
           "tier": "standard_ge15"
         },
         {
@@ -3520,6 +4090,7 @@
           "speaker_id_prefix": "9003d9231470321a9e816ff4\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 59,
+          "clips_available_strict": 59,
           "tier": "standard_ge15"
         },
         {
@@ -3527,6 +4098,7 @@
           "speaker_id_prefix": "c4e56e77e5dc7fd2527eb50f\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 96,
+          "clips_available_strict": 96,
           "tier": "standard_ge15"
         },
         {
@@ -3534,6 +4106,7 @@
           "speaker_id_prefix": "cf210e65469016f8f8935daf\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 60,
+          "clips_available_strict": 60,
           "tier": "standard_ge15"
         },
         {
@@ -3541,6 +4114,7 @@
           "speaker_id_prefix": "d6704d8a47c666ac5c9e3282\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 34,
+          "clips_available_strict": 34,
           "tier": "standard_ge15"
         },
         {
@@ -3548,6 +4122,7 @@
           "speaker_id_prefix": "283dcf4597ceeeed8e6aa1f8\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 39,
+          "clips_available_strict": 39,
           "tier": "standard_ge15"
         },
         {
@@ -3555,6 +4130,7 @@
           "speaker_id_prefix": "9e1018f62d70e798193e4149\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 46,
+          "clips_available_strict": 46,
           "tier": "standard_ge15"
         },
         {
@@ -3562,6 +4138,7 @@
           "speaker_id_prefix": "13218c300016f5f9ab281ac0\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 126,
+          "clips_available_strict": 126,
           "tier": "standard_ge15"
         },
         {
@@ -3569,6 +4146,7 @@
           "speaker_id_prefix": "1968c8ef01d46a1e3267c9ff\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 19,
+          "clips_available_strict": 19,
           "tier": "standard_ge15"
         },
         {
@@ -3576,6 +4154,7 @@
           "speaker_id_prefix": "cde3616ea3a0b74063774a88\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 30,
+          "clips_available_strict": 29,
           "tier": "standard_ge15"
         },
         {
@@ -3583,6 +4162,7 @@
           "speaker_id_prefix": "940807e6cdb798c2086e4b27\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 55,
+          "clips_available_strict": 55,
           "tier": "standard_ge15"
         },
         {
@@ -3590,6 +4170,7 @@
           "speaker_id_prefix": "ada26c3f128e04dc1227628e\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 18,
+          "clips_available_strict": 18,
           "tier": "standard_ge15"
         },
         {
@@ -3597,6 +4178,7 @@
           "speaker_id_prefix": "eb09fd8526992b75961d4b20\u2026",
           "usable_clips": 15,
           "clips_available_baseline": 47,
+          "clips_available_strict": 47,
           "tier": "standard_ge15"
         }
       ]

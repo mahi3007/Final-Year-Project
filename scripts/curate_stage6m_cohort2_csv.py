@@ -232,6 +232,9 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
     # Speaker clip accounting: tracking raw, baseline B0, and strict V
     speaker_b0_clips: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
     speaker_strict_clips: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    speaker_declared_accents: Dict[str, Set[str]] = defaultdict(set)
+    global_seen_paths: Set[str] = set()
+
     speaker_rejection_counts: Dict[str, Dict[str, int]] = {
         pref: {
             "raw_total": 0,
@@ -239,6 +242,7 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
             "rejected_votes": 0,
             "rejected_words": 0,
             "rejected_accent": 0,
+            "rejected_duplicate_path": 0,
             "passed_b0": 0,
             "passed_strict": 0,
         }
@@ -283,20 +287,30 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
             down = row["down_votes"]
             words = len(sent.split())
 
-            # C1: Accent mapping
+            # Track speaker-level declared normalized accents
             mapped = ACCENT_NORMALIZATION_MAP.get(acc)
+            if mapped is not None:
+                speaker_declared_accents[pref].add(mapped[0])
+
+            # C1: Accent mapping
             expected_s_name = prefix_to_speaker_info[pref]["stratum_name"]
             if mapped is None or mapped[0] != expected_s_name:
                 rej["rejected_accent"] += 1
                 continue
 
+            clip_path = str(row["path"]).strip()
+            if not clip_path:
+                continue
+
+            # Global path deduplication (B0 requirement)
+            if clip_path in global_seen_paths:
+                rej["rejected_duplicate_path"] += 1
+                continue
+            global_seen_paths.add(clip_path)
+
             # C4: Non-empty sentence and word count >= 2
             if words < MIN_WORD_COUNT or not sent:
                 rej["rejected_words"] += 1
-                continue
-
-            clip_path = str(row["path"]).strip()
-            if not clip_path:
                 continue
 
             clip_info = {
@@ -329,6 +343,15 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
                 rej["passed_strict"] += 1
                 speaker_strict_clips[pref].append(clip_info)
 
+    # Enforce Speaker-Level Accent Homogeneity (B0 requirement)
+    heterogeneous_speakers: Dict[str, List[str]] = {}
+    for pref, declared in speaker_declared_accents.items():
+        if len(declared) > 1:
+            heterogeneous_speakers[pref] = sorted(list(declared))
+            # Heterogeneous speakers violate B0 and are disqualified
+            speaker_b0_clips[pref] = []
+            speaker_strict_clips[pref] = []
+
     logger.info(f"TSV scan complete: {total_tsv_rows:,} rows scanned; {candidate_tsv_rows:,} candidate rows matched.")
 
     # 4. Execute the 6 Audit Checks under Strict Stage 6M Predicate V
@@ -355,6 +378,16 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
         "unresolved_prefixes": list(set(manifest_speakers.keys()) - set(matched_speakers.keys())),
     }
     if not check1_pass:
+        audit_results["overall_status"] = "FAIL"
+
+    # Check 1B: Speaker-Level Accent Homogeneity (B0 Invariant)
+    check_homogeneity_pass = len(heterogeneous_speakers) == 0
+    audit_results["checks"]["accent_homogeneity"] = {
+        "status": "PASS" if check_homogeneity_pass else "FAIL",
+        "heterogeneous_speaker_count": len(heterogeneous_speakers),
+        "heterogeneous_speakers": heterogeneous_speakers,
+    }
+    if not check_homogeneity_pass:
         audit_results["overall_status"] = "FAIL"
 
     # Check 2: Strict Clip Eligibility (>= 15 qualified clips per speaker satisfying B0 + V)
@@ -509,12 +542,28 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
     empty_transcripts = (curated_df["transcript"].str.strip() == "").sum() if not curated_df.empty else 0
     has_double_extension = any(r["recording_id"].endswith(".mp3") for r in curated_records)
 
-    check6_pass = len(missing_cols) == 0 and empty_transcripts == 0 and not has_double_extension and not curated_df.empty
+    # Stem uniqueness check
+    curated_stems = [r["recording_id"] for r in curated_records]
+    seen_stems = set()
+    duplicate_stems = set()
+    for s in curated_stems:
+        if s in seen_stems:
+            duplicate_stems.add(s)
+        seen_stems.add(s)
+
+    check6_pass = (
+        len(missing_cols) == 0
+        and empty_transcripts == 0
+        and not has_double_extension
+        and len(duplicate_stems) == 0
+        and not curated_df.empty
+    )
     audit_results["checks"]["schema_and_naming"] = {
         "status": "PASS" if check6_pass else "FAIL",
         "missing_columns": list(missing_cols),
         "empty_transcripts": int(empty_transcripts),
         "double_extension_detected": has_double_extension,
+        "duplicate_recording_id_stems": list(duplicate_stems),
         "sample_recording_id": curated_records[0]["recording_id"] if curated_records else None,
         "sample_audio_path": curated_records[0]["audio_path"] if curated_records else None,
     }
@@ -553,7 +602,21 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(audit_results, f, indent=2)
 
-    # Markdown Report
+    # Markdown Report Table 2
+    strata_rows = ""
+    for s_name in EXPECTED_STRATA:
+        info = strata_audit_summary.get(s_name, {"total_active_speakers": 0, "strict_eligible_speakers": 0, "shortfall_speakers": 0})
+        tot = info["total_active_speakers"]
+        el = info["strict_eligible_speakers"]
+        sf = info["shortfall_speakers"]
+        status_str = "**PASS**" if sf == 0 else f"**HOLD ({sf} Shortfall)**"
+        strata_rows += f"| **{s_name}** | {tot} | {el} | {sf} | {status_str} |\n"
+
+    total_spks = sum(d["total_active_speakers"] for d in strata_audit_summary.values())
+    total_eligible = sum(d["strict_eligible_speakers"] for d in strata_audit_summary.values())
+    total_sf = sum(d["shortfall_speakers"] for d in strata_audit_summary.values())
+    total_status_str = f"**{audit_results['overall_status']}**"
+
     shortfall_table = ""
     if speakers_under_15_strict:
         shortfall_table = "\n### Strict Quality Shortfall Speakers (|Q| Violations in Manifest):\n\n"
@@ -564,6 +627,28 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
                 f"| `{p}…` | {d['stratum']} | {d['raw_total']} | {d['b0_baseline_count']} | "
                 f"**{d['strict_count']}** | -{d['shortfall']} | {d['rejected_votes']} |\n"
             )
+
+    decision_section = ""
+    if audit_results["overall_status"] == "PASS":
+        decision_section = f"""## 3. Strict Audit Verdict & Data Integrity Status
+
+- **Strict Quality Invariant Satisfied:**
+  All {total_spks} active candidate speakers across all 6 strata possess at least 15 valid audio clips strictly satisfying both baseline predicate $B_0$ and strict quality predicate $V$ (`locale == "en"`, `up_votes >= 2`, `down_votes < 2`).
+- **Cryptographic & Geometry Verification:**
+  Full 7,020 clips (1,170 per stratum) selected deterministically via `SHA256(seed:client_id:clip_path)`. Zero cross-cohort exposure with Replication Cohort 1 and Sentinel Panel. Zero duplicate stems or audio paths.
+- **Readiness Protocol Posture:**
+  Curation audit is **PASS**. The candidate manifest is fully qualified under Option A. In accordance with ADR-005 protocol safeguards, confirmatory evaluation CSV and clip lock generation remains under controlled supervisory gate until authorized.
+"""
+    else:
+        decision_section = f"""## 3. Methodological Audit Finding & Supervisory Decision Gate
+
+- **Root Cause Analysis:**
+  The candidate manifest contains {total_sf} active speakers failing the strict quality predicate $V$.
+  `external_speaker_inventory.csv` indexed baseline qualification ($C_{{\\text{{inventory}}}} \\ge 15$, Predicate $B_0$) without applying strict quality predicate $V$.
+  As documented in [`reports/stage6m/stage6m_data_feasibility_audit.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_data_feasibility_audit.md) Section 2.2, 18 South Asian speakers in the inventory belong to the quality exclusion set $Q$ ($C_{{\\text{{strict}}}} < 15$).
+- **Fail-Closed Guarantee:**
+  Because {total_sf} active speakers have strict clip shortfalls, confirmatory evaluation CSV generation is **HALTED**. `MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD` remains strictly in effect.
+"""
 
     md_content = f"""# Stage 6M Confirmatory Cohort 2: Curation & Strict Integrity Audit Report
 
@@ -581,11 +666,12 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
 | Audit Check | Scope | Verdict | Details |
 | :--- | :--- | :---: | :--- |
 | **1. Prefix Resolution** | 468 Manifest Active Prefixes | `{audit_results['checks']['prefix_resolution']['status']}` | Resolved {audit_results['checks']['prefix_resolution']['resolved_prefixes']}/468 prefixes bijectively (1:1). |
+| **1B. Accent Homogeneity** | Speaker-Level Homogeneity (B0) | `{audit_results['checks']['accent_homogeneity']['status']}` | Found {audit_results['checks']['accent_homogeneity']['heterogeneous_speaker_count']} heterogeneous speakers. |
 | **2. Strict Clip Eligibility** | Strict Quality Predicate V (B0 + V) | `{audit_results['checks']['clip_eligibility']['status']}` | {audit_results['checks']['clip_eligibility']['speakers_meeting_strict_quota']}/468 speakers meet strict quota ({audit_results['checks']['clip_eligibility']['strict_shortfall_count']} shortfall). |
 | **3. Speaker Disjointness** | Cross-Cohort Isolation | `{audit_results['checks']['speaker_disjointness']['status']}` | 0 overlap with Cohort 1 (60 spks) and Sentinel Panel (30 spks). Zero leakage. |
 | **4. Stratum Preservation** | 6 Pre-specified Strata | `{audit_results['checks']['stratum_preservation']['status']}` | Exactly 78 speakers per stratum across all 6 strata. |
 | **5. Stream Geometry** | 15 Clips/Speaker Stream | `{audit_results['checks']['stream_geometry']['status']}` | Selected {audit_results['checks']['stream_geometry']['total_clips_selected']}/7020 strict clips across 6 strata. |
-| **6. Schema & Naming** | Runner Filename Compatibility | `{audit_results['checks']['schema_and_naming']['status']}` | Filename stem convention verified (`cohort2_audio/{{recording_id}}.mp3`). |
+| **6. Schema & Naming** | Runner Filename Compatibility | `{audit_results['checks']['schema_and_naming']['status']}` | Filename stem convention verified (`cohort2_audio/{{recording_id}}.mp3`), zero duplicate stems. |
 
 ---
 
@@ -593,24 +679,11 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
 
 | Stratum Name | Total Active Speakers | Strict-Eligible Speakers ($C_{{\\text{{strict}}}} \\ge 15$) | Shortfall Speakers ($C_{{\\text{{strict}}}} < 15$) | Feasibility Status |
 | :--- | :---: | :---: | :---: | :---: |
-| **Australian English** | 78 | 78 | 0 | **PASS** |
-| **Canadian English** | 78 | 78 | 0 | **PASS** |
-| **England English** | 78 | 78 | 0 | **PASS** |
-| **Irish English** | 78 | 78 | 0 | **PASS** |
-| **South Asian English** | 78 | 74 | 4 | **HOLD (4 Shortfall)** |
-| **US English** | 78 | 78 | 0 | **PASS** |
-| **Total All 6 Strata** | **468** | **464** | **4** | **HOLD_STRICT_QUALITY_SHORTFALL** |
+{strata_rows}| **Total All 6 Strata** | **{total_spks}** | **{total_eligible}** | **{total_sf}** | {total_status_str} |
 {shortfall_table}
 ---
 
-## 3. Methodological Audit Finding & Supervisory Decision Gate
-
-- **Root Cause Analysis:**
-  The locked candidate manifest ([`stage6m_locked_candidate_manifest.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/datasets/splits/stage6m_locked_candidate_manifest.json)) was constructed by [`scripts/generate_stage6m_locked_manifest.py`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/scripts/generate_stage6m_locked_manifest.py) from [`reports/stage5/external_speaker_inventory.csv`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage5/external_speaker_inventory.csv).
-  `external_speaker_inventory.csv` indexed baseline qualification ($C_{{\\text{{inventory}}}} \\ge 15$, Predicate $B_0$) without applying strict quality predicate $V$.
-  As documented in [`reports/stage6m/stage6m_data_feasibility_audit.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_data_feasibility_audit.md) Section 2.2, exactly 18 South Asian speakers in the inventory belong to the quality exclusion set $Q$ ($C_{{\\text{{strict}}}} < 15$ due to down-votes $\\ge 2$). Four of these 18 speakers were allocated into the active manifest.
-- **Fail-Closed Guarantee:**
-  Because 4 active speakers have only 13 or 14 strict-eligible clips, confirmatory evaluation CSV generation is **HALTED**. `MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD` remains strictly in effect.
+{decision_section}
 """
 
     with open(md_path, "w", encoding="utf-8") as f:

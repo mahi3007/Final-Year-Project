@@ -1,8 +1,8 @@
 {
   "manifest_path": "stage6m_locked_candidate_manifest.json",
-  "sha256": "610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895",
-  "sha256_lf": "2e59a75c40abd165ee1689773c1a95409be29636079c0f714d51236dd54dcef0",
-  "generated_timestamp_utc": "2026-10-20T07:00:24.413670+00:00",
+  "sha256": "7dcf8d5812ce8b555d1f4c0b1a1f2d63263e83c81120bd811cc8fcb427cfbd95",
+  "sha256_lf": "9d7823ad1c622fbb63ba114ebffddd4e44ced366709fd172c34fa12e1f79f8ae",
+  "generated_timestamp_utc": "2026-10-25T13:02:02.312807+00:00",
   "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
   "governing_standard": "ADR-005 (Amended via AMENDMENT-001)",
   "total_active_speakers": 468,

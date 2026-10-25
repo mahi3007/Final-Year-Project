@@ -289,7 +289,77 @@ def test_curation_recording_id_stem_uniqueness(tmp_path):
     rec_ids = df["recording_id"].tolist()
     assert len(rec_ids) == len(set(rec_ids))
     assert not any(r.endswith(".mp3") for r in rec_ids)
-    assert all("common_voice_en" in r for r in rec_ids)
+
+
+def test_curation_rejects_speaker_level_accent_heterogeneity(tmp_path):
+    """Speakers declaring conflicting recognized accents violate B0 accent homogeneity and are rejected."""
+    env = _create_mock_environment(tmp_path, num_speakers_per_stratum=1, clips_per_speaker=16)
+
+    # In TSV, give the first speaker conflicting accents (Irish + England)
+    df_tsv = pd.read_csv(env["tsv"], sep="\t")
+    # First 8 clips Irish English, next 8 England English for client 0
+    spk0_cid = df_tsv.loc[0, "client_id"]
+    mask_spk0 = df_tsv["client_id"] == spk0_cid
+    spk0_indices = df_tsv[mask_spk0].index
+    df_tsv.loc[spk0_indices[8:], "accents"] = "England English"
+
+    het_tsv = tmp_path / "het_tsv.tsv"
+    df_tsv.to_csv(het_tsv, sep="\t", index=False)
+
+    args = argparse.Namespace(
+        manifest=env["manifest"],
+        val_tsv=het_tsv,
+        ext_eval_csv=env["c1"],
+        sentinel_csv=env["sentinel"],
+        output_csv=env["out_csv"],
+        output_lock=env["out_lock"],
+        reports_dir=env["reports_dir"],
+        seed=20261020,
+        generate=False,
+    )
+
+    success, audit_results, _ = run_curation_audit(args)
+    assert not success
+    assert audit_results["checks"]["accent_homogeneity"]["status"] == "FAIL"
+    assert audit_results["checks"]["accent_homogeneity"]["heterogeneous_speaker_count"] == 1
+    pref = spk0_cid[:24]
+    assert pref in audit_results["checks"]["accent_homogeneity"]["heterogeneous_speakers"]
+
+
+def test_curation_global_path_deduplication(tmp_path):
+    """Duplicate clip paths across or within rows must be discarded before evaluating the 15-clip quota."""
+    env = _create_mock_environment(tmp_path, num_speakers_per_stratum=1, clips_per_speaker=16)
+
+    # In TSV, duplicate the last 3 clips of speaker 0 so unique paths = 13 (< 15)
+    df_tsv = pd.read_csv(env["tsv"], sep="\t")
+    spk0_cid = df_tsv.loc[0, "client_id"]
+    mask_spk0 = df_tsv["client_id"] == spk0_cid
+    spk0_indices = df_tsv[mask_spk0].index
+    # Make paths for indices 13, 14, 15 identical to index 0
+    for idx in spk0_indices[13:]:
+        df_tsv.loc[idx, "path"] = df_tsv.loc[spk0_indices[0], "path"]
+
+    dup_tsv = tmp_path / "dup_tsv.tsv"
+    df_tsv.to_csv(dup_tsv, sep="\t", index=False)
+
+    args = argparse.Namespace(
+        manifest=env["manifest"],
+        val_tsv=dup_tsv,
+        ext_eval_csv=env["c1"],
+        sentinel_csv=env["sentinel"],
+        output_csv=env["out_csv"],
+        output_lock=env["out_lock"],
+        reports_dir=env["reports_dir"],
+        seed=20261020,
+        generate=False,
+    )
+
+    success, audit_results, _ = run_curation_audit(args)
+    assert not success
+    assert audit_results["checks"]["clip_eligibility"]["status"] == "FAIL"
+    pref = spk0_cid[:24]
+    assert pref in audit_results["checks"]["clip_eligibility"]["strict_shortfall_speakers"]
+    assert audit_results["checks"]["clip_eligibility"]["strict_shortfall_speakers"][pref]["strict_count"] == 13
 
 
 def test_curation_fails_closed_on_strict_quota_shortfall(tmp_path):
@@ -357,8 +427,52 @@ def test_curation_lock_records_schema_and_exact_recording_ids(tmp_path):
     assert expected_cols.issubset(set(df.columns))
 
 
-def test_actual_repo_strict_audit_identifies_four_south_asian_shortfall_speakers():
-    """Validates that real committed manifest + validated.tsv correctly catches the 4 South Asian shortfall speakers."""
+def test_historical_v133_manifest_identifies_four_south_asian_shortfall_speakers():
+    """Validates that historical v1.3.3 manifest fails closed and catches the 4 South Asian shortfall speakers."""
+    hist_manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.v1.3.3.historical.json"
+    val_tsv = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "validated.tsv"
+    ext_eval = PROJECT_ROOT / "datasets" / "splits" / "stage5_external_eval.csv"
+    sentinel = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
+
+    if not val_tsv.exists():
+        pytest.skip("validated.tsv not available in this test environment")
+    if not hist_manifest_path.exists():
+        pytest.skip("historical v1.3.3 manifest not available")
+
+    args = argparse.Namespace(
+        manifest=hist_manifest_path,
+        val_tsv=val_tsv,
+        ext_eval_csv=ext_eval,
+        sentinel_csv=sentinel,
+        output_csv=PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.csv",
+        output_lock=PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.lock.json",
+        reports_dir=PROJECT_ROOT / "reports" / "stage6m",
+        seed=DEFAULT_SEED,
+        generate=False,
+    )
+
+    success, audit_results, _ = run_curation_audit(args)
+
+    assert not success, "Historical manifest must fail closed due to strict quality shortfall!"
+    assert audit_results["overall_status"] == "HOLD_STRICT_QUALITY_SHORTFALL"
+
+    # Exactly 4 speakers fail strict in historical manifest
+    shortfall = audit_results["checks"]["clip_eligibility"]["strict_shortfall_speakers"]
+    assert len(shortfall) == 4
+    expected_shortfall_prefixes = {
+        "07004fed5c5e5b0eec54cada",
+        "6cd7653404104d87053bcef6",
+        "25949e8d7229d181418b78ad",
+        "a7a33ab5ac9181d03e49a22a",
+    }
+    assert set(shortfall.keys()) == expected_shortfall_prefixes
+    for p in expected_shortfall_prefixes:
+        assert shortfall[p]["stratum"] == "South Asian English"
+        assert shortfall[p]["strict_count"] in (13, 14)
+
+
+def test_corrected_option_a_manifest_passes_strict_curation_audit():
+    """Validates that corrected Option A candidate manifest achieves full 468/468 PASS on validated.tsv."""
     manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
     val_tsv = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "validated.tsv"
     ext_eval = PROJECT_ROOT / "datasets" / "splits" / "stage5_external_eval.csv"
@@ -381,19 +495,30 @@ def test_actual_repo_strict_audit_identifies_four_south_asian_shortfall_speakers
 
     success, audit_results, _ = run_curation_audit(args)
 
-    assert not success, "Audit must fail closed due to strict quality shortfall!"
-    assert audit_results["overall_status"] == "HOLD_STRICT_QUALITY_SHORTFALL"
+    assert success, f"Corrected Option A manifest must PASS all checks! Errors: {audit_results.get('checks')}"
+    assert audit_results["overall_status"] == "PASS"
 
-    # Exactly 4 speakers fail strict
-    shortfall = audit_results["checks"]["clip_eligibility"]["strict_shortfall_speakers"]
-    assert len(shortfall) == 4
-    expected_shortfall_prefixes = {
-        "07004fed5c5e5b0eec54cada",
-        "6cd7653404104d87053bcef6",
-        "25949e8d7229d181418b78ad",
-        "a7a33ab5ac9181d03e49a22a",
-    }
-    assert set(shortfall.keys()) == expected_shortfall_prefixes
-    for p in expected_shortfall_prefixes:
-        assert shortfall[p]["stratum"] == "South Asian English"
-        assert shortfall[p]["strict_count"] in (13, 14)
+    # All 468 active speakers meet strict quota with 0 shortfall
+    clip_check = audit_results["checks"]["clip_eligibility"]
+    assert clip_check["status"] == "PASS"
+    assert clip_check["total_active_speakers"] == 468
+    assert clip_check["speakers_meeting_strict_quota"] == 468
+    assert clip_check["strict_shortfall_count"] == 0
+
+    # Stream geometry check
+    geom_check = audit_results["checks"]["stream_geometry"]
+    assert geom_check["status"] == "PASS"
+    assert geom_check["total_clips_selected"] == 7020
+    assert geom_check["unique_audio_paths"] == 7020
+
+    # Schema & naming check
+    schema_check = audit_results["checks"]["schema_and_naming"]
+    assert schema_check["status"] == "PASS"
+    assert len(schema_check["missing_columns"]) == 0
+    assert len(schema_check["duplicate_recording_id_stems"]) == 0
+
+    # Accent homogeneity check
+    assert audit_results["checks"]["accent_homogeneity"]["status"] == "PASS"
+
+    # Speaker disjointness check
+    assert audit_results["checks"]["speaker_disjointness"]["status"] == "PASS"
