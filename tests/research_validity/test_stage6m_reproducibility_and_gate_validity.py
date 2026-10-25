@@ -1013,17 +1013,17 @@ def test_production_synthesize_disparity_narrative_inconsistent_input_validation
     """
     Validates that explicitly providing disparity values that contradict
     the stratum-derived range by > 0.02 pp raises a clear ValueError, while
-    tolerating differences within the theoretical rounding bound (<= 0.02 pp).
+    tolerating minor discrepancies within the conservative 0.02 pp validation margin.
     """
     strata = _make_strata_results(40.0, 40.0, 12.0, 12.0)  # range = 28.00 pp
-    # 28.05 deviates by 0.05 pp (> 0.02 pp bound) -> must raise ValueError
+    # 28.05 deviates by 0.05 pp (> 0.02 pp margin) -> must raise ValueError
     with pytest.raises(ValueError, match="Supplied disp_arm1 .* is inconsistent with stratum-derived range"):
         synthesize_disparity_narrative(strata_results=strata, disp_arm1=28.05)
 
     with pytest.raises(ValueError, match="Supplied disp_arm2 .* is inconsistent with stratum-derived range"):
         synthesize_disparity_narrative(strata_results=strata, disp_arm2=28.05)
 
-    # 28.01 deviates by 0.01 pp (within <= 0.02 pp rounding bound) -> must succeed
+    # 28.01 deviates by 0.01 pp (within <= 0.02 pp validation margin) -> must succeed
     ok_narrative = synthesize_disparity_narrative(strata_results=strata, disp_arm1=28.01, disp_arm2=28.01)
     assert "28.01 pp" in ok_narrative
 

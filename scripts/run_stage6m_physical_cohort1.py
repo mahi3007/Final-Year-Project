@@ -293,9 +293,10 @@ def synthesize_disparity_narrative(
     derived_disp_arm2 = max(r["wer_arm2_ungated"] for r in strata_results) - min(r["wer_arm2_ungated"] for r in strata_results)
 
     # Validate consistency if explicitly supplied.
-    # Theoretical rounding bound: stratum endpoints rounded to 2 decimal places carry at most +/-0.005 pp
-    # rounding error each, so the range difference |(round(a,2) - round(b,2)) - (a - b)| is bounded by
-    # 0.005 + 0.005 = 0.010 pp. We enforce a tight tolerance of 0.02 pp (0.010 pp theoretical bound + float epsilon).
+    # Stratum endpoints rounded to 2 decimal places carry at most +/-0.005 pp rounding error each,
+    # meaning the theoretical range difference |(round(a,2) - round(b,2)) - (a - b)| is bounded by
+    # 0.005 + 0.005 = 0.010 pp. We enforce a conservative 0.02 pp validation margin, chosen to
+    # accommodate rounding differences across reporting formats and floating-point representations.
     if validate_consistency:
         if disp_arm1 is not None and abs(disp_arm1 - derived_disp_arm1) > 0.02:
             raise ValueError(
