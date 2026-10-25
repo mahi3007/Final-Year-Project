@@ -189,6 +189,78 @@ def suta_adaptation_step(
     return float(total_loss.item())
 
 
+def _paired_t_arm3_vs_arm2_interpretation(
+    t_stat: float, p_val: float, mean_diff_g_u: float
+) -> str:
+    """
+    Synthesise the Arm 3 vs Arm 2 paired-test interpretation string from the
+    computed statistical result.  The string must never claim significance when
+    the result does not support it.
+
+    Parameters
+    ----------
+    t_stat      : paired t-statistic (may be NaN when SE = 0)
+    p_val       : two-tailed p-value  (may be NaN when SE = 0)
+    mean_diff_g_u : unweighted speaker-average (WER3 - WER2) in percentage
+                  points; negative means Arm 3 is better than Arm 2
+    """
+    if np.isnan(t_stat) or np.isnan(p_val):
+        return (
+            "Not estimable: paired t-statistic is undefined because the "
+            "sample standard error of (WER_3 - WER_2) is zero."
+        )
+    if p_val < 0.05:
+        if mean_diff_g_u < 0:
+            direction = "lower word error rate (improvement)"
+        elif mean_diff_g_u > 0:
+            direction = "higher word error rate (regression)"
+        else:
+            direction = "no observed directional change"
+        return (
+            f"Statistically significant difference detected at p < 0.05 "
+            f"(t = {t_stat:.4f}, p = {p_val:.5f}): Arm 3 shows {direction} "
+            f"relative to ungated CTTA ({mean_diff_g_u:+.4f} pp unweighted speaker average)."
+        )
+    return (
+        f"No statistically significant difference detected between Arm 3 and "
+        f"ungated CTTA at the p < 0.05 threshold "
+        f"(t = {t_stat:.4f}, p = {p_val:.5f})."
+    )
+
+
+def _paired_t_arm3_vs_arm1_interpretation(
+    t_stat: float, p_val: float, se_diff: float, num_clips: int
+) -> str:
+    """
+    Synthesise the Arm 3 vs Arm 1 paired-test interpretation string from the
+    computed statistical result.  When SE = 0 (zero-variance identity), the
+    function emits the not-estimable message rather than claiming equivalence or
+    a spurious non-significant difference.
+
+    Parameters
+    ----------
+    t_stat    : paired t-statistic (may be NaN when se_diff = 0)
+    p_val     : two-tailed p-value  (may be NaN when se_diff = 0)
+    se_diff   : sample standard error of (WER_3 - WER_1) in percentage points
+    num_clips : total number of evaluated audio clips (for context in message)
+    """
+    if se_diff == 0.0 or np.isnan(t_stat) or np.isnan(p_val):
+        return (
+            f"Not estimable because the observed paired differences have zero "
+            f"variance. Arm 3 predictions match Arm 1 on all {num_clips} clips, "
+            f"but this sample identity does not establish population-level equivalence."
+        )
+    if p_val < 0.05:
+        return (
+            f"Statistically significant difference detected from static baseline "
+            f"at p < 0.05 (t = {t_stat:.4f}, p = {p_val:.5f})."
+        )
+    return (
+        f"No statistically significant difference detected from static baseline "
+        f"under standard paired t-test (t = {t_stat:.4f}, p = {p_val:.5f} ≥ 0.05)."
+    )
+
+
 def generate_and_save_reports(
     out_report_json: Path,
     out_report_md: Path,
@@ -474,7 +546,10 @@ def generate_and_save_reports(
                 "p_value": float(p_val_g_u) if not np.isnan(p_val_g_u) else None,
                 "degrees_of_freedom": df_spk,
                 "statistically_significant_p05": bool(p_val_g_u < 0.05) if not np.isnan(p_val_g_u) else None,
-                "interpretation": f"Disparity Safety Gate significantly reduced word errors relative to ungated CTTA (t = {t_stat_g_u:.4f}, p = {p_val_g_u:.5f} < 0.05)."
+                "interpretation": _paired_t_arm3_vs_arm2_interpretation(
+                    t_stat_g_u, p_val_g_u,
+                    float(np.mean(spk_wer3_unrounded - spk_wer2_unrounded))
+                )
             },
             "paired_t_arm3_vs_arm1": {
                 "test_status": "NOT_ESTIMABLE_ZERO_VARIANCE" if (np.isnan(t_stat_g_s) or se_diff_s == 0.0) else "COMPLETED",
@@ -482,10 +557,8 @@ def generate_and_save_reports(
                 "p_value": float(p_val_g_s) if not np.isnan(p_val_g_s) else None,
                 "degrees_of_freedom": df_spk,
                 "statistically_significant_p05": bool(p_val_g_s < 0.05) if not np.isnan(p_val_g_s) else None,
-                "interpretation": (
-                    f"No statistically significant difference detected from static baseline under standard paired t-test (t = {t_stat_g_s:.4f}, p = {p_val_g_s:.4f} > 0.05)."
-                    if (not np.isnan(t_stat_g_s) and n_accept > 0) else
-                    f"Not estimable because the observed paired differences have zero variance. Arm 3 predictions match Arm 1 on all {metadata['num_clips']} clips, but this sample identity does not establish population-level equivalence."
+                "interpretation": _paired_t_arm3_vs_arm1_interpretation(
+                    t_stat_g_s, p_val_g_s, se_diff_s, metadata["num_clips"]
                 ),
                 "tost_equivalence": tost_payload
             }
@@ -552,18 +625,11 @@ def generate_and_save_reports(
             f"Gated SUTA maintained disparity at {disp_arm3:.2f} pp."
         )
 
-    # Secondary Stability Hypothesis Conclusion
-    if np.isnan(t_stat_g_s) or se_diff_s == 0.0:
-        paired_t_arm1_conclusion_md = (
-            f"Not estimable because the observed paired differences have zero variance. "
-            f"Arm 3 predictions match Arm 1 on all {metadata['num_clips']} clips, but this sample identity does not establish population-level equivalence."
-        )
-    else:
-        paired_t_arm1_conclusion_md = (
-            "Statistically significant difference (p < 0.05)"
-            if p_val_g_s < 0.05 else
-            "No statistically significant difference detected at $\\alpha = 0.05$."
-        )
+    # Secondary Stability Hypothesis Conclusion (Markdown) — derived from the same
+    # helper as the JSON field so the two representations are always in sync.
+    paired_t_arm1_conclusion_md = _paired_t_arm3_vs_arm1_interpretation(
+        t_stat_g_s, p_val_g_s, se_diff_s, metadata["num_clips"]
+    )
 
     # Markdown TOST Section
     if se_diff_s > 0.0:
@@ -641,7 +707,7 @@ Unlike prior controller dry-runs, **every word error reported herein derives fro
 - **Primary Utility Hypothesis (Arm 3 vs. Arm 2):**
   - Paired $t$-statistic: $t = {t_stat_g_u:.4f}$ ($df = {df_spk}$)
   - Two-tailed $p$-value: $p = {p_val_g_u:.4e}$
-  - Conclusion: {"Statistically significant difference (p < 0.05)" if p_val_g_u < 0.05 else "Difference does not achieve p < 0.05 threshold"}
+  - Conclusion: {_paired_t_arm3_vs_arm2_interpretation(t_stat_g_u, p_val_g_u, float(np.mean(spk_wer3_unrounded - spk_wer2_unrounded)))}
 
 - **Secondary Stability Hypothesis (Arm 3 vs. Arm 1):**
   - Paired $t$-statistic: $t = {t_stat_g_s:.4f}$ ($df = {df_spk}$)

@@ -68,7 +68,7 @@
       "p_value": 0.0171155694666455,
       "degrees_of_freedom": 59,
       "statistically_significant_p05": true,
-      "interpretation": "Disparity Safety Gate significantly reduced word errors relative to ungated CTTA (t = -2.4536, p = 0.01712 < 0.05)."
+      "interpretation": "Statistically significant difference detected at p < 0.05 (t = -2.4536, p = 0.01712): Arm 3 shows lower word error rate (improvement) relative to ungated CTTA (-0.9729 pp unweighted speaker average)."
     },
     "paired_t_arm3_vs_arm1": {
       "test_status": "NOT_ESTIMABLE_ZERO_VARIANCE",

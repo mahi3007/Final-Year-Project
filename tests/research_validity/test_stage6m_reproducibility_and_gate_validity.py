@@ -755,3 +755,304 @@ def test_revalidated_cohort1_zero_variance_tost_representation():
     assert "Equivalence within margin not established" in md_text
 
 
+
+
+# =============================================================================
+# Report-Generator Robustness Tests  (hardening pass -- no physical re-run)
+# =============================================================================
+
+import sys as _sys
+_sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from run_stage6m_physical_cohort1 import (  # noqa: E402
+    _paired_t_arm3_vs_arm2_interpretation,
+    _paired_t_arm3_vs_arm1_interpretation,
+)
+
+
+class TestPairedTArm3VsArm2Interpretation:
+    """
+    Unit tests for _paired_t_arm3_vs_arm2_interpretation covering every branch:
+    (a) NaN t-statistic / p-value  ->  not estimable
+    (b) p < 0.05, mean_diff < 0    ->  significant improvement
+    (c) p < 0.05, mean_diff > 0    ->  significant regression
+    (d) p < 0.05, mean_diff == 0   ->  significant, no directional change
+    (e) p >= 0.05                  ->  not significant
+    (f) p == 0.05 exactly          ->  not significant (boundary)
+    """
+
+    def test_nan_returns_not_estimable(self):
+        text = _paired_t_arm3_vs_arm2_interpretation(float("nan"), float("nan"), 0.0)
+        assert "not estimable" in text.lower()
+        assert "zero" in text.lower()
+
+    def test_significant_improvement(self):
+        text = _paired_t_arm3_vs_arm2_interpretation(-2.71, 0.0087, -0.91)
+        assert "statistically significant" in text.lower()
+        assert "improvement" in text.lower()
+        assert "-2.7100" in text
+        assert "0.00870" in text
+        assert "not significant" not in text.lower()
+
+    def test_significant_regression(self):
+        text = _paired_t_arm3_vs_arm2_interpretation(+2.40, 0.019, +1.50)
+        assert "statistically significant" in text.lower()
+        assert "regression" in text.lower()
+
+    def test_significant_zero_direction(self):
+        text = _paired_t_arm3_vs_arm2_interpretation(-3.0, 0.004, 0.0)
+        assert "statistically significant" in text.lower()
+        assert "no observed directional change" in text.lower()
+
+    def test_not_significant(self):
+        text = _paired_t_arm3_vs_arm2_interpretation(-0.50, 0.62, -0.10)
+        assert "no statistically significant" in text.lower()
+        assert "0.6200" in text
+        # Must never claim significance
+        assert "statistically significant difference detected at p" not in text.lower()
+
+    def test_boundary_p_005_is_not_significant(self):
+        text = _paired_t_arm3_vs_arm2_interpretation(-1.96, 0.05, -0.05)
+        assert "no statistically significant" in text.lower()
+
+
+class TestPairedTArm3VsArm1Interpretation:
+    """
+    Unit tests for _paired_t_arm3_vs_arm1_interpretation covering every branch:
+    (a) se_diff == 0.0  ->  not estimable (zero-variance identity)
+    (b) NaN t/p         ->  not estimable
+    (c) p < 0.05        ->  statistically significant
+    (d) p >= 0.05       ->  not statistically significant
+    (e) p == 0.05       ->  not significant (boundary)
+    (f) zero SE + extreme t/p  ->  not estimable (cannot claim significance)
+    """
+
+    def test_zero_se_returns_not_estimable(self):
+        text = _paired_t_arm3_vs_arm1_interpretation(0.0, 1.0, 0.0, 900)
+        assert "not estimable" in text.lower()
+        assert "zero variance" in text.lower()
+        assert "900 clips" in text
+        assert "does not establish population-level equivalence" in text.lower()
+
+    def test_nan_t_returns_not_estimable(self):
+        text = _paired_t_arm3_vs_arm1_interpretation(float("nan"), float("nan"), 0.12, 900)
+        assert "not estimable" in text.lower()
+
+    def test_significant_result(self):
+        text = _paired_t_arm3_vs_arm1_interpretation(-2.50, 0.015, 0.12, 900)
+        assert "statistically significant" in text.lower()
+        assert "p < 0.05" in text
+
+    def test_not_significant_result(self):
+        text = _paired_t_arm3_vs_arm1_interpretation(-0.26, 0.80, 0.12, 900)
+        assert "no statistically significant" in text.lower()
+        assert "0.8000" in text
+
+    def test_boundary_p_005_is_not_significant(self):
+        text = _paired_t_arm3_vs_arm1_interpretation(-1.67, 0.05, 0.12, 900)
+        assert "no statistically significant" in text.lower()
+
+    def test_zero_se_cannot_claim_significance(self):
+        """Even with extreme t/p values, zero SE must trigger not-estimable."""
+        text = _paired_t_arm3_vs_arm1_interpretation(float("inf"), 0.0, 0.0, 900)
+        assert "not estimable" in text.lower()
+        assert "statistically significant difference detected" not in text.lower()
+
+
+# ---------------------------------------------------------------------------
+# Disparity narrative branch tests  (pure logic, no physical inference)
+# ---------------------------------------------------------------------------
+
+def _make_strata_results(max_wer1, max_wer2, min_wer1, min_wer2,
+                          other_wer1=25.0, other_wer2=25.0):
+    """Build a minimal 3-stratum strata_results list for narrative unit tests."""
+    return [
+        {"stratum": "MaxStratum", "ref_words": 1000,
+         "wer_arm1_static": max_wer1, "wer_arm2_ungated": max_wer2, "wer_arm3_gated": max_wer1,
+         "delta_g_arm3_vs_arm1": 0.0, "delta_g_arm3_vs_arm2": round(max_wer1 - max_wer2, 2)},
+        {"stratum": "MinStratum", "ref_words": 1000,
+         "wer_arm1_static": min_wer1, "wer_arm2_ungated": min_wer2, "wer_arm3_gated": min_wer1,
+         "delta_g_arm3_vs_arm1": 0.0, "delta_g_arm3_vs_arm2": round(min_wer1 - min_wer2, 2)},
+        {"stratum": "MidStratum", "ref_words": 1000,
+         "wer_arm1_static": other_wer1, "wer_arm2_ungated": other_wer2, "wer_arm3_gated": other_wer1,
+         "delta_g_arm3_vs_arm1": 0.0, "delta_g_arm3_vs_arm2": round(other_wer1 - other_wer2, 2)},
+    ]
+
+
+def _run_disparity_narrative(strata_results, disp_arm1, disp_arm2, n_accept, acc_rate):
+    """
+    Faithful reimplementation of the disparity narrative logic from
+    generate_and_save_reports for branch-coverage unit testing.
+    No physical inference is invoked.
+    """
+    if not strata_results:
+        return (
+            f"Ungated SUTA reduced cross-accent disparity from {disp_arm1:.2f} pp "
+            f"to {disp_arm2:.2f} pp. "
+        )
+    min_stratum = min(strata_results, key=lambda r: r["wer_arm1_static"])
+    max_stratum = max(strata_results, key=lambda r: r["wer_arm1_static"])
+    min_name = min_stratum["stratum"]
+    max_name = max_stratum["stratum"]
+    min_change = min_stratum["wer_arm2_ungated"] - min_stratum["wer_arm1_static"]
+    max_change = max_stratum["wer_arm2_ungated"] - max_stratum["wer_arm1_static"]
+    max_desc = "an improvement" if max_change < 0 else ("a regression" if max_change > 0 else "no change")
+    min_desc = "a regression" if min_change > 0 else ("an improvement" if min_change < 0 else "no change")
+    disp_change = disp_arm2 - disp_arm1
+    if disp_change < -0.001:
+        disp_verb = "reduced"
+        if max_change < 0 and min_change > 0:
+            synthesis = (
+                "The disparity reduction therefore combines an observed improvement in the "
+                "worst-performing stratum with a leveling-down effect on the best-performing stratum."
+            )
+        elif max_change < 0 and min_change <= 0:
+            synthesis = (
+                "The disparity reduction was driven primarily by an improvement in the "
+                "worst-performing stratum without degrading the best-performing stratum."
+            )
+        elif max_change >= 0 and min_change > 0:
+            synthesis = (
+                "The disparity reduction was driven entirely by a leveling-down effect "
+                "(regression in the best-performing stratum) rather than uplifting disadvantaged groups."
+            )
+        else:
+            synthesis = "The disparity reduction reflects shifting stratum error profiles under ungated adaptation."
+    elif disp_change > 0.001:
+        disp_verb = "increased"
+        if max_change > 0 and min_change <= 0:
+            synthesis = "The disparity increase was driven primarily by performance regression in the worst-performing stratum."
+        elif min_change < 0 and max_change >= 0:
+            synthesis = (
+                "The disparity increase was driven by improvements concentrated in the best-performing "
+                "stratum, widening the gap with disadvantaged groups."
+            )
+        else:
+            synthesis = "The disparity increase reflects widening performance gaps across strata under ungated adaptation."
+    else:
+        disp_verb = "maintained"
+        synthesis = "The observed cross-accent disparity remained identical under ungated adaptation."
+    gated_desc = (
+        "Gated SUTA rejected all candidate updates and retained baseline predictions."
+        if n_accept == 0 else
+        f"Gated SUTA accepted {n_accept} candidate updates ({acc_rate:.1f}%)."
+    )
+    return (
+        f"Ungated SUTA {disp_verb} the observed cross-accent WER range "
+        f"from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
+        f"This reflected both {max_desc} in {max_name} WER ({max_change:+.2f} pp) and "
+        f"{min_desc} in {min_name} WER ({min_change:+.2f} pp). "
+        f"{synthesis} "
+        f"{gated_desc}"
+    )
+
+
+@pytest.mark.parametrize(
+    "scenario,max_wer1,max_wer2,min_wer1,min_wer2,expected_verb,fragment",
+    [
+        # --- Disparity NARROWING ---
+        ("narrowing_worst_improved_best_leveled_down",
+         40.0, 39.0, 12.0, 13.0, "reduced",
+         "combines an observed improvement in the worst-performing stratum with a leveling-down effect"),
+        ("narrowing_worst_improved_best_unchanged",
+         40.0, 38.0, 12.0, 12.0, "reduced",
+         "driven primarily by an improvement in the worst-performing stratum without degrading"),
+        ("narrowing_worst_unchanged_best_leveled_down",
+         40.0, 40.0, 12.0, 13.5, "reduced",
+         "driven entirely by a leveling-down effect"),
+        # worst slightly worsens (+0.5 pp) AND best worsens harder (+2.0 pp) -> net narrowing.
+        # Hits elif max_change >= 0 and min_change > 0 -> leveling-down effect.
+        ("narrowing_both_regress_best_harder",
+         40.0, 40.5, 12.0, 14.0, "reduced",
+         "driven entirely by a leveling-down effect"),
+        # Note: the 'shifting stratum error profiles' else-branch inside the narrowing block
+        # fires when max_change >= 0 AND min_change <= 0 with disp_change < -0.001. This
+        # combination cannot occur when disp_arm1/disp_arm2 are derived from the same
+        # max/min strata (that would require min_change <= 0 while disp narrows, which needs
+        # max_change to drive the narrowing -- and max_change < 0 triggers an earlier branch).
+        # A dedicated test below exercises this branch directly with synthetic disp values.
+        # --- Disparity WIDENING ---
+        ("widening_worst_regressed_best_stable",
+         40.0, 43.0, 12.0, 12.0, "increased",
+         "driven primarily by performance regression in the worst-performing stratum"),
+        ("widening_best_improved_worst_stable",
+         40.0, 40.0, 12.0, 10.0, "increased",
+         "driven by improvements concentrated in the best-performing stratum, widening the gap"),
+        ("widening_both_worsen_unequally",
+         40.0, 43.0, 12.0, 14.0, "increased",
+         "widening performance gaps"),
+        # --- Disparity UNCHANGED ---
+        ("unchanged_disparity",
+         40.0, 40.5, 12.0, 12.5, "maintained",
+         "remained identical under ungated adaptation"),
+    ],
+)
+def test_disparity_narrative_branch(scenario, max_wer1, max_wer2, min_wer1, min_wer2,
+                                     expected_verb, fragment):
+    """
+    Every sign combination of (max_stratum_change, min_stratum_change) must
+    produce the expected disparity verb and synthesis sentence.
+    No physical inference is invoked.
+    """
+    strata = _make_strata_results(max_wer1, max_wer2, min_wer1, min_wer2)
+    disp1 = max_wer1 - min_wer1
+    disp2 = max_wer2 - min_wer2
+    narrative = _run_disparity_narrative(strata, disp1, disp2, 0, 0.0)
+    assert expected_verb in narrative, (
+        f"[{scenario}] Missing verb '{expected_verb}'.\nGot: {narrative}"
+    )
+    assert fragment in narrative, (
+        f"[{scenario}] Missing fragment.\nExpected: {fragment!r}\nGot: {narrative}"
+    )
+
+
+@pytest.mark.parametrize("n_accept,acc_rate,expected_fragment", [
+    (0,   0.0,   "rejected all candidate updates and retained baseline predictions"),
+    (15,  6.7,   "accepted 15 candidate updates (6.7%)"),
+    (224, 100.0, "accepted 224 candidate updates (100.0%)"),
+])
+def test_disparity_narrative_gated_description(n_accept, acc_rate, expected_fragment):
+    """Gated SUTA description reflects the actual acceptance count."""
+    strata = _make_strata_results(40.0, 39.0, 12.0, 13.0)
+    narrative = _run_disparity_narrative(strata, 28.0, 26.0, n_accept, acc_rate)
+    assert expected_fragment in narrative, (
+        f"Expected {expected_fragment!r}\nGot: {narrative}"
+    )
+
+
+def test_disparity_narrative_empty_strata_fallback():
+    """Empty strata list must not raise — falls back to simplified narrative."""
+    narrative = _run_disparity_narrative([], 28.0, 26.0, 0, 0.0)
+    assert "26.00 pp" in narrative
+    assert "28.00 pp" in narrative
+
+
+def test_disparity_narrative_narrowing_shifting_profiles_branch():
+    """
+    The 'shifting stratum error profiles' else-branch inside the narrowing block fires when
+    max_change >= 0 AND min_change <= 0 AND disp_change < -0.001.  This requires the disparity
+    to narrow even though neither the worst-performing stratum improved nor the best-performing
+    stratum regressed -- which can arise when intermediate strata drive the apparent disparity
+    reduction in the full report generator.  We test the branch directly by calling
+    _run_disparity_narrative with synthetic strata where max_change=0 and min_change=0 but
+    supplying disp_arm2 < disp_arm1.
+    """
+    # max_stratum: unchanged (max_change = 0.0)
+    # min_stratum: unchanged (min_change = 0.0)
+    # synthetic disp: 28.00 -> 26.00  (narrowed by 2 pp, from intermediate strata)
+    strata = [
+        {"stratum": "MaxStratum", "ref_words": 1000,
+         "wer_arm1_static": 40.0, "wer_arm2_ungated": 40.0, "wer_arm3_gated": 40.0,
+         "delta_g_arm3_vs_arm1": 0.0, "delta_g_arm3_vs_arm2": 0.0},
+        {"stratum": "MinStratum", "ref_words": 1000,
+         "wer_arm1_static": 12.0, "wer_arm2_ungated": 12.0, "wer_arm3_gated": 12.0,
+         "delta_g_arm3_vs_arm1": 0.0, "delta_g_arm3_vs_arm2": 0.0},
+        {"stratum": "MidStratum", "ref_words": 1000,
+         "wer_arm1_static": 25.0, "wer_arm2_ungated": 23.0, "wer_arm3_gated": 25.0,
+         "delta_g_arm3_vs_arm1": 0.0, "delta_g_arm3_vs_arm2": 2.0},
+    ]
+    # Pass synthetic disparity values that differ from the max-min pair span
+    narrative = _run_disparity_narrative(strata, 28.0, 26.0, 0, 0.0)
+    assert "reduced" in narrative
+    assert "shifting stratum error profiles" in narrative, (
+        "Expected else-branch synthesis sentence.\nGot: " + narrative
+    )

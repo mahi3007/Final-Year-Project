@@ -54,7 +54,7 @@ Unlike prior controller dry-runs, **every word error reported herein derives fro
 - **Primary Utility Hypothesis (Arm 3 vs. Arm 2):**
   - Paired $t$-statistic: $t = -2.4536$ ($df = 59$)
   - Two-tailed $p$-value: $p = 1.7116e-02$
-  - Conclusion: Statistically significant difference (p < 0.05)
+  - Conclusion: Statistically significant difference detected at p < 0.05 (t = -2.4536, p = 0.01712): Arm 3 shows lower word error rate (improvement) relative to ungated CTTA (-0.9729 pp unweighted speaker average).
 
 - **Secondary Stability Hypothesis (Arm 3 vs. Arm 1):**
   - Paired $t$-statistic: $t = nan$ ($df = 59$)
