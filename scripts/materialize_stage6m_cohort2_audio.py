@@ -131,6 +131,7 @@ class ThreadedResilientGzipStream(io.RawIOBase):
         raise RuntimeError("Could not obtain presigned download URL after 9 attempts.")
 
     def _producer_loop(self):
+        consecutive_zero_reads = 0
         while not self._stop_event.is_set():
             if time.time() - self._url_ts > 36000:
                 print("[MDC] Presigned URL nearing expiry -- refreshing...", flush=True)
@@ -148,19 +149,41 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                 req = urllib.request.Request(self._url, headers=headers)
                 resp = urllib.request.urlopen(req, timeout=120)
 
+                bytes_this_conn = 0
                 while not self._stop_event.is_set():
                     chunk = resp.read(2 * 1024 * 1024)
                     if not chunk:
-                        print("\n[STREAM] Server reached EOF.", flush=True)
-                        self._queue.put(None)
-                        return
-                    self._queue.put(chunk)
+                        print(f"\n[RESUME] Socket closed by Cloudflare at byte {self.compressed_bytes_read:,}.", flush=True)
+                        if bytes_this_conn == 0:
+                            consecutive_zero_reads += 1
+                            if consecutive_zero_reads >= 3:
+                                print("\n[STREAM] Multiple zero-byte reads at offset. Entire archive consumed.", flush=True)
+                                self._stop_event.set()
+                        else:
+                            consecutive_zero_reads = 0
+                        break
 
-            except Exception as e:
-                if self._stop_event.is_set():
+                    consecutive_zero_reads = 0
+                    bytes_this_conn += len(chunk)
+                    while not self._stop_event.is_set():
+                        try:
+                            self._queue.put(chunk, timeout=1.0)
+                            break
+                        except queue.Full:
+                            continue
+
+            except urllib.error.HTTPError as he:
+                if he.code == 403:
+                    print("\n[MDC] 403 Forbidden / Presigned URL expired -- refreshing...", flush=True)
+                    self._refresh_url()
+                elif he.code == 416:
+                    print("\n[STREAM] HTTP 416 Range Not Satisfiable -- entire archive consumed.", flush=True)
                     break
-                print(f"\n[STREAM] Connection dropped ({e}). Waiting 5s before reconnecting...", flush=True)
                 time.sleep(5)
+            except Exception as e:
+                if not self._stop_event.is_set():
+                    print(f"\n[STREAM] Connection dropped ({e}). Waiting 5s before reconnecting...", flush=True)
+                    time.sleep(5)
             finally:
                 if resp is not None:
                     try:
@@ -187,16 +210,33 @@ class ThreadedResilientGzipStream(io.RawIOBase):
     def readinto(self, b: bytearray | memoryview) -> int:
         while len(self._uc_buf) == self._offset:
             try:
-                chunk = self._queue.get(timeout=120)
+                chunk = self._queue.get(timeout=60)
             except queue.Empty:
-                print("[STREAM] Stall waiting for chunk from producer. Retrying...", flush=True)
+                if self._stop_event.is_set() or (self._producer_thread and not self._producer_thread.is_alive()):
+                    flushed = self._decompressor.flush()
+                    if flushed:
+                        self._uc_buf = bytearray(flushed)
+                        self._offset = 0
+                        avail = len(self._uc_buf) - self._offset
+                        n = min(len(b), avail)
+                        b[:n] = self._uc_buf[self._offset : self._offset + n]
+                        self._offset += n
+                        return n
+                    return 0
+                print("[STREAM] Waiting for chunks from network producer...", flush=True)
                 continue
 
             if chunk is None:
+                self._queue.put(None)
                 flushed = self._decompressor.flush()
                 if flushed:
                     self._uc_buf = bytearray(flushed)
                     self._offset = 0
+                    avail = len(self._uc_buf) - self._offset
+                    n = min(len(b), avail)
+                    b[:n] = self._uc_buf[self._offset : self._offset + n]
+                    self._offset += n
+                    return n
                 return 0
 
             self.compressed_bytes_read += len(chunk)
