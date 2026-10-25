@@ -56,6 +56,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 from dsg_ctta.models.registry import create_asr_model
 from dsg_ctta.data.normalization import TextNormalizer
 from dsg_ctta.data.acoustic import load_and_resample_audio
+from dsg_ctta.data.cohort2_preflight import Cohort2PreflightValidator
 from dsg_ctta.offline.metrics import compute_utterance_metrics
 from dsg_ctta.controller.shadow import compute_model_parameter_hash
 from dsg_ctta.controller.streaming_gate import StreamingSentinelSafetyGate, compute_calibrated_obf_schedule
@@ -180,6 +181,11 @@ def parse_args():
         choices=["wav2vec2_base", "hubert_large"],
         help="Backbone acoustic model architecture."
     )
+    parser.add_argument(
+        "--preflight-only",
+        action="store_true",
+        help="Run comprehensive preflight integrity checks and generate readiness reports without executing neural acoustic inference."
+    )
     return parser.parse_args()
 
 
@@ -206,17 +212,55 @@ def main():
         eval_df = pd.read_csv(eval_csv)
         print(f"      Selected Cohort 1: {len(eval_df)} clips across {eval_df['speaker_id'].nunique()} speakers.")
     else:
-        # Cohort 2 check
+        # Cohort 2 check: Exhaustive preflight readiness validation
         cohort2_audio_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "cohort2_audio"
         cohort2_csv = PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.csv"
-        
-        # Verify physical clip availability
-        if not cohort2_csv.exists() or not cohort2_audio_dir.exists() or len(list(cohort2_audio_dir.glob("*.mp3"))) < 7020:
+
+        print("      Executing Confirmatory Cohort 2 Preflight Readiness Validation...")
+        validator = Cohort2PreflightValidator(
+            project_root=PROJECT_ROOT,
+            manifest_path=manifest_path,
+            eval_csv_path=cohort2_csv,
+            audio_dir=cohort2_audio_dir,
+            sentinel_csv_path=sentinel_csv,
+            sentinel_audio_dir=sentinel_audio_dir,
+        )
+        preflight_report = validator.run_preflight(model_name=args.model)
+        json_rep, md_rep = validator.save_reports(preflight_report, output_dir=reports_dir)
+
+        if args.preflight_only:
+            print("\n" + "=" * 80)
+            print(f"PREFLIGHT AUDIT VERDICT: {preflight_report['overall_status']}")
+            print(f"Summary: {preflight_report['summary_description']}")
+            print(f"Readiness Reports Saved:")
+            print(f"  - {json_rep}")
+            print(f"  - {md_rep}")
+            if preflight_report["status_reasons"]:
+                print("\nActive HOLD Conditions:")
+                for r in preflight_report["status_reasons"]:
+                    print(f"  * {r}")
+            print("\nGovernance Check:")
+            print("  Passing technical readiness checks establishes scientific feasibility;")
+            print("  it does NOT constitute approval of compute expenditure or experimental execution.")
+            print("=" * 80 + "\n")
+            sys.exit(0 if preflight_report["overall_status"] == "READY FOR AUTHORIZED EXECUTION" else 1)
+
+        # Fail-closed check if running normal physical benchmark
+        if preflight_report["overall_status"] != "READY FOR AUTHORIZED EXECUTION":
             print("\n" + "!" * 80)
             print("[FAIL-CLOSED INTEGRITY CHECK]")
             print("Physical audio clips for Confirmatory Cohort 2 (7,020 clips) are not materialized on disk.")
             print("Status: MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD")
             print("Reference Manifest: datasets/splits/stage6m_locked_candidate_manifest.json")
+            print(f"Cohort 2 preflight readiness audit halted execution. Status: {preflight_report['overall_status']}")
+            print(f"Summary: {preflight_report['summary_description']}")
+            print(f"Readiness Reports Saved:")
+            print(f"  - {json_rep}")
+            print(f"  - {md_rep}")
+            print()
+            print("Active HOLD Reasons:")
+            for r in preflight_report["status_reasons"]:
+                print(f"  * {r}")
             print()
             print("SCIENTIFIC VALIDITY PRINCIPLE (ADR-005 & Protocol v1.3.4):")
             print("  Synthetic controller simulations must NEVER masquerade as physical ASR GPU benchmarks.")
@@ -227,6 +271,7 @@ def main():
             print("     python cloud/kaggle/run_stage6m_cohort2_benchmark.py --cohort cohort1")
             print("  2. To run full Cohort 2:")
             print("     Extract/download the 7,020 audio clips into datasets/external/common_voice_27/cohort2_audio/")
+            print("     and provide matching datasets/splits/stage6m_cohort2_audio.csv.")
             print("!" * 80 + "\n")
             sys.exit(1)
 

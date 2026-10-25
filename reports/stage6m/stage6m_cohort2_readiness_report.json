@@ -1,0 +1,140 @@
+{
+  "report_title": "Stage 6M Confirmatory Cohort 2 Preflight Readiness Audit",
+  "overall_status": "HOLD",
+  "summary_description": "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Confirmatory data prerequisites not yet materialized on disk.",
+  "status_reasons": [
+    "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Evaluation CSV not materialized: datasets/splits/stage6m_cohort2_audio.csv",
+    "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio"
+  ],
+  "timestamp_utc": "2026-10-25T07:36:21.999962+00:00",
+  "git_commit": "7969f0a49a01bb2b5f6668dc8136d8059171fc01",
+  "governing_standard": "ADR-005",
+  "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+  "checks": {
+    "manifest_integrity_and_schema": {
+      "check_name": "manifest_integrity_and_schema",
+      "status": "PASS",
+      "errors": [],
+      "warnings": [],
+      "details": {
+        "manifest_sha256": "610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895",
+        "protocol_version": "v1.3.3-stage6m-reconciled-decision-pack",
+        "governing_standard": "ADR-005",
+        "total_active_speakers": 468,
+        "total_clips_allocated": 7020,
+        "strata_summary": {
+          "Irish English": {
+            "stratum_code": "ireland",
+            "active_speakers": 78,
+            "clips_allocated": 1170
+          },
+          "England English": {
+            "stratum_code": "england",
+            "active_speakers": 78,
+            "clips_allocated": 1170
+          },
+          "Canadian English": {
+            "stratum_code": "canada",
+            "active_speakers": 78,
+            "clips_allocated": 1170
+          },
+          "Australian English": {
+            "stratum_code": "australia",
+            "active_speakers": 78,
+            "clips_allocated": 1170
+          },
+          "South Asian English": {
+            "stratum_code": "south_asian",
+            "active_speakers": 78,
+            "clips_allocated": 1170
+          },
+          "US English": {
+            "stratum_code": "us",
+            "active_speakers": 78,
+            "clips_allocated": 1170
+          }
+        },
+        "irish_reserve_total": 27
+      }
+    },
+    "evaluation_csv_manifest_agreement": {
+      "check_name": "evaluation_csv_manifest_agreement",
+      "status": "HOLD",
+      "errors": [
+        "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Evaluation CSV not materialized: datasets/splits/stage6m_cohort2_audio.csv"
+      ],
+      "warnings": [],
+      "details": {}
+    },
+    "audio_materialization_and_decodability": {
+      "check_name": "audio_materialization_and_decodability",
+      "status": "HOLD",
+      "errors": [
+        "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio"
+      ],
+      "warnings": [],
+      "details": {}
+    },
+    "sentinel_panel_completeness_and_isolation": {
+      "check_name": "sentinel_panel_completeness_and_isolation",
+      "status": "PASS",
+      "errors": [],
+      "warnings": [],
+      "details": {
+        "total_sentinel_records": 300,
+        "core_sentinel_speakers": 30,
+        "core_sentinel_clips": 30,
+        "core_sentinel_reference_words": 281,
+        "uncertainty_floor_pp": 0.3559,
+        "speaker_isolation_verified": true,
+        "sentinel_active_overlap_count": 0
+      }
+    },
+    "execution_configuration_freeze": {
+      "check_name": "execution_configuration_freeze",
+      "status": "PASS",
+      "governing_protocol": "v1.3.4-stage6m-self-authorization-amendment",
+      "governing_standard": "ADR-005",
+      "model_architecture": "wav2vec2_base",
+      "huggingface_backbone": "facebook/wav2vec2-base-960h",
+      "stream_geometry": {
+        "cohort": "cohort2",
+        "total_evaluation_clips": 7020,
+        "window_size_k": 4,
+        "total_stream_windows_w": 1755,
+        "adaptation_updates_u": 1754,
+        "terminal_window_index": 1754,
+        "terminal_window_mode": "PREDICTION_ONLY_INVARIANT"
+      },
+      "gate_parameters": {
+        "epsilon_r_pp": 0.0,
+        "epsilon_g_pp": 2.0,
+        "epsilon_d_pp": 2.0,
+        "alpha_target": 0.05,
+        "spending_function": "Lan-DeMets O'Brien-Fleming",
+        "effective_uncertainty_floor_pp": 0.3559,
+        "tie_breaker_rule": "REJECT_TIE_STRICT_INEQUALITY",
+        "rollback_guarantee": "BITWISE_EXACT_PARAMETER_HASH"
+      },
+      "hardware_environment": {
+        "cuda_available": false,
+        "device_type": "cpu",
+        "device_name": "None (CPU Execution)",
+        "total_vram_gb": 0.0,
+        "pytorch_version": "2.11.0+cpu"
+      },
+      "compute_budget_estimate": {
+        "evaluation_clip_forward_passes": 21060,
+        "sentinel_forward_passes": 52650,
+        "suta_backward_passes": 3508,
+        "estimated_runtime_hours_p100": 3.8,
+        "recommended_accelerator": "Kaggle NVIDIA Tesla P100 (16 GB VRAM)"
+      },
+      "output_locations": {
+        "results_dir": "results/stage6m_kaggle",
+        "reports_dir": "reports/stage6m"
+      }
+    }
+  },
+  "governance_note": "Passing technical preflight checks establishes scientific feasibility; it does NOT constitute authorization of compute expenditure or confirmatory benchmark execution. Hardware execution requires designated project lead or supervisory signoff."
+}
