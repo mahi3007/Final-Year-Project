@@ -1,7 +1,7 @@
 # Stage 6M Confirmatory Cohort 2: Curation & Strict Integrity Audit Report
 
 > **Audit Verdict:** `PASS`  
-> **Timestamp:** 2026-10-25T14:25:42.899767+00:00  
+> **Timestamp:** 2026-10-25T15:02:59.302751+00:00  
 > **Protocol:** `v1.3.4-stage6m-self-authorization-amendment` (ADR-005)  
 > **Predicate Level:** `STRICT QUALITY PREDICATE V (locale=='en', up_votes>=2, down_votes<2)`  
 > **Deterministic Seed:** `20261020`  

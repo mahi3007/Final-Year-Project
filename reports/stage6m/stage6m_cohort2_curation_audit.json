@@ -2,7 +2,7 @@
   "metadata": {
     "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
     "governing_standard": "ADR-005",
-    "timestamp_utc": "2026-10-25T14:25:42.899767+00:00",
+    "timestamp_utc": "2026-10-25T15:02:59.302751+00:00",
     "selection_seed": 20261020,
     "selection_algorithm": "SHA256(seed:client_id:clip_path) ascending rank sort",
     "predicate_level": "STRICT (B0 + V: locale=='en', up_votes>=2, down_votes<2)",
