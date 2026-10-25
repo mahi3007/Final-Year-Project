@@ -31,7 +31,12 @@
       "num_updates": 224,
       "alpha_target": 0.05,
       "num_boot_replicates": 500,
-      "se_r_floor_pp": 0.0115
+      "sentinel_evaluation_clips": 30,
+      "sentinel_evaluation_words": 281,
+      "sentinel_evaluation_speakers": 30,
+      "sentinel_evaluation_strata": 6,
+      "se_r_floor_pp": 0.3559,
+      "se_r_floor_description": "Single-token resolution safeguard: 1 edit distance error across 281 reference words in the 30-clip core sentinel screening panel (100.0 / 281 = 0.3559 pp)."
     }
   },
   "overall_results": {
@@ -71,23 +76,19 @@
       "statistically_significant_p05": false,
       "interpretation": "Identical to static baseline because all candidate updates were safely rolled back (zero-variance paired difference across all 60 speakers).",
       "tost_equivalence": {
+        "status": "NOT_ESTIMABLE_ZERO_VARIANCE",
         "equivalence_margin_pp": 0.5,
-        "mean_paired_difference_pp": 0.0,
+        "observed_sample_difference_pp": 0.0,
         "standard_error_pp": 0.0,
-        "ci_90_pp": [
-          0.0,
-          0.0
-        ],
-        "ci_95_pp": [
-          0.0,
-          0.0
-        ],
-        "t_lower": 0.0,
-        "p_lower": 1.0,
-        "t_upper": 0.0,
-        "p_upper": 1.0,
-        "p_tost": 1.0,
-        "statistically_equivalent": false
+        "ci_90_pp": null,
+        "ci_95_pp": null,
+        "t_lower": null,
+        "p_lower": null,
+        "t_upper": null,
+        "p_upper": null,
+        "p_tost": null,
+        "statistically_equivalent": false,
+        "note": "Observed sample identity: Arm 3 predictions are identical to Arm 1 baseline across all 900 clips and 60 speakers (zero paired difference). Sample standard error is zero (s = 0.0), making population Student-t inferential intervals and TOST degenerate. Equivalence within the exploratory +/-0.50 pp margin is not established through inferential hypothesis testing."
       }
     }
   },

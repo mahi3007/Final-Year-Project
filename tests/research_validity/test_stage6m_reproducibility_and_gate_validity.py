@@ -634,3 +634,96 @@ def test_kaggle_runner_fail_closed_and_notebook_invariants():
 
     # Must contain Step 4 execution command
     assert "run_stage6m_cohort2_benchmark.py" in code_text
+
+
+def test_revalidated_cohort1_gate_floor_provenance_and_word_counts():
+    """Verify uncertainty floor provenance and sentinel word count consistency across JSON and CSV."""
+    reval_dir = PROJECT_ROOT / "reports" / "stage6m" / "revalidated_cohort1"
+    json_path = reval_dir / "stage6m_physical_cohort1_report.json"
+    csv_path = reval_dir / "stage6m_physical_cohort1_gate_decisions.csv"
+
+    assert json_path.exists(), f"Missing revalidated JSON report: {json_path}"
+    assert csv_path.exists(), f"Missing revalidated gate CSV: {csv_path}"
+
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    gate_cfg = data["metadata"]["gate_configuration"]
+    assert gate_cfg["sentinel_evaluation_clips"] == 30
+    assert gate_cfg["sentinel_evaluation_words"] == 281
+    assert gate_cfg["sentinel_evaluation_speakers"] == 30
+    assert gate_cfg["sentinel_evaluation_strata"] == 6
+    assert gate_cfg["se_r_floor_pp"] == 0.3559
+
+    # Reconcile with 100.0 / 281 words
+    expected_floor = round(100.0 / 281.0, 4)
+    assert gate_cfg["se_r_floor_pp"] == expected_floor
+
+    # Verify decision CSV matches gate_configuration floor on all rows
+    df_gate = pd.read_csv(csv_path)
+    assert len(df_gate) == 224
+    assert "se_r_floor" in df_gate.columns
+    unique_floors = df_gate["se_r_floor"].unique()
+    assert len(unique_floors) == 1
+    assert abs(unique_floors[0] - 0.3559) < 1e-4
+
+
+def test_revalidated_cohort1_markdown_report_narrative_consistency():
+    """Verify Markdown report disparity commentary is dynamically consistent with computed stratum results."""
+    reval_dir = PROJECT_ROOT / "reports" / "stage6m" / "revalidated_cohort1"
+    md_path = reval_dir / "stage6m_physical_cohort1_report.md"
+    json_path = reval_dir / "stage6m_physical_cohort1_report.json"
+
+    assert md_path.exists(), f"Missing revalidated markdown report: {md_path}"
+    assert json_path.exists(), f"Missing revalidated JSON report: {json_path}"
+
+    md_text = md_path.read_text(encoding="utf-8")
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # Canadian English metrics from JSON
+    can_entry = next(s for s in data["stratum_breakdown"] if s["stratum"] == "Canadian English")
+    wer_arm1 = can_entry["wer_arm1_static"]
+    wer_arm2 = can_entry["wer_arm2_ungated"]
+    wer_arm3 = can_entry["wer_arm3_gated"]
+
+    assert wer_arm1 == 12.87
+    assert wer_arm2 == 14.73
+    assert wer_arm3 == 12.87
+
+    # Markdown narrative must contain current run numbers
+    assert "14.73%" in md_text
+    assert "Arm 3 preserved Canadian English accuracy (12.87%)" in md_text
+
+    # Markdown must NOT contain stale numbers from previous runs
+    assert "14.07%" not in md_text
+    assert "+1.20 pp" not in md_text
+    assert "13.13%" not in md_text
+
+
+def test_revalidated_cohort1_zero_variance_tost_representation():
+    """Verify zero-variance TOST output is represented as not estimable under zero sample variance."""
+    reval_dir = PROJECT_ROOT / "reports" / "stage6m" / "revalidated_cohort1"
+    json_path = reval_dir / "stage6m_physical_cohort1_report.json"
+    md_path = reval_dir / "stage6m_physical_cohort1_report.md"
+
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    tost_sec = data["inferential_statistics_speaker_clustered"]["paired_t_arm3_vs_arm1"]["tost_equivalence"]
+    assert tost_sec["status"] == "NOT_ESTIMABLE_ZERO_VARIANCE"
+    assert tost_sec["observed_sample_difference_pp"] == 0.0
+    assert tost_sec["standard_error_pp"] == 0.0
+    assert tost_sec["ci_90_pp"] is None
+    assert tost_sec["ci_95_pp"] is None
+    assert tost_sec["t_lower"] is None
+    assert tost_sec["p_tost"] is None
+    assert tost_sec["statistically_equivalent"] is False
+    assert "degenerate" in tost_sec["note"].lower()
+
+    # Markdown must state Not Estimable and explain sample identity vs population equivalence
+    md_text = md_path.read_text(encoding="utf-8")
+    assert "Not Estimable" in md_text
+    assert "degenerate under zero observed sample variance" in md_text
+    assert "Equivalence within margin not established" in md_text
+

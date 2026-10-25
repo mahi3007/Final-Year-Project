@@ -29,7 +29,7 @@ Unlike prior controller dry-runs, **every word error reported herein derives fro
 
 ### Disparity Comparators and Leveling Down
 - **Relative to Static Baseline:** Arm 3 reduces cross-accent disparity from **29.79 pp** to **29.79 pp** (+0.00 pp).
-- **Relative to Ungated SUTA:** Ungated SUTA exhibits a numerically lower disparity (26.94 pp), but this reduction is an artifact of **leveling down**: ungated SUTA degrades the best-performing accent (Canadian English degrades from 12.87% to 14.07%, +1.20 pp) rather than lifting disadvantaged groups. Arm 3 preserved Canadian English accuracy (13.13%), refusing to achieve lower disparity through degradation of advantaged speakers.
+- **Relative to Ungated SUTA:** Ungated SUTA exhibits a numerically lower disparity (26.94 pp vs. 29.79 pp), but this reduction is an artifact of **leveling down**: ungated SUTA degrades the best-performing accent (Canadian English degrades from 12.87% to 14.73%, +1.86 pp) rather than lifting disadvantaged groups. Arm 3 preserved Canadian English accuracy (12.87%), refusing to achieve lower disparity through degradation of advantaged speakers.
 
 ---
 
@@ -63,13 +63,11 @@ Unlike prior controller dry-runs, **every word error reported herein derives fro
 
 - **Formal Two One-Sided Tests (TOST) Equivalence Analysis:**
   - Exploratory Equivalence Margin: $\Delta_{\text{equiv}} = \pm 0.50\text{ pp}$ (exploratory equivalence analysis using a $\pm 0.50$ percentage-point margin)
-  - Unweighted Mean Paired Difference: +0.0000 pp ($SE = 0.0000\text{ pp}$)
-  - 90% Student $t$-interval: [+0.0000, +0.0000] pp
-  - 95% Student $t$-interval: [+0.0000, +0.0000] pp (using $t_{59}$ critical value 2.0010)
-  - Lower bound test ($H_{01}: \Delta \le -0.50\text{ pp}$): $t_1 = +0.0000, p_1 = 1.0000e+00$
-  - Upper bound test ($H_{02}: \Delta \ge +0.50\text{ pp}$): $t_2 = +0.0000, p_2 = 1.0000e+00$
-  - Overall TOST Equivalence $p$-value: $p_{\text{TOST}} = 1.0000e+00$
-  - Conclusion: Equivalence within margin not established
+  - Observed Sample Difference: +0.0000 pp (identical predictions across all 900 clips and 60 speakers)
+  - Sample Standard Error: $SE = 0.0000\text{ pp}$ ($s = 0.0$, degenerate sample variance)
+  - 90% & 95% Student $t$-intervals: **Not Estimable** (inferential intervals degenerate under zero observed sample variance; displaying [0, 0] would be mathematically misleading)
+  - TOST Equivalence Tests ($H_{01}: \Delta \le -0.50\text{ pp}, H_{02}: \Delta \ge +0.50\text{ pp}$): **Not Estimable** ($t$-statistics undefined / degenerate under zero sample variance)
+  - Conclusion: Equivalence within margin not established (zero sample variance reflects sample identity from complete rollback, not population equivalence)
 
 ---
 
