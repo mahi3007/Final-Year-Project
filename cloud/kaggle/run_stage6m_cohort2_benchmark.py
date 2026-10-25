@@ -209,6 +209,13 @@ def main():
     sentinel_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
     sentinel_lock = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.lock.json"
     sentinel_audio_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "sentinel_audio"
+    bundle_path = PROJECT_ROOT / "stage6_audio_bundle.tar.gz"
+    if (not sentinel_audio_dir.exists() or len(list(sentinel_audio_dir.glob("*.mp3"))) < 300) and bundle_path.exists():
+        print(f"      [AUTOLOAD] Unpacking sentinel audio from tracked bundle: {bundle_path.name}...")
+        import tarfile
+        with tarfile.open(bundle_path, "r:gz") as tar:
+            tar.extractall(path=PROJECT_ROOT)
+
     results_dir = Path(args.results_dir)
     reports_dir = Path(args.reports_dir)
     results_dir.mkdir(parents=True, exist_ok=True)
