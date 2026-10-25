@@ -1293,13 +1293,27 @@ def test_deterministic_sentinel_sampling_is_reproducible_and_stratified():
     assert sorted(core_strata) == sorted(EXPECTED_STRATA_NAMES)
     assert sorted(non_core_strata) == sorted(EXPECTED_STRATA_NAMES)
 
-    # 6. Assert strict 1:1 balance for operational preflight default n_samples=20
+    # 6. Assert strict 1:1 balance, full stratum coverage, and pairwise alternation for operational preflight default n_samples=20
     sample_20 = select_deterministic_sentinel_samples(df, n_samples=20)
     assert len(sample_20) == 20
     core_20 = [s for s in sample_20 if s in core_ids]
     non_core_20 = [s for s in sample_20 if s not in core_ids]
     assert len(core_20) == 10, f"Expected 10 core clips in 20-clip sample, got {len(core_20)}"
     assert len(non_core_20) == 10, f"Expected 10 non-core clips in 20-clip sample, got {len(non_core_20)}"
+
+    # Assert all 6 strata are represented in the 20-clip sample
+    sample_20_rows = df[df[id_col].isin(sample_20)]
+    strata_counts_20 = sample_20_rows["stage5_accent_group"].value_counts()
+    assert len(strata_counts_20) == 6, f"Expected 6 strata represented in 20-clip sample, got {len(strata_counts_20)}"
+    for stratum_name in EXPECTED_STRATA_NAMES:
+        assert stratum_name in strata_counts_20, f"Stratum {stratum_name} missing from 20-clip sample"
+
+    # Assert pairwise core/non-core alternation across all 20 positions
+    for idx, clip in enumerate(sample_20):
+        if idx % 2 == 0:
+            assert clip in core_ids, f"Position {idx} must be a core clip, got non-core: {clip}"
+        else:
+            assert clip not in core_ids, f"Position {idx} must be a non-core clip, got core: {clip}"
 
 
 def test_cohort2_and_cohort1_preflight_record_stratified_sampling_metadata(base_validator):
@@ -1341,9 +1355,12 @@ def test_cohort2_and_cohort1_preflight_record_stratified_sampling_metadata(base_
 
 
 def test_deterministic_sentinel_sampling_edge_cases():
-    """Sampling helper must handle empty data, non-positive sample counts, and oversized samples cleanly."""
+    """Sampling helper must handle empty data, non-positive sample counts, boundary saturation, and quota spillover cleanly."""
     sent_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
     df = pd.read_csv(sent_csv)
+    id_col = "sentinel_id" if "sentinel_id" in df.columns else "recording_id"
+    core_df = df.sort_values(by=["stage5_accent_group", "speaker_id", id_col]).groupby("speaker_id").first()
+    core_ids = set(core_df[id_col].astype(str))
 
     # Empty DataFrame
     assert select_deterministic_sentinel_samples(pd.DataFrame(), n_samples=12) == []
@@ -1356,10 +1373,25 @@ def test_deterministic_sentinel_sampling_edge_cases():
     s3 = select_deterministic_sentinel_samples(df, n_samples=3)
     assert len(s3) == 3
 
+    # Boundary saturation limit: exact 1:1 balance holds up to N=60 (30 core clips available * 2)
+    s60 = select_deterministic_sentinel_samples(df, n_samples=60)
+    assert len(s60) == 60
+    assert sum(1 for s in s60 if s in core_ids) == 30
+    assert sum(1 for s in s60 if s not in core_ids) == 30
+
+    # Quota spillover: N=80 (> 60), core pool exhausted at ceiling (30 clips), remainder (50) from non-core pool
+    s80 = select_deterministic_sentinel_samples(df, n_samples=80)
+    assert len(s80) == 80
+    assert sum(1 for s in s80 if s in core_ids) == 30, "Core clips must cap at total available (30)"
+    assert sum(1 for s in s80 if s not in core_ids) == 50, "Remaining 50 clips must spill over to non-core pool"
+    assert len(set(s80)) == 80, "All 80 selected clips must be unique"
+
     # Sample larger than total records (n_samples=500)
     s_all = select_deterministic_sentinel_samples(df, n_samples=500)
     assert len(s_all) == len(df) == 300
     assert len(set(s_all)) == 300
+    assert sum(1 for s in s_all if s in core_ids) == 30
+    assert sum(1 for s in s_all if s not in core_ids) == 270
 
 
 

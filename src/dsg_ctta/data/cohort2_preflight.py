@@ -119,7 +119,7 @@ def select_deterministic_sentinel_samples(
 ) -> List[str]:
     """
     Select a deterministic, stratified sample of sentinel clip IDs covering all strata
-    with exact 1:1 partition balance between core and non-core clips (for even n_samples).
+    with exact 1:1 partition balance between core and non-core clips when both pools have sufficient clips.
 
     Guarantees:
     1. Deterministic & permutation-invariant: Sorts by [stratum, speaker, clip_id]
@@ -127,10 +127,15 @@ def select_deterministic_sentinel_samples(
        and regardless of row shuffling or set hashing.
     2. Representative stratification: Allocates samples round-robin across all detected
        strata within both core and non-core pools.
-    3. Exact partition balance: Allocates n_samples // 2 to core clips and
-       n_samples - (n_samples // 2) to non-core clips, interleaving them pairwise.
-       For the preflight check default of n_samples=20, this guarantees an exact 10:10 split.
-       For the sentinel check default of n_samples=12, this guarantees an exact 6:6 split.
+    3. Partition balance & boundary constraints:
+       - When both partition pools have sufficient clips (i.e. n_samples <= 2 * min(N_core, N_non_core),
+         which equals 60 clips for the 30-core / 270-non-core sentinel panel), exactly n_samples // 2
+         core clips and n_samples - (n_samples // 2) non-core clips are selected, interleaved pairwise.
+         * For the operational preflight default (n_samples=20), this yields an exact 10:10 split.
+         * For the sentinel check default (n_samples=12), this yields an exact 6:6 split.
+       - When requested n_samples exceeds 2 * N_core (n_samples > 60), the core partition is exhausted
+         at its ceiling (30 clips), and remaining requested samples spill over to the non-core pool,
+         producing an imbalanced allocation up to total available panel records (N=300).
 
     Args:
         sent_df: Sentinel panel DataFrame.

@@ -7,8 +7,8 @@
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Authoritative clip lock file not materialized: datasets/splits/stage6m_cohort2_audio.lock.json",
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio"
   ],
-  "timestamp_utc": "2026-10-25T11:09:28.421777+00:00",
-  "git_commit": "9a743057600bd4d963de42b3710b5a585adce0df",
+  "timestamp_utc": "2026-10-25T11:19:52.821918+00:00",
+  "git_commit": "49805819a773967d6d9e0b1fb650b15fcef6798e",
   "governing_standard": "ADR-005",
   "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
   "checks": {
