@@ -7,8 +7,8 @@
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Authoritative clip lock file not materialized: datasets/splits/stage6m_cohort2_audio.lock.json",
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio"
   ],
-  "timestamp_utc": "2026-10-25T09:44:17.955061+00:00",
-  "git_commit": "25ced72f02ece15d0d52da8dff6111c236abde1d",
+  "timestamp_utc": "2026-10-25T10:22:09.028006+00:00",
+  "git_commit": "01271c3429af636eba4a61894a17d0b4888d2717",
   "governing_standard": "ADR-005",
   "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
   "checks": {
@@ -99,7 +99,39 @@
         "speaker_isolation_verified": true,
         "sentinel_active_overlap_count": 0,
         "sentinel_decode_sample_tested": 20,
-        "sentinel_decode_sample_failed": 0
+        "sentinel_decode_sample_failed": 0,
+        "sentinel_sampled_clips": [
+          "sentinel_01_01_01",
+          "sentinel_02_01_01",
+          "sentinel_03_01_01",
+          "sentinel_04_01_01",
+          "sentinel_05_01_01",
+          "sentinel_06_01_01",
+          "sentinel_01_01_02",
+          "sentinel_02_01_02",
+          "sentinel_03_01_02",
+          "sentinel_04_01_02",
+          "sentinel_05_01_02",
+          "sentinel_06_01_02",
+          "sentinel_01_02_01",
+          "sentinel_02_02_01",
+          "sentinel_03_02_01",
+          "sentinel_04_02_01",
+          "sentinel_05_02_01",
+          "sentinel_06_02_01",
+          "sentinel_01_01_03",
+          "sentinel_02_01_03"
+        ],
+        "sentinel_sampled_strata": {
+          "Australian English": 4,
+          "Canadian English": 4,
+          "England English": 3,
+          "Irish English": 3,
+          "South Asian English": 3,
+          "US English": 3
+        },
+        "sentinel_sampled_core_count": 12,
+        "sentinel_sampled_non_core_count": 8
       }
     },
     "execution_configuration_freeze": {

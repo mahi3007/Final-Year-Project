@@ -110,6 +110,111 @@ def get_git_revision(project_root: Path) -> str:
         return "UNKNOWN_OR_UNTRACKED"
 
 
+def select_deterministic_sentinel_samples(
+    sent_df: pd.DataFrame,
+    n_samples: int = 12,
+    id_col: Optional[str] = None,
+    stratum_col: Optional[str] = None,
+    speaker_col: Optional[str] = None,
+) -> List[str]:
+    """
+    Select a deterministic, stratified sample of sentinel clip IDs covering all strata
+    and balancing across both core and non-core clip partitions.
+
+    Guarantees:
+    1. Deterministic & permutation-invariant: Sorts by [stratum, speaker, clip_id]
+       prior to selection, ensuring identical sample output across Python processes
+       and regardless of row shuffling or set hashing.
+    2. Representative stratification: Allocates samples round-robin across all detected
+       strata, guaranteeing that if n_samples >= len(strata), every stratum is represented.
+    3. Partition balance: Interleaves core clips (first clip per speaker) and non-core clips
+       in alternating round-robin passes across strata.
+
+    Args:
+        sent_df: Sentinel panel DataFrame.
+        n_samples: Target number of clips to select (default: 12, yielding 2 clips per stratum
+                   for 6 strata: 1 core clip and 1 non-core clip).
+        id_col: Optional clip ID column name (auto-detected if None).
+        stratum_col: Optional stratum column name (auto-detected if None).
+        speaker_col: Optional speaker ID column name (auto-detected if None).
+
+    Returns:
+        List of selected clip ID strings.
+    """
+    if sent_df.empty or n_samples <= 0:
+        return []
+
+    # Detect column names with robust fallbacks
+    if id_col is None:
+        id_col = "sentinel_id" if "sentinel_id" in sent_df.columns else (
+            "recording_id" if "recording_id" in sent_df.columns else "clip_id"
+        )
+    if stratum_col is None:
+        stratum_col = "stage5_accent_group" if "stage5_accent_group" in sent_df.columns else (
+            "stratum" if "stratum" in sent_df.columns else "accent_group"
+        )
+    if speaker_col is None:
+        speaker_col = "speaker_id" if "speaker_id" in sent_df.columns else (
+            "speaker" if "speaker" in sent_df.columns else "spk_id"
+        )
+
+    # Sort stably by [stratum, speaker, clip_id] to ensure complete permutation invariance
+    sort_cols = [c for c in [stratum_col, speaker_col, id_col] if c in sent_df.columns]
+    df_sorted = sent_df.sort_values(by=sort_cols).reset_index(drop=True)
+
+    # Deterministically identify core clips (first clip per speaker in sorted order)
+    core_df = df_sorted.groupby(speaker_col, as_index=False).first()
+    core_ids_set = set(core_df[id_col].astype(str))
+
+    # Partition clips by stratum into ordered lists of core and non-core clips
+    strata = sorted(df_sorted[stratum_col].unique())
+    core_by_stratum: Dict[str, List[str]] = {s: [] for s in strata}
+    non_core_by_stratum: Dict[str, List[str]] = {s: [] for s in strata}
+
+    for _, row in df_sorted.iterrows():
+        clip_id = str(row[id_col])
+        s = row[stratum_col]
+        if clip_id in core_ids_set:
+            core_by_stratum[s].append(clip_id)
+        else:
+            non_core_by_stratum[s].append(clip_id)
+
+    # Stratified, balanced round-robin selection across all strata:
+    # Round 1: 1 core clip from each stratum
+    # Round 2: 1 non-core clip from each stratum
+    # Subsequent rounds: alternate core and non-core passes until n_samples reached or pool exhausted
+    selected: List[str] = []
+    core_idx = {s: 0 for s in strata}
+    non_core_idx = {s: 0 for s in strata}
+
+    while len(selected) < n_samples:
+        added_in_cycle = False
+        # Pass 1: core clips across strata
+        for s in strata:
+            if len(selected) >= n_samples:
+                break
+            if core_idx[s] < len(core_by_stratum[s]):
+                selected.append(core_by_stratum[s][core_idx[s]])
+                core_idx[s] += 1
+                added_in_cycle = True
+        if len(selected) >= n_samples:
+            break
+
+        # Pass 2: non-core clips across strata
+        for s in strata:
+            if len(selected) >= n_samples:
+                break
+            if non_core_idx[s] < len(non_core_by_stratum[s]):
+                selected.append(non_core_by_stratum[s][non_core_idx[s]])
+                non_core_idx[s] += 1
+                added_in_cycle = True
+
+        if not added_in_cycle:
+            break
+
+    return selected
+
+
 class Cohort2PreflightValidator:
     """
     Exhaustive preflight validator for Stage 6M Cohort 2 confirmatory benchmark.
@@ -753,7 +858,7 @@ class Cohort2PreflightValidator:
         return result
 
     def validate_sentinel_panel_and_isolation(
-        self, manifest_data: Dict[str, Any], eval_df: Optional[pd.DataFrame] = None, check_samples: int = 10
+        self, manifest_data: Dict[str, Any], eval_df: Optional[pd.DataFrame] = None, check_samples: int = 12
     ) -> Dict[str, Any]:
         """
         Check 4: Sentinel Panel Completeness & Zero-Exposure Speaker Isolation.
@@ -885,14 +990,18 @@ class Cohort2PreflightValidator:
                 f"{len(extra_sent_clips)} extraneous audio files found in sentinel audio directory not listed in sentinel CSV (e.g. {extra_sent_clips[:3]})."
             )
 
-        # Sample decode & resample test across both core and non-core clips
+        # Deterministic, stratified sample decode & resample test across both core and non-core clips
+        id_col = "sentinel_id" if "sentinel_id" in sent_df.columns else "recording_id"
+        stratum_col = "stage5_accent_group" if "stage5_accent_group" in sent_df.columns else "stratum"
         core_ids = set(str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_sentinel_df.iterrows())
-        all_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in sent_df.iterrows()]
-        non_core_ids = [s for s in all_ids if s not in core_ids]
 
-        n_core = min(check_samples // 2, len(core_ids))
-        n_non_core = min(check_samples - n_core, len(non_core_ids))
-        sampled_ids = list(core_ids)[:n_core] + non_core_ids[:n_non_core]
+        sampled_ids = select_deterministic_sentinel_samples(
+            sent_df,
+            n_samples=check_samples,
+            id_col=id_col,
+            stratum_col=stratum_col,
+            speaker_col="speaker_id",
+        )
 
         sent_decode_tested = 0
         sent_decode_failed = 0
@@ -942,6 +1051,13 @@ class Cohort2PreflightValidator:
                     f"DATA LEAKAGE DETECTED! {len(csv_overlap)} evaluation CSV speakers overlap with sentinel panel!"
                 )
 
+        sampled_rows = sent_df[sent_df[id_col].astype(str).isin(sampled_ids)]
+        sampled_strata_counts = (
+            {str(k): int(v) for k, v in sampled_rows[stratum_col].value_counts().items()}
+            if stratum_col in sent_df.columns
+            else {}
+        )
+
         result["details"] = {
             "total_sentinel_records": len(sent_df),
             "core_sentinel_speakers": sent_spk_count,
@@ -952,6 +1068,10 @@ class Cohort2PreflightValidator:
             "sentinel_active_overlap_count": len(active_overlap),
             "sentinel_decode_sample_tested": sent_decode_tested,
             "sentinel_decode_sample_failed": sent_decode_failed,
+            "sentinel_sampled_clips": sampled_ids,
+            "sentinel_sampled_strata": sampled_strata_counts,
+            "sentinel_sampled_core_count": sum(1 for s in sampled_ids if s in core_ids),
+            "sentinel_sampled_non_core_count": sum(1 for s in sampled_ids if s not in core_ids),
         }
         return result
 
@@ -1141,9 +1261,16 @@ class Cohort2PreflightValidator:
 
         elif check_key == "sentinel_panel_completeness_and_isolation":
             if status == "PASS":
+                tested_n = details.get("sentinel_decode_sample_tested", 0)
+                strata_n = len(details.get("sentinel_sampled_strata", {}))
+                sample_desc = (
+                    f"deterministic stratified decodability verified ({tested_n} clips across {strata_n} strata)"
+                    if strata_n > 0
+                    else "sampled audio decodability verified"
+                )
                 return (
                     f"30 core clips (281 words, uncertainty floor = {details.get('uncertainty_floor_pp', 0.3559):.4f} pp); "
-                    "sampled audio decodability verified; 0 speaker overlap (zero leakage)."
+                    f"{sample_desc}; 0 speaker overlap (zero leakage)."
                 )
             return f"Sentinel validation failed: {errors[0] if errors else 'Integrity violation detected'}."
 
@@ -1526,7 +1653,7 @@ class Cohort1PreflightValidator:
         return result
 
     def validate_sentinel_panel_and_isolation(
-        self, eval_df: Optional[pd.DataFrame] = None, check_samples: int = 10
+        self, eval_df: Optional[pd.DataFrame] = None, check_samples: int = 12
     ) -> Dict[str, Any]:
         """
         Check 3: Sentinel Panel Integrity & Zero Speaker Leakage against Cohort 1.
@@ -1653,14 +1780,18 @@ class Cohort1PreflightValidator:
                 f"{len(extra_sent_clips)} extraneous audio files found in sentinel audio directory not listed in sentinel CSV (e.g. {extra_sent_clips[:3]})."
             )
 
-        # Sample decode & resample test across both core and non-core clips
+        # Deterministic, stratified sample decode & resample test across both core and non-core clips
+        id_col = "sentinel_id" if "sentinel_id" in sent_df.columns else "recording_id"
+        stratum_col = "stage5_accent_group" if "stage5_accent_group" in sent_df.columns else "stratum"
         core_ids = set(str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_sentinel_df.iterrows())
-        all_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in sent_df.iterrows()]
-        non_core_ids = [s for s in all_ids if s not in core_ids]
 
-        n_core = min(check_samples // 2, len(core_ids))
-        n_non_core = min(check_samples - n_core, len(non_core_ids))
-        sampled_ids = list(core_ids)[:n_core] + non_core_ids[:n_non_core]
+        sampled_ids = select_deterministic_sentinel_samples(
+            sent_df,
+            n_samples=check_samples,
+            id_col=id_col,
+            stratum_col=stratum_col,
+            speaker_col="speaker_id",
+        )
 
         sent_decode_tested = 0
         sent_decode_failed = 0
@@ -1694,6 +1825,13 @@ class Cohort1PreflightValidator:
                     f"DATA LEAKAGE DETECTED! {len(overlap)} Cohort 1 evaluation speakers overlap with sentinel panel: {overlap}"
                 )
 
+        sampled_rows = sent_df[sent_df[id_col].astype(str).isin(sampled_ids)]
+        sampled_strata_counts = (
+            {str(k): int(v) for k, v in sampled_rows[stratum_col].value_counts().items()}
+            if stratum_col in sent_df.columns
+            else {}
+        )
+
         result["details"] = {
             "total_sentinel_records": len(sent_df),
             "core_sentinel_speakers": sent_spk_count,
@@ -1704,6 +1842,10 @@ class Cohort1PreflightValidator:
             "empty_sentinel_audio_count": len(empty_sent_files),
             "sentinel_decode_tested": sent_decode_tested,
             "sentinel_decode_failed": sent_decode_failed,
+            "sentinel_sampled_clips": sampled_ids,
+            "sentinel_sampled_strata": sampled_strata_counts,
+            "sentinel_sampled_core_count": sum(1 for s in sampled_ids if s in core_ids),
+            "sentinel_sampled_non_core_count": sum(1 for s in sampled_ids if s not in core_ids),
             "speaker_isolation_verified": len(overlap) == 0,
             "speaker_leakage_count": len(overlap),
         }

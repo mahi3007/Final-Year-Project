@@ -65,6 +65,7 @@ from dsg_ctta.data.cohort2_preflight import (
     CORE_SENTINEL_CLIPS,
     CORE_SENTINEL_SPEAKERS,
     EXPECTED_UNCERTAINTY_FLOOR_PP,
+    select_deterministic_sentinel_samples,
 )
 
 
@@ -1241,6 +1242,117 @@ def test_cohort1_preflight_fails_on_extraneous_audio_files(tmp_path):
     assert result["status"] == "FAIL"
     assert any("extraneous audio files" in err for err in result["errors"])
     assert any("expected exactly 900" in err for err in result["errors"])
+
+
+# =============================================================================
+# 15. Deterministic and Stratified Sentinel Decode Sampling Tests
+# =============================================================================
+
+def test_deterministic_sentinel_sampling_is_reproducible_and_stratified():
+    """
+    Sentinel decode sampling must be deterministic across repeated runs and permutations,
+    covering all 6 strata and both core and non-core clip partitions.
+    """
+    sent_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
+    df = pd.read_csv(sent_csv)
+
+    # 1. Base selection
+    sample_base = select_deterministic_sentinel_samples(df, n_samples=12)
+    assert len(sample_base) == 12
+
+    # 2. Assert complete reproducibility / permutation invariance across 20 random shuffles
+    for seed in range(20):
+        df_shuffled = df.sample(frac=1.0, random_state=seed).reset_index(drop=True)
+        sample_shuffled = select_deterministic_sentinel_samples(df_shuffled, n_samples=12)
+        assert sample_shuffled == sample_base, (
+            f"Seed {seed} produced divergent sample order: {sample_shuffled} vs {sample_base}"
+        )
+
+    # 3. Assert all 6 strata are represented in the sample
+    id_col = "sentinel_id" if "sentinel_id" in df.columns else "recording_id"
+    sample_rows = df[df[id_col].isin(sample_base)]
+    strata_counts = sample_rows["stage5_accent_group"].value_counts()
+    assert len(strata_counts) == 6, f"Expected 6 strata represented, got {len(strata_counts)}"
+    for stratum_name in EXPECTED_STRATA_NAMES:
+        assert stratum_name in strata_counts, f"Stratum {stratum_name} missing from sample"
+        assert strata_counts[stratum_name] == 2, (
+            f"Stratum {stratum_name} expected exactly 2 clips in 12-sample selection, got {strata_counts[stratum_name]}"
+        )
+
+    # 4. Assert both core and non-core partitions are represented
+    core_df = df.sort_values(by=["stage5_accent_group", "speaker_id", id_col]).groupby("speaker_id").first()
+    core_ids = set(core_df[id_col].astype(str))
+    core_selected = [s for s in sample_base if s in core_ids]
+    non_core_selected = [s for s in sample_base if s not in core_ids]
+    assert len(core_selected) == 6, f"Expected exactly 6 core clips, got {len(core_selected)}"
+    assert len(non_core_selected) == 6, f"Expected exactly 6 non-core clips, got {len(non_core_selected)}"
+
+    # 5. Assert each stratum receives exactly 1 core clip and 1 non-core clip
+    core_strata = sample_rows[sample_rows[id_col].isin(core_selected)]["stage5_accent_group"].tolist()
+    non_core_strata = sample_rows[sample_rows[id_col].isin(non_core_selected)]["stage5_accent_group"].tolist()
+    assert sorted(core_strata) == sorted(EXPECTED_STRATA_NAMES)
+    assert sorted(non_core_strata) == sorted(EXPECTED_STRATA_NAMES)
+
+
+def test_cohort2_and_cohort1_preflight_record_stratified_sampling_metadata(base_validator):
+    """
+    Both Cohort 2 and Cohort 1 preflight validators must record stratified sampling details
+    and format checklist metrics with stratum representation counts.
+    """
+    manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+
+    # Cohort 2 Validator
+    res2 = base_validator.validate_sentinel_panel_and_isolation(manifest_data, check_samples=12)
+    assert res2["status"] == "PASS"
+    details2 = res2["details"]
+    assert "sentinel_sampled_clips" in details2
+    assert len(details2["sentinel_sampled_clips"]) == 12
+    assert "sentinel_sampled_strata" in details2
+    assert len(details2["sentinel_sampled_strata"]) == 6
+    assert details2["sentinel_sampled_core_count"] == 6
+    assert details2["sentinel_sampled_non_core_count"] == 6
+
+    metric_desc = Cohort2PreflightValidator._format_checklist_metrics(
+        "sentinel_panel_completeness_and_isolation", res2
+    )
+    assert "deterministic stratified decodability verified (12 clips across 6 strata)" in metric_desc
+
+    # Cohort 1 Validator
+    c1_validator = Cohort1PreflightValidator(project_root=PROJECT_ROOT)
+    res1 = c1_validator.validate_sentinel_panel_and_isolation(check_samples=12)
+    assert res1["status"] == "PASS"
+    details1 = res1["details"]
+    assert "sentinel_sampled_clips" in details1
+    assert len(details1["sentinel_sampled_clips"]) == 12
+    assert "sentinel_sampled_strata" in details1
+    assert len(details1["sentinel_sampled_strata"]) == 6
+    assert details1["sentinel_sampled_core_count"] == 6
+    assert details1["sentinel_sampled_non_core_count"] == 6
+
+
+def test_deterministic_sentinel_sampling_edge_cases():
+    """Sampling helper must handle empty data, non-positive sample counts, and oversized samples cleanly."""
+    sent_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
+    df = pd.read_csv(sent_csv)
+
+    # Empty DataFrame
+    assert select_deterministic_sentinel_samples(pd.DataFrame(), n_samples=12) == []
+
+    # Non-positive sample count
+    assert select_deterministic_sentinel_samples(df, n_samples=0) == []
+    assert select_deterministic_sentinel_samples(df, n_samples=-5) == []
+
+    # Sample smaller than strata count (n_samples=3)
+    s3 = select_deterministic_sentinel_samples(df, n_samples=3)
+    assert len(s3) == 3
+
+    # Sample larger than total records (n_samples=500)
+    s_all = select_deterministic_sentinel_samples(df, n_samples=500)
+    assert len(s_all) == len(df) == 300
+    assert len(set(s_all)) == 300
+
 
 
 
