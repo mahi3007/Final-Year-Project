@@ -132,6 +132,10 @@ class Cohort2PreflightValidator:
         approved_sentinel_csv_sha256: Optional[Set[str]] = None,
         approved_sentinel_lock_sha256: Optional[Set[str]] = None,
         approved_clip_lock_sha256: Optional[Set[str]] = None,
+        expected_manifest_crlf_sha256: Optional[str] = None,
+        expected_manifest_lf_sha256: Optional[str] = None,
+        expected_sentinel_csv_crlf_sha256: Optional[str] = None,
+        expected_sentinel_csv_lf_sha256: Optional[str] = None,
     ):
         self.root = project_root or Path(__file__).resolve().parent.parent.parent.parent
         self.manifest_path = manifest_path or (self.root / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json")
@@ -157,6 +161,19 @@ class Cohort2PreflightValidator:
         )
         self.approved_clip_lock_sha256 = (
             approved_clip_lock_sha256 if approved_clip_lock_sha256 is not None else VALID_COHORT2_CLIP_LOCK_SHA256
+        )
+
+        self.expected_manifest_crlf_sha256 = (
+            expected_manifest_crlf_sha256 or VALID_MANIFEST_CRLF_SHA256
+        )
+        self.expected_manifest_lf_sha256 = (
+            expected_manifest_lf_sha256 or VALID_MANIFEST_LF_SHA256
+        )
+        self.expected_sentinel_csv_crlf_sha256 = (
+            expected_sentinel_csv_crlf_sha256 or VALID_SENTINEL_CSV_CRLF_SHA256
+        )
+        self.expected_sentinel_csv_lf_sha256 = (
+            expected_sentinel_csv_lf_sha256 or VALID_SENTINEL_CSV_LF_SHA256
         )
 
     def validate_manifest(self) -> Dict[str, Any]:
@@ -206,19 +223,19 @@ class Cohort2PreflightValidator:
         if not lock_sha256:
             result["status"] = "FAIL"
             result["errors"].append("Manifest lock file missing required 'sha256' field.")
-        elif lock_sha256 != VALID_MANIFEST_CRLF_SHA256 and lock_sha256 not in self.approved_manifest_sha256:
+        elif lock_sha256 != self.expected_manifest_crlf_sha256:
             result["status"] = "FAIL"
             result["errors"].append(
-                f"Manifest lock records unauthorized CRLF 'sha256' digest '{lock_sha256}' (expected canonical CRLF '{VALID_MANIFEST_CRLF_SHA256}')."
+                f"Manifest lock records unauthorized CRLF 'sha256' digest '{lock_sha256}' (expected canonical CRLF '{self.expected_manifest_crlf_sha256}')."
             )
 
         if not lock_sha256_lf:
             result["status"] = "FAIL"
             result["errors"].append("Manifest lock file missing required 'sha256_lf' field.")
-        elif lock_sha256_lf != VALID_MANIFEST_LF_SHA256 and lock_sha256_lf not in self.approved_manifest_sha256:
+        elif lock_sha256_lf != self.expected_manifest_lf_sha256:
             result["status"] = "FAIL"
             result["errors"].append(
-                f"Manifest lock records unauthorized LF 'sha256_lf' digest '{lock_sha256_lf}' (expected canonical LF '{VALID_MANIFEST_LF_SHA256}')."
+                f"Manifest lock records unauthorized LF 'sha256_lf' digest '{lock_sha256_lf}' (expected canonical LF '{self.expected_manifest_lf_sha256}')."
             )
 
         # 3. Check physical manifest file against allowlist and lock's declared digests
@@ -777,7 +794,7 @@ class Cohort2PreflightValidator:
                 result["errors"].append(f"Malformed sentinel lock JSON: {e}")
                 return result
 
-        # 2. Validate EVERY populated digest in sentinel lock against canonical allowlist and expected variants
+        # 2. Validate EVERY populated digest in sentinel lock against exact canonical line-ending variant!
         lock_csv_sha256 = lock.get("csv_sha256")
         lock_crlf_sha256 = lock.get("crlf_sha256")
         lock_lf_sha256 = lock.get("lf_sha256")
@@ -785,20 +802,18 @@ class Cohort2PreflightValidator:
         if lock_csv_sha256 and lock_csv_sha256 not in self.approved_sentinel_csv_sha256:
             result["status"] = "FAIL"
             result["errors"].append(
-                f"Sentinel lock records unauthorized 'csv_sha256' '{lock_csv_sha256}'."
+                f"Sentinel lock records unauthorized 'csv_sha256' '{lock_csv_sha256}' not in authorized digests {self.approved_sentinel_csv_sha256}."
             )
-        if lock_crlf_sha256:
-            if lock_crlf_sha256 != VALID_SENTINEL_CSV_CRLF_SHA256 and lock_crlf_sha256 not in self.approved_sentinel_csv_sha256:
-                result["status"] = "FAIL"
-                result["errors"].append(
-                    f"Sentinel lock records unauthorized 'crlf_sha256' '{lock_crlf_sha256}' (expected '{VALID_SENTINEL_CSV_CRLF_SHA256}')."
-                )
-        if lock_lf_sha256:
-            if lock_lf_sha256 != VALID_SENTINEL_CSV_LF_SHA256 and lock_lf_sha256 not in self.approved_sentinel_csv_sha256:
-                result["status"] = "FAIL"
-                result["errors"].append(
-                    f"Sentinel lock records unauthorized 'lf_sha256' '{lock_lf_sha256}' (expected '{VALID_SENTINEL_CSV_LF_SHA256}')."
-                )
+        if lock_crlf_sha256 and lock_crlf_sha256 != self.expected_sentinel_csv_crlf_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Sentinel lock records unauthorized 'crlf_sha256' '{lock_crlf_sha256}' (expected canonical CRLF '{self.expected_sentinel_csv_crlf_sha256}')."
+            )
+        if lock_lf_sha256 and lock_lf_sha256 != self.expected_sentinel_csv_lf_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Sentinel lock records unauthorized 'lf_sha256' '{lock_lf_sha256}' (expected canonical LF '{self.expected_sentinel_csv_lf_sha256}')."
+            )
 
         # 3. Check sentinel CSV on disk against approved allowlist and lock's declared digests
         sent_hash = compute_sha256(self.sentinel_csv_path)
@@ -1210,6 +1225,10 @@ class Cohort1PreflightValidator:
         approved_eval_lock_sha256: Optional[Set[str]] = None,
         approved_sentinel_csv_sha256: Optional[Set[str]] = None,
         approved_sentinel_lock_sha256: Optional[Set[str]] = None,
+        expected_eval_csv_crlf_sha256: Optional[str] = None,
+        expected_eval_csv_lf_sha256: Optional[str] = None,
+        expected_sentinel_csv_crlf_sha256: Optional[str] = None,
+        expected_sentinel_csv_lf_sha256: Optional[str] = None,
     ):
         self.root = project_root or Path(__file__).resolve().parent.parent.parent.parent
         self.eval_csv_path = eval_csv_path or (self.root / "datasets" / "splits" / "stage5_external_eval.csv")
@@ -1230,6 +1249,19 @@ class Cohort1PreflightValidator:
         )
         self.approved_sentinel_lock_sha256 = (
             approved_sentinel_lock_sha256 if approved_sentinel_lock_sha256 is not None else VALID_SENTINEL_LOCK_SHA256
+        )
+
+        self.expected_eval_csv_crlf_sha256 = (
+            expected_eval_csv_crlf_sha256 or VALID_STAGE5_EVAL_CSV_CRLF_SHA256
+        )
+        self.expected_eval_csv_lf_sha256 = (
+            expected_eval_csv_lf_sha256 or VALID_STAGE5_EVAL_CSV_LF_SHA256
+        )
+        self.expected_sentinel_csv_crlf_sha256 = (
+            expected_sentinel_csv_crlf_sha256 or VALID_SENTINEL_CSV_CRLF_SHA256
+        )
+        self.expected_sentinel_csv_lf_sha256 = (
+            expected_sentinel_csv_lf_sha256 or VALID_SENTINEL_CSV_LF_SHA256
         )
 
     def validate_eval_dataset(self) -> Dict[str, Any]:
@@ -1281,6 +1313,19 @@ class Cohort1PreflightValidator:
             result["status"] = "FAIL"
             result["errors"].append(
                 f"Cohort 1 evaluation lock declared digests {declared_csv_hashes} do not intersect approved CSV allowlist {self.approved_eval_csv_sha256}."
+            )
+
+        lock_crlf = lock_data.get("crlf_sha256")
+        lock_lf = lock_data.get("lf_sha256")
+        if lock_crlf and lock_crlf != self.expected_eval_csv_crlf_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Cohort 1 evaluation lock records unauthorized 'crlf_sha256' '{lock_crlf}' (expected canonical CRLF '{self.expected_eval_csv_crlf_sha256}')."
+            )
+        if lock_lf and lock_lf != self.expected_eval_csv_lf_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Cohort 1 evaluation lock records unauthorized 'lf_sha256' '{lock_lf}' (expected canonical LF '{self.expected_eval_csv_lf_sha256}')."
             )
 
         # Check lock schema numbers
@@ -1490,6 +1535,19 @@ class Cohort1PreflightValidator:
         if sent_hash not in valid_sent_hashes:
             result["status"] = "FAIL"
             result["errors"].append(f"Sentinel CSV hash '{sent_hash}' not in lock declared digests {valid_sent_hashes}.")
+
+        sent_crlf = sent_lock.get("crlf_sha256")
+        sent_lf = sent_lock.get("lf_sha256")
+        if sent_crlf and sent_crlf != self.expected_sentinel_csv_crlf_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Sentinel lock records unauthorized 'crlf_sha256' '{sent_crlf}' (expected canonical CRLF '{self.expected_sentinel_csv_crlf_sha256}')."
+            )
+        if sent_lf and sent_lf != self.expected_sentinel_csv_lf_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Sentinel lock records unauthorized 'lf_sha256' '{sent_lf}' (expected canonical LF '{self.expected_sentinel_csv_lf_sha256}')."
+            )
 
         try:
             sent_df = pd.read_csv(self.sentinel_csv_path)

@@ -53,8 +53,12 @@ from dsg_ctta.data.cohort2_preflight import (
     VALID_MANIFEST_LF_SHA256,
     VALID_MANIFEST_LOCK_SHA256,
     VALID_SENTINEL_CSV_SHA256,
+    VALID_SENTINEL_CSV_CRLF_SHA256,
+    VALID_SENTINEL_CSV_LF_SHA256,
     VALID_SENTINEL_LOCK_SHA256,
     VALID_STAGE5_EVAL_CSV_SHA256,
+    VALID_STAGE5_EVAL_CSV_CRLF_SHA256,
+    VALID_STAGE5_EVAL_CSV_LF_SHA256,
     VALID_STAGE5_EVAL_LOCK_SHA256,
     EXPECTED_STRATA_NAMES,
     CORE_SENTINEL_WORDS,
@@ -907,6 +911,74 @@ def test_cohort2_sentinel_fails_on_mixed_digests_in_lock(tmp_path):
     assert any("unauthorized 'lf_sha256'" in err for err in result["errors"])
 
 
+def test_cohort2_manifest_fails_on_swapped_canonical_digests_in_lock(tmp_path):
+    """
+    Manifest lock where canonical CRLF and LF digests are deliberately swapped between fields
+    must fail closed at field-level checks even when the physical lock disk hash is anchored.
+    """
+    real_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    real_lock = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.lock.json"
+
+    with open(real_lock, "r", encoding="utf-8") as f:
+        lock_data = json.load(f)
+
+    # Deliberately swap canonical CRLF and LF digests between fields
+    lock_data["sha256"] = VALID_MANIFEST_LF_SHA256
+    lock_data["sha256_lf"] = VALID_MANIFEST_CRLF_SHA256
+
+    swapped_lock = tmp_path / "manifest_swapped.lock.json"
+    with open(swapped_lock, "w", encoding="utf-8") as f:
+        json.dump(lock_data, f)
+    swapped_hash = hashlib.sha256(swapped_lock.read_bytes()).hexdigest()
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        manifest_path=real_manifest,
+        lock_path=swapped_lock,
+        approved_manifest_lock_sha256={swapped_hash},
+    )
+    result = validator.validate_manifest()
+    assert result["status"] == "FAIL"
+    assert any("unauthorized CRLF 'sha256' digest" in err for err in result["errors"])
+    assert any("unauthorized LF 'sha256_lf' digest" in err for err in result["errors"])
+
+
+def test_cohort2_sentinel_fails_on_swapped_canonical_digests_in_lock(tmp_path):
+    """
+    Sentinel lock where canonical CRLF and LF digests are deliberately swapped between fields
+    must fail closed at field-level checks even when the physical lock disk hash is anchored.
+    """
+    real_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    with open(real_manifest, "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+
+    real_sent_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
+    real_sent_lock = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.lock.json"
+
+    with open(real_sent_lock, "r", encoding="utf-8") as f:
+        lock_data = json.load(f)
+
+    # Deliberately swap canonical CRLF and LF digests between fields
+    lock_data["crlf_sha256"] = VALID_SENTINEL_CSV_LF_SHA256
+    lock_data["lf_sha256"] = VALID_SENTINEL_CSV_CRLF_SHA256
+
+    swapped_lock = tmp_path / "sentinel_swapped.lock.json"
+    with open(swapped_lock, "w", encoding="utf-8") as f:
+        json.dump(lock_data, f)
+    swapped_hash = hashlib.sha256(swapped_lock.read_bytes()).hexdigest()
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        sentinel_csv_path=real_sent_csv,
+        sentinel_lock_path=swapped_lock,
+        approved_sentinel_lock_sha256={swapped_hash},
+    )
+    result = validator.validate_sentinel_panel_and_isolation(manifest_data)
+    assert result["status"] == "FAIL"
+    assert any("unauthorized 'crlf_sha256'" in err for err in result["errors"])
+    assert any("unauthorized 'lf_sha256'" in err for err in result["errors"])
+
+
 # =============================================================================
 # 11. Cohort 1 Preflight Verification & Integrity Invariants (Finding 2)
 # =============================================================================
@@ -946,6 +1018,26 @@ def test_cohort1_preflight_fails_on_missing_or_tampered_eval_lock(tmp_path):
     res_tampered = validator_tampered.validate_eval_dataset()
     assert res_tampered["status"] == "FAIL"
     assert any("unauthorized SHA-256" in err for err in res_tampered["errors"])
+
+    # 3. Swapped CRLF and LF digests -> FAIL at field-level checks
+    with open(real_lock, "r", encoding="utf-8") as f:
+        swapped_data = json.load(f)
+    swapped_data["crlf_sha256"] = VALID_STAGE5_EVAL_CSV_LF_SHA256
+    swapped_data["lf_sha256"] = VALID_STAGE5_EVAL_CSV_CRLF_SHA256
+    swapped_lock = tmp_path / "eval_swapped.lock.json"
+    with open(swapped_lock, "w", encoding="utf-8") as f:
+        json.dump(swapped_data, f)
+    swapped_hash = hashlib.sha256(swapped_lock.read_bytes()).hexdigest()
+
+    validator_swapped = Cohort1PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_lock_path=swapped_lock,
+        approved_eval_lock_sha256={swapped_hash},
+    )
+    res_swapped = validator_swapped.validate_eval_dataset()
+    assert res_swapped["status"] == "FAIL"
+    assert any("unauthorized 'crlf_sha256'" in err for err in res_swapped["errors"])
+    assert any("unauthorized 'lf_sha256'" in err for err in res_swapped["errors"])
 
 
 def test_cohort1_preflight_fails_on_missing_audio_or_zero_bytes(tmp_path):
