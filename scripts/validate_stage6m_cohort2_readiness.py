@@ -51,6 +51,12 @@ def parse_args():
         help="Path to evaluation CSV (defaults to datasets/splits/stage6m_cohort2_audio.csv).",
     )
     parser.add_argument(
+        "--clip-lock",
+        type=Path,
+        default=None,
+        help="Path to clip lock JSON (defaults to datasets/splits/stage6m_cohort2_audio.lock.json).",
+    )
+    parser.add_argument(
         "--audio-dir",
         type=Path,
         default=None,
@@ -86,6 +92,7 @@ def main():
     validator = Cohort2PreflightValidator(
         project_root=PROJECT_ROOT,
         manifest_path=args.manifest,
+        clip_lock_path=args.clip_lock,
         eval_csv_path=args.eval_csv,
         audio_dir=args.audio_dir,
         sentinel_csv_path=args.sentinel_csv,

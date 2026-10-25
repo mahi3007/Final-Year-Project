@@ -42,10 +42,38 @@ from dsg_ctta.data.acoustic import load_and_resample_audio
 from dsg_ctta.data.normalization import TextNormalizer
 
 
-VALID_MANIFEST_SHA256 = {
-    "610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895",  # CRLF (Windows)
-    "2e59a75c40abd165ee1689773c1a95409be29636079c0f714d51236dd54dcef0",  # LF (Linux / Git)
-}
+# Canonical Manifest Digests
+VALID_MANIFEST_CRLF_SHA256 = "610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895"
+VALID_MANIFEST_LF_SHA256 = "2e59a75c40abd165ee1689773c1a95409be29636079c0f714d51236dd54dcef0"
+VALID_MANIFEST_SHA256 = {VALID_MANIFEST_CRLF_SHA256, VALID_MANIFEST_LF_SHA256}
+
+# Canonical Manifest Lock Digests
+VALID_MANIFEST_LOCK_CRLF_SHA256 = "3b00d31140488ad614e175c3585130af50c07677a89ef5630a6feea5e28b6c64"
+VALID_MANIFEST_LOCK_LF_SHA256 = "9081c40cb31e8c6ff8a6925b49b26a95e83c030f356131ef4066273a90475330"
+VALID_MANIFEST_LOCK_SHA256 = {VALID_MANIFEST_LOCK_CRLF_SHA256, VALID_MANIFEST_LOCK_LF_SHA256}
+
+# Canonical Sentinel Panel CSV Digests
+VALID_SENTINEL_CSV_CRLF_SHA256 = "665009a00660f7e9bbdf8de8a53473fc1249362ca2a5bc0038518313d18f0543"
+VALID_SENTINEL_CSV_LF_SHA256 = "612b7045e3e68326d00a963f9ade44b197a53e2c2640a13f8ee5162b2efc3691"
+VALID_SENTINEL_CSV_SHA256 = {VALID_SENTINEL_CSV_CRLF_SHA256, VALID_SENTINEL_CSV_LF_SHA256}
+
+# Canonical Sentinel Panel Lock Digests
+VALID_SENTINEL_LOCK_CRLF_SHA256 = "4792ce49cc0e5a5c588f6e30cf0cee6b7a512fabdae6dadee117912927ec167d"
+VALID_SENTINEL_LOCK_LF_SHA256 = "5e2ea1709ab9ab8031e82f4a5513538d6653d1cf11594ff437860a1eb3a58980"
+VALID_SENTINEL_LOCK_SHA256 = {VALID_SENTINEL_LOCK_CRLF_SHA256, VALID_SENTINEL_LOCK_LF_SHA256}
+
+# Canonical Stage 5 External Evaluation (Cohort 1) CSV Digests
+VALID_STAGE5_EVAL_CSV_CRLF_SHA256 = "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32"
+VALID_STAGE5_EVAL_CSV_LF_SHA256 = "56cb4f9fc7ab7b8b959a65d19f195d9d8b1751a6bca26f474a6304dd47559093"
+VALID_STAGE5_EVAL_CSV_SHA256 = {VALID_STAGE5_EVAL_CSV_CRLF_SHA256, VALID_STAGE5_EVAL_CSV_LF_SHA256}
+
+# Canonical Stage 5 External Evaluation (Cohort 1) Lock Digests
+VALID_STAGE5_EVAL_LOCK_CRLF_SHA256 = "194a95f7303038775321ef58298d611cfcf83021f34a5cd31bc39c37d066d309"
+VALID_STAGE5_EVAL_LOCK_LF_SHA256 = "5c589e637ef04eb02f6b1fa0242f8838c563e51a82b6f0e81fb039c67dc1be2f"
+VALID_STAGE5_EVAL_LOCK_SHA256 = {VALID_STAGE5_EVAL_LOCK_CRLF_SHA256, VALID_STAGE5_EVAL_LOCK_LF_SHA256}
+
+# Cohort 2 Clip Lock Allowlist (empty by default until committed/approved)
+VALID_COHORT2_CLIP_LOCK_SHA256: Set[str] = set()
 
 EXPECTED_STRATA_NAMES = [
     "Irish English",
@@ -99,6 +127,11 @@ class Cohort2PreflightValidator:
         sentinel_csv_path: Optional[Path] = None,
         sentinel_lock_path: Optional[Path] = None,
         sentinel_audio_dir: Optional[Path] = None,
+        approved_manifest_sha256: Optional[Set[str]] = None,
+        approved_manifest_lock_sha256: Optional[Set[str]] = None,
+        approved_sentinel_csv_sha256: Optional[Set[str]] = None,
+        approved_sentinel_lock_sha256: Optional[Set[str]] = None,
+        approved_clip_lock_sha256: Optional[Set[str]] = None,
     ):
         self.root = project_root or Path(__file__).resolve().parent.parent.parent.parent
         self.manifest_path = manifest_path or (self.root / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json")
@@ -109,6 +142,22 @@ class Cohort2PreflightValidator:
         self.sentinel_csv_path = sentinel_csv_path or (self.root / "datasets" / "splits" / "stage5_sentinel_panel.csv")
         self.sentinel_lock_path = sentinel_lock_path or (self.root / "datasets" / "splits" / "stage5_sentinel_panel.lock.json")
         self.sentinel_audio_dir = sentinel_audio_dir or (self.root / "datasets" / "external" / "common_voice_27" / "sentinel_audio")
+
+        self.approved_manifest_sha256 = (
+            approved_manifest_sha256 if approved_manifest_sha256 is not None else VALID_MANIFEST_SHA256
+        )
+        self.approved_manifest_lock_sha256 = (
+            approved_manifest_lock_sha256 if approved_manifest_lock_sha256 is not None else VALID_MANIFEST_LOCK_SHA256
+        )
+        self.approved_sentinel_csv_sha256 = (
+            approved_sentinel_csv_sha256 if approved_sentinel_csv_sha256 is not None else VALID_SENTINEL_CSV_SHA256
+        )
+        self.approved_sentinel_lock_sha256 = (
+            approved_sentinel_lock_sha256 if approved_sentinel_lock_sha256 is not None else VALID_SENTINEL_LOCK_SHA256
+        )
+        self.approved_clip_lock_sha256 = (
+            approved_clip_lock_sha256 if approved_clip_lock_sha256 is not None else VALID_COHORT2_CLIP_LOCK_SHA256
+        )
 
     def validate_manifest(self) -> Dict[str, Any]:
         """
@@ -134,7 +183,14 @@ class Cohort2PreflightValidator:
             result["errors"].append(f"Manifest lock file missing: {self.lock_path}")
             return result
 
-        # Cryptographic Hash & Lock Authorization Check
+        # 1. Cryptographic Hash & Lock Authorization Check on Disk
+        lock_file_hash = compute_sha256(self.lock_path)
+        if lock_file_hash not in self.approved_manifest_lock_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Manifest lock file records unauthorized SHA-256 digest '{lock_file_hash}' not in canonical allowlist {self.approved_manifest_lock_sha256}."
+            )
+
         with open(self.lock_path, "r", encoding="utf-8") as f:
             try:
                 lock_data = json.load(f)
@@ -143,21 +199,40 @@ class Cohort2PreflightValidator:
                 result["errors"].append(f"Malformed manifest lock JSON: {e}")
                 return result
 
-        # Enforce that lock file digests match the canonical repository allowlist
+        # 2. Enforce that EVERY populated digest in lock matches its specific expected canonical line-ending variant!
         lock_sha256 = lock_data.get("sha256")
         lock_sha256_lf = lock_data.get("sha256_lf")
-        lock_hashes = {h for h in [lock_sha256, lock_sha256_lf] if h}
-        if not lock_hashes.intersection(VALID_MANIFEST_SHA256):
+
+        if not lock_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append("Manifest lock file missing required 'sha256' field.")
+        elif lock_sha256 != VALID_MANIFEST_CRLF_SHA256 and lock_sha256 not in self.approved_manifest_sha256:
             result["status"] = "FAIL"
             result["errors"].append(
-                f"Manifest lock file records unauthorized SHA-256 digest '{lock_sha256}' not in canonical allowlist {VALID_MANIFEST_SHA256}."
+                f"Manifest lock records unauthorized CRLF 'sha256' digest '{lock_sha256}' (expected canonical CRLF '{VALID_MANIFEST_CRLF_SHA256}')."
             )
 
-        manifest_hash = compute_sha256(self.manifest_path)
-        if manifest_hash not in VALID_MANIFEST_SHA256 or (lock_hashes and manifest_hash not in lock_hashes):
+        if not lock_sha256_lf:
+            result["status"] = "FAIL"
+            result["errors"].append("Manifest lock file missing required 'sha256_lf' field.")
+        elif lock_sha256_lf != VALID_MANIFEST_LF_SHA256 and lock_sha256_lf not in self.approved_manifest_sha256:
             result["status"] = "FAIL"
             result["errors"].append(
-                f"Manifest SHA-256 mismatch! Computed '{manifest_hash}' not in authorized digests {VALID_MANIFEST_SHA256}."
+                f"Manifest lock records unauthorized LF 'sha256_lf' digest '{lock_sha256_lf}' (expected canonical LF '{VALID_MANIFEST_LF_SHA256}')."
+            )
+
+        # 3. Check physical manifest file against allowlist and lock's declared digests
+        manifest_hash = compute_sha256(self.manifest_path)
+        if manifest_hash not in self.approved_manifest_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Manifest SHA-256 mismatch! Computed '{manifest_hash}' not in authorized digests {self.approved_manifest_sha256}."
+            )
+        lock_declared_hashes = {h for h in [lock_sha256, lock_sha256_lf] if h}
+        if manifest_hash not in lock_declared_hashes:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Manifest SHA-256 '{manifest_hash}' does not match lock declared digests {lock_declared_hashes}."
             )
 
         # Parse Manifest
@@ -326,10 +401,25 @@ class Cohort2PreflightValidator:
             "details": {},
         }
 
-        if not self.eval_csv_path.exists():
+        # Check prerequisite existence: Evaluation CSV and Mandatory Clip Lock
+        csv_exists = self.eval_csv_path.exists()
+        clip_lock_exists = self.clip_lock_path.exists()
+
+        if not csv_exists:
             result["status"] = "HOLD"
             result["errors"].append(
                 "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Evaluation CSV not materialized: datasets/splits/stage6m_cohort2_audio.csv"
+            )
+            if not clip_lock_exists:
+                result["errors"].append(
+                    "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Authoritative clip lock file not materialized: datasets/splits/stage6m_cohort2_audio.lock.json"
+                )
+            return result
+
+        if not clip_lock_exists:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                "Mandatory clip lock file missing: datasets/splits/stage6m_cohort2_audio.lock.json"
             )
             return result
 
@@ -439,41 +529,105 @@ class Cohort2PreflightValidator:
                 f"Speaker stratum preservation violation! {len(stratum_swaps)} speakers were redistributed/swapped between strata: {stratum_swaps[:3]}"
             )
 
-        # Clip-Level Lock / Manifest Agreement Check
+        # Mandatory Clip-Level Lock / Manifest Agreement Check
         clip_lock_verified = False
-        if self.clip_lock_path.exists():
-            try:
-                with open(self.clip_lock_path, "r", encoding="utf-8") as f:
-                    clip_lock_data = json.load(f)
-
-                if "recording_ids" in clip_lock_data:
-                    expected_rec_ids = set(clip_lock_data["recording_ids"])
-                    actual_rec_ids = set(df["recording_id"])
-                    missing_rec_ids = expected_rec_ids - actual_rec_ids
-                    extra_rec_ids = actual_rec_ids - expected_rec_ids
-                    if missing_rec_ids or extra_rec_ids:
-                        result["status"] = "FAIL"
-                        result["errors"].append(
-                            f"Clip-set exact equality failed! {len(missing_rec_ids)} missing clips, {len(extra_rec_ids)} extra clips compared to locked clip manifest."
-                        )
-
-                if "csv_sha256" in clip_lock_data:
-                    csv_hash = compute_sha256(self.eval_csv_path)
-                    allowlist = {
-                        clip_lock_data.get("csv_sha256"),
-                        clip_lock_data.get("crlf_sha256"),
-                        clip_lock_data.get("lf_sha256"),
-                    }
-                    if csv_hash not in allowlist:
-                        result["status"] = "FAIL"
-                        result["errors"].append(
-                            f"Evaluation CSV SHA-256 '{csv_hash}' not in clip lock allowlist {allowlist}."
-                        )
-
-                clip_lock_verified = True
-            except Exception as e:
+        try:
+            clip_lock_hash = compute_sha256(self.clip_lock_path)
+            if not self.approved_clip_lock_sha256 or clip_lock_hash not in self.approved_clip_lock_sha256:
                 result["status"] = "FAIL"
-                result["errors"].append(f"Failed to parse clip lock file '{self.clip_lock_path}': {e}")
+                result["errors"].append(
+                    f"Clip lock file '{self.clip_lock_path}' SHA-256 '{clip_lock_hash}' is not in approved allowlist {self.approved_clip_lock_sha256}."
+                )
+
+            with open(self.clip_lock_path, "r", encoding="utf-8") as f:
+                clip_lock_data = json.load(f)
+
+            # Validate complete lock schema
+            required_schema_keys = [
+                "protocol_version",
+                "governing_standard",
+                "dataset_name",
+                "total_clips",
+                "total_speakers",
+                "total_strata",
+                "clips_per_speaker",
+                "recording_ids",
+            ]
+            missing_schema_keys = [k for k in required_schema_keys if k not in clip_lock_data]
+            if missing_schema_keys:
+                result["status"] = "FAIL"
+                result["errors"].append(
+                    f"Clip lock schema incomplete! Missing required keys: {missing_schema_keys}"
+                )
+
+            if clip_lock_data.get("total_clips") != 7020:
+                result["status"] = "FAIL"
+                result["errors"].append(
+                    f"Clip lock schema total_clips is {clip_lock_data.get('total_clips')} (expected 7020)."
+                )
+
+            if clip_lock_data.get("total_speakers") != 468:
+                result["status"] = "FAIL"
+                result["errors"].append(
+                    f"Clip lock schema total_speakers is {clip_lock_data.get('total_speakers')} (expected 468)."
+                )
+
+            if clip_lock_data.get("total_strata") != 6:
+                result["status"] = "FAIL"
+                result["errors"].append(
+                    f"Clip lock schema total_strata is {clip_lock_data.get('total_strata')} (expected 6)."
+                )
+
+            if clip_lock_data.get("clips_per_speaker") != 15:
+                result["status"] = "FAIL"
+                result["errors"].append(
+                    f"Clip lock schema clips_per_speaker is {clip_lock_data.get('clips_per_speaker')} (expected 15)."
+                )
+
+            # Exact recording-ID set equality
+            raw_rec_ids = clip_lock_data.get("recording_ids")
+            if not isinstance(raw_rec_ids, list):
+                result["status"] = "FAIL"
+                result["errors"].append("Clip lock 'recording_ids' field must be a list of recording IDs.")
+            else:
+                expected_rec_ids = set(raw_rec_ids)
+                actual_rec_ids = set(df["recording_id"])
+                missing_rec_ids = expected_rec_ids - actual_rec_ids
+                extra_rec_ids = actual_rec_ids - expected_rec_ids
+                if len(raw_rec_ids) != 7020 or len(expected_rec_ids) != 7020:
+                    result["status"] = "FAIL"
+                    result["errors"].append(
+                        f"Clip lock contains {len(raw_rec_ids)} recording IDs ({len(expected_rec_ids)} unique, expected exactly 7,020 unique)."
+                    )
+                if missing_rec_ids or extra_rec_ids:
+                    result["status"] = "FAIL"
+                    result["errors"].append(
+                        f"Clip-set exact equality failed! {len(missing_rec_ids)} missing clips, {len(extra_rec_ids)} extra clips compared to locked clip manifest."
+                    )
+
+            # Matching CSV digest
+            csv_hash = compute_sha256(self.eval_csv_path)
+            csv_allowlist = {
+                clip_lock_data.get("csv_sha256"),
+                clip_lock_data.get("crlf_sha256"),
+                clip_lock_data.get("lf_sha256"),
+            } - {None}
+            if not csv_allowlist:
+                result["status"] = "FAIL"
+                result["errors"].append(
+                    "Clip lock does not contain any CSV digest fields ('csv_sha256', 'crlf_sha256', 'lf_sha256')."
+                )
+            elif csv_hash not in csv_allowlist:
+                result["status"] = "FAIL"
+                result["errors"].append(
+                    f"Evaluation CSV SHA-256 '{csv_hash}' not in clip lock declared digests {csv_allowlist}."
+                )
+
+            if result["status"] == "PASS":
+                clip_lock_verified = True
+        except Exception as e:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Failed to parse clip lock file '{self.clip_lock_path}': {e}")
 
         result["details"] = {
             "total_clips": total_clips,
@@ -607,19 +761,57 @@ class Cohort2PreflightValidator:
             result["errors"].append(f"Sentinel panel lock missing: {self.sentinel_lock_path}")
             return result
 
-        # Lock hash verification
-        sent_hash = compute_sha256(self.sentinel_csv_path)
+        # 1. Check physical sentinel lock file on disk against authorized lock allowlist
+        sent_lock_hash = compute_sha256(self.sentinel_lock_path)
+        if sent_lock_hash not in self.approved_sentinel_lock_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Sentinel lock file '{self.sentinel_lock_path}' SHA-256 '{sent_lock_hash}' not in approved lock allowlist {self.approved_sentinel_lock_sha256}."
+            )
+
         with open(self.sentinel_lock_path, "r", encoding="utf-8") as f:
-            lock = json.load(f)
-        valid_sent_hashes = {
-            lock.get("csv_sha256"),
-            lock.get("crlf_sha256"),
-            lock.get("lf_sha256"),
-            lock.get("sha256"),
-        }
+            try:
+                lock = json.load(f)
+            except Exception as e:
+                result["status"] = "FAIL"
+                result["errors"].append(f"Malformed sentinel lock JSON: {e}")
+                return result
+
+        # 2. Validate EVERY populated digest in sentinel lock against canonical allowlist and expected variants
+        lock_csv_sha256 = lock.get("csv_sha256")
+        lock_crlf_sha256 = lock.get("crlf_sha256")
+        lock_lf_sha256 = lock.get("lf_sha256")
+
+        if lock_csv_sha256 and lock_csv_sha256 not in self.approved_sentinel_csv_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Sentinel lock records unauthorized 'csv_sha256' '{lock_csv_sha256}'."
+            )
+        if lock_crlf_sha256:
+            if lock_crlf_sha256 != VALID_SENTINEL_CSV_CRLF_SHA256 and lock_crlf_sha256 not in self.approved_sentinel_csv_sha256:
+                result["status"] = "FAIL"
+                result["errors"].append(
+                    f"Sentinel lock records unauthorized 'crlf_sha256' '{lock_crlf_sha256}' (expected '{VALID_SENTINEL_CSV_CRLF_SHA256}')."
+                )
+        if lock_lf_sha256:
+            if lock_lf_sha256 != VALID_SENTINEL_CSV_LF_SHA256 and lock_lf_sha256 not in self.approved_sentinel_csv_sha256:
+                result["status"] = "FAIL"
+                result["errors"].append(
+                    f"Sentinel lock records unauthorized 'lf_sha256' '{lock_lf_sha256}' (expected '{VALID_SENTINEL_CSV_LF_SHA256}')."
+                )
+
+        # 3. Check sentinel CSV on disk against approved allowlist and lock's declared digests
+        sent_hash = compute_sha256(self.sentinel_csv_path)
+        if sent_hash not in self.approved_sentinel_csv_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Sentinel panel CSV hash '{sent_hash}' not in approved allowlist {self.approved_sentinel_csv_sha256}."
+            )
+
+        valid_sent_hashes = {h for h in [lock_csv_sha256, lock_crlf_sha256, lock_lf_sha256] if h}
         if sent_hash not in valid_sent_hashes:
             result["status"] = "FAIL"
-            result["errors"].append(f"Sentinel panel CSV hash altered! ({sent_hash} not in {valid_sent_hashes})")
+            result["errors"].append(f"Sentinel panel CSV hash altered! ({sent_hash} not in declared digests {valid_sent_hashes})")
 
         sent_df = pd.read_csv(self.sentinel_csv_path)
         if len(sent_df) != 300:
@@ -997,3 +1189,428 @@ class Cohort2PreflightValidator:
             f.write(md_content)
 
         return json_path, md_path
+
+
+class Cohort1PreflightValidator:
+    """
+    Exhaustive preflight validator for Stage 6M Cohort 1 benchmark (900 physical clips).
+    Guarantees fail-closed behavior before allocating compute resources or preloading waveforms.
+    """
+
+    def __init__(
+        self,
+        project_root: Optional[Path] = None,
+        eval_csv_path: Optional[Path] = None,
+        eval_lock_path: Optional[Path] = None,
+        audio_dir: Optional[Path] = None,
+        sentinel_csv_path: Optional[Path] = None,
+        sentinel_lock_path: Optional[Path] = None,
+        sentinel_audio_dir: Optional[Path] = None,
+        approved_eval_csv_sha256: Optional[Set[str]] = None,
+        approved_eval_lock_sha256: Optional[Set[str]] = None,
+        approved_sentinel_csv_sha256: Optional[Set[str]] = None,
+        approved_sentinel_lock_sha256: Optional[Set[str]] = None,
+    ):
+        self.root = project_root or Path(__file__).resolve().parent.parent.parent.parent
+        self.eval_csv_path = eval_csv_path or (self.root / "datasets" / "splits" / "stage5_external_eval.csv")
+        self.eval_lock_path = eval_lock_path or (self.root / "datasets" / "splits" / "stage5_external_eval.lock.json")
+        self.audio_dir = audio_dir or (self.root / "datasets" / "external" / "common_voice_27" / "audio")
+        self.sentinel_csv_path = sentinel_csv_path or (self.root / "datasets" / "splits" / "stage5_sentinel_panel.csv")
+        self.sentinel_lock_path = sentinel_lock_path or (self.root / "datasets" / "splits" / "stage5_sentinel_panel.lock.json")
+        self.sentinel_audio_dir = sentinel_audio_dir or (self.root / "datasets" / "external" / "common_voice_27" / "sentinel_audio")
+
+        self.approved_eval_csv_sha256 = (
+            approved_eval_csv_sha256 if approved_eval_csv_sha256 is not None else VALID_STAGE5_EVAL_CSV_SHA256
+        )
+        self.approved_eval_lock_sha256 = (
+            approved_eval_lock_sha256 if approved_eval_lock_sha256 is not None else VALID_STAGE5_EVAL_LOCK_SHA256
+        )
+        self.approved_sentinel_csv_sha256 = (
+            approved_sentinel_csv_sha256 if approved_sentinel_csv_sha256 is not None else VALID_SENTINEL_CSV_SHA256
+        )
+        self.approved_sentinel_lock_sha256 = (
+            approved_sentinel_lock_sha256 if approved_sentinel_lock_sha256 is not None else VALID_SENTINEL_LOCK_SHA256
+        )
+
+    def validate_eval_dataset(self) -> Dict[str, Any]:
+        """
+        Check 1: Cohort 1 Evaluation CSV & Lock Cryptographic Integrity and Schema.
+        """
+        result: Dict[str, Any] = {
+            "check_name": "cohort1_eval_dataset_integrity",
+            "status": "PASS",
+            "errors": [],
+            "warnings": [],
+            "details": {},
+        }
+
+        if not self.eval_lock_path.exists():
+            result["status"] = "FAIL"
+            result["errors"].append(f"Cohort 1 evaluation lock missing: {self.eval_lock_path}")
+            return result
+
+        if not self.eval_csv_path.exists():
+            result["status"] = "FAIL"
+            result["errors"].append(f"Cohort 1 evaluation CSV missing: {self.eval_csv_path}")
+            return result
+
+        # Verify lock file on disk against allowlist
+        lock_hash = compute_sha256(self.eval_lock_path)
+        if lock_hash not in self.approved_eval_lock_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Cohort 1 evaluation lock file records unauthorized SHA-256 '{lock_hash}' not in {self.approved_eval_lock_sha256}."
+            )
+
+        with open(self.eval_lock_path, "r", encoding="utf-8") as f:
+            try:
+                lock_data = json.load(f)
+            except Exception as e:
+                result["status"] = "FAIL"
+                result["errors"].append(f"Malformed Cohort 1 evaluation lock JSON: {e}")
+                return result
+
+        # Check declared lock digests
+        declared_csv_hashes = {
+            lock_data.get("csv_sha256"),
+            lock_data.get("crlf_sha256"),
+            lock_data.get("lf_sha256"),
+            lock_data.get("csv_hash"),
+        } - {None}
+        if not declared_csv_hashes.intersection(self.approved_eval_csv_sha256):
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Cohort 1 evaluation lock declared digests {declared_csv_hashes} do not intersect approved CSV allowlist {self.approved_eval_csv_sha256}."
+            )
+
+        # Check lock schema numbers
+        if lock_data.get("num_rows") != 900:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Cohort 1 lock specifies num_rows={lock_data.get('num_rows')} (expected 900).")
+        if lock_data.get("num_speakers") != 60:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Cohort 1 lock specifies num_speakers={lock_data.get('num_speakers')} (expected 60).")
+        if lock_data.get("num_groups") != 6:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Cohort 1 lock specifies num_groups={lock_data.get('num_groups')} (expected 6).")
+        if lock_data.get("clips_per_speaker") != 15:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Cohort 1 lock specifies clips_per_speaker={lock_data.get('clips_per_speaker')} (expected 15).")
+
+        # Verify CSV hash on disk
+        csv_hash = compute_sha256(self.eval_csv_path)
+        if csv_hash not in self.approved_eval_csv_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Cohort 1 CSV SHA-256 '{csv_hash}' not in approved allowlist {self.approved_eval_csv_sha256}."
+            )
+        if csv_hash not in declared_csv_hashes:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Cohort 1 CSV SHA-256 '{csv_hash}' does not match declared lock digests {declared_csv_hashes}."
+            )
+
+        # Parse CSV
+        try:
+            df = pd.read_csv(self.eval_csv_path)
+        except Exception as e:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Failed to parse Cohort 1 evaluation CSV: {e}")
+            return result
+
+        if len(df) != 900:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Cohort 1 CSV contains {len(df)} rows (expected exactly 900).")
+
+        dup_clips = df["recording_id"].duplicated().sum()
+        if dup_clips > 0:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Cohort 1 CSV contains {dup_clips} duplicate recording IDs!")
+
+        unique_speakers = df["speaker_id"].nunique()
+        if unique_speakers != 60:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Cohort 1 CSV contains {unique_speakers} speakers (expected exactly 60).")
+
+        clips_per_spk = df.groupby("speaker_id")["recording_id"].count()
+        if not (clips_per_spk == 15).all():
+            mismatched = (clips_per_spk != 15).sum()
+            result["status"] = "FAIL"
+            result["errors"].append(f"{mismatched} speakers do not have exactly 15 clips allocated.")
+
+        stratum_col = (
+            "stage5_accent_group"
+            if "stage5_accent_group" in df.columns
+            else ("stratum" if "stratum" in df.columns else ("group" if "group" in df.columns else None))
+        )
+        if not stratum_col:
+            result["status"] = "FAIL"
+            result["errors"].append("No stratum column found in Cohort 1 evaluation CSV.")
+        else:
+            strata_counts = df.groupby(stratum_col)["recording_id"].count().to_dict()
+            if len(strata_counts) != 6:
+                result["status"] = "FAIL"
+                result["errors"].append(f"Cohort 1 CSV contains {len(strata_counts)} strata (expected 6).")
+            for s_key, count in strata_counts.items():
+                if count != 150:
+                    result["status"] = "FAIL"
+                    result["errors"].append(f"Stratum '{s_key}' has {count} clips (expected 150 = 10*15).")
+
+        result["details"] = {
+            "total_clips": len(df),
+            "unique_speakers": unique_speakers,
+            "duplicate_clip_count": int(dup_clips),
+            "csv_sha256": csv_hash,
+            "lock_sha256": lock_hash,
+        }
+        return result
+
+    def validate_audio_materialization(
+        self, eval_df: Optional[pd.DataFrame] = None, check_samples: int = 20
+    ) -> Dict[str, Any]:
+        """
+        Check 2: Cohort 1 Audio Materialization & 16 kHz Decodability.
+        """
+        result: Dict[str, Any] = {
+            "check_name": "cohort1_audio_materialization",
+            "status": "PASS",
+            "errors": [],
+            "warnings": [],
+            "details": {},
+        }
+
+        if not self.audio_dir.exists():
+            result["status"] = "FAIL"
+            result["errors"].append(f"Cohort 1 audio directory missing: {self.audio_dir}")
+            return result
+
+        mp3_files = list(self.audio_dir.glob("*.mp3"))
+        if len(mp3_files) < 900:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Cohort 1 audio directory contains {len(mp3_files)} files (expected >= 900).")
+
+        # Zero-byte file check
+        empty_files = [f.name for f in mp3_files if f.stat().st_size == 0]
+        if empty_files:
+            result["status"] = "FAIL"
+            result["errors"].append(f"{len(empty_files)} Cohort 1 audio files have zero bytes (e.g. {empty_files[:3]}).")
+
+        # Missing clips from evaluation CSV
+        missing_clips: List[str] = []
+        if eval_df is not None:
+            actual_names = set(f.name for f in mp3_files)
+            for rec_id in eval_df["recording_id"]:
+                if f"{rec_id}.mp3" not in actual_names:
+                    missing_clips.append(str(rec_id))
+
+            if missing_clips:
+                result["status"] = "FAIL"
+                result["errors"].append(f"{len(missing_clips)} clips in Cohort 1 CSV lack physical audio files (e.g. {missing_clips[:3]}).")
+
+        # Sample decode & resample test
+        decode_tested = 0
+        decode_failed = 0
+        sample_files = mp3_files[:check_samples]
+        for f in sample_files:
+            try:
+                waveform, sr = load_and_resample_audio(f, target_sr=16000)
+                decode_tested += 1
+                if sr != 16000 or len(waveform) == 0 or np.isnan(waveform).any() or np.isinf(waveform).any():
+                    decode_failed += 1
+            except Exception:
+                decode_failed += 1
+
+        if decode_failed > 0:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Cohort 1 audio decoding failure: {decode_failed}/{decode_tested} sampled audio files failed 16 kHz conversion."
+            )
+
+        result["details"] = {
+            "total_audio_files": len(mp3_files),
+            "expected_audio_files": 900,
+            "empty_files_count": len(empty_files),
+            "missing_clip_count": len(missing_clips),
+            "decode_sample_tested": decode_tested,
+            "decode_sample_failed": decode_failed,
+        }
+        return result
+
+    def validate_sentinel_panel_and_isolation(
+        self, eval_df: Optional[pd.DataFrame] = None
+    ) -> Dict[str, Any]:
+        """
+        Check 3: Sentinel Panel Integrity & Zero Speaker Leakage against Cohort 1.
+        """
+        result: Dict[str, Any] = {
+            "check_name": "cohort1_sentinel_panel_and_isolation",
+            "status": "PASS",
+            "errors": [],
+            "warnings": [],
+            "details": {},
+        }
+
+        if not self.sentinel_csv_path.exists():
+            result["status"] = "FAIL"
+            result["errors"].append(f"Sentinel panel CSV missing: {self.sentinel_csv_path}")
+            return result
+
+        if not self.sentinel_lock_path.exists():
+            result["status"] = "FAIL"
+            result["errors"].append(f"Sentinel panel lock missing: {self.sentinel_lock_path}")
+            return result
+
+        sent_lock_hash = compute_sha256(self.sentinel_lock_path)
+        if sent_lock_hash not in self.approved_sentinel_lock_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Sentinel lock file records unauthorized SHA-256 '{sent_lock_hash}' not in {self.approved_sentinel_lock_sha256}."
+            )
+
+        with open(self.sentinel_lock_path, "r", encoding="utf-8") as f:
+            try:
+                sent_lock = json.load(f)
+            except Exception as e:
+                result["status"] = "FAIL"
+                result["errors"].append(f"Malformed sentinel lock JSON: {e}")
+                return result
+
+        sent_hash = compute_sha256(self.sentinel_csv_path)
+        if sent_hash not in self.approved_sentinel_csv_sha256:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Sentinel panel CSV hash '{sent_hash}' not in approved allowlist {self.approved_sentinel_csv_sha256}."
+            )
+
+        valid_sent_hashes = {
+            sent_lock.get("csv_sha256"),
+            sent_lock.get("crlf_sha256"),
+            sent_lock.get("lf_sha256"),
+        } - {None}
+        if sent_hash not in valid_sent_hashes:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Sentinel CSV hash '{sent_hash}' not in lock declared digests {valid_sent_hashes}.")
+
+        try:
+            sent_df = pd.read_csv(self.sentinel_csv_path)
+        except Exception as e:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Failed to parse sentinel CSV: {e}")
+            return result
+
+        if len(sent_df) != 300:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Expected 300 sentinel panel records, got {len(sent_df)}")
+
+        sent_spk_count = sent_df["speaker_id"].nunique()
+        if sent_spk_count != CORE_SENTINEL_SPEAKERS:
+            result["status"] = "FAIL"
+            result["errors"].append(f"Expected 30 sentinel speakers, got {sent_spk_count}")
+
+        # Core panel word count
+        core_sentinel_df = sent_df.groupby("speaker_id").first().reset_index()
+        core_word_count = sum(len(TextNormalizer.normalize(str(t)).split()) for t in core_sentinel_df["transcript"])
+        if core_word_count != CORE_SENTINEL_WORDS:
+            result["status"] = "FAIL"
+            result["errors"].append(
+                f"Core sentinel panel reference word count is {core_word_count} (expected {CORE_SENTINEL_WORDS})."
+            )
+
+        # Strict Speaker Isolation against Cohort 1
+        overlap: Set[str] = set()
+        if eval_df is not None:
+            eval_spks = set(eval_df["speaker_id"].unique())
+            sent_spks = set(sent_df["speaker_id"].unique())
+            overlap = eval_spks.intersection(sent_spks)
+            if overlap:
+                result["status"] = "FAIL"
+                result["errors"].append(
+                    f"DATA LEAKAGE DETECTED! {len(overlap)} Cohort 1 evaluation speakers overlap with sentinel panel: {overlap}"
+                )
+
+        result["details"] = {
+            "total_sentinel_records": len(sent_df),
+            "core_sentinel_speakers": sent_spk_count,
+            "core_sentinel_reference_words": core_word_count,
+            "speaker_isolation_verified": len(overlap) == 0,
+            "speaker_leakage_count": len(overlap),
+        }
+        return result
+
+    def freeze_execution_configuration(self, model_name: str = "wav2vec2_base") -> Dict[str, Any]:
+        """
+        Check 4: Freeze Cohort 1 Execution Configuration.
+        """
+        cuda_avail = torch.cuda.is_available()
+        gpu_name = torch.cuda.get_device_name(0) if cuda_avail else "None (CPU Execution)"
+        return {
+            "check_name": "cohort1_execution_configuration_freeze",
+            "status": "PASS",
+            "governing_standard": "ADR-005",
+            "model_architecture": model_name,
+            "cohort": "cohort1",
+            "total_evaluation_clips": 900,
+            "window_size_k": 4,
+            "total_stream_windows_w": 225,
+            "hardware_device": gpu_name,
+        }
+
+    def run_preflight(
+        self, model_name: str = "wav2vec2_base", check_audio_samples: int = 20
+    ) -> Dict[str, Any]:
+        """
+        Run all Cohort 1 preflight checks and generate overall status.
+        """
+        t0 = datetime.now(timezone.utc)
+        git_rev = get_git_revision(self.root)
+
+        # 1. Dataset & Lock Check
+        dataset_res = self.validate_eval_dataset()
+
+        # Load eval_df if valid
+        eval_df = None
+        if self.eval_csv_path.exists() and dataset_res["status"] == "PASS":
+            try:
+                eval_df = pd.read_csv(self.eval_csv_path)
+            except Exception:
+                pass
+
+        # 2. Audio Materialization
+        audio_res = self.validate_audio_materialization(eval_df=eval_df, check_samples=check_audio_samples)
+
+        # 3. Sentinel Panel & Isolation
+        sent_res = self.validate_sentinel_panel_and_isolation(eval_df=eval_df)
+
+        # 4. Config Freeze
+        cfg_res = self.freeze_execution_configuration(model_name=model_name)
+
+        all_checks = [dataset_res, audio_res, sent_res, cfg_res]
+        all_statuses = [c["status"] for c in all_checks]
+        all_errors = [err for c in all_checks for err in c.get("errors", [])]
+
+        if "FAIL" in all_statuses:
+            overall_status = "HOLD"
+            summary_desc = "FAIL_CLOSED_VALIDATION_ERROR: One or more technical integrity checks failed for Cohort 1."
+        elif "HOLD" in all_statuses:
+            overall_status = "HOLD"
+            summary_desc = "COHORT1_PREREQUISITE_HOLD: One or more Cohort 1 prerequisites not materialized."
+        else:
+            overall_status = "READY FOR AUTHORIZED EXECUTION (COHORT 1)"
+            summary_desc = "All Cohort 1 preflight integrity checks verified. Technical readiness established."
+
+        return {
+            "report_title": "Stage 6M Physical Cohort 1 Preflight Readiness Audit",
+            "overall_status": overall_status,
+            "summary_description": summary_desc,
+            "status_reasons": all_errors,
+            "timestamp_utc": t0.isoformat(),
+            "git_commit": git_rev,
+            "governing_standard": "ADR-005",
+            "checks": {
+                "cohort1_eval_dataset_integrity": dataset_res,
+                "cohort1_audio_materialization": audio_res,
+                "cohort1_sentinel_panel_and_isolation": sent_res,
+                "cohort1_execution_configuration_freeze": cfg_res,
+            },
+        }
+

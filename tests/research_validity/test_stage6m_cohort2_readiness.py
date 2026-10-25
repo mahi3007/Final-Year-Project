@@ -46,8 +46,16 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from dsg_ctta.data.cohort2_preflight import (
+    Cohort1PreflightValidator,
     Cohort2PreflightValidator,
     VALID_MANIFEST_SHA256,
+    VALID_MANIFEST_CRLF_SHA256,
+    VALID_MANIFEST_LF_SHA256,
+    VALID_MANIFEST_LOCK_SHA256,
+    VALID_SENTINEL_CSV_SHA256,
+    VALID_SENTINEL_LOCK_SHA256,
+    VALID_STAGE5_EVAL_CSV_SHA256,
+    VALID_STAGE5_EVAL_LOCK_SHA256,
     EXPECTED_STRATA_NAMES,
     CORE_SENTINEL_WORDS,
     CORE_SENTINEL_CLIPS,
@@ -195,8 +203,30 @@ def _generate_synthetic_cohort2_df(manifest_data: dict) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def test_cohort2_eval_csv_agreement_passes_on_valid_matching_data(tmp_path):
-    """When CSV exactly matches manifest, agreement check must pass."""
+def _generate_matching_clip_lock(df: pd.DataFrame, csv_path: Path, clip_lock_path: Path) -> str:
+    """Generate a fully compliant, complete-schema clip lock JSON and return its SHA-256 digest."""
+    csv_bytes = csv_path.read_bytes()
+    csv_hash = hashlib.sha256(csv_bytes).hexdigest()
+    lock_dict = {
+        "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+        "governing_standard": "ADR-005 (Amended via AMENDMENT-001)",
+        "dataset_name": "stage6m_cohort2_audio",
+        "total_clips": len(df),
+        "total_speakers": int(df["speaker_id"].nunique()),
+        "total_strata": 6,
+        "clips_per_speaker": 15,
+        "csv_sha256": csv_hash,
+        "crlf_sha256": csv_hash,
+        "lf_sha256": csv_hash,
+        "recording_ids": list(df["recording_id"]),
+    }
+    with open(clip_lock_path, "w", encoding="utf-8") as f:
+        json.dump(lock_dict, f, indent=2)
+    return hashlib.sha256(clip_lock_path.read_bytes()).hexdigest()
+
+
+def test_cohort2_eval_csv_fails_when_clip_lock_missing(tmp_path):
+    """When evaluation CSV exists but mandatory clip lock is missing, validator must fail closed."""
     manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
     with open(manifest_path, "r", encoding="utf-8") as f:
         manifest_data = json.load(f)
@@ -205,13 +235,41 @@ def test_cohort2_eval_csv_agreement_passes_on_valid_matching_data(tmp_path):
     csv_path = tmp_path / "stage6m_cohort2_audio.csv"
     df.to_csv(csv_path, index=False)
 
-    validator = Cohort2PreflightValidator(project_root=PROJECT_ROOT, eval_csv_path=csv_path)
+    nonexistent_lock = tmp_path / "nonexistent_stage6m_cohort2_audio.lock.json"
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT, eval_csv_path=csv_path, clip_lock_path=nonexistent_lock
+    )
+    result = validator.validate_eval_csv(manifest_data)
+    assert result["status"] == "FAIL"
+    assert any("Mandatory clip lock file missing" in err for err in result["errors"])
+
+
+def test_cohort2_eval_csv_agreement_passes_on_valid_matching_data(tmp_path):
+    """When CSV and mandatory clip lock exactly match manifest and lock is approved, agreement check must pass."""
+    manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+
+    df = _generate_synthetic_cohort2_df(manifest_data)
+    csv_path = tmp_path / "stage6m_cohort2_audio.csv"
+    df.to_csv(csv_path, index=False)
+
+    lock_path = tmp_path / "stage6m_cohort2_audio.lock.json"
+    lock_hash = _generate_matching_clip_lock(df, csv_path, lock_path)
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_csv_path=csv_path,
+        clip_lock_path=lock_path,
+        approved_clip_lock_sha256={lock_hash},
+    )
     result = validator.validate_eval_csv(manifest_data)
     assert result["status"] == "PASS"
     assert result["details"]["total_clips"] == 7020
     assert result["details"]["unique_speakers"] == 468
     assert result["details"]["duplicate_clip_count"] == 0
     assert result["details"]["manifest_prefix_match_rate_pct"] == 100.0
+    assert result["details"]["clip_lock_verified"] is True
 
 
 def test_cohort2_eval_csv_fails_on_duplicate_clip_ids(tmp_path):
@@ -226,7 +284,15 @@ def test_cohort2_eval_csv_fails_on_duplicate_clip_ids(tmp_path):
     csv_path = tmp_path / "stage6m_cohort2_audio.csv"
     df.to_csv(csv_path, index=False)
 
-    validator = Cohort2PreflightValidator(project_root=PROJECT_ROOT, eval_csv_path=csv_path)
+    lock_path = tmp_path / "stage6m_cohort2_audio.lock.json"
+    lock_hash = _generate_matching_clip_lock(df, csv_path, lock_path)
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_csv_path=csv_path,
+        clip_lock_path=lock_path,
+        approved_clip_lock_sha256={lock_hash},
+    )
     result = validator.validate_eval_csv(manifest_data)
     assert result["status"] == "FAIL"
     assert any("duplicate clip IDs" in err for err in result["errors"])
@@ -245,7 +311,15 @@ def test_cohort2_eval_csv_fails_on_unmapped_speakers(tmp_path):
     csv_path = tmp_path / "stage6m_cohort2_audio.csv"
     df.to_csv(csv_path, index=False)
 
-    validator = Cohort2PreflightValidator(project_root=PROJECT_ROOT, eval_csv_path=csv_path)
+    lock_path = tmp_path / "stage6m_cohort2_audio.lock.json"
+    lock_hash = _generate_matching_clip_lock(df, csv_path, lock_path)
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_csv_path=csv_path,
+        clip_lock_path=lock_path,
+        approved_clip_lock_sha256={lock_hash},
+    )
     result = validator.validate_eval_csv(manifest_data)
     assert result["status"] == "FAIL"
     assert any("do not match any candidate manifest active prefix" in err for err in result["errors"])
@@ -348,10 +422,12 @@ def test_cohort2_full_preflight_reaches_ready_state_on_mock_materialized_dataset
     with open(manifest_path, "r", encoding="utf-8") as f:
         manifest_data = json.load(f)
 
-    # 1. Generate matching CSV
+    # 1. Generate matching CSV and mandatory clip lock
     df = _generate_synthetic_cohort2_df(manifest_data)
     csv_path = tmp_path / "stage6m_cohort2_audio.csv"
     df.to_csv(csv_path, index=False)
+    clip_lock_path = tmp_path / "stage6m_cohort2_audio.lock.json"
+    clip_lock_hash = _generate_matching_clip_lock(df, csv_path, clip_lock_path)
 
     # 2. Generate matching dummy 16 kHz audio files
     audio_dir = tmp_path / "cohort2_audio"
@@ -371,11 +447,13 @@ def test_cohort2_full_preflight_reaches_ready_state_on_mock_materialized_dataset
         project_root=PROJECT_ROOT,
         manifest_path=manifest_path,
         lock_path=PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.lock.json",
+        clip_lock_path=clip_lock_path,
         eval_csv_path=csv_path,
         audio_dir=audio_dir,
         sentinel_csv_path=PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv",
         sentinel_lock_path=PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.lock.json",
         sentinel_audio_dir=PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "sentinel_audio",
+        approved_clip_lock_sha256={clip_lock_hash},
     )
 
     report = validator.run_preflight(check_audio_samples=5)
@@ -528,14 +606,22 @@ def test_cohort2_eval_csv_fails_on_stratum_swapping(tmp_path):
     csv_path = tmp_path / "swapped_stage6m_cohort2_audio.csv"
     df.to_csv(csv_path, index=False)
 
-    validator = Cohort2PreflightValidator(project_root=PROJECT_ROOT, eval_csv_path=csv_path)
+    clip_lock_path = tmp_path / "swapped_stage6m_cohort2_audio.lock.json"
+    clip_lock_hash = _generate_matching_clip_lock(df, csv_path, clip_lock_path)
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_csv_path=csv_path,
+        clip_lock_path=clip_lock_path,
+        approved_clip_lock_sha256={clip_lock_hash},
+    )
     result = validator.validate_eval_csv(manifest_data)
     assert result["status"] == "FAIL"
     assert any("Speaker stratum preservation violation" in err for err in result["errors"])
 
 
-def test_cohort2_eval_csv_clip_lock_exact_set_equality(tmp_path):
-    """Clip lock file must enforce exact clip-set equality with evaluation CSV."""
+def test_cohort2_eval_csv_clip_lock_comprehensive_validation(tmp_path):
+    """Clip lock file must enforce approved hash anchor, complete schema, and exact clip-set equality."""
     manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
     with open(manifest_path, "r", encoding="utf-8") as f:
         manifest_data = json.load(f)
@@ -544,27 +630,85 @@ def test_cohort2_eval_csv_clip_lock_exact_set_equality(tmp_path):
     csv_path = tmp_path / "stage6m_cohort2_audio.csv"
     df.to_csv(csv_path, index=False)
 
-    # 1. Matching clip lock -> PASS
+    # 1. Matching clip lock with complete schema and approved hash -> PASS
     clip_lock_path = tmp_path / "stage6m_cohort2_audio.lock.json"
-    all_rec_ids = list(df["recording_id"])
-    with open(clip_lock_path, "w", encoding="utf-8") as f:
-        json.dump({"recording_ids": all_rec_ids}, f)
+    lock_hash = _generate_matching_clip_lock(df, csv_path, clip_lock_path)
 
     validator = Cohort2PreflightValidator(
-        project_root=PROJECT_ROOT, eval_csv_path=csv_path, clip_lock_path=clip_lock_path
+        project_root=PROJECT_ROOT,
+        eval_csv_path=csv_path,
+        clip_lock_path=clip_lock_path,
+        approved_clip_lock_sha256={lock_hash},
     )
     res_pass = validator.validate_eval_csv(manifest_data)
     assert res_pass["status"] == "PASS"
     assert res_pass["details"]["clip_lock_verified"] is True
 
-    # 2. Mismatched clip lock (omit one clip ID, add one bogus ID) -> FAIL
-    all_rec_ids_tampered = all_rec_ids[:-1] + ["bogus_extra_clip_99999"]
-    with open(clip_lock_path, "w", encoding="utf-8") as f:
-        json.dump({"recording_ids": all_rec_ids_tampered}, f)
+    # 2. Unapproved clip lock hash -> FAIL
+    validator_unauth = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_csv_path=csv_path,
+        clip_lock_path=clip_lock_path,
+        approved_clip_lock_sha256={"unauthorized_hash_value" * 4},
+    )
+    res_unauth = validator_unauth.validate_eval_csv(manifest_data)
+    assert res_unauth["status"] == "FAIL"
+    assert any("not in approved allowlist" in err for err in res_unauth["errors"])
 
-    res_fail = validator.validate_eval_csv(manifest_data)
+    # 3. Incomplete schema (missing required total_clips key) -> FAIL
+    with open(clip_lock_path, "r", encoding="utf-8") as f:
+        lock_dict = json.load(f)
+    del lock_dict["total_clips"]
+    with open(clip_lock_path, "w", encoding="utf-8") as f:
+        json.dump(lock_dict, f, indent=2)
+    tampered_hash = hashlib.sha256(clip_lock_path.read_bytes()).hexdigest()
+
+    validator_incomp = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_csv_path=csv_path,
+        clip_lock_path=clip_lock_path,
+        approved_clip_lock_sha256={tampered_hash},
+    )
+    res_incomp = validator_incomp.validate_eval_csv(manifest_data)
+    assert res_incomp["status"] == "FAIL"
+    assert any("Clip lock schema incomplete" in err for err in res_incomp["errors"])
+
+    # 4. Mismatched clip lock recording IDs (omit one clip ID, add one bogus ID) -> FAIL
+    lock_dict["total_clips"] = 7020
+    all_rec_ids = list(df["recording_id"])
+    lock_dict["recording_ids"] = all_rec_ids[:-1] + ["bogus_extra_clip_99999"]
+    with open(clip_lock_path, "w", encoding="utf-8") as f:
+        json.dump(lock_dict, f, indent=2)
+    tampered_hash = hashlib.sha256(clip_lock_path.read_bytes()).hexdigest()
+
+    validator_mismatch = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_csv_path=csv_path,
+        clip_lock_path=clip_lock_path,
+        approved_clip_lock_sha256={tampered_hash},
+    )
+    res_fail = validator_mismatch.validate_eval_csv(manifest_data)
     assert res_fail["status"] == "FAIL"
     assert any("Clip-set exact equality failed" in err for err in res_fail["errors"])
+
+    # 5. Mismatched CSV digest -> FAIL
+    lock_dict["recording_ids"] = all_rec_ids
+    lock_dict["csv_sha256"] = "0" * 64
+    lock_dict["crlf_sha256"] = "0" * 64
+    lock_dict["lf_sha256"] = "0" * 64
+    with open(clip_lock_path, "w", encoding="utf-8") as f:
+        json.dump(lock_dict, f, indent=2)
+    tampered_hash = hashlib.sha256(clip_lock_path.read_bytes()).hexdigest()
+
+    validator_csv_mismatch = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_csv_path=csv_path,
+        clip_lock_path=clip_lock_path,
+        approved_clip_lock_sha256={tampered_hash},
+    )
+    res_csv_mismatch = validator_csv_mismatch.validate_eval_csv(manifest_data)
+    assert res_csv_mismatch["status"] == "FAIL"
+    assert any("not in clip lock declared digests" in err for err in res_csv_mismatch["errors"])
 
 
 # =============================================================================
@@ -638,4 +782,260 @@ def test_cohort2_markdown_report_avoids_contradictory_claims_under_hold(base_val
     # Negative assertions: must NOT make false success claims
     assert "7,020 physical 16 kHz audio files materialized and decodable" not in md_text
     assert "0 duplicate clip IDs; 7,020 clips (1,170/stratum); prefix mapping complete." not in md_text
+
+
+# =============================================================================
+# 10. Strict Lock-Digest Verification & Lock Anchoring Tests (Finding 3)
+# =============================================================================
+
+def test_cohort2_manifest_fails_on_mixed_digests_in_lock(tmp_path):
+    """
+    A manifest lock containing one correct canonical digest and one arbitrary/bogus digest
+    must fail closed. Every populated digest field must match its expected line-ending variant.
+    """
+    real_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    real_lock = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.lock.json"
+
+    with open(real_lock, "r", encoding="utf-8") as f:
+        lock_data = json.load(f)
+
+    # Case A: Valid CRLF, but arbitrary bogus LF
+    tampered_data_a = copy.deepcopy(lock_data)
+    tampered_data_a["sha256_lf"] = "deadbeef" * 8
+    lock_a = tmp_path / "lock_mixed_a.json"
+    with open(lock_a, "w", encoding="utf-8") as f:
+        json.dump(tampered_data_a, f)
+    hash_a = hashlib.sha256(lock_a.read_bytes()).hexdigest()
+
+    validator_a = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        manifest_path=real_manifest,
+        lock_path=lock_a,
+        approved_manifest_lock_sha256={hash_a},
+    )
+    res_a = validator_a.validate_manifest()
+    assert res_a["status"] == "FAIL"
+    assert any("unauthorized LF 'sha256_lf' digest" in err for err in res_a["errors"])
+
+    # Case B: Arbitrary bogus CRLF, but valid LF
+    tampered_data_b = copy.deepcopy(lock_data)
+    tampered_data_b["sha256"] = "cafebabe" * 8
+    lock_b = tmp_path / "lock_mixed_b.json"
+    with open(lock_b, "w", encoding="utf-8") as f:
+        json.dump(tampered_data_b, f)
+    hash_b = hashlib.sha256(lock_b.read_bytes()).hexdigest()
+
+    validator_b = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        manifest_path=real_manifest,
+        lock_path=lock_b,
+        approved_manifest_lock_sha256={hash_b},
+    )
+    res_b = validator_b.validate_manifest()
+    assert res_b["status"] == "FAIL"
+    assert any("unauthorized CRLF 'sha256' digest" in err for err in res_b["errors"])
+
+
+def test_cohort2_manifest_fails_on_tampered_manifest_lock_file(tmp_path):
+    """Manifest lock file on disk whose SHA-256 is not in approved allowlist must fail closed."""
+    real_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    real_lock = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.lock.json"
+
+    # Copy lock file and tamper with bytes
+    tampered_lock = tmp_path / "tampered_manifest.lock.json"
+    tampered_lock.write_bytes(real_lock.read_bytes() + b"\n/* tamper */")
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        manifest_path=real_manifest,
+        lock_path=tampered_lock,
+    )
+    result = validator.validate_manifest()
+    assert result["status"] == "FAIL"
+    assert any("not in canonical allowlist" in err for err in result["errors"])
+
+
+def test_cohort2_sentinel_fails_on_tampered_sentinel_lock_file(tmp_path):
+    """Sentinel lock file on disk whose SHA-256 is not in approved allowlist must fail closed."""
+    real_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    with open(real_manifest, "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+
+    real_sent_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
+    real_sent_lock = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.lock.json"
+
+    tampered_sent_lock = tmp_path / "tampered_sentinel.lock.json"
+    tampered_sent_lock.write_bytes(real_sent_lock.read_bytes() + b"\n/* tamper */")
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        sentinel_csv_path=real_sent_csv,
+        sentinel_lock_path=tampered_sent_lock,
+    )
+    result = validator.validate_sentinel_panel_and_isolation(manifest_data)
+    assert result["status"] == "FAIL"
+    assert any("not in approved lock allowlist" in err for err in result["errors"])
+
+
+def test_cohort2_sentinel_fails_on_mixed_digests_in_lock(tmp_path):
+    """Sentinel lock containing an unauthorized digest variant must fail closed."""
+    real_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
+    with open(real_manifest, "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+
+    real_sent_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
+    real_sent_lock = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.lock.json"
+
+    with open(real_sent_lock, "r", encoding="utf-8") as f:
+        lock_data = json.load(f)
+
+    # Invalidate LF digest while keeping CRLF digest valid
+    lock_data["lf_sha256"] = "12345678" * 8
+    tampered_lock = tmp_path / "sentinel_mixed.lock.json"
+    with open(tampered_lock, "w", encoding="utf-8") as f:
+        json.dump(lock_data, f)
+    tampered_hash = hashlib.sha256(tampered_lock.read_bytes()).hexdigest()
+
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        sentinel_csv_path=real_sent_csv,
+        sentinel_lock_path=tampered_lock,
+        approved_sentinel_lock_sha256={tampered_hash},
+    )
+    result = validator.validate_sentinel_panel_and_isolation(manifest_data)
+    assert result["status"] == "FAIL"
+    assert any("unauthorized 'lf_sha256'" in err for err in result["errors"])
+
+
+# =============================================================================
+# 11. Cohort 1 Preflight Verification & Integrity Invariants (Finding 2)
+# =============================================================================
+
+def test_cohort1_preflight_passes_on_committed_repo():
+    """Cohort 1 preflight validator must pass cleanly on committed repository state."""
+    validator = Cohort1PreflightValidator(project_root=PROJECT_ROOT)
+    report = validator.run_preflight(check_audio_samples=5)
+    assert report["overall_status"] == "READY FOR AUTHORIZED EXECUTION (COHORT 1)"
+    assert report["status_reasons"] == []
+    assert report["checks"]["cohort1_eval_dataset_integrity"]["status"] == "PASS"
+    assert report["checks"]["cohort1_audio_materialization"]["status"] == "PASS"
+    assert report["checks"]["cohort1_sentinel_panel_and_isolation"]["status"] == "PASS"
+    assert report["checks"]["cohort1_execution_configuration_freeze"]["status"] == "PASS"
+
+
+def test_cohort1_preflight_fails_on_missing_or_tampered_eval_lock(tmp_path):
+    """Cohort 1 preflight validator must fail closed when evaluation lock is missing or tampered."""
+    # 1. Missing lock -> FAIL
+    validator_missing = Cohort1PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_lock_path=tmp_path / "nonexistent.lock.json",
+    )
+    res_missing = validator_missing.validate_eval_dataset()
+    assert res_missing["status"] == "FAIL"
+    assert any("evaluation lock missing" in err for err in res_missing["errors"])
+
+    # 2. Tampered lock -> FAIL
+    real_lock = PROJECT_ROOT / "datasets" / "splits" / "stage5_external_eval.lock.json"
+    tampered_lock = tmp_path / "tampered.lock.json"
+    tampered_lock.write_bytes(real_lock.read_bytes() + b"\n/* tamper */")
+
+    validator_tampered = Cohort1PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_lock_path=tampered_lock,
+    )
+    res_tampered = validator_tampered.validate_eval_dataset()
+    assert res_tampered["status"] == "FAIL"
+    assert any("unauthorized SHA-256" in err for err in res_tampered["errors"])
+
+
+def test_cohort1_preflight_fails_on_missing_audio_or_zero_bytes(tmp_path):
+    """Cohort 1 preflight validator must fail closed on missing audio directory or zero-byte clips."""
+    # 1. Missing audio directory -> FAIL
+    validator_missing = Cohort1PreflightValidator(
+        project_root=PROJECT_ROOT,
+        audio_dir=tmp_path / "nonexistent_audio",
+    )
+    res_missing = validator_missing.validate_audio_materialization()
+    assert res_missing["status"] == "FAIL"
+    assert any("audio directory missing" in err for err in res_missing["errors"])
+
+    # 2. Zero-byte audio files -> FAIL
+    mock_audio = tmp_path / "mock_audio"
+    mock_audio.mkdir()
+    for i in range(900):
+        (mock_audio / f"clip_{i:04d}.mp3").write_bytes(b"x")
+    (mock_audio / "clip_0899.mp3").write_bytes(b"")  # 0 bytes
+
+    validator_zero = Cohort1PreflightValidator(
+        project_root=PROJECT_ROOT,
+        audio_dir=mock_audio,
+    )
+    res_zero = validator_zero.validate_audio_materialization(check_samples=1)
+    assert res_zero["status"] == "FAIL"
+    assert any("zero bytes" in err for err in res_zero["errors"])
+
+
+def test_cohort1_preflight_fails_on_corrupted_counts_or_duplicate_clips(tmp_path):
+    """Cohort 1 preflight validator must fail closed if row count is not 900 or duplicates exist."""
+    real_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_external_eval.csv"
+    df = pd.read_csv(real_csv)
+
+    # Inject duplicate clip ID
+    df.loc[1, "recording_id"] = df.loc[0, "recording_id"]
+    corrupted_csv = tmp_path / "corrupted_eval.csv"
+    df.to_csv(corrupted_csv, index=False)
+    corrupted_hash = hashlib.sha256(corrupted_csv.read_bytes()).hexdigest()
+
+    validator = Cohort1PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_csv_path=corrupted_csv,
+        approved_eval_csv_sha256={corrupted_hash},
+    )
+    result = validator.validate_eval_dataset()
+    assert result["status"] == "FAIL"
+    assert any("duplicate recording IDs" in err for err in result["errors"])
+
+
+def test_cohort1_preflight_fails_on_speaker_leakage_with_sentinel(tmp_path):
+    """Cohort 1 preflight validator must fail closed if evaluation speakers overlap with sentinel panel."""
+    real_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_external_eval.csv"
+    real_sent_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
+
+    eval_df = pd.read_csv(real_csv)
+    sent_df = pd.read_csv(real_sent_csv)
+
+    # Deliberately inject a sentinel speaker ID into eval_df
+    leaked_spk = sent_df["speaker_id"].iloc[0]
+    eval_df.loc[eval_df["speaker_id"] == eval_df["speaker_id"].iloc[0], "speaker_id"] = leaked_spk
+
+    validator = Cohort1PreflightValidator(project_root=PROJECT_ROOT)
+    result = validator.validate_sentinel_panel_and_isolation(eval_df=eval_df)
+    assert result["status"] == "FAIL"
+    assert any("DATA LEAKAGE DETECTED" in err for err in result["errors"])
+
+
+def test_cohort1_benchmark_runner_cli_fails_closed_when_prerequisite_corrupted(tmp_path):
+    """Runner CLI with --cohort cohort1 --preflight-only must exit with code 1 when sentinel panel is missing."""
+    bogus_script = tmp_path / "runner_test.py"
+    # Create a small wrapper script simulating Kaggle run with a nonexistent sentinel CSV
+    script_text = f"""
+import sys
+from pathlib import Path
+sys.path.insert(0, r"{PROJECT_ROOT / 'src'}")
+from dsg_ctta.data.cohort2_preflight import Cohort1PreflightValidator
+
+validator = Cohort1PreflightValidator(
+    project_root=Path(r"{PROJECT_ROOT}"),
+    sentinel_csv_path=Path(r"{tmp_path / 'nonexistent_sentinel.csv'}"),
+)
+rep = validator.run_preflight()
+print(f"PREFLIGHT AUDIT VERDICT: {{rep['overall_status']}}")
+sys.exit(0 if rep["overall_status"] == "READY FOR AUTHORIZED EXECUTION (COHORT 1)" else 1)
+"""
+    bogus_script.write_text(script_text, encoding="utf-8")
+
+    proc = subprocess.run([sys.executable, str(bogus_script)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    assert proc.returncode == 1
+    assert "READY FOR AUTHORIZED EXECUTION" not in proc.stdout
+
 

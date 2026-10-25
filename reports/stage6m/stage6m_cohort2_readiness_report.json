@@ -4,10 +4,11 @@
   "summary_description": "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Confirmatory data prerequisites not yet materialized on disk.",
   "status_reasons": [
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Evaluation CSV not materialized: datasets/splits/stage6m_cohort2_audio.csv",
+    "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Authoritative clip lock file not materialized: datasets/splits/stage6m_cohort2_audio.lock.json",
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio"
   ],
-  "timestamp_utc": "2026-10-25T08:03:59.014463+00:00",
-  "git_commit": "62a3611b1503ddd248e6f39fc2ccc2043e95e417",
+  "timestamp_utc": "2026-10-25T08:50:41.839681+00:00",
+  "git_commit": "e35d67ea0aecb7f3330679b4b68c255f3829f87e",
   "governing_standard": "ADR-005",
   "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
   "checks": {
@@ -69,7 +70,8 @@
       "check_name": "evaluation_csv_manifest_agreement",
       "status": "HOLD",
       "errors": [
-        "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Evaluation CSV not materialized: datasets/splits/stage6m_cohort2_audio.csv"
+        "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Evaluation CSV not materialized: datasets/splits/stage6m_cohort2_audio.csv",
+        "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Authoritative clip lock file not materialized: datasets/splits/stage6m_cohort2_audio.lock.json"
       ],
       "warnings": [],
       "details": {}

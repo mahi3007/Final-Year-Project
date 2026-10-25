@@ -3,8 +3,8 @@
 > [!WARNING]
 > **Overall Preflight Status:** `HOLD`  
 > **Summary:** MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Confirmatory data prerequisites not yet materialized on disk.  
-> **Timestamp:** 2026-10-25T08:03:59.014463+00:00  
-> **Git Commit:** `62a3611b15`  
+> **Timestamp:** 2026-10-25T08:50:41.839681+00:00  
+> **Git Commit:** `e35d67ea0a`  
 > **Protocol:** `v1.3.4-stage6m-self-authorization-amendment` (ADR-005)
 
 ---
@@ -32,6 +32,7 @@ Passing technical preflight checks establishes scientific feasibility; it does N
 The following items currently hold confirmatory execution:
 
 - **MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Evaluation CSV not materialized: datasets/splits/stage6m_cohort2_audio.csv**
+- **MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Authoritative clip lock file not materialized: datasets/splits/stage6m_cohort2_audio.lock.json**
 - **MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio**
 
 ### Required Steps to Lift HOLD:
