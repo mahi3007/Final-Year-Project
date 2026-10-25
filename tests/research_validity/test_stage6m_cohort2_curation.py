@@ -38,6 +38,7 @@ from scripts.curate_stage6m_cohort2_csv import (
     compute_sha256,
     run_curation_audit,
 )
+from scripts.generate_stage6m_locked_manifest import compute_strict_inventory_counts
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -577,4 +578,93 @@ def test_curation_cross_speaker_path_collision_is_permutation_invariant(tmp_path
     assert df_fwd["recording_id"].tolist() == df_rev["recording_id"].tolist()
     assert df_fwd["speaker_id"].tolist() == df_rev["speaker_id"].tolist()
     assert audit_fwd["checks"]["clip_eligibility"] == audit_rev["checks"]["clip_eligibility"]
+
+
+def test_generator_cross_speaker_path_collision_is_permutation_invariant(tmp_path):
+    """
+    Generator-level regression test: verifies that compute_strict_inventory_counts()
+    identifies cross-speaker path collisions, subtracts them from eligible clip sets,
+    and produces 100% identical C_strict, C_b0, and Q_exclusions whether TSV rows
+    are presented in forward or reversed order.
+    """
+    pref1 = "000000000000000000000001"
+    pref2 = "000000000000000000000002"
+    cid1 = pref1 + "a" * 40
+    cid2 = pref2 + "b" * 40
+
+    df_inv = pd.DataFrame([
+        {"speaker_id_prefix": f"{pref1}…", "group_code": "Irish English"},
+        {"speaker_id_prefix": f"{pref2}…", "group_code": "Irish English"},
+    ])
+
+    rows = []
+    # 14 distinct qualified clips for speaker 1
+    for i in range(1, 15):
+        rows.append({
+            "client_id": cid1,
+            "path": f"s1_clip_{i:03d}.mp3",
+            "sentence": f"This is valid sentence {i} for speaker one.",
+            "accents": "Irish English",
+            "locale": "en",
+            "up_votes": 2,
+            "down_votes": 0,
+        })
+    # 14 distinct qualified clips for speaker 2
+    for i in range(1, 15):
+        rows.append({
+            "client_id": cid2,
+            "path": f"s2_clip_{i:03d}.mp3",
+            "sentence": f"This is valid sentence {i} for speaker two.",
+            "accents": "Irish English",
+            "locale": "en",
+            "up_votes": 2,
+            "down_votes": 0,
+        })
+    # Injected collision: clip 15 has identical path declared by BOTH speakers
+    shared_path = "shared_collision_path_between_spk1_and_spk2.mp3"
+    rows.append({
+        "client_id": cid1,
+        "path": shared_path,
+        "sentence": "This is shared collision clip for speaker one.",
+        "accents": "Irish English",
+        "locale": "en",
+        "up_votes": 2,
+        "down_votes": 0,
+    })
+    rows.append({
+        "client_id": cid2,
+        "path": shared_path,
+        "sentence": "This is shared collision clip for speaker two.",
+        "accents": "Irish English",
+        "locale": "en",
+        "up_votes": 2,
+        "down_votes": 0,
+    })
+
+    df_tsv = pd.DataFrame(rows)
+
+    tsv_fwd = tmp_path / "generator_collision_forward.tsv"
+    df_tsv.to_csv(tsv_fwd, sep="\t", index=False)
+
+    tsv_rev = tmp_path / "generator_collision_reversed.tsv"
+    df_tsv.iloc[::-1].to_csv(tsv_rev, sep="\t", index=False)
+
+    strict_fwd, b0_fwd, q_fwd = compute_strict_inventory_counts(df_inv, tsv_fwd)
+    strict_rev, b0_rev, q_rev = compute_strict_inventory_counts(df_inv, tsv_rev)
+
+    # 1. Exact permutation invariance between forward and reversed order
+    assert strict_fwd == strict_rev
+    assert b0_fwd == b0_rev
+    assert q_fwd == q_rev
+
+    # 2. Collision exclusion check:
+    # Each speaker had 15 raw qualified rows, but shared_path was discarded from both.
+    # Therefore, both speakers must have exactly 14 valid strict clips (NOT 15).
+    assert strict_fwd[pref1] == 14
+    assert strict_fwd[pref2] == 14
+    assert b0_fwd[pref1] == 14
+    assert b0_fwd[pref2] == 14
+
+    # 3. Because both counts are 14 (< 15 quota), both speakers must be in Q exclusions
+    assert q_fwd == {pref1, pref2}
 

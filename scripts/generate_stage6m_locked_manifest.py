@@ -136,10 +136,9 @@ def compute_strict_inventory_counts(
     prefixes_all = set(prefix_to_stratum.keys())
     logger.info(f"Scanning {val_tsv} ({val_tsv.stat().st_size / (1024**2):.1f} MB) for {len(prefixes_all)} inventory speakers...")
 
-    counts_strict: Dict[str, int] = defaultdict(int)
-    counts_b0: Dict[str, int] = defaultdict(int)
+    speaker_b0_paths: Dict[str, Set[str]] = defaultdict(set)
+    speaker_strict_paths: Dict[str, Set[str]] = defaultdict(set)
     speaker_declared_accents: Dict[str, Set[str]] = defaultdict(set)
-    seen_speaker_paths: Set[Tuple[str, str]] = set()
     path_claimants: Dict[str, Set[str]] = defaultdict(set)
 
     chunk_size = 100000
@@ -178,26 +177,28 @@ def compute_strict_inventory_counts(
             if len(sent.split()) < 2:
                 continue
 
-            # Issue C: Intra-speaker deduplication (permutation-invariant)
-            spk_clip = (pref, p)
-            if spk_clip in seen_speaker_paths:
-                continue
-            seen_speaker_paths.add(spk_clip)
-
-            counts_b0[pref] += 1
+            # Track qualified baseline B0 path for candidate
+            speaker_b0_paths[pref].add(p)
 
             loc = str(row["locale"]).strip() if pd.notna(row["locale"]) else ""
             up = row["up_votes"]
             down = row["down_votes"]
 
             if loc == "en" and up >= 2 and down < 2:
-                counts_strict[pref] += 1
+                speaker_strict_paths[pref].add(p)
 
     # Issue C: Cross-speaker path collisions: reject any path declared by > 1 candidate speaker
     ambiguous_paths = {p for p, claimants in path_claimants.items() if len(claimants) > 1}
     if ambiguous_paths:
         logger.warning(f"Found {len(ambiguous_paths)} cross-speaker collision paths! Discarding from eligibility.")
-        # If any ambiguous path was counted, it is removed here to maintain exact permutation invariance
+
+    counts_strict: Dict[str, int] = {}
+    counts_b0: Dict[str, int] = {}
+    for p_id in prefixes_all:
+        valid_b0 = speaker_b0_paths[p_id] - ambiguous_paths
+        valid_strict = speaker_strict_paths[p_id] - ambiguous_paths
+        counts_b0[p_id] = len(valid_b0)
+        counts_strict[p_id] = len(valid_strict)
 
     # Issue A: Disqualify candidates whose recognized accent declarations conflict across records
     heterogeneous_speakers = {spk for spk, accs in speaker_declared_accents.items() if len(accs) > 1}

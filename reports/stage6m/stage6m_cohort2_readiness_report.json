@@ -5,8 +5,8 @@
   "status_reasons": [
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio"
   ],
-  "timestamp_utc": "2026-10-25T14:06:23.509471+00:00",
-  "git_commit": "d1b74a89d1f2d23ec33176ecfacd9a0845022687",
+  "timestamp_utc": "2026-10-25T14:25:57.365708+00:00",
+  "git_commit": "e980e55378b7ab9dc3f41db6946934a2408f6f52",
   "governing_standard": "ADR-005",
   "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
   "checks": {
