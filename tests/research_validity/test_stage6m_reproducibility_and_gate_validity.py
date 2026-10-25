@@ -880,107 +880,120 @@ def _make_strata_results(max_wer1, max_wer2, min_wer1, min_wer2,
 
 
 @pytest.mark.parametrize(
-    "scenario,max_wer1,max_wer2,min_wer1,min_wer2,disp1,disp2,expected_verb,fragment",
+    "scenario,max_wer1,max_wer2,min_wer1,min_wer2,other_wer1,other_wer2,expected_verb,fragment",
     [
         # =========================================================================
-        # 1. Disparity NARROWING (disp2 - disp1 < -0.001 -> 'reduced')
+        # 1. Disparity NARROWING (D2 < D1 -> 'reduced')
         # =========================================================================
         # 1a. Worst improved (-1.0 pp), best regressed (+1.0 pp) -> both drive narrowing
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 39.0 - 13.0 = 26.0 pp (-2.0 pp)
         ("narrowing_worst_improved_best_regressed",
-         40.0, 39.0, 12.0, 13.0, 28.0, 26.0, "reduced",
+         40.0, 39.0, 12.0, 13.0, 25.0, 25.0, "reduced",
          "combines an observed improvement in the worst-performing stratum with a leveling-down effect"),
 
         # 1b. Worst improved (-2.0 pp), best unchanged (0.0 pp)
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 38.0 - 12.0 = 26.0 pp (-2.0 pp)
         ("narrowing_worst_improved_best_unchanged",
-         40.0, 38.0, 12.0, 12.0, 28.0, 26.0, "reduced",
+         40.0, 38.0, 12.0, 12.0, 25.0, 25.0, "reduced",
          "driven primarily by an improvement in the worst-performing stratum without degrading"),
 
         # 1c. Both improved, worst improved more (-4.0 pp vs -1.0 pp)
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 36.0 - 11.0 = 25.0 pp (-3.0 pp)
         ("narrowing_both_improved_worst_more",
-         40.0, 36.0, 12.0, 11.0, 28.0, 25.0, "reduced",
+         40.0, 36.0, 12.0, 11.0, 25.0, 25.0, "reduced",
          "driven primarily by an improvement in the worst-performing stratum without degrading"),
 
         # 1d. Worst unchanged (0.0 pp), best regressed (+2.0 pp) -> leveling-down
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 40.0 - 14.0 = 26.0 pp (-2.0 pp)
         ("narrowing_worst_unchanged_best_regressed",
-         40.0, 40.0, 12.0, 14.0, 28.0, 26.0, "reduced",
+         40.0, 40.0, 12.0, 14.0, 25.0, 25.0, "reduced",
          "driven entirely by a leveling-down effect"),
 
         # 1e. Both regressed, best regressed more (+1.0 pp vs +3.0 pp) -> leveling-down
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 41.0 - 15.0 = 26.0 pp (-2.0 pp)
         ("narrowing_both_regressed_best_more",
-         40.0, 41.0, 12.0, 15.0, 28.0, 26.0, "reduced",
+         40.0, 41.0, 12.0, 15.0, 25.0, 25.0, "reduced",
          "driven entirely by a leveling-down effect"),
 
-        # 1f. Intermediate strata narrowing (extrema unchanged, but disp narrows)
-        ("narrowing_intermediate_strata_shifting",
-         40.0, 40.0, 12.0, 12.0, 28.0, 26.0, "reduced",
-         "reflects shifting stratum error profiles under ungated adaptation"),
-
         # =========================================================================
-        # 2. Disparity WIDENING (disp2 - disp1 > +0.001 -> 'increased')
+        # 2. Disparity WIDENING (D2 > D1 -> 'increased')
         # =========================================================================
         # 2a. Worst regressed (+2.0 pp), best improved (-2.0 pp) -> both drive widening
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 42.0 - 10.0 = 32.0 pp (+4.0 pp)
         ("widening_worst_regressed_best_improved",
-         40.0, 42.0, 12.0, 10.0, 28.0, 32.0, "increased",
+         40.0, 42.0, 12.0, 10.0, 25.0, 25.0, "increased",
          "combines performance regression in the worst-performing stratum with improvements in the best-performing stratum"),
 
         # 2b. Worst regressed (+3.0 pp), best unchanged (0.0 pp)
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 43.0 - 12.0 = 31.0 pp (+3.0 pp)
         ("widening_worst_regressed_best_unchanged",
-         40.0, 43.0, 12.0, 12.0, 28.0, 31.0, "increased",
+         40.0, 43.0, 12.0, 12.0, 25.0, 25.0, "increased",
          "driven primarily by performance regression in the worst-performing stratum"),
 
         # 2c. Both regressed, worst regressed more (+4.0 pp vs +1.0 pp)
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 44.0 - 13.0 = 31.0 pp (+3.0 pp)
         ("widening_both_regressed_worst_more",
-         40.0, 44.0, 12.0, 13.0, 28.0, 31.0, "increased",
+         40.0, 44.0, 12.0, 13.0, 25.0, 25.0, "increased",
          "driven primarily by performance regression in the worst-performing stratum"),
 
         # 2d. Worst unchanged (0.0 pp), best improved (-2.0 pp)
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 40.0 - 10.0 = 30.0 pp (+2.0 pp)
         ("widening_worst_unchanged_best_improved",
-         40.0, 40.0, 12.0, 10.0, 28.0, 30.0, "increased",
+         40.0, 40.0, 12.0, 10.0, 25.0, 25.0, "increased",
          "driven by improvements concentrated in the best-performing stratum, widening the gap"),
 
         # 2e. Both improved, best improved more (-1.0 pp vs -3.0 pp)
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 39.0 - 9.0 = 30.0 pp (+2.0 pp)
         ("widening_both_improved_best_more",
-         40.0, 39.0, 12.0, 9.0, 28.0, 30.0, "increased",
+         40.0, 39.0, 12.0, 9.0, 25.0, 25.0, "increased",
          "driven by improvements concentrated in the best-performing stratum, widening the gap"),
 
-        # 2f. Intermediate strata widening (extrema unchanged, but disp widens)
-        ("widening_intermediate_strata",
-         40.0, 40.0, 12.0, 12.0, 28.0, 30.0, "increased",
+        # 2f. Intermediate stratum regresses beyond original extremes (Mid: 25.0 -> 46.0 pp)
+        #     Arm 1 range: max(40,12,25) - min(40,12,25) = 28.0 pp
+        #     Arm 2 range: max(40,12,46) - min(40,12,46) = 34.0 pp (+6.0 pp)
+        ("widening_intermediate_stratum_exceeds_extremes",
+         40.0, 40.0, 12.0, 12.0, 25.0, 46.0, "increased",
          "widening performance gaps across strata under ungated adaptation"),
 
         # =========================================================================
-        # 3. Disparity MAINTAINED (|disp2 - disp1| <= 0.001 -> 'maintained')
+        # 3. Disparity MAINTAINED (|D2 - D1| <= 0.001 -> 'maintained')
         # =========================================================================
         # 3a. Both extrema unchanged (0.0 pp, 0.0 pp)
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 40.0 - 12.0 = 28.0 pp (0.0 pp)
         ("maintained_both_unchanged",
-         40.0, 40.0, 12.0, 12.0, 28.0, 28.0, "maintained",
+         40.0, 40.0, 12.0, 12.0, 25.0, 25.0, "maintained",
          "remained identical under ungated adaptation"),
 
         # 3b. Both improved equally (-2.0 pp, -2.0 pp)
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 38.0 - 10.0 = 28.0 pp (0.0 pp)
         ("maintained_both_improved_equally",
-         40.0, 38.0, 12.0, 10.0, 28.0, 28.0, "maintained",
+         40.0, 38.0, 12.0, 10.0, 25.0, 25.0, "maintained",
          "remained identical under ungated adaptation"),
 
         # 3c. Both regressed equally (+2.0 pp, +2.0 pp)
+        #     Arm 1 range: 40.0 - 12.0 = 28.0 pp; Arm 2 range: 42.0 - 14.0 = 28.0 pp (0.0 pp)
         ("maintained_both_regressed_equally",
-         40.0, 42.0, 12.0, 14.0, 28.0, 28.0, "maintained",
+         40.0, 42.0, 12.0, 14.0, 25.0, 25.0, "maintained",
          "remained identical under ungated adaptation"),
     ],
 )
 def test_production_synthesize_disparity_narrative_all_mathematical_cases(
-    scenario, max_wer1, max_wer2, min_wer1, min_wer2, disp1, disp2, expected_verb, fragment
+    scenario, max_wer1, max_wer2, min_wer1, min_wer2, other_wer1, other_wer2, expected_verb, fragment
 ):
     """
     Directly invokes the production helper synthesize_disparity_narrative across
-    all mathematically possible cases of (sign(max_change), sign(min_change), sign(disp_change)).
-    Verifies that the narrative verb and qualitative synthesis match the mathematical outcome.
+    all mathematically realizable cases using internally consistent stratum data.
+    The helper derives disp_arm1 and disp_arm2 directly from the complete set of stratum WERs,
+    ensuring 100% agreement between stratum endpoints and reported range disparities.
     """
-    strata = _make_strata_results(max_wer1, max_wer2, min_wer1, min_wer2)
+    strata = _make_strata_results(
+        max_wer1=max_wer1, max_wer2=max_wer2,
+        min_wer1=min_wer1, min_wer2=min_wer2,
+        other_wer1=other_wer1, other_wer2=other_wer2,
+    )
+    # disp_arm1 and disp_arm2 are left None to verify the helper derives them from strata
     narrative = synthesize_disparity_narrative(
         strata_results=strata,
-        disp_arm1=disp1,
-        disp_arm2=disp2,
-        disp_arm3=disp1,
         n_accept=0,
         acc_rate=0.0,
     )
@@ -990,6 +1003,37 @@ def test_production_synthesize_disparity_narrative_all_mathematical_cases(
     assert fragment in narrative, (
         f"[{scenario}] Missing expected fragment '{fragment}'.\nGot:\n{narrative}"
     )
+
+
+def test_production_synthesize_disparity_narrative_inconsistent_input_validation():
+    """
+    Validates that explicitly providing disparity values that contradict
+    the stratum-derived range by > 0.10 pp raises a clear ValueError.
+    """
+    strata = _make_strata_results(40.0, 40.0, 12.0, 12.0)  # range = 28.0 pp
+    with pytest.raises(ValueError, match="Supplied disp_arm1 .* is inconsistent with stratum-derived range"):
+        synthesize_disparity_narrative(strata_results=strata, disp_arm1=35.0)
+
+    with pytest.raises(ValueError, match="Supplied disp_arm2 .* is inconsistent with stratum-derived range"):
+        synthesize_disparity_narrative(strata_results=strata, disp_arm2=20.0)
+
+
+def test_production_synthesize_disparity_narrative_defensive_narrowing_fallback():
+    """
+    Validates the defensive code-hardening path for narrowing with unimproved extrema.
+    Under the formal definition D = max - min, range narrowing cannot occur without either
+    the worst improving or the best regressing. When inconsistent inputs bypass validation
+    (validate_consistency=False), the helper safely emits the defensive shifting-profiles sentence.
+    """
+    strata = _make_strata_results(40.0, 40.0, 12.0, 12.0)
+    narrative = synthesize_disparity_narrative(
+        strata_results=strata,
+        disp_arm1=28.0,
+        disp_arm2=26.0,
+        validate_consistency=False,
+    )
+    assert "reduced" in narrative
+    assert "reflects shifting stratum error profiles under ungated adaptation" in narrative
 
 
 @pytest.mark.parametrize("n_accept,acc_rate,expected_fragment", [

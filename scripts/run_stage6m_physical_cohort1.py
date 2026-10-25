@@ -264,25 +264,51 @@ def _paired_t_arm3_vs_arm1_interpretation(
 
 def synthesize_disparity_narrative(
     strata_results: List[Dict[str, Any]],
-    disp_arm1: float,
-    disp_arm2: float,
+    disp_arm1: Optional[float] = None,
+    disp_arm2: Optional[float] = None,
     disp_arm3: float = 0.0,
     n_accept: int = 0,
     acc_rate: float = 0.0,
+    validate_consistency: bool = True,
 ) -> str:
     """
     Synthesize the natural-language cross-accent disparity narrative comparing
     ungated SUTA (Arm 2) to static baseline (Arm 1), and contextualizing gated
     SUTA (Arm 3) decisions.
 
-    This side-effect-free helper is used by the physical benchmark report generator
-    and directly tested across all combinations of stratum changes and disparity signs.
+    Disparity is defined as max_s(WER_s) - min_s(WER_s). When strata_results are
+    provided, disp_arm1 and disp_arm2 are derived directly from the stratum WERs,
+    or validated against them if explicitly supplied.
     """
     if not strata_results:
+        disp1_str = f"{disp_arm1:.2f} pp" if disp_arm1 is not None else "0.00 pp"
+        disp2_str = f"{disp_arm2:.2f} pp" if disp_arm2 is not None else "0.00 pp"
         return (
-            f"Ungated SUTA reduced cross-accent disparity from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
+            f"Ungated SUTA reduced cross-accent disparity from {disp1_str} to {disp2_str}. "
             f"Gated SUTA maintained disparity at {disp_arm3:.2f} pp."
         )
+
+    # Derive range directly from complete set of stratum WERs
+    derived_disp_arm1 = max(r["wer_arm1_static"] for r in strata_results) - min(r["wer_arm1_static"] for r in strata_results)
+    derived_disp_arm2 = max(r["wer_arm2_ungated"] for r in strata_results) - min(r["wer_arm2_ungated"] for r in strata_results)
+
+    # Validate consistency if explicitly supplied (allowing 0.10 pp tolerance for corpus-level rounding)
+    if validate_consistency:
+        if disp_arm1 is not None and abs(disp_arm1 - derived_disp_arm1) > 0.10:
+            raise ValueError(
+                f"Supplied disp_arm1 ({disp_arm1:.2f} pp) is inconsistent with stratum-derived range "
+                f"({derived_disp_arm1:.2f} pp; max={max(r['wer_arm1_static'] for r in strata_results):.2f}, "
+                f"min={min(r['wer_arm1_static'] for r in strata_results):.2f})."
+            )
+        if disp_arm2 is not None and abs(disp_arm2 - derived_disp_arm2) > 0.10:
+            raise ValueError(
+                f"Supplied disp_arm2 ({disp_arm2:.2f} pp) is inconsistent with stratum-derived range "
+                f"({derived_disp_arm2:.2f} pp; max={max(r['wer_arm2_ungated'] for r in strata_results):.2f}, "
+                f"min={min(r['wer_arm2_ungated'] for r in strata_results):.2f})."
+            )
+
+    effective_disp_arm1 = disp_arm1 if disp_arm1 is not None else derived_disp_arm1
+    effective_disp_arm2 = disp_arm2 if disp_arm2 is not None else derived_disp_arm2
 
     min_stratum = min(strata_results, key=lambda r: r["wer_arm1_static"])
     max_stratum = max(strata_results, key=lambda r: r["wer_arm1_static"])
@@ -294,7 +320,7 @@ def synthesize_disparity_narrative(
     max_desc = "an improvement" if max_change < 0 else ("a regression" if max_change > 0 else "no change")
     min_desc = "a regression" if min_change > 0 else ("an improvement" if min_change < 0 else "no change")
 
-    disp_change = disp_arm2 - disp_arm1
+    disp_change = effective_disp_arm2 - effective_disp_arm1
     if disp_change < -0.001:
         disp_verb = "reduced"
         if max_change < 0 and min_change > 0:
@@ -350,7 +376,7 @@ def synthesize_disparity_narrative(
     )
 
     return (
-        f"Ungated SUTA {disp_verb} the observed cross-accent WER range from {disp_arm1:.2f} pp to {disp_arm2:.2f} pp. "
+        f"Ungated SUTA {disp_verb} the observed cross-accent WER range from {effective_disp_arm1:.2f} pp to {effective_disp_arm2:.2f} pp. "
         f"This reflected both {max_desc} in {max_name} WER ({max_change:+.2f} pp) and "
         f"{min_desc} in {min_name} WER ({min_change:+.2f} pp). "
         f"{synthesis_sentence} "
