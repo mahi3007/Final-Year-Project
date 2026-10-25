@@ -229,11 +229,11 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
     logger.info(f"Scanning validated.tsv: {args.val_tsv} ({args.val_tsv.stat().st_size / (1024**2):.1f} MB)...")
     matched_speakers: Dict[str, str] = {}  # prefix -> full client_id
 
-    # Speaker clip accounting: tracking raw, baseline B0, and strict V
-    speaker_b0_clips: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
-    speaker_strict_clips: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    # Speaker clip accounting: tracking raw, baseline B0, and strict V with permutation-invariant path deduplication
+    speaker_candidate_b0_map: Dict[str, Dict[str, Dict[str, Any]]] = defaultdict(dict)
+    speaker_candidate_strict_map: Dict[str, Dict[str, Dict[str, Any]]] = defaultdict(dict)
     speaker_declared_accents: Dict[str, Set[str]] = defaultdict(set)
-    global_seen_paths: Set[str] = set()
+    path_claimants: Dict[str, Set[str]] = defaultdict(set)
 
     speaker_rejection_counts: Dict[str, Dict[str, int]] = {
         pref: {
@@ -302,15 +302,17 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
             if not clip_path:
                 continue
 
-            # Global path deduplication (B0 requirement)
-            if clip_path in global_seen_paths:
-                rej["rejected_duplicate_path"] += 1
-                continue
-            global_seen_paths.add(clip_path)
+            # Track claimant for permutation-invariant cross-speaker collision check
+            path_claimants[clip_path].add(pref)
 
             # C4: Non-empty sentence and word count >= 2
             if words < MIN_WORD_COUNT or not sent:
                 rej["rejected_words"] += 1
+                continue
+
+            # Intra-speaker duplicate row deduplication
+            if clip_path in speaker_candidate_b0_map[pref]:
+                rej["rejected_duplicate_path"] += 1
                 continue
 
             clip_info = {
@@ -328,7 +330,7 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
 
             # Passes Baseline Predicate B0
             rej["passed_b0"] += 1
-            speaker_b0_clips[pref].append(clip_info)
+            speaker_candidate_b0_map[pref][clip_path] = clip_info
 
             # Strict Stage 6M Quality Predicate V: locale == "en", up_votes >= 2, down_votes < 2
             fail_loc = (loc != "en")
@@ -341,7 +343,29 @@ def run_curation_audit(args) -> Tuple[bool, Dict[str, Any], Optional[pd.DataFram
 
             if not fail_loc and not fail_votes:
                 rej["passed_strict"] += 1
-                speaker_strict_clips[pref].append(clip_info)
+                speaker_candidate_strict_map[pref][clip_path] = clip_info
+
+    # Enforce Permutation-Invariant Cross-Speaker Collision Rejection:
+    # If any path is claimed by > 1 candidate speaker, it is ambiguous across speakers
+    # and fails B0 uniqueness globally for all claimants.
+    cross_speaker_collision_paths = {p for p, claimants in path_claimants.items() if len(claimants) > 1}
+    for p in cross_speaker_collision_paths:
+        for pref in path_claimants[p]:
+            if p in speaker_candidate_b0_map[pref]:
+                del speaker_candidate_b0_map[pref][p]
+            if p in speaker_candidate_strict_map[pref]:
+                del speaker_candidate_strict_map[pref][p]
+            speaker_rejection_counts[pref]["rejected_duplicate_path"] += 1
+
+    # Populate final speaker clip lists
+    speaker_b0_clips: Dict[str, List[Dict[str, Any]]] = {
+        pref: list(speaker_candidate_b0_map[pref].values())
+        for pref in manifest_speakers
+    }
+    speaker_strict_clips: Dict[str, List[Dict[str, Any]]] = {
+        pref: list(speaker_candidate_strict_map[pref].values())
+        for pref in manifest_speakers
+    }
 
     # Enforce Speaker-Level Accent Homogeneity (B0 requirement)
     heterogeneous_speakers: Dict[str, List[str]] = {}

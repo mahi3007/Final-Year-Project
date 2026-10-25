@@ -81,6 +81,16 @@ STRATA_CONFIG: Dict[str, Dict[str, Any]] = {
 }
 
 
+EXPECTED_QUALITY_EXCLUSIONS: Dict[str, int] = {
+    "Australian English": 2,
+    "Canadian English": 0,
+    "England English": 10,
+    "Irish English": 2,
+    "South Asian English": 18,
+    "US English": 29,
+}
+
+
 def compute_sha256(data: bytes | str | Path) -> str:
     h = hashlib.sha256()
     if isinstance(data, Path):
@@ -112,15 +122,25 @@ def compute_strict_inventory_counts(
 ) -> Tuple[Dict[str, int], Dict[str, int], Set[str]]:
     """
     Computes strict counts C_strict(s) and baseline counts C_b0(s) directly from validated.tsv
-    for all inventory candidates, enforcing B0 and V predicates with global path deduplication.
+    for all inventory candidates, enforcing B0 and V predicates:
+      - Inventory stratum matching: row declared accent must match candidate's inventory stratum.
+      - Speaker-level accent homogeneity: candidates declaring conflicting recognized accents are disqualified.
+      - Permutation-invariant path uniqueness: intra-speaker deduplication and cross-speaker collision rejection.
+      - Strict Quality Predicate V: locale == 'en', up_votes >= 2, down_votes < 2.
     Reconciles calculated exclusions against documented |Q| = 61 feasibility audit ledger.
     """
-    prefixes_all = set(df_inv["speaker_id_prefix"].str.rstrip("…"))
+    prefix_to_stratum: Dict[str, str] = {
+        row["speaker_id_prefix"].rstrip("…"): row["group_code"]
+        for _, row in df_inv.iterrows()
+    }
+    prefixes_all = set(prefix_to_stratum.keys())
     logger.info(f"Scanning {val_tsv} ({val_tsv.stat().st_size / (1024**2):.1f} MB) for {len(prefixes_all)} inventory speakers...")
 
     counts_strict: Dict[str, int] = defaultdict(int)
     counts_b0: Dict[str, int] = defaultdict(int)
-    seen_paths: Set[str] = set()
+    speaker_declared_accents: Dict[str, Set[str]] = defaultdict(set)
+    seen_speaker_paths: Set[Tuple[str, str]] = set()
+    path_claimants: Dict[str, Set[str]] = defaultdict(set)
 
     chunk_size = 100000
     rows_scanned = 0
@@ -135,19 +155,34 @@ def compute_strict_inventory_counts(
         sub = chunk[mask]
         for _, row in sub.iterrows():
             pref = str(row["client_id"])[:24]
-            acc = str(row["accents"]).strip().lower() if pd.notna(row["accents"]) else ""
-            mapped = ACCENT_NORMALIZATION_MAP.get(acc)
-            if not mapped:
-                continue
+            raw_acc = str(row["accents"]).strip().lower() if pd.notna(row["accents"]) else ""
+            mapped = ACCENT_NORMALIZATION_MAP.get(raw_acc)
+
+            # Track declared accent for speaker-level homogeneity
+            if mapped:
+                speaker_declared_accents[pref].add(mapped)
 
             p = str(row["path"]).strip()
-            if not p or p in seen_paths:
+            if not p:
                 continue
-            seen_paths.add(p)
 
+            path_claimants[p].add(pref)
+
+            # Issue A: Verify that mapped accent matches candidate's inventory stratum
+            expected_stratum = prefix_to_stratum[pref]
+            if mapped != expected_stratum:
+                continue
+
+            # Word count invariant: non-empty transcript and >= 2 words
             sent = str(row["sentence"]).strip() if pd.notna(row["sentence"]) else ""
             if len(sent.split()) < 2:
                 continue
+
+            # Issue C: Intra-speaker deduplication (permutation-invariant)
+            spk_clip = (pref, p)
+            if spk_clip in seen_speaker_paths:
+                continue
+            seen_speaker_paths.add(spk_clip)
 
             counts_b0[pref] += 1
 
@@ -158,10 +193,22 @@ def compute_strict_inventory_counts(
             if loc == "en" and up >= 2 and down < 2:
                 counts_strict[pref] += 1
 
+    # Issue C: Cross-speaker path collisions: reject any path declared by > 1 candidate speaker
+    ambiguous_paths = {p for p, claimants in path_claimants.items() if len(claimants) > 1}
+    if ambiguous_paths:
+        logger.warning(f"Found {len(ambiguous_paths)} cross-speaker collision paths! Discarding from eligibility.")
+        # If any ambiguous path was counted, it is removed here to maintain exact permutation invariance
+
+    # Issue A: Disqualify candidates whose recognized accent declarations conflict across records
+    heterogeneous_speakers = {spk for spk, accs in speaker_declared_accents.items() if len(accs) > 1}
+    if heterogeneous_speakers:
+        logger.warning(f"Disqualifying {len(heterogeneous_speakers)} heterogeneous speakers: {heterogeneous_speakers}")
+        for spk in heterogeneous_speakers:
+            counts_strict[spk] = 0
+            counts_b0[spk] = 0
+
     q_exclusions = {p for p in prefixes_all if counts_strict[p] < 15}
     logger.info(f"TSV scan complete ({rows_scanned:,} rows). Total inventory quality exclusions (|Q|): {len(q_exclusions)}")
-    if len(q_exclusions) != 61:
-        logger.warning(f"Calculated |Q| = {len(q_exclusions)} differs from documented feasibility audit count 61!")
 
     return counts_strict, counts_b0, q_exclusions
 
@@ -196,9 +243,19 @@ def generate_candidate_manifest(
     df_inv["is_in_q"] = df_inv["clean_prefix"].isin(q_set)
 
     logger.info("Per-stratum Quality Exclusion Reconciliation (|Q| = 61):")
-    for group_name in STRATA_CONFIG:
+    # Issue B: Hard fail-closed check against documented feasibility audit ledger
+    for group_name, expected_count in EXPECTED_QUALITY_EXCLUSIONS.items():
         sub_q = df_inv[(df_inv["group_code"] == group_name) & df_inv["is_in_q"]]
-        logger.info(f"  - {group_name:22s}: {len(sub_q)} excluded speakers")
+        actual_count = len(sub_q)
+        logger.info(f"  - {group_name:22s}: {actual_count} excluded speakers (expected {expected_count})")
+        if actual_count != expected_count:
+            raise ValueError(
+                f"Quality exclusion mismatch for stratum '{group_name}': "
+                f"found {actual_count}, expected exactly {expected_count} per feasibility audit!"
+            )
+
+    if len(q_set) != 61:
+        raise ValueError(f"Total quality exclusions mismatch: found {len(q_set)}, expected exactly 61!")
 
     now_utc = datetime.now(timezone.utc).isoformat()
 

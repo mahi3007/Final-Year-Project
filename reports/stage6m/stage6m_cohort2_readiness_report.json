@@ -3,12 +3,10 @@
   "overall_status": "HOLD",
   "summary_description": "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Confirmatory data prerequisites not yet materialized on disk.",
   "status_reasons": [
-    "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Evaluation CSV not materialized: datasets/splits/stage6m_cohort2_audio.csv",
-    "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Authoritative clip lock file not materialized: datasets/splits/stage6m_cohort2_audio.lock.json",
     "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Cohort 2 audio directory not found: datasets/external/common_voice_27/cohort2_audio"
   ],
-  "timestamp_utc": "2026-10-25T13:13:30.244595+00:00",
-  "git_commit": "09996472a269c13376fb34a18f9b12d5d5c4c4ad",
+  "timestamp_utc": "2026-10-25T14:06:23.509471+00:00",
+  "git_commit": "d1b74a89d1f2d23ec33176ecfacd9a0845022687",
   "governing_standard": "ADR-005",
   "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
   "checks": {
@@ -68,13 +66,25 @@
     },
     "evaluation_csv_manifest_agreement": {
       "check_name": "evaluation_csv_manifest_agreement",
-      "status": "HOLD",
-      "errors": [
-        "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Evaluation CSV not materialized: datasets/splits/stage6m_cohort2_audio.csv",
-        "MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD: Authoritative clip lock file not materialized: datasets/splits/stage6m_cohort2_audio.lock.json"
-      ],
+      "status": "PASS",
+      "errors": [],
       "warnings": [],
-      "details": {}
+      "details": {
+        "total_clips": 7020,
+        "unique_speakers": 468,
+        "strata_counts": {
+          "Australian English": 1170,
+          "Canadian English": 1170,
+          "England English": 1170,
+          "Irish English": 1170,
+          "South Asian English": 1170,
+          "US English": 1170
+        },
+        "duplicate_clip_count": 0,
+        "manifest_prefix_match_rate_pct": 100.0,
+        "speaker_stratum_preservation_verified": true,
+        "clip_lock_verified": true
+      }
     },
     "audio_materialization_and_decodability": {
       "check_name": "audio_materialization_and_decodability",

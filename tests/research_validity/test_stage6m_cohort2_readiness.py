@@ -769,15 +769,19 @@ def test_cohort2_audio_fails_on_extraneous_files(tmp_path):
 # 9. Truthful Markdown Reporting (Finding 1)
 # =============================================================================
 
-def test_cohort2_markdown_report_avoids_contradictory_claims_under_hold(base_validator, tmp_path):
+def test_cohort2_markdown_report_avoids_contradictory_claims_under_hold(tmp_path):
     """
-    Under HOLD, the checklist matrix must state that validation could not be completed
-    and never claim completed decodability or clip counts.
+    Under HOLD with unmaterialized evaluation CSV, the checklist matrix must state
+    that validation could not be completed and never claim completed decodability or clip counts.
     """
-    report = base_validator.run_preflight()
+    validator = Cohort2PreflightValidator(
+        project_root=PROJECT_ROOT,
+        eval_csv_path=tmp_path / "nonexistent_stage6m_cohort2_audio.csv",
+    )
+    report = validator.run_preflight()
     assert report["overall_status"] == "HOLD"
 
-    _, md_p = base_validator.save_reports(report, output_dir=tmp_path)
+    _, md_p = validator.save_reports(report, output_dir=tmp_path)
     md_text = md_p.read_text(encoding="utf-8")
 
     # Positive assertions: must state validation could not be completed

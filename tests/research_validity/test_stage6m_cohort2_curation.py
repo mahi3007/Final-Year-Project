@@ -522,3 +522,59 @@ def test_corrected_option_a_manifest_passes_strict_curation_audit():
 
     # Speaker disjointness check
     assert audit_results["checks"]["speaker_disjointness"]["status"] == "PASS"
+
+
+def test_curation_cross_speaker_path_collision_is_permutation_invariant(tmp_path):
+    """When duplicate audio paths appear across different speakers, they are rejected deterministically invariant to row order."""
+    env = _create_mock_environment(tmp_path, num_speakers_per_stratum=2, clips_per_speaker=18)
+
+    df_tsv = pd.read_csv(env["tsv"], sep="\t")
+    spk0_cid = df_tsv.loc[0, "client_id"]
+    spk1_cid = df_tsv[df_tsv["client_id"] != spk0_cid].iloc[0]["client_id"]
+
+    # Deliberately inject a cross-speaker collision: speaker 1 claims speaker 0's first clip path
+    shared_path = df_tsv.loc[0, "path"]
+    spk1_idx = df_tsv[df_tsv["client_id"] == spk1_cid].index[0]
+    df_tsv.loc[spk1_idx, "path"] = shared_path
+
+    tsv_forward = tmp_path / "collision_forward.tsv"
+    df_tsv.to_csv(tsv_forward, sep="\t", index=False)
+
+    tsv_reversed = tmp_path / "collision_reversed.tsv"
+    df_tsv.iloc[::-1].to_csv(tsv_reversed, sep="\t", index=False)
+
+    args_fwd = argparse.Namespace(
+        manifest=env["manifest"],
+        val_tsv=tsv_forward,
+        ext_eval_csv=env["c1"],
+        sentinel_csv=env["sentinel"],
+        output_csv=env["out_csv"],
+        output_lock=env["out_lock"],
+        reports_dir=tmp_path / "rep_fwd",
+        seed=20261020,
+        generate=False,
+    )
+    args_rev = argparse.Namespace(
+        manifest=env["manifest"],
+        val_tsv=tsv_reversed,
+        ext_eval_csv=env["c1"],
+        sentinel_csv=env["sentinel"],
+        output_csv=env["out_csv"],
+        output_lock=env["out_lock"],
+        reports_dir=tmp_path / "rep_rev",
+        seed=20261020,
+        generate=False,
+    )
+
+    success_fwd, audit_fwd, df_fwd = run_curation_audit(args_fwd)
+    success_rev, audit_rev, df_rev = run_curation_audit(args_rev)
+
+    # 1. Neither run should include the shared path for either speaker
+    assert shared_path not in df_fwd["audio_path"].values
+    assert shared_path not in df_rev["audio_path"].values
+
+    # 2. Results must be 100% identical between forward and reversed order
+    assert df_fwd["recording_id"].tolist() == df_rev["recording_id"].tolist()
+    assert df_fwd["speaker_id"].tolist() == df_rev["speaker_id"].tolist()
+    assert audit_fwd["checks"]["clip_eligibility"] == audit_rev["checks"]["clip_eligibility"]
+
