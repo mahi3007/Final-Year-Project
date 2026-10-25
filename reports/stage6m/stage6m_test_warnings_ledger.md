@@ -15,6 +15,8 @@ This ledger maintains run-specific records across repository revisions to guaran
 | **Run-1** | `3ddf79296c22ba9fba2c54eb1196ea1897caf57e` | Full Repository Suite | `python -m pytest tests/` | `0` | 101.74s | 291 passed | **9** | 2 (1 startup, 1 teardown) | Clean (prior to test isolation) |
 | **Run-2** | `3886d903930c589ab1a1d70e394798d2ec727e1c` | Full Repository Suite | `python -m pytest tests/` | `0` | 118.93s | 291 passed | **7** | 2 (1 startup, 1 teardown) | `nothing to commit, working tree clean` |
 | **Run-3** | `3886d903930c589ab1a1d70e394798d2ec727e1c` | Focused Cohort 2 Suite | `python -m pytest tests/research_validity/test_stage6m_cohort2_curation.py tests/research_validity/test_stage6m_cohort2_readiness.py` | `0` | 65.57s | 57 passed | **0** | 1 (startup RequestsDependencyWarning) | `nothing to commit, working tree clean` |
+| **Run-4** | Working Tree / Audio Scripts Added | Focused Cohort 2 + Audio Suite | `python -m pytest tests/research_validity/test_stage6m_cohort2_curation.py tests/research_validity/test_stage6m_cohort2_readiness.py tests/research_validity/test_stage6m_cohort2_audio_validation.py` | `0` | 64.74s | 64 passed | **0** | 1 (startup RequestsDependencyWarning) | `nothing to commit, working tree clean` |
+| **Run-5** | Working Tree / Audio Scripts Added | Full Repository Suite (Expanded) | `python -m pytest tests/` | `0` | 103.78s | 298 passed | **7** | 2 (1 startup, 1 teardown) | `nothing to commit, working tree clean` |
 
 ---
 
