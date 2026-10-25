@@ -1,0 +1,167 @@
+{
+  "metadata": {
+    "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+    "governing_standard": "ADR-005",
+    "timestamp_utc": "2026-10-25T12:15:12.259109+00:00",
+    "selection_seed": 20261020,
+    "selection_algorithm": "SHA256(seed:client_id:clip_path) ascending rank sort",
+    "predicate_level": "STRICT (B0 + V: locale=='en', up_votes>=2, down_votes<2)",
+    "execution_mode": "AUDIT_ONLY"
+  },
+  "checks": {
+    "prefix_resolution": {
+      "status": "PASS",
+      "expected_prefixes": 468,
+      "resolved_prefixes": 468,
+      "unresolved_prefixes": []
+    },
+    "clip_eligibility": {
+      "status": "FAIL",
+      "predicate": "B0 + V (locale=='en', up_votes>=2, down_votes<2)",
+      "total_active_speakers": 468,
+      "speakers_meeting_b0_quota": 468,
+      "speakers_meeting_strict_quota": 464,
+      "strict_shortfall_count": 4,
+      "strict_shortfall_speakers": {
+        "07004fed5c5e5b0eec54cada": {
+          "stratum": "South Asian English",
+          "raw_total": 15,
+          "b0_baseline_count": 15,
+          "strict_count": 14,
+          "shortfall": 1,
+          "rejected_votes": 1,
+          "rejected_locale": 0,
+          "rejected_words": 0
+        },
+        "6cd7653404104d87053bcef6": {
+          "stratum": "South Asian English",
+          "raw_total": 15,
+          "b0_baseline_count": 15,
+          "strict_count": 13,
+          "shortfall": 2,
+          "rejected_votes": 2,
+          "rejected_locale": 0,
+          "rejected_words": 0
+        },
+        "25949e8d7229d181418b78ad": {
+          "stratum": "South Asian English",
+          "raw_total": 15,
+          "b0_baseline_count": 15,
+          "strict_count": 13,
+          "shortfall": 2,
+          "rejected_votes": 2,
+          "rejected_locale": 0,
+          "rejected_words": 0
+        },
+        "a7a33ab5ac9181d03e49a22a": {
+          "stratum": "South Asian English",
+          "raw_total": 17,
+          "b0_baseline_count": 17,
+          "strict_count": 14,
+          "shortfall": 1,
+          "rejected_votes": 3,
+          "rejected_locale": 0,
+          "rejected_words": 0
+        }
+      }
+    },
+    "speaker_disjointness": {
+      "status": "PASS",
+      "cohort1_overlap_count": 0,
+      "cohort1_overlap_speakers": [],
+      "sentinel_overlap_count": 0,
+      "sentinel_overlap_speakers": []
+    },
+    "stratum_preservation": {
+      "status": "PASS",
+      "stratum_speaker_counts": {
+        "Canadian English": 78,
+        "South Asian English": 78,
+        "US English": 78,
+        "England English": 78,
+        "Irish English": 78,
+        "Australian English": 78
+      },
+      "expected_per_stratum": {
+        "Irish English": 78,
+        "England English": 78,
+        "Canadian English": 78,
+        "Australian English": 78,
+        "South Asian English": 78,
+        "US English": 78
+      }
+    },
+    "stream_geometry": {
+      "status": "FAIL",
+      "total_clips_selected": 7014,
+      "expected_total_clips": 7020,
+      "unique_audio_paths": 7014,
+      "stratum_clip_counts": {
+        "Australian English": 1170,
+        "Canadian English": 1170,
+        "Irish English": 1170,
+        "South Asian English": 1164,
+        "England English": 1170,
+        "US English": 1170
+      },
+      "expected_per_stratum": {
+        "Irish English": 1170,
+        "England English": 1170,
+        "Canadian English": 1170,
+        "Australian English": 1170,
+        "South Asian English": 1170,
+        "US English": 1170
+      }
+    },
+    "schema_and_naming": {
+      "status": "PASS",
+      "missing_columns": [],
+      "empty_transcripts": 0,
+      "double_extension_detected": false,
+      "sample_recording_id": "common_voice_en_634774",
+      "sample_audio_path": "common_voice_en_634774.mp3"
+    }
+  },
+  "overall_status": "HOLD_STRICT_QUALITY_SHORTFALL",
+  "summary": {
+    "overall_status": "HOLD_STRICT_QUALITY_SHORTFALL",
+    "total_speakers_checked": 468,
+    "speakers_meeting_strict_quota": 464,
+    "speakers_failing_strict_quota": 4,
+    "strata_breakdown": {
+      "Irish English": {
+        "total_active_speakers": 78,
+        "strict_eligible_speakers": 78,
+        "shortfall_speakers": 0
+      },
+      "England English": {
+        "total_active_speakers": 78,
+        "strict_eligible_speakers": 78,
+        "shortfall_speakers": 0
+      },
+      "Canadian English": {
+        "total_active_speakers": 78,
+        "strict_eligible_speakers": 78,
+        "shortfall_speakers": 0
+      },
+      "Australian English": {
+        "total_active_speakers": 78,
+        "strict_eligible_speakers": 78,
+        "shortfall_speakers": 0
+      },
+      "South Asian English": {
+        "total_active_speakers": 78,
+        "strict_eligible_speakers": 74,
+        "shortfall_speakers": 4
+      },
+      "US English": {
+        "total_active_speakers": 78,
+        "strict_eligible_speakers": 78,
+        "shortfall_speakers": 0
+      }
+    },
+    "total_clips_selected": 7014,
+    "expected_clips": 7020,
+    "ready_for_generation": false
+  }
+}
