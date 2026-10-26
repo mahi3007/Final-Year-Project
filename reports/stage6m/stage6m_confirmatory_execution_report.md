@@ -1,15 +1,20 @@
 # Stage 6M Confirmatory Execution Report: Multi-Model Cumulative Adaptation & Cross-Dataset Benchmark
 
+> [!WARNING]
+> **SUPERSEDED HISTORICAL ARTIFACT — SYNTHETIC SIMULATION REHEARSAL ONLY:**  
+> This document records an earlier synthetic simulation dry-run conducted on October 23, 2026, using the formula-driven `ConfirmatoryAcousticModel` (`scripts/run_stage6m_confirmatory_experiment.py`, duration: 27.12 seconds, 581 simulated acceptances). It was conducted prior to physical audio materialization and genuine GPU benchmark execution.  
+> **Status:** SUPERSEDED by the physical GPU confirmatory benchmark across 7,020 audio clips documented in [`reports/stage6m/stage6m_physical_cohort2_report.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_physical_cohort2_report.md). This historical artifact must NOT be cited as physical acoustic empirical evidence.
+
 **Protocol Version:** `v1.3.4-stage6m-self-authorization-amendment`  
 **Governing Standard:** ADR-005 (Amended via AMENDMENT-001)  
-**Document Status:** Formal Empirical Benchmark Execution Record  
+**Document Status:** Superseded Historical Synthetic Simulation Record  
 **Authorizing Authority:** Designated Project Lead  
 **Authorization Token:** `AUTH-20261020-STAGE6M-AMEND-V134-EXECUTE-PERMITTED`  
 **Supervisor Record:** Prof. L.V. Srinivas (Identified Academic Supervisor; independent research record)  
 **Supervisor Disclaimer:** *The amendment does not represent or imply approval by the academic supervisor.*  
 **Execution Timestamp (UTC):** `2026-10-23T17:06:03.362624+00:00`  
 **Git Commit Revision:** `a43640107953f5297f0e630574546b9dec2c674e`  
-**Candidate Manifest SHA-256:** `610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895` (Cryptographically Verified)  
+**Candidate Manifest SHA-256:** `610649e8f634e21c0236f18e9461f865721c7864703fb87d597df7968f912895` (Historical Draft Manifest)  
 
 ---
 

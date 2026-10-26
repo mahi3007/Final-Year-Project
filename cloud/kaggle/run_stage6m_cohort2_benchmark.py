@@ -136,14 +136,20 @@ def suta_adaptation_step_gpu(
     B, T, C = probs.shape
     flat_probs = probs.view(-1, C)
     class_sums = torch.sum(flat_probs, dim=0)
-    norm_factor = torch.sqrt(class_sums.unsqueeze(1) @ class_sums.unsqueeze(0)) + 1e-8
+    norm_factor = torch.sqrt(class_sums.unsqueeze(1) @ class_sums.unsqueeze(0) + 1e-8)
     corr_matrix = (flat_probs.T @ flat_probs) / norm_factor
     diagonal = torch.diag(corr_matrix)
     off_diag_sum = torch.sum(corr_matrix) - torch.sum(diagonal)
     l_mcc = off_diag_sum / (C * (C - 1) + 1e-8)
 
     total_loss = alpha * l_em + (1.0 - alpha) * l_mcc
+    if not torch.isfinite(total_loss):
+        optimizer.zero_grad()
+        model.eval()
+        return float("nan")
+
     total_loss.backward()
+    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
     optimizer.step()
     model.eval()
 
@@ -338,6 +344,15 @@ def main():
         eval_df = pd.read_csv(cohort2_csv)
         audio_dir = cohort2_audio_dir
 
+        # Scientific assertion: strictly 78 speakers per stratum, 1 stratum per speaker
+        spk_strata_counts = eval_df.groupby("speaker_id")["stage5_accent_group"].nunique()
+        if (spk_strata_counts != 1).any():
+            raise ValueError("Integrity failure: detected speaker spanning multiple strata in eval_df")
+        speakers_per_stratum = eval_df.groupby("stage5_accent_group")["speaker_id"].nunique()
+        for s_name, count in speakers_per_stratum.items():
+            if count != 78:
+                raise ValueError(f"Integrity failure: Stratum {s_name} has {count} speakers (expected exactly 78)")
+
     if not sentinel_csv.exists():
         raise FileNotFoundError(f"Missing sentinel panel CSV: {sentinel_csv}")
     sentinel_df = pd.read_csv(sentinel_csv)
@@ -422,7 +437,7 @@ def main():
         batch_waveforms = [eval_cache[r["recording_id"]] for _, r in batch_rows.iterrows()]
         batch_raw_refs = [str(r["transcript"]) for _, r in batch_rows.iterrows()]
         batch_norm_refs = [TextNormalizer.normalize(t) for t in batch_raw_refs]
-        stratum_name = str(batch_rows.iloc[0].get("stage5_accent_group") or batch_rows.iloc[0].get("accent_group"))
+        window_primary_stratum = str(batch_rows.iloc[0].get("stage5_accent_group") or batch_rows.iloc[0].get("accent_group"))
 
         # Prequential Inference
         hyps_arm1 = batch_transcribe_gpu(arm1_model, processor, batch_waveforms, device)
@@ -435,13 +450,14 @@ def main():
 
         for idx, (_, r) in enumerate(batch_rows.iterrows()):
             ref_norm = batch_norm_refs[idx]
+            clip_stratum = str(r.get("stage5_accent_group") or r.get("stratum_code") or r.get("accent_group"))
 
             m1 = compute_utterance_metrics(ref_norm, TextNormalizer.normalize(hyps_arm1[idx]))
             win_err_arm1 += (m1.substitutions + m1.deletions + m1.insertions)
             win_words_arm1 += m1.reference_length
             arm1_records.append({
                 "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
-                "group_id": stratum_name, "ref": ref_norm, "hyp": hyps_arm1[idx],
+                "group_id": clip_stratum, "ref": ref_norm, "hyp": hyps_arm1[idx],
                 "sub": m1.substitutions, "del": m1.deletions, "ins": m1.insertions, "n": m1.reference_length
             })
 
@@ -450,7 +466,7 @@ def main():
             win_words_arm2 += m2.reference_length
             arm2_records.append({
                 "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
-                "group_id": stratum_name, "ref": ref_norm, "hyp": hyps_arm2[idx],
+                "group_id": clip_stratum, "ref": ref_norm, "hyp": hyps_arm2[idx],
                 "sub": m2.substitutions, "del": m2.deletions, "ins": m2.insertions, "n": m2.reference_length
             })
 
@@ -459,7 +475,7 @@ def main():
             win_words_arm3 += m3.reference_length
             arm3_records.append({
                 "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
-                "group_id": stratum_name, "ref": ref_norm, "hyp": hyps_arm3[idx],
+                "group_id": clip_stratum, "ref": ref_norm, "hyp": hyps_arm3[idx],
                 "sub": m3.substitutions, "del": m3.deletions, "ins": m3.insertions, "n": m3.reference_length
             })
 
@@ -530,8 +546,8 @@ def main():
 
             gate_decision_records.append({
                 "window_id": win_idx,
-                "stratum": stratum_name,
-                "loss": round(loss_val, 4),
+                "stratum": window_primary_stratum,
+                "loss": round(loss_val, 4) if np.isfinite(loss_val) else None,
                 "decision": gate_dec.decision,
                 "decision_raw": gate_decision_str,
                 "delta_r": gate_dec.delta_r,
@@ -551,7 +567,7 @@ def main():
             })
 
         win_elapsed = time.time() - t_win_start
-        print(f"{win_idx+1:3d}/{num_windows} | {stratum_name[:12]:12s} | {wer1:6.1f}%  | {wer2:6.1f}%  | {wer3:6.1f}%  | {gate_decision_str:18s} | {loss_val:6.3f} | {win_elapsed:.1f}s")
+        print(f"{win_idx+1:3d}/{num_windows} | {window_primary_stratum[:12]:12s} | {wer1:6.1f}%  | {wer2:6.1f}%  | {wer3:6.1f}%  | {gate_decision_str:18s} | {loss_val:6.3f} | {win_elapsed:.1f}s")
 
     # Step 4: Summary Statistics
     print(f"\n[4/5] Computing Offline Metrics and Speaker-Clustered Paired Statistics...")

@@ -1,31 +1,37 @@
 {
   "metadata": {
     "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+    "governing_standard": "ADR-005 (Amended via AMENDMENT-001)",
     "execution_scope": "Physical COHORT2 Prequential Stream on Virtual GPU",
     "execution_mode": "Physical PyTorch wav2vec2_base Acoustic Forward Passes",
     "timestamp_utc": "2026-10-26T05:14:07.713066+00:00",
+    "execution_source_commit": "8324f38",
     "total_execution_seconds": 6526.71,
     "stream_windows": 1755,
     "candidate_update_opportunities": 1754,
     "total_audio_clips": 7020,
     "total_speakers": 468,
     "total_strata": 6,
+    "locked_candidate_manifest_sha256": "7dcf8d5812ce8b555d1f4c0b1a1f2d63263e83c81120bd811cc8fcb427cfbd95",
+    "evaluation_csv_path": "datasets/splits/stage6m_cohort2_audio.csv",
     "initial_live_parameter_hash_sha256": "17dc36faa11c581e77df9f6483cc35648b57ec156ff14777081df88f54ac9dee",
     "final_live_parameter_hash_sha256": "17dc36faa11c581e77df9f6483cc35648b57ec156ff14777081df88f54ac9dee",
-    "full_hash_bitwise_rollback_verified": true,
-    "parameter_drift_linf": NaN
+    "model_invariance_verified": true,
+    "adaptation_mechanism_notes": "Arm 3 creates candidate deepcopies for evaluation. Discarded candidate models leave the live model parameter state completely untouched and invariant.",
+    "numerical_health_diagnostic": "MCC loss formulation contains sqrt(outer_product). When rare CTC tokens have zero probability in small batches (K=4), backward gradients evaluate to infinite/NaN, leading to LayerNorm parameter corruption and decoding collapse to empty strings. The Dynamic Sentinel Gate detected this failure mode and protected the live model by universally rejecting all 1,754 corrupted candidate updates."
   },
   "overall_results": {
+    "total_evaluated_words": 68046,
     "arm1_static_wer_pct": 22.28,
     "arm2_ungated_wer_pct": 99.95,
     "arm3_gated_wer_pct": 22.28,
     "delta_arm3_vs_arm2_pp": -77.67,
     "delta_arm3_vs_arm1_pp": 0.0,
-    "disparity_arm1_pp": 24.11,
+    "disparity_arm1_pp": 27.04,
     "disparity_arm2_pp": 0.27,
-    "disparity_arm3_pp": 24.11,
+    "disparity_arm3_pp": 27.04,
     "delta_disparity_arm3_vs_arm1_pp": 0.0,
-    "delta_disparity_arm3_vs_arm2_pp": 23.84
+    "delta_disparity_arm3_vs_arm2_pp": 26.77
   },
   "gate_performance": {
     "total_candidates": 1754,
@@ -38,7 +44,8 @@
     "sample_size_n_speakers": 468,
     "paired_t_arm3_vs_arm2": {
       "t_statistic": -107.4193,
-      "p_value": 0.0,
+      "p_value_raw": 0.0,
+      "p_value_display": "p < 1e-300 (numerical underflow)",
       "degrees_of_freedom": 467,
       "statistically_significant_p05": true
     },
@@ -47,63 +54,63 @@
       "p_value": null,
       "degrees_of_freedom": 467,
       "statistically_significant_p05": false,
-      "interpretation": "Identical to static baseline if all candidates rolled back (zero-variance difference)."
+      "interpretation": "Identical to static baseline under universal candidate discard (zero-variance difference)."
     }
   },
   "stratum_breakdown": [
     {
       "stratum": "Australian English",
-      "ref_words": 11340,
-      "wer_arm1_static": 19.32,
+      "ref_words": 11343,
+      "wer_arm1_static": 19.48,
       "wer_arm2_ungated": 99.73,
-      "wer_arm3_gated": 19.32,
+      "wer_arm3_gated": 19.48,
       "delta_g_arm3_vs_arm1": 0.0,
-      "delta_g_arm3_vs_arm2": -80.41
+      "delta_g_arm3_vs_arm2": -80.24
     },
     {
       "stratum": "Canadian English",
-      "ref_words": 11247,
-      "wer_arm1_static": 15.86,
+      "ref_words": 11306,
+      "wer_arm1_static": 14.88,
       "wer_arm2_ungated": 100.0,
-      "wer_arm3_gated": 15.86,
+      "wer_arm3_gated": 14.88,
       "delta_g_arm3_vs_arm1": 0.0,
-      "delta_g_arm3_vs_arm2": -84.14
+      "delta_g_arm3_vs_arm2": -85.12
     },
     {
       "stratum": "England English",
-      "ref_words": 11163,
-      "wer_arm1_static": 20.35,
+      "ref_words": 11032,
+      "wer_arm1_static": 20.15,
       "wer_arm2_ungated": 100.0,
-      "wer_arm3_gated": 20.35,
+      "wer_arm3_gated": 20.15,
       "delta_g_arm3_vs_arm1": 0.0,
-      "delta_g_arm3_vs_arm2": -79.65
+      "delta_g_arm3_vs_arm2": -79.85
     },
     {
       "stratum": "Irish English",
-      "ref_words": 11494,
-      "wer_arm1_static": 20.48,
+      "ref_words": 11772,
+      "wer_arm1_static": 20.14,
       "wer_arm2_ungated": 100.0,
-      "wer_arm3_gated": 20.48,
+      "wer_arm3_gated": 20.14,
       "delta_g_arm3_vs_arm1": 0.0,
-      "delta_g_arm3_vs_arm2": -79.52
+      "delta_g_arm3_vs_arm2": -79.86
     },
     {
       "stratum": "South Asian English",
-      "ref_words": 11267,
-      "wer_arm1_static": 39.98,
+      "ref_words": 11190,
+      "wer_arm1_static": 41.92,
       "wer_arm2_ungated": 100.0,
-      "wer_arm3_gated": 39.98,
+      "wer_arm3_gated": 41.92,
       "delta_g_arm3_vs_arm1": 0.0,
-      "delta_g_arm3_vs_arm2": -60.02
+      "delta_g_arm3_vs_arm2": -58.08
     },
     {
       "stratum": "US English",
-      "ref_words": 11535,
-      "wer_arm1_static": 17.84,
+      "ref_words": 11403,
+      "wer_arm1_static": 17.42,
       "wer_arm2_ungated": 100.0,
-      "wer_arm3_gated": 17.84,
+      "wer_arm3_gated": 17.42,
       "delta_g_arm3_vs_arm1": 0.0,
-      "delta_g_arm3_vs_arm2": -82.16
+      "delta_g_arm3_vs_arm2": -82.58
     }
   ],
   "speaker_level_paired_records": [
@@ -135,7 +142,7 @@
     },
     {
       "speaker_id": "01aed7c251d5e52aa086240023e5e9fd50c969c1f832ee3e4ee73133a9b855cb55b8df36293140fbb1f4e59b1af2520a824fdcf1fbf74ecce1aeb66eb25ccdc7",
-      "stratum": "Australian English",
+      "stratum": "Canadian English",
       "wc": 133,
       "err1": 21,
       "err2": 133,
@@ -148,7 +155,7 @@
     },
     {
       "speaker_id": "02dce8fb4569893456d8c1907ece38750c62bb8a071ec40d16753c4974a3ec28678f2bd94b265ae1d7519307baef29d28c49cbf3a67b0b847975423db328d775",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 169,
       "err1": 33,
       "err2": 169,
@@ -174,7 +181,7 @@
     },
     {
       "speaker_id": "036d6531c59cc0d65c7bf9b6122199b2ca4d3eedd722d76271f85fcf78b3df69479f21338d054deda9248e49c8b2e7a0a8f7dc872aba3bf22e64db0ccfa8c53a",
-      "stratum": "South Asian English",
+      "stratum": "Australian English",
       "wc": 116,
       "err1": 44,
       "err2": 116,
@@ -187,7 +194,7 @@
     },
     {
       "speaker_id": "03775a0322e9b6d1ddc55335f85ede7db02e435df5aee7df0cdfb1804192012c46136c771af9e1abb8d8a755981a7214fb370bb8a101da6808e9ba368de67d67",
-      "stratum": "Australian English",
+      "stratum": "Canadian English",
       "wc": 127,
       "err1": 9,
       "err2": 127,
@@ -200,7 +207,7 @@
     },
     {
       "speaker_id": "03ac926a15e7695d5c933f46dc82e483ccda96ff8f00f4ff33363cd004c7a97ad5fd42f1768a5740aa71fb535cb55cee2e69b22384acf8264efeb55146a061a7",
-      "stratum": "Canadian English",
+      "stratum": "England English",
       "wc": 143,
       "err1": 58,
       "err2": 143,
@@ -226,7 +233,7 @@
     },
     {
       "speaker_id": "0663aeb40f5d5ea46610cac3ca0183f2193b429770c84b516efe7d199b8b110944005539d986613fdc9d6532694f43c3a8e4dfc9de8ae7bfbc8b57b412ef71dd",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 153,
       "err1": 55,
       "err2": 153,
@@ -239,7 +246,7 @@
     },
     {
       "speaker_id": "0760007937bb3a9ba37c8b23d66d31d540a4c0a0f26df8a937125ac0fb8bf462956d1458e0fb561359c6d9e84b1e519bcbe55828c67f0495b99c9d0233c58576",
-      "stratum": "South Asian English",
+      "stratum": "US English",
       "wc": 166,
       "err1": 24,
       "err2": 166,
@@ -252,7 +259,7 @@
     },
     {
       "speaker_id": "07d156d3f6b5c3b73df12610a07b6a2c3451fd708e49e413ba7fd7d17b6555c41193e6d3a3c283f2238c8d448a20031858bac0f7358bc5e4248b4c4bfa24a9f8",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 113,
       "err1": 23,
       "err2": 113,
@@ -278,7 +285,7 @@
     },
     {
       "speaker_id": "07ea9f611d1c20a420c53a9e1f3b3271475353720afc9d319931caa853cb3032061605fbb726326ef12bb20448581b5c64d5f8a6ce3972ce01713f32425bb796",
-      "stratum": "Australian English",
+      "stratum": "Canadian English",
       "wc": 163,
       "err1": 49,
       "err2": 163,
@@ -291,7 +298,7 @@
     },
     {
       "speaker_id": "08e6b8d21d01affd083238c9c73a6012eac66710b15b817a71b9830a0914bf1015856978c4cb5561eaed36dfb388f276bd857f96a240a897f5e7ab159e8278f4",
-      "stratum": "Canadian English",
+      "stratum": "US English",
       "wc": 173,
       "err1": 19,
       "err2": 173,
@@ -304,7 +311,7 @@
     },
     {
       "speaker_id": "0913c1a50ccfbc71b57416c700a63a50cbe473b16693126b7b0c122fc6f6c0a29b265761b2ad624098d44f720e3b188a8cc5564b30f8e19dd18b4a9b915db3c5",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 168,
       "err1": 38,
       "err2": 168,
@@ -330,7 +337,7 @@
     },
     {
       "speaker_id": "098cd4ae227dc09b21c09e4c8bcc1c2d257a828b8f9e38bd18519e1605f678d117d056baa83e3d15eb267f5c510ae45227087d9b63c6c7f4e43be9c6149c87c8",
-      "stratum": "South Asian English",
+      "stratum": "Australian English",
       "wc": 156,
       "err1": 38,
       "err2": 156,
@@ -343,7 +350,7 @@
     },
     {
       "speaker_id": "09c5eb68d13f1df2d0fd11f3685212cfb7bf0046cfb51eb4a1d50d4acbeae00a7fb70ea258d4185e8f2c581d6ba784a25a4146c71a0599d350c1b10ac7fa4d73",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 158,
       "err1": 21,
       "err2": 158,
@@ -356,7 +363,7 @@
     },
     {
       "speaker_id": "0a0f98c5fb5bef528a71a83b74c59c06901144a415e24378d4e67d54101b981ed70310d8360c1bc1cb558af6810ca2178bd26ac22920b1d815d001bb871a4f3a",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 173,
       "err1": 46,
       "err2": 173,
@@ -382,7 +389,7 @@
     },
     {
       "speaker_id": "0ab0b4681f04abb280c27268cdf7c8dc8f86ba973cfa052fa7d5200ae19795fa2b8c3711f03496d1d5baab49508789a0b8ba55994fccbcd270f93be7afbe2a6c",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 163,
       "err1": 10,
       "err2": 163,
@@ -408,7 +415,7 @@
     },
     {
       "speaker_id": "0b3d55acf115fdf88131d7324fa9a7e1a26542405b0671d5ec0d9ed34b40fa0158576fd51ee9cc937a41b1c529f49cfb23fec693ae1382f21ec8fed796a9dece",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 154,
       "err1": 90,
       "err2": 154,
@@ -434,7 +441,7 @@
     },
     {
       "speaker_id": "0d3485184affec8ace46018c8180cb3b016ae0ceb841ff0aaa3875c9c92b79396ebb91b08f1ba1e7f88bfea2c8e8f05ab6ec68f035698b7fbfeeb3148d5d60cd",
-      "stratum": "England English",
+      "stratum": "Canadian English",
       "wc": 157,
       "err1": 16,
       "err2": 157,
@@ -447,7 +454,7 @@
     },
     {
       "speaker_id": "0d4895c706373555d65399f8ddb39ff33abf44ce68ed7634dc7df557ad583a488afa8147f787aece0966e906ed07b4a831348d7fecbcc5318f592a3b7d249e1e",
-      "stratum": "Canadian English",
+      "stratum": "Australian English",
       "wc": 167,
       "err1": 7,
       "err2": 167,
@@ -486,7 +493,7 @@
     },
     {
       "speaker_id": "0e319d4cecc97b38f52d3d2b541c31b56c473dfee30c90a3d69d9f7682f5e88a064d6e09f1b25496d4239e10d62250cbc97636f7a98fee59a1f5ecdae99a8672",
-      "stratum": "Canadian English",
+      "stratum": "England English",
       "wc": 116,
       "err1": 7,
       "err2": 116,
@@ -499,7 +506,7 @@
     },
     {
       "speaker_id": "0fc85447a65211ec9fcc3247b0fc89440f91621a9b577a67ebef38b1b6a2791b09274c65c0a2c0511dd0e09c19e9e1bb1d7ca252dcf723124f45067d6a100385",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 153,
       "err1": 43,
       "err2": 153,
@@ -512,7 +519,7 @@
     },
     {
       "speaker_id": "1061f5acd424342c6a3e78af53b53be5723d3edd36593221d95d2a4e12268b629e79497413fae90a6a8fdface6212b4e7e3e24acdd5567dac2ec12e4e7265d60",
-      "stratum": "Australian English",
+      "stratum": "Canadian English",
       "wc": 164,
       "err1": 17,
       "err2": 164,
@@ -538,7 +545,7 @@
     },
     {
       "speaker_id": "12146d1ee29a4c4c4b4dbadda88a02bd7664d8bbc26408dfe065578fc3f7eb672c7fe6c9d62ae0868f52982214199286bc0bedd54280add4ff91a3da4f7eeb09",
-      "stratum": "Canadian English",
+      "stratum": "US English",
       "wc": 144,
       "err1": 94,
       "err2": 144,
@@ -564,7 +571,7 @@
     },
     {
       "speaker_id": "13d0538687f067a9958c0721b0333ad28307cc91050390b349159c53bf909a910e0a5e4c0f0987e8d97d44a0d2fe1d9d299285c71d34033f43412ef89a73232c",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 107,
       "err1": 5,
       "err2": 107,
@@ -603,7 +610,7 @@
     },
     {
       "speaker_id": "14dfdc91e501f6d540916b8c9a15ede4dac22fbe671196dc2493a7648a33334b4424727770f924590ceb9ec66ffb96638e6c4c67bdb5f049d2add011de7c91db",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 181,
       "err1": 28,
       "err2": 181,
@@ -616,7 +623,7 @@
     },
     {
       "speaker_id": "15f4b2d89fd6ef677ad0cf16118393247db64e892060c2b238c09fa625e31ed5d5c4b4e05b0de21c6fc2202db2a2ebf567b2fd032758dbfbeb9897aecb2ab555",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 160,
       "err1": 89,
       "err2": 160,
@@ -642,7 +649,7 @@
     },
     {
       "speaker_id": "166032d1842dc93de594cb530d95851cc6fa18e05b1f2c4e3dd9a7d47f83f498071eeb2622b4f4c1c22490492e9b31293299a865ac1b8bc768f3490cc004d221",
-      "stratum": "US English",
+      "stratum": "Canadian English",
       "wc": 161,
       "err1": 34,
       "err2": 161,
@@ -668,7 +675,7 @@
     },
     {
       "speaker_id": "16c4d595dc9574177290c4bbc3ddea6ab322d79a107820c18586583b2d2026ccefd79c6bf4129d5323ae72a32a334b9f5f589ab6791c151a2ea3579106d7e255",
-      "stratum": "Canadian English",
+      "stratum": "US English",
       "wc": 166,
       "err1": 42,
       "err2": 166,
@@ -694,7 +701,7 @@
     },
     {
       "speaker_id": "17dcd55a0e0d9bd3df84ea9d6f8ec1e3c60162fcb0e9b8bcd44eec8129df502b79d2b055c483bb7b4cced4078cfd497330f34eefdd92174efcdbdcc6fd4aa064",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 162,
       "err1": 38,
       "err2": 162,
@@ -707,7 +714,7 @@
     },
     {
       "speaker_id": "1950c0c96b18c615514bb59b894e5210a18e803dcbca2de8d2785fb4fe96b4e6b9cca98a68a4cafe860ea6bd6a8dac3ef12f5dba2940663d7f79544c447c4446",
-      "stratum": "Canadian English",
+      "stratum": "South Asian English",
       "wc": 153,
       "err1": 55,
       "err2": 153,
@@ -720,7 +727,7 @@
     },
     {
       "speaker_id": "1976e82e1bbaefb3fd386f5577f33a7e74d204f8baf97934d835c3a4b4c9ee85b1084908e4dd33ed06f1761e1d54803f08c284bcc5c79f474ec01973357b1110",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 177,
       "err1": 71,
       "err2": 177,
@@ -759,7 +766,7 @@
     },
     {
       "speaker_id": "1a7affcdbc38b0b348af446d34fb2b8796fee59b7346f82ed96686a423d450e62122ada9ea6efe1b388ceba3458b68ad38d5d569d26e07b1a6ade03309ca9d31",
-      "stratum": "South Asian English",
+      "stratum": "US English",
       "wc": 163,
       "err1": 18,
       "err2": 163,
@@ -772,7 +779,7 @@
     },
     {
       "speaker_id": "1a922227ae3147d84b70c2103fbec940f0c5969b56362810eddbc71cf061fb81f206ff623ddbe02c48efec2d9f3e85ca91fce18d39abf3ff75a17f06d0012218",
-      "stratum": "US English",
+      "stratum": "Irish English",
       "wc": 121,
       "err1": 6,
       "err2": 121,
@@ -798,7 +805,7 @@
     },
     {
       "speaker_id": "1bc3dc0bc84f16ba31209af3ff03ec57825fb126e2afbca29c4abaa493c1edb2a209c4c260df10a094c5707acc1ad5afdd2e8e8c04f41740ebdd654ac3745994",
-      "stratum": "US English",
+      "stratum": "Canadian English",
       "wc": 127,
       "err1": 14,
       "err2": 127,
@@ -850,7 +857,7 @@
     },
     {
       "speaker_id": "1c673b0209f32b4203637065b31d919e1b6b74be2c814c3f8d730f7cc0f2b208661ff150ae009fae92be380cceadf8c8be6b6b53b9fffcbe1715c8badd7df646",
-      "stratum": "Irish English",
+      "stratum": "US English",
       "wc": 156,
       "err1": 20,
       "err2": 156,
@@ -863,7 +870,7 @@
     },
     {
       "speaker_id": "1d6a501a96c5b8e7dc7c6a75c5f3168b919aa36bc57aacda79e7d1e59abc278fde272682b02285ae49eacc285f2ce7b7bbbb9e94d13da58f4d20e1900df464bb",
-      "stratum": "US English",
+      "stratum": "Canadian English",
       "wc": 159,
       "err1": 27,
       "err2": 159,
@@ -876,7 +883,7 @@
     },
     {
       "speaker_id": "1da450b6301a8d238e03585463e37646c28f93ecb63350eec40517f346e6abaae1a21181c08eb30a7c5c766366204f87b82b4bc2512822c962fae7081ba1456c",
-      "stratum": "Canadian English",
+      "stratum": "South Asian English",
       "wc": 140,
       "err1": 44,
       "err2": 140,
@@ -967,7 +974,7 @@
     },
     {
       "speaker_id": "1edef8cbf1e616f3a351ca1f2e4c0e000fc2ff1a9a57b53fca15f582a38d1501f289051d36e1b4f9ad3dbd8458e4ba83ba10b9f7b6b2961b00a08e789da37c0e",
-      "stratum": "South Asian English",
+      "stratum": "England English",
       "wc": 160,
       "err1": 34,
       "err2": 160,
@@ -980,7 +987,7 @@
     },
     {
       "speaker_id": "1ffd1a9933b407f9f9387b822c84e5dcd6c7e66865cf61bb304af8e48cdc53363387bc78056e491f621752497265ced735da4945fa7f80c79dc695a282636736",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 155,
       "err1": 18,
       "err2": 155,
@@ -1006,7 +1013,7 @@
     },
     {
       "speaker_id": "21061a982dde360ab68e331cc969e3c59d276b07e7c95c7b1e94c327f083f9c5fccd33f9bc15149d58ca37d0046f48903427b25865e64ddc71e123aedb250028",
-      "stratum": "US English",
+      "stratum": "Australian English",
       "wc": 170,
       "err1": 52,
       "err2": 170,
@@ -1032,7 +1039,7 @@
     },
     {
       "speaker_id": "21e9e0128cafe8441ceba07e1c33df29b8db82cae5ce1a77739908b5bffc9dcd57e32bd7a03b7e6df8ee7429cbdf912f785a94ea6e6d2da1b0df97ab8ede8b26",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 171,
       "err1": 37,
       "err2": 171,
@@ -1058,7 +1065,7 @@
     },
     {
       "speaker_id": "225d33c2d8a19c7d9194ff7ad519cc802d2024fbd4dcde25b21ff4f70de39418eb40621debeb7fb03fd55e0c8dd3de5bfc45298391997cc5d0bc950a1e88990f",
-      "stratum": "England English",
+      "stratum": "South Asian English",
       "wc": 152,
       "err1": 67,
       "err2": 152,
@@ -1071,7 +1078,7 @@
     },
     {
       "speaker_id": "228d0ff37ef3656c0a469feb17a26feeac579bd0ac1243de5b4230855a3e673856ecfc3a8daf74bc281d1989644ffdb6bb19f7e8a63fb85eb6212b34360218cc",
-      "stratum": "South Asian English",
+      "stratum": "US English",
       "wc": 165,
       "err1": 26,
       "err2": 165,
@@ -1084,7 +1091,7 @@
     },
     {
       "speaker_id": "24f4118fa06f6ebbe906780b221afea1d580645db0dd8af826dbf146790919c2fb8f41a0da185e666fe7f2bc15f598d66d008c9dc4f67147d18625e133fb546a",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 147,
       "err1": 85,
       "err2": 147,
@@ -1110,7 +1117,7 @@
     },
     {
       "speaker_id": "25fa409389143296ea768fe4fb78e1b14a50ed7300abaeb8502fd5cd9724f220b62a34f6e72fb1e2efe64a9d03290c9629752b9d9a0c161b8c197e1539e110f9",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 169,
       "err1": 9,
       "err2": 169,
@@ -1123,7 +1130,7 @@
     },
     {
       "speaker_id": "26119d8875376e9919a93ab63e3b76854cdc4169cf5678a6b13b3686eb1d2fcbacd475c1ea243ba85bcfdf63102208986f87a0b92c7abd6f235e2e116df36426",
-      "stratum": "Irish English",
+      "stratum": "England English",
       "wc": 157,
       "err1": 26,
       "err2": 157,
@@ -1136,7 +1143,7 @@
     },
     {
       "speaker_id": "273dbc98471a3d12cad2db9bcab5e0f54ab1ca2f9a76d4c9837163357df218fe1e0580c90426eec214790d5e8044267e14f16e822dca46929480453c7b7be5b9",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 159,
       "err1": 39,
       "err2": 159,
@@ -1162,7 +1169,7 @@
     },
     {
       "speaker_id": "28f2583a95856e753fdc84be691edcf0bd3b3be087532d5e8c0798fb99c521ef4b93021b09fed3c18a1f2a14fe09400377c1a92a56e9473e890f39b471cd23b0",
-      "stratum": "Canadian English",
+      "stratum": "Australian English",
       "wc": 155,
       "err1": 43,
       "err2": 155,
@@ -1175,7 +1182,7 @@
     },
     {
       "speaker_id": "2a4698fdef9d5e565aba3ac795716c6882f5fbffaf7d463a423883cd90844d08635f1d45e7f74031b8d670c65dab54b1eadcaa334f02c4ed704412e64dd4bcf3",
-      "stratum": "Australian English",
+      "stratum": "US English",
       "wc": 116,
       "err1": 23,
       "err2": 116,
@@ -1188,7 +1195,7 @@
     },
     {
       "speaker_id": "2a66b494a387c21e0e0dade3689963bf9823466863a27d694e1ff2ac4565b0cac716411df038fafcd60efb1e40ddf3c0d0bbb709ce99c7bf0d526d59a47806aa",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 112,
       "err1": 15,
       "err2": 112,
@@ -1214,7 +1221,7 @@
     },
     {
       "speaker_id": "2abbfe4ac20ff2fbeb9a112f9b459aa3fd200163c38fab24bfe09eee89edbfbccf88b9cafe2e4ceb47a919a293baebec04390bda40227a07dcd77046690aca15",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 164,
       "err1": 26,
       "err2": 164,
@@ -1227,7 +1234,7 @@
     },
     {
       "speaker_id": "2b2ce509f346ee3eb7107d05e5c2dea1eeea792ab4c499d5d27a7aad2b804ee9ddd5f8728d3ace479f04ad1f489ad64097c5b0129f244ab2c4d070f5ea3e3dc2",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 178,
       "err1": 23,
       "err2": 178,
@@ -1240,7 +1247,7 @@
     },
     {
       "speaker_id": "2c0875458cea5bf7aa07fb4960b7c1ca4043af3c52215c8ca03f3b5c1a523ce79ee2a235e91158a9f3688efc2a25cec29b1203288837f68f9e7465cc141ed850",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 140,
       "err1": 14,
       "err2": 140,
@@ -1279,7 +1286,7 @@
     },
     {
       "speaker_id": "2f5baec923e6c50d5537fc8e7d31dfe2d2ab5ef3dc46d6d122b2bff3d9d32cdc0631f2200f13538d9ccf2aa34c2c206719eb7285c8eab95f6d4533b233fb8c34",
-      "stratum": "US English",
+      "stratum": "Canadian English",
       "wc": 156,
       "err1": 14,
       "err2": 156,
@@ -1292,7 +1299,7 @@
     },
     {
       "speaker_id": "3074179766a4bb229c15e2d0872c4ed67e86b0c8829e62ec40a01262800547c89f891da3a1ba490aec6fa7806bdccb57a8fe6d057459f523818ff9f32a3fecce",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 159,
       "err1": 18,
       "err2": 159,
@@ -1318,7 +1325,7 @@
     },
     {
       "speaker_id": "30d8532cb4eaf720f5b7b5be31778fc97030ea8f8ea04611c61b8e14535334877855e0f35203ee73c261a807538cd2c3d37f7ff361d7b6111c84423b228218db",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 162,
       "err1": 54,
       "err2": 162,
@@ -1331,7 +1338,7 @@
     },
     {
       "speaker_id": "3294186a191056dceac15367869e30435d2428704ee92694e87139d6c2090e49503bf232cf829635b962f708c228a16bdc1b0ff56c20656a76b6550cb6484d84",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 156,
       "err1": 25,
       "err2": 156,
@@ -1344,7 +1351,7 @@
     },
     {
       "speaker_id": "338482eafddb09144e292938fb4e368e465e7951303b2a82d2ed2574ca2ea06e7925aaaf533d2c6ae41649096a7555af0d2e0567b52a824c927e0b378c3604b3",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 113,
       "err1": 15,
       "err2": 113,
@@ -1370,7 +1377,7 @@
     },
     {
       "speaker_id": "357208a91f3bd8871a315736d8069d2471054f7129a79549a10a7d5968baca7b4e1b1e7c8999ac69ce1f16f84bbd688fd7e4fbb9e34677df12edd756269e754e",
-      "stratum": "Irish English",
+      "stratum": "Canadian English",
       "wc": 152,
       "err1": 30,
       "err2": 152,
@@ -1383,7 +1390,7 @@
     },
     {
       "speaker_id": "3605f1397b42e98b20961e226a151f2814ebceda224b352af3aeafb6b4f8487a1075d8728146cf0da9193439e548cb06b639acf5021c2caa9d61c20444de2e40",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 154,
       "err1": 27,
       "err2": 154,
@@ -1396,7 +1403,7 @@
     },
     {
       "speaker_id": "378f878bcfed1dc653373dfd8254bfbc70fb155a2792d4ebb5c3862556cd5cda753ed4c0fcbcc3bc2de4dec6851ca240f5ddb5aecd4a7b82c18ac8daeb55b9ea",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 111,
       "err1": 25,
       "err2": 111,
@@ -1422,7 +1429,7 @@
     },
     {
       "speaker_id": "386ffce2d025c70036bbb60106cfa2bec83001d9051993927f63655c52383c1c2054d9b7bed046a9c5b12193c3129d20594b521d445e86dd8226a41769b31cea",
-      "stratum": "South Asian English",
+      "stratum": "England English",
       "wc": 84,
       "err1": 15,
       "err2": 84,
@@ -1435,7 +1442,7 @@
     },
     {
       "speaker_id": "38daa2cca9a58efc9319ff94df21cb62100f444046968ec325d3bb0ff68c2ee88efd5e1d32fb1024196ce0edc884ebbc36650cd02a7c2ee3ee38c8d85ee4a20a",
-      "stratum": "England English",
+      "stratum": "South Asian English",
       "wc": 145,
       "err1": 22,
       "err2": 145,
@@ -1448,7 +1455,7 @@
     },
     {
       "speaker_id": "394130d7e8553b60d1026fc24471bf47e6d5d29b46718b08e70486b556a306f23e39611aecd792ff25e9a9f982e4f4766dfa7fd2d3970736193c94699d49b22b",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 151,
       "err1": 5,
       "err2": 151,
@@ -1474,7 +1481,7 @@
     },
     {
       "speaker_id": "3b6461acf4d89c65caece3362357d232f371e26036b56947c3b74c9e9311315cd9e2bbb714c8b7d0c6a58bc2b1d5e24424bd90c13dc7596d8cb6b96bb5a20b4f",
-      "stratum": "Irish English",
+      "stratum": "Canadian English",
       "wc": 95,
       "err1": 10,
       "err2": 95,
@@ -1487,7 +1494,7 @@
     },
     {
       "speaker_id": "3b97a91b90f6143c6691d6c22eb9780f7e778f7df65f635233c39ce4034752e70b1ca40c75b263f9d703e1d3e9bfe4f0afde790d7871867cfa255fe40d73d2b6",
-      "stratum": "Canadian English",
+      "stratum": "South Asian English",
       "wc": 116,
       "err1": 23,
       "err2": 116,
@@ -1500,7 +1507,7 @@
     },
     {
       "speaker_id": "3bb3a36c57cda41bf756f07477da3e805355dd9b1b9e07f387e0360d7d7d083acbfc6bd86ce3c269e534875bc1f3c13ca4fa18a68f34852747a462b80a1c1b8f",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 157,
       "err1": 42,
       "err2": 157,
@@ -1526,7 +1533,7 @@
     },
     {
       "speaker_id": "3c385c6e0ec5f44edf089882a0f3db43d31fb791efc43ee6c89a201edb36f3b791382bb44c47568380335b17ad931bb9a2607829e03455da292a09b33c3da3a1",
-      "stratum": "Irish English",
+      "stratum": "England English",
       "wc": 139,
       "err1": 34,
       "err2": 139,
@@ -1539,7 +1546,7 @@
     },
     {
       "speaker_id": "3ce9fbff2dbb3ddf83e09e295ad7c1472a7b0537f97fbb77afe1cdcccd998a845733c96c61c75d16136655d2beafa9f832f91e35a98c30c4449d6417f845d462",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 132,
       "err1": 26,
       "err2": 132,
@@ -1552,7 +1559,7 @@
     },
     {
       "speaker_id": "3d4645ad563d70702a4525944c944b5df9d113295cf4f296fde6081ef9869502efd6bfd473a2d07621910109fe2778f759844f738485787a39dc6d68cba75e80",
-      "stratum": "Irish English",
+      "stratum": "England English",
       "wc": 142,
       "err1": 11,
       "err2": 142,
@@ -1578,7 +1585,7 @@
     },
     {
       "speaker_id": "3dbb15be45bbb6a44cee0c715a4fd06c4e5267061420217c4a4279a8f47365fa3c7243c274d08ddaa39a11d39b1c281760c59e358f1a4b14914923605831a3b8",
-      "stratum": "Australian English",
+      "stratum": "South Asian English",
       "wc": 122,
       "err1": 37,
       "err2": 122,
@@ -1591,7 +1598,7 @@
     },
     {
       "speaker_id": "3dc96094f97daf2480e974d3efcc92849f3fe63d00fb65b4150bea55096a8acff78773de66cb06c6dfaf112f495779d93b359fd3cb5af39c7f4a7658ce77f157",
-      "stratum": "South Asian English",
+      "stratum": "US English",
       "wc": 128,
       "err1": 28,
       "err2": 128,
@@ -1604,7 +1611,7 @@
     },
     {
       "speaker_id": "3e6ce773541549eb2e39e9d3954f5e8baad6fb486b21ce3fe5f52c2d54b03d56788db3a919dc7c985bde536767c5826f0b44f132c101c054e4e4a4ff72e98502",
-      "stratum": "US English",
+      "stratum": "Irish English",
       "wc": 194,
       "err1": 12,
       "err2": 194,
@@ -1630,7 +1637,7 @@
     },
     {
       "speaker_id": "406c2c523baadda67bea5059601740908dbae3e9608bc98b35fc4c1e1b1321e6e534c9c6be0b9783b8484dd44894d5f4451c3110e8b6055e40eadf43c2b0d26d",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 157,
       "err1": 16,
       "err2": 157,
@@ -1643,7 +1650,7 @@
     },
     {
       "speaker_id": "4084e0cf2e63ca96d94d6da004a5d93409e2a786e1a164d5c24bd59fd24c3c04ecdbf125dd8b85c26d6f8e18b830593c41899bbd4b30c7952c8b00b8b1835ffc",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 138,
       "err1": 35,
       "err2": 138,
@@ -1695,7 +1702,7 @@
     },
     {
       "speaker_id": "4322c47c95771ee69b2b68cec47aeb5a9fcfd6673432f70fb35618df7946b10e027a3e91117ec90fddd57175495f0da22a1b05b1179b3f41237246d4c6b80e0a",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 153,
       "err1": 61,
       "err2": 153,
@@ -1708,7 +1715,7 @@
     },
     {
       "speaker_id": "43a51f37b61799b1c1e4079761411c6a1a67b7d95bdab930f46e2491b3f6610df2deae0c91d5e9747a233cbf8b7da841d6124ba42ddc09f680982600c874ffb7",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 137,
       "err1": 8,
       "err2": 137,
@@ -1734,7 +1741,7 @@
     },
     {
       "speaker_id": "44646075aa4622196200686758a097f1dc2e827cafe071c0a108bc8251fe2bea7f3b3ac728dd5b9ad43d973dfeeb83bde790de6dc0bf267aefb45d8309175ace",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 186,
       "err1": 18,
       "err2": 186,
@@ -1747,7 +1754,7 @@
     },
     {
       "speaker_id": "45386ac0e401e71c1e0cc4187361d8df6c971b2c420e0237f207a3845f35a6cb1a5f35a6f4b4273e36c6e51d1d0cc3602a401f389c023cd002caae5b99754a53",
-      "stratum": "Irish English",
+      "stratum": "Canadian English",
       "wc": 153,
       "err1": 44,
       "err2": 153,
@@ -1760,7 +1767,7 @@
     },
     {
       "speaker_id": "478c06f2dc0d4726f93187e83ef991c8f3f0f5d7a19e04d9c3b31198f94b6c0825126e36427a6099a4ee810cf6ef5ff5ac470560ef7156a2a88ec0c19a940555",
-      "stratum": "Canadian English",
+      "stratum": "England English",
       "wc": 142,
       "err1": 28,
       "err2": 142,
@@ -1799,7 +1806,7 @@
     },
     {
       "speaker_id": "48681f5130163687194536c34c5e5a6c627f8e0e906d6490f312ae7237eec1ed0bd43f1d566f6bd0f701bc5cc67624bc09014d4a0acde7c98520bd54d75312b3",
-      "stratum": "Australian English",
+      "stratum": "South Asian English",
       "wc": 126,
       "err1": 56,
       "err2": 126,
@@ -1812,7 +1819,7 @@
     },
     {
       "speaker_id": "494cf403866e7cf818ffeefed5de56b4bd3cecef0a1e33138c94b2c495b6166d9cb2753357c78669c3e2e95fd7769cd69d5f0fed3d46c83c0274e8b99e31deac",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 164,
       "err1": 14,
       "err2": 164,
@@ -1838,7 +1845,7 @@
     },
     {
       "speaker_id": "4b17c03c0bb1ff68195391c863fad2685aaa8f9da0ec1731a44df0ea6d787235262cb9d63d090844203c43cbb3786d0089ec725ae473208a927e42760b0335b9",
-      "stratum": "Irish English",
+      "stratum": "Australian English",
       "wc": 167,
       "err1": 12,
       "err2": 167,
@@ -1890,7 +1897,7 @@
     },
     {
       "speaker_id": "4c922f65df814ef0a55676518b59cbbd566b959a541e0075c6962b3e951c08a1fd315aa7bc2c4dcf52af45b03f2373613554c05c9b41acd38e42bf8f2159bd42",
-      "stratum": "US English",
+      "stratum": "Australian English",
       "wc": 163,
       "err1": 21,
       "err2": 163,
@@ -1903,7 +1910,7 @@
     },
     {
       "speaker_id": "4ce90dfb8a8cb0947a051a330ca15cdf8f7c4747737fdb7f3853a6d88ca8f8be787683e2ed984caf8ab2e613c834e14c9790f9419428355128486aa51ccc6c4e",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 159,
       "err1": 49,
       "err2": 159,
@@ -1916,7 +1923,7 @@
     },
     {
       "speaker_id": "4d25a814abf402e8383e5ee561bfdaa32baf602eedeff371833d1412d2352dca355419018152daa9f6a62d598dea2f8eefe722b111318f00b28ae795ac0cfbb2",
-      "stratum": "England English",
+      "stratum": "Canadian English",
       "wc": 136,
       "err1": 15,
       "err2": 136,
@@ -1942,7 +1949,7 @@
     },
     {
       "speaker_id": "4d9375bfa93addd7afde166175d623ced4ebbbf9585e3f39e3c69c20433137a4769d94affa9dfcb72577ea77300615cb5d8839a973b742cb55febdecf346d21e",
-      "stratum": "US English",
+      "stratum": "Canadian English",
       "wc": 107,
       "err1": 7,
       "err2": 107,
@@ -1955,7 +1962,7 @@
     },
     {
       "speaker_id": "4da7e0d9bff514889010bd85fc0ad01b0b3afd7d08604351ba08a7835737b4c179bfda545bd798997eaa20ad3db677ed241e1dead7dc711a879f470bce631a14",
-      "stratum": "Canadian English",
+      "stratum": "England English",
       "wc": 135,
       "err1": 33,
       "err2": 135,
@@ -1968,7 +1975,7 @@
     },
     {
       "speaker_id": "4dd092547992c4146c3d64678faa89c96f8d9a85add0d40b5e358be437a05f85d9e4d2a927a59d515a0e83be8f027802c29ea33eaf3218ed5b2c413a3df3c7d8",
-      "stratum": "England English",
+      "stratum": "Canadian English",
       "wc": 130,
       "err1": 18,
       "err2": 130,
@@ -1994,7 +2001,7 @@
     },
     {
       "speaker_id": "4e48b9ce49792978fabe05374d3d2e0ad546b03d07ebec9bf7328e12d3b5d0f8e6ff189d93c5b61cc3b49f0ed2f38656972783990fd8892725fc166ea6c8b584",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 158,
       "err1": 65,
       "err2": 158,
@@ -2007,7 +2014,7 @@
     },
     {
       "speaker_id": "4eaccca03a6d685a8a1156694bd3816a382ea710df2d8af621b65c931973278c85b475545b68c67904f6e4a0f09aeb4e6db9a863c76ae0acef9b78bc38312938",
-      "stratum": "South Asian English",
+      "stratum": "Australian English",
       "wc": 98,
       "err1": 24,
       "err2": 98,
@@ -2020,7 +2027,7 @@
     },
     {
       "speaker_id": "4fcdd17805b736cac2dc920985d2187185e759b54d9cfe7d2654dd8f4aff10e630e579edcb5cb4d04f215bebe6d096d9e932203345ad7272e889beca6a5c20e7",
-      "stratum": "Australian English",
+      "stratum": "South Asian English",
       "wc": 141,
       "err1": 137,
       "err2": 141,
@@ -2046,7 +2053,7 @@
     },
     {
       "speaker_id": "51573d137764ccf250c88949892f4d9b109ffd6dbe39ee48f25849009c494c91b5841d6f33d922324edb789d8a1b6e9da28e6644eefc2b6ccf39fb400bc81ff6",
-      "stratum": "Irish English",
+      "stratum": "Canadian English",
       "wc": 159,
       "err1": 8,
       "err2": 159,
@@ -2072,7 +2079,7 @@
     },
     {
       "speaker_id": "51f6d7bfd151230e24824202b404431812c5e0fa839eb11277f1d3b92c73f30bed0f8d6d69e4529994a39840104024c64bf5823f9eda7c99141ab80d2dee34a4",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 178,
       "err1": 68,
       "err2": 178,
@@ -2098,7 +2105,7 @@
     },
     {
       "speaker_id": "52aa80e4d2f163293d06a4e176b64c8dddab12b09372c24cb41c75ae991634a8a1d4828b967c457c60d025d9fb1b46a44138572a2a014ecaf53ac8f8d468a0ea",
-      "stratum": "Canadian English",
+      "stratum": "US English",
       "wc": 128,
       "err1": 33,
       "err2": 128,
@@ -2124,7 +2131,7 @@
     },
     {
       "speaker_id": "53cdaa3b5002c77a2d9b0cb7fc1bcb6f82ebffd2ad8e90f32600ca6a009b83b52d0a937c986fdee66d80fdfd2309d5551f8e4920e997f99dad64515dfc3cdb2c",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 143,
       "err1": 28,
       "err2": 143,
@@ -2150,7 +2157,7 @@
     },
     {
       "speaker_id": "54cf4ee3899847bd13620072bb36c2f1b29069f3b9da0bed95f598ddab1963135223f9f6988a330559b9d781ff66d2a586a2ab14a4e4bf43522638ed97f10ebb",
-      "stratum": "Canadian English",
+      "stratum": "South Asian English",
       "wc": 143,
       "err1": 45,
       "err2": 143,
@@ -2163,7 +2170,7 @@
     },
     {
       "speaker_id": "54eeac8ea3badf2cc01f117fac62ff1c24249efad1ac84078aabc89885396a3a3638f499a4ba2db7fa307db674cf21d3060c421cfac137ceacecd373053c3bb9",
-      "stratum": "South Asian English",
+      "stratum": "US English",
       "wc": 149,
       "err1": 20,
       "err2": 149,
@@ -2176,7 +2183,7 @@
     },
     {
       "speaker_id": "550d4cf3e358b328079d6c1458c4e4dfaaeb4491e6a70a41b0d675852a9d2a9ffc03594c69962922d97e266b43606c93665d7b6c302096457bdecd7838aa0b54",
-      "stratum": "US English",
+      "stratum": "Australian English",
       "wc": 149,
       "err1": 45,
       "err2": 149,
@@ -2202,7 +2209,7 @@
     },
     {
       "speaker_id": "5566f3e5b6f464b7951a4eb8550a0f8fc2b96c7377a266c0ecf93fee2738fe116552bdeaf0b5e7852d2ff9c62d963f0c37541805d95be1198cfbf2ede4d13497",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 96,
       "err1": 22,
       "err2": 96,
@@ -2215,7 +2222,7 @@
     },
     {
       "speaker_id": "558b3346ddec03f77f10b292c5bfb381161d5fd46b1db68bab4878806da98865fbf9cfd7a8b0fbe7fd321770622c9d4ba79e042fe2bdbf599e28f6f7c7cce917",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 184,
       "err1": 67,
       "err2": 184,
@@ -2254,7 +2261,7 @@
     },
     {
       "speaker_id": "5633df4160c8d2cb8153643874cdac4e2aea1fd117d0bae745824e14eb719cb714a3404165b3cb132afd4061371bbca1fc70a294a85babc553fe547bef1fcb0f",
-      "stratum": "Canadian English",
+      "stratum": "South Asian English",
       "wc": 166,
       "err1": 56,
       "err2": 166,
@@ -2280,7 +2287,7 @@
     },
     {
       "speaker_id": "56d9419eaa778a3e9f165d6f4182065613e04ddcac585a9f92738650f653c2e1c944e98fafbb91a051eae96a258bd0f90f92f156a6242f734bcb350f2580c588",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 166,
       "err1": 42,
       "err2": 166,
@@ -2319,7 +2326,7 @@
     },
     {
       "speaker_id": "58729219b29642dee2d0e4546839ffd53611d76afc866da502c93bb8f601d6d734e3447f524d250d3eacf8219f8845a84551f9e6699335c9abd29c90ec5cf2a4",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 157,
       "err1": 111,
       "err2": 157,
@@ -2358,7 +2365,7 @@
     },
     {
       "speaker_id": "59a350ba345823f7b516bbf091978d8950997dd42108f7907aab50e6d626525f338e6767cc9541b95667fdf1825cb99d87c2fa0ec971bcdd34e5f2ffeee39285",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 100,
       "err1": 15,
       "err2": 100,
@@ -2371,7 +2378,7 @@
     },
     {
       "speaker_id": "59c2c641bba601e49e0dd72ea1b7a19b93c57f8c75c839a0c43dab73635332065ce41b791eef1899e5855e04c64eb75c348e4eac479f80c78b2d19bcbb09d609",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 177,
       "err1": 45,
       "err2": 177,
@@ -2423,7 +2430,7 @@
     },
     {
       "speaker_id": "5b9b3c1dbce5a24235f5f8df126e1d6b988ff9e0a2b2f2b5c90b644b623376ea6923bdec540b1ae33d6943d6ffd2dadf39d58325a6aa71a38f5b7326d05169ad",
-      "stratum": "South Asian English",
+      "stratum": "Australian English",
       "wc": 156,
       "err1": 23,
       "err2": 156,
@@ -2462,7 +2469,7 @@
     },
     {
       "speaker_id": "5d11b952e9611a75d83a6b37c9eb61990cda39a280a57ed6b8e1e5169bbf408c23a2618a05bd8ed04bef3258fc84db91cac825708b4163b8053d8301d130370b",
-      "stratum": "England English",
+      "stratum": "South Asian English",
       "wc": 177,
       "err1": 95,
       "err2": 177,
@@ -2475,7 +2482,7 @@
     },
     {
       "speaker_id": "5de424a68012cf2938d0651d7f269248ec895b1740d376251e87b4f68202e20ab6dc8d0999d66e6fa267de63f10055f0e8952fe9587099f0f3d700de283d706c",
-      "stratum": "South Asian English",
+      "stratum": "England English",
       "wc": 141,
       "err1": 10,
       "err2": 141,
@@ -2488,7 +2495,7 @@
     },
     {
       "speaker_id": "5eb089d0174fcd185ef14ee75402e1764a841f308508067cabe839c1e25bb446b855ef543f65d6c47400c36a5f874e88d81bfd402a8779cc7017b411b2e4d030",
-      "stratum": "England English",
+      "stratum": "South Asian English",
       "wc": 139,
       "err1": 42,
       "err2": 139,
@@ -2514,7 +2521,7 @@
     },
     {
       "speaker_id": "5ec6273f434cc93af78a5f27d04f8b14b63a4bd1303ace5f969939cc8de28753bbd17708ad56da3f655750fbb94378b6b0cdd7ca9f89fdb0bdc2fa51fd3a8704",
-      "stratum": "Irish English",
+      "stratum": "US English",
       "wc": 181,
       "err1": 29,
       "err2": 181,
@@ -2527,7 +2534,7 @@
     },
     {
       "speaker_id": "619f08dd806f9ccce744ffcfed4c1f5dd587313dd11d5723adf1b56f75db629dabe0a1d2065c87857b7305d8e938feeddaf678fac61b3d50b99224b4c94a2c01",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 138,
       "err1": 15,
       "err2": 138,
@@ -2540,7 +2547,7 @@
     },
     {
       "speaker_id": "61d4a96f2dd5494366f0480abe0c7b73387470bafb7d3f2e1212a43ee975731509539e3af173ce34cd452c2fdd46825f1a910478477dc0199fb5c1ab2fb2ceab",
-      "stratum": "South Asian English",
+      "stratum": "US English",
       "wc": 106,
       "err1": 4,
       "err2": 106,
@@ -2566,7 +2573,7 @@
     },
     {
       "speaker_id": "64b5e90b4a328f7deb156cf48571ca130af44d963c8e4c685c2f4c3ad48f7faa2cb1c492c009c393ac588106dc33c453bce2b9eb93b38745db59b07c112a908f",
-      "stratum": "Australian English",
+      "stratum": "South Asian English",
       "wc": 111,
       "err1": 35,
       "err2": 111,
@@ -2592,7 +2599,7 @@
     },
     {
       "speaker_id": "65b74f58b14b412b1801827744b00ba7310e8c28aad8004060fbde11b7eec8d0267dcb4a14dadcf403868d3d969c51786b5275b45862e83a786f7be39d3f67c6",
-      "stratum": "South Asian English",
+      "stratum": "US English",
       "wc": 152,
       "err1": 93,
       "err2": 152,
@@ -2618,7 +2625,7 @@
     },
     {
       "speaker_id": "6696dbd92a25020660c2185fa4d54e530b3ec446bc248696a0aa5144108071fad15b2e3295f370c49682d0e58c9db2e317f160c21c3af760e36455a85c42e6cc",
-      "stratum": "Irish English",
+      "stratum": "England English",
       "wc": 144,
       "err1": 37,
       "err2": 144,
@@ -2631,7 +2638,7 @@
     },
     {
       "speaker_id": "66a3784228333ced27b62daacd1cb933fe5df5069c1bcad621d93539d13ec5022b713a9799fed0afff57cce9c5f64bed0a6197cb811767f1d8d225afbd2d957a",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 128,
       "err1": 24,
       "err2": 128,
@@ -2670,7 +2677,7 @@
     },
     {
       "speaker_id": "688bf0257801f329a2baf0eda29ee98e2d0eab5686f19b440d3be5c86ad136ef8b10c5ef89b59e8dd4660d1f6cef1e3acc157248283cb45f4ffa0a500cce5388",
-      "stratum": "Australian English",
+      "stratum": "Irish English",
       "wc": 135,
       "err1": 15,
       "err2": 135,
@@ -2683,7 +2690,7 @@
     },
     {
       "speaker_id": "694f653ba2431188dd9e70a4742071c13e5c3720cb8401584d5cab790a0c5279c5fa2aa1c7bcb578f2b3bcbd63d1cce2f44ca02d7e3aae779733f990ff60b722",
-      "stratum": "Irish English",
+      "stratum": "Canadian English",
       "wc": 156,
       "err1": 44,
       "err2": 156,
@@ -2696,7 +2703,7 @@
     },
     {
       "speaker_id": "69fb9ad6ce75856cb59cc1415e15f6e900746bb7ac1140ce1cf7c6d72fab3c6532a3bace72a18ed001998e03c5a32f199c2e0aafeaf48e411904ddd113556de6",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 163,
       "err1": 31,
       "err2": 163,
@@ -2722,7 +2729,7 @@
     },
     {
       "speaker_id": "6a2f9b251c8f220691125b50134ca04ad7a00ec3d4e0a3117e2f982f9abe9f2e75a7ce4ad580b5b93b006a1aded013b707f8d54b16ff96f743ae512a98fca85a",
-      "stratum": "South Asian English",
+      "stratum": "Australian English",
       "wc": 138,
       "err1": 17,
       "err2": 138,
@@ -2735,7 +2742,7 @@
     },
     {
       "speaker_id": "6a6236a9bc1d2c811e5082f8270bdab31f894cdf29d5c33253f81e17ff3fe3ac9ab9977be55e93a3e38f0ac1ed8da45366fded40026629c50cc39462a0251c53",
-      "stratum": "Australian English",
+      "stratum": "Canadian English",
       "wc": 127,
       "err1": 28,
       "err2": 127,
@@ -2748,7 +2755,7 @@
     },
     {
       "speaker_id": "6b3dea408fa18a20674ac661d052eef911b07f3bebed6075f222940ce6fc0ba4a112dcc4f32674d2ad59b72cb90f39b42ab0f8258a0dae266528561c632f9a36",
-      "stratum": "Canadian English",
+      "stratum": "US English",
       "wc": 172,
       "err1": 24,
       "err2": 172,
@@ -2774,7 +2781,7 @@
     },
     {
       "speaker_id": "6baad24ab95ead4b63785bc8b944404e6cb2804480753b7ef1b0ebd9d741e90e6073f79bb04b1b1d49e3fbe2427555bb38b187256d1b916bfdb766bd59cb8ad3",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 127,
       "err1": 36,
       "err2": 127,
@@ -2787,7 +2794,7 @@
     },
     {
       "speaker_id": "6c774212f9c8f01c32f049a1b519c5c3724c840d7f0d27b0df6654acd4a4280ec1c4f3857a55be1f2e2b751a780c4d26aebb620d135e2317d625a2cb50dbf755",
-      "stratum": "Australian English",
+      "stratum": "US English",
       "wc": 164,
       "err1": 22,
       "err2": 164,
@@ -2800,7 +2807,7 @@
     },
     {
       "speaker_id": "6d9075f05819658b13640f570c53f235a18841635e5201c73976689728ea74a52b6379ca4b3186408ac912e1d4b4cf90966abce351f022cb11ab98d150876aac",
-      "stratum": "US English",
+      "stratum": "Australian English",
       "wc": 159,
       "err1": 47,
       "err2": 159,
@@ -2826,7 +2833,7 @@
     },
     {
       "speaker_id": "6f1e1b0fde97fbc527d121f6bc7b75b93d5f4ea48439d05944a9bdc724b72c3a89ebbf892a52fe14302d6e575fc93aa51eb7753b198bb2dfc42ee9e738755360",
-      "stratum": "Australian English",
+      "stratum": "Irish English",
       "wc": 144,
       "err1": 22,
       "err2": 144,
@@ -2839,7 +2846,7 @@
     },
     {
       "speaker_id": "70c96a46f6827039223782fee3a93b99fa8168c84d3e5f9a0e2a1f16cfc1d62ad6f52d19ac175ad3ee541abd81068d089df3693e843b932053395156f6ff36b6",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 160,
       "err1": 50,
       "err2": 160,
@@ -2852,7 +2859,7 @@
     },
     {
       "speaker_id": "70cc264d0733cfcabbf843769d725046fc2d9f0d25733f6a2a7af7b28e2f6c878b99bafea7ff8e1507d3366ea3c51e3f91193bee87909e3a849d8a3705cdbfaa",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 155,
       "err1": 44,
       "err2": 155,
@@ -2878,7 +2885,7 @@
     },
     {
       "speaker_id": "71117b0ec4c2239327b102731cb0e0faedda79b49798e934b97d3434525e2226f6c981a161bf232a0c67d47402c6141a4b18fc452142c3b16d4fc6de806674e8",
-      "stratum": "Australian English",
+      "stratum": "Irish English",
       "wc": 103,
       "err1": 28,
       "err2": 103,
@@ -2891,7 +2898,7 @@
     },
     {
       "speaker_id": "717ce094736b71bc4a671a31a78d776ecc6c775524982ca5e5f26c39d22b0aa74c921e1467868b67f82ff36d6d9d21e2b002e645ab72f81ca8e2612eeef64301",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 150,
       "err1": 67,
       "err2": 150,
@@ -2930,7 +2937,7 @@
     },
     {
       "speaker_id": "734d2c2280785641a4b9967b69eeec69c2f8562a9b599cdce4805d50726bd4a7110d14951d2ed9b92d80a637a3cdfccb3d82d7598a69fe323c34524980c53570",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 108,
       "err1": 46,
       "err2": 108,
@@ -2943,7 +2950,7 @@
     },
     {
       "speaker_id": "739dad3f7991939c8efd750b1a3bea9c6f9308e8acd5fb4bd6fecec29042f1a3ac755eb0f7c5ce5080b90d80e834c8c992bfd0e06f1daba49145cd9065085608",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 153,
       "err1": 17,
       "err2": 153,
@@ -2956,7 +2963,7 @@
     },
     {
       "speaker_id": "73a25eaf141b23dc7a5cf38aa46a002e4f2b88f8a0515ce6ef2f1a0b0ececc1978aa2dc29a719b6b7c37ecfeea11e6eb8c8c977b26083183d4729f2cb0cdc840",
-      "stratum": "Canadian English",
+      "stratum": "South Asian English",
       "wc": 142,
       "err1": 55,
       "err2": 142,
@@ -2982,7 +2989,7 @@
     },
     {
       "speaker_id": "7568d1ffde31d7917f7e0a9a8a18c19b78f1bf05e43c4ea21ea08394782780b58377ad1bb2586c8cc24ec3f7fc960649fd6e57114a8c39518e87c2d20475a315",
-      "stratum": "Australian English",
+      "stratum": "South Asian English",
       "wc": 151,
       "err1": 37,
       "err2": 151,
@@ -2995,7 +3002,7 @@
     },
     {
       "speaker_id": "774c34e1d47fea7998c4c7cc09f5f9b0da7d2a95538f55dae86d24abe2d0277a22572c49b0690ea5fc301055e7ec12c197a067004c8b9232f51e01c304d1f7c8",
-      "stratum": "South Asian English",
+      "stratum": "Australian English",
       "wc": 111,
       "err1": 20,
       "err2": 111,
@@ -3008,7 +3015,7 @@
     },
     {
       "speaker_id": "777c014d742cdcc2e612ea2ab56d64c9b5b50f5074fef5465a5ac998e17862b2caeb950f63594c77c7fd298c458efcf0a65bed17b65b873c49e22ef7431f74fd",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 118,
       "err1": 10,
       "err2": 118,
@@ -3034,7 +3041,7 @@
     },
     {
       "speaker_id": "78616d469e7e77405a03bde1fb0035eaae583b94c33ea2ef9b32300f15b72008cbd35a49c88dc07174e06e349bc21eb0520a41dea5545351d499921ff73e5590",
-      "stratum": "South Asian English",
+      "stratum": "US English",
       "wc": 154,
       "err1": 30,
       "err2": 154,
@@ -3047,7 +3054,7 @@
     },
     {
       "speaker_id": "78899c686b3bdef6619b63f98b03d3f5fdf2ca7427d0ce6dace8a10befc17941b33c5b7b7c2a808f0c670e9560ad5da356b6f4b06407ce3e1a299787168c3b6a",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 124,
       "err1": 66,
       "err2": 124,
@@ -3086,7 +3093,7 @@
     },
     {
       "speaker_id": "7968b79cb716da6f508d7b3206fd84c65f00ca09b70256a894b7ce6203bc59beeaad5c11ecf7c1d1302c05da7c412391ed5923577b3b568ca1379ddb3845895e",
-      "stratum": "Irish English",
+      "stratum": "US English",
       "wc": 118,
       "err1": 16,
       "err2": 118,
@@ -3099,7 +3106,7 @@
     },
     {
       "speaker_id": "7992ee59c8a9af9b74fd6f0cc12eaee3da35f588ff19c8859c39fb46d64da542518c2cbe3f8d7657ed6838f721781f9bbb0c82bc15bf31fb662c88b124ba6494",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 161,
       "err1": 33,
       "err2": 161,
@@ -3112,7 +3119,7 @@
     },
     {
       "speaker_id": "7a3a314e38034b1ddf9b92cb93ebdc5652eed34600e925b23163c5a4a2ba1de9581b0efa594e69b5af292f6694238b1c50d65c0063af05a221eee6f7a29bed9d",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 112,
       "err1": 41,
       "err2": 112,
@@ -3138,7 +3145,7 @@
     },
     {
       "speaker_id": "7b3aabbf2b6dedf3089a32ff9eb0c1ef060775e3cd9d98f7da20acb3d09990f1247e3634e873200c1b807c6cb99bd41371063fbf77fcca9467b575d681233d72",
-      "stratum": "US English",
+      "stratum": "Canadian English",
       "wc": 109,
       "err1": 12,
       "err2": 109,
@@ -3151,7 +3158,7 @@
     },
     {
       "speaker_id": "7b87ec951ccd0cf89bde96fd108645624fd584de3fc97ea64ac197fe5927b33f60392737fef0f3b044611313814a82c2bfd10b830a505b73d31e0da4739ba700",
-      "stratum": "Canadian English",
+      "stratum": "England English",
       "wc": 162,
       "err1": 26,
       "err2": 162,
@@ -3164,7 +3171,7 @@
     },
     {
       "speaker_id": "7b8dc15a6df174df3e09c96a3ca72a35716a52ce3dcffbef9cc07ff457d2777a8acd3288d3736978d55a5e11424f19a71f3a0dfc8ef9bac8b6ec63c14122e11f",
-      "stratum": "England English",
+      "stratum": "South Asian English",
       "wc": 132,
       "err1": 28,
       "err2": 132,
@@ -3190,7 +3197,7 @@
     },
     {
       "speaker_id": "7ccace0eec8b1a643dae87c1f7af713bd480a1113e3da0bb17afbba9a1aa1f14fe62bdfce4dc5db8f07067e449272068fe6db9be9612cc2d905150f929e488f3",
-      "stratum": "Australian English",
+      "stratum": "US English",
       "wc": 129,
       "err1": 22,
       "err2": 129,
@@ -3203,7 +3210,7 @@
     },
     {
       "speaker_id": "7d584e8019a3adc8715d9c93dd2da7615704a5d1b72afe7559e262ad5ef3d1c4d8c14bbd6f84410d72961ec59b17655d076a14d713120e3de550c4f6e9782d07",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 150,
       "err1": 22,
       "err2": 150,
@@ -3216,7 +3223,7 @@
     },
     {
       "speaker_id": "7d7e991821f232c20234a1281c6ccf8b2552cf2434991637bcb7fc74055e6f1e238504c204dd6d5c7ca9866fbb0c1db417195f5b1b464bd2b09baf53f3d628db",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 168,
       "err1": 11,
       "err2": 168,
@@ -3242,7 +3249,7 @@
     },
     {
       "speaker_id": "7dc614bc22e18236a9a39468acf818255ad62cb6be68286c3dd76293d12ae84cfd41e71edf69d49ea57c9b8c17870b77dabd326da77b4500d91dc252da14ad7d",
-      "stratum": "Irish English",
+      "stratum": "US English",
       "wc": 108,
       "err1": 13,
       "err2": 108,
@@ -3255,7 +3262,7 @@
     },
     {
       "speaker_id": "7de088282fda8e2196a5e0714e554d3b3aafed4e6aeb10b74562bf53f7e8378f19af4e1f6da2130e7d836b69643f6c77a3b5cf679a5fbfabb7c9f6728ed539d6",
-      "stratum": "US English",
+      "stratum": "Irish English",
       "wc": 146,
       "err1": 40,
       "err2": 146,
@@ -3294,7 +3301,7 @@
     },
     {
       "speaker_id": "80452854411211fb5de116231adebdf16dc0d130658e74f21c32733533e96ff26e8217a5bf6288fd8bf1b51481fca82936bad21c1a7b663e4cc70ad628bca260",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 123,
       "err1": 19,
       "err2": 123,
@@ -3307,7 +3314,7 @@
     },
     {
       "speaker_id": "82557ed50b74bac49d5fb53a88f1e68cce75de29a91d98c3cf2d1af73ac1a4a05b8bf92c984a37192e63b7209242b64dac903c3c69101cbe7d196047a60cf886",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 147,
       "err1": 15,
       "err2": 147,
@@ -3320,7 +3327,7 @@
     },
     {
       "speaker_id": "82a373b5c1e91542c9be9f896a55be5d4e7d77447128a6494f0860479634104cdd8671fcc19e1cdeaa407db7d7a01ef4934f2d1d78ff75ba084b28fd8f26b97b",
-      "stratum": "Australian English",
+      "stratum": "US English",
       "wc": 125,
       "err1": 13,
       "err2": 125,
@@ -3346,7 +3353,7 @@
     },
     {
       "speaker_id": "83459a81b95feaab353e89a69e586da271de0950c343d8b43c05bcbdd63d5cbefa543958a56611bf9a80a076d3bd631506d5f4fb66f9fb89c0f105df358bfed3",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 118,
       "err1": 49,
       "err2": 118,
@@ -3359,7 +3366,7 @@
     },
     {
       "speaker_id": "841316621bead8dadba8aaea42d557bf058bcdc82d5a3e3d4eed8f7a1324f364d1841cbe30643d1ac2c9ff297e1c1c783a57e81eaad2230782f12991fcff64f4",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 147,
       "err1": 32,
       "err2": 147,
@@ -3372,7 +3379,7 @@
     },
     {
       "speaker_id": "848e28812a58fec782e7a2ad3e554b470a69806113ca203eff127ef5d50b173fa4f737b85870f71eda5f697955a315d363dd2610f37d07539be961c3b37cea2a",
-      "stratum": "Irish English",
+      "stratum": "US English",
       "wc": 166,
       "err1": 24,
       "err2": 166,
@@ -3398,7 +3405,7 @@
     },
     {
       "speaker_id": "87c37ac8f79802cd859b6edf1fe035bbf2d13750e27266dd30d46e58cacde54fc7bd99f472e4da9d1c5cfe017eff41c80ac8eaa1233544671eef5d86787de04f",
-      "stratum": "South Asian English",
+      "stratum": "Australian English",
       "wc": 159,
       "err1": 14,
       "err2": 159,
@@ -3411,7 +3418,7 @@
     },
     {
       "speaker_id": "88073d27cbc43466f01b45d2f1d4651e000a0cdc525558158b4a50dda0a30fbc0364a5a3f629dee16fe26a04f9be70a98f5b6017c45397065117a51770ce6a80",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 110,
       "err1": 8,
       "err2": 110,
@@ -3424,7 +3431,7 @@
     },
     {
       "speaker_id": "884c887b14572fe3d2cbc190804c7ab4472c909b0bce644e125bdc76fc35fea7a0549f40988473fdb5f08f9f6661343abd4ddcb7a62ca618985017dacd2b9412",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 155,
       "err1": 25,
       "err2": 155,
@@ -3450,7 +3457,7 @@
     },
     {
       "speaker_id": "8a17eeffb45203029fe6c457fbf5b25ee0115ba6b8996354bc48a8394bf8f3ab7a50d86983ade0eb7ed689fa5c7989a9c215b8193867f1034add8777d668ee29",
-      "stratum": "US English",
+      "stratum": "Canadian English",
       "wc": 132,
       "err1": 25,
       "err2": 132,
@@ -3463,7 +3470,7 @@
     },
     {
       "speaker_id": "8ae8e297468ae417ccad631148bb55ef2e4b60860446318629da662643906feb9b293d1b4190abe01bccd67dd82975705da4e92386db0bc4689e7640aa9c286b",
-      "stratum": "Canadian English",
+      "stratum": "England English",
       "wc": 160,
       "err1": 49,
       "err2": 160,
@@ -3502,7 +3509,7 @@
     },
     {
       "speaker_id": "8d730a3e00a296c6af5e6b318953e1fabd2c26959e212954a0b949bd82081c7e24b621adda8de124549fe925752ca508cdb2f609c5dfedc7f3e5190f1bb5694c",
-      "stratum": "Australian English",
+      "stratum": "US English",
       "wc": 141,
       "err1": 39,
       "err2": 141,
@@ -3515,7 +3522,7 @@
     },
     {
       "speaker_id": "8f2e121f476a5cf52c2a5b298af48df164f7b15b97e2841f13aedfd5f6e1b1d170abe9851ba7dafabc55213cdb557c1ba3ef49a2da2b3da79357b468a74e4f44",
-      "stratum": "US English",
+      "stratum": "Australian English",
       "wc": 139,
       "err1": 50,
       "err2": 139,
@@ -3554,7 +3561,7 @@
     },
     {
       "speaker_id": "9062128a88e1e719b5c8ff1ab70114c63e0cc34c6260882e5f75f4b12910ad99ddcd73b861593c541dd18f390584afd78ddd802c6c4a0d5dc9766cc499305b5d",
-      "stratum": "Canadian English",
+      "stratum": "US English",
       "wc": 153,
       "err1": 45,
       "err2": 153,
@@ -3567,7 +3574,7 @@
     },
     {
       "speaker_id": "90645556e15ed55ccddbd189434e4602345aae48a9011bdb2e36cf18f0b8e93219551036340cbd0bb0ca8122cee3febca1ce5bc614b5abf7937b8879bd34bb05",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 153,
       "err1": 44,
       "err2": 153,
@@ -3580,7 +3587,7 @@
     },
     {
       "speaker_id": "9116e5c333ffc3b3459e7215d2ae6b8a44b9a3c63e4e575f3f1b817f55183cb5d5a6a450f4be17b187ce423da33675a912a3fb574ff55aaa868b01bdfe2934ac",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 155,
       "err1": 18,
       "err2": 155,
@@ -3619,7 +3626,7 @@
     },
     {
       "speaker_id": "943a7053e36b1c55424e8b53a526144a8bad254e583841e050ac401397bee4174498f6c2970c401050df258f54527298bfaae1823c0271424407c00b0c2b9eb5",
-      "stratum": "Canadian English",
+      "stratum": "Australian English",
       "wc": 190,
       "err1": 42,
       "err2": 190,
@@ -3658,7 +3665,7 @@
     },
     {
       "speaker_id": "953e4e8cf93441b8a29961fc7372141fa5b59dae8113c1360d7c6186f45adea45817f3a592b1a9d0698f2e925d7254bca41c086f18a51c12f09da128e4d730ca",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 140,
       "err1": 22,
       "err2": 140,
@@ -3671,7 +3678,7 @@
     },
     {
       "speaker_id": "957e237182429d18a23860609223dc7821d4a4fb9294adb3000b35129cb8431402bd1ce7abedec7172fb96ee2d7f4ee68d750cd4cfae4a1535d3e66c269121c7",
-      "stratum": "Irish English",
+      "stratum": "England English",
       "wc": 114,
       "err1": 16,
       "err2": 114,
@@ -3684,7 +3691,7 @@
     },
     {
       "speaker_id": "966409e2b901274ed09f46990c45d634ab8361b666c16502b7edbe97f8b5e80bdc213a49d5de3d6fb3d376a6eb985871a21f97621a1e1c60e103889d73a5b8e0",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 151,
       "err1": 19,
       "err2": 151,
@@ -3723,7 +3730,7 @@
     },
     {
       "speaker_id": "98659ac1da11ab68e524e87788e67723f54d635e43c568388952b6d48219df0d3bdb9797eaded8217677c626a944a5a7c4119451c7ad48d8c38e6eeeb3033479",
-      "stratum": "Irish English",
+      "stratum": "Australian English",
       "wc": 171,
       "err1": 21,
       "err2": 171,
@@ -3736,7 +3743,7 @@
     },
     {
       "speaker_id": "98aa96f9593415a14b3834447ae5818f08c5ccfbc610ecc90e28eafbcccee99e33dee753ba0d3f3abb2013beb6138b9b3a9b6503480b7c3941e670c661cca858",
-      "stratum": "Australian English",
+      "stratum": "Irish English",
       "wc": 121,
       "err1": 15,
       "err2": 121,
@@ -3762,7 +3769,7 @@
     },
     {
       "speaker_id": "99675ca9d5d92277163ef9f6529c21605bd10fa97f3be72bcdbe2214ccc5eb08f7a10b0f5dd42d73262400aa22ff71bbe4adb3e1c680a17b4da0c405a5e85176",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 148,
       "err1": 28,
       "err2": 148,
@@ -3775,7 +3782,7 @@
     },
     {
       "speaker_id": "998c0a9317bf0b096eb8eb6231cf5bf8438f03829704e55220bcf76de2a00e01ad026b438789998c0945c3cb1f1c5595eead353542b101f7f0865af0f10b57e0",
-      "stratum": "Australian English",
+      "stratum": "Irish English",
       "wc": 152,
       "err1": 68,
       "err2": 152,
@@ -3788,7 +3795,7 @@
     },
     {
       "speaker_id": "999d8d4719ca0f0ce1500e98cfe817009e78ceeac27006a815d81b8fcdf937f866d737e9d6444a2b7d32207db82e4db790a49888c739fd8233d0de0026aebd26",
-      "stratum": "Irish English",
+      "stratum": "Australian English",
       "wc": 106,
       "err1": 8,
       "err2": 106,
@@ -3814,7 +3821,7 @@
     },
     {
       "speaker_id": "99ff1aff5b52355df609c1262286c30f62b49e352558509fa7978fa56841817d6a61392ff428a58f543299128436e4977d11f3c51a736ac9dfc784c0e9b359b2",
-      "stratum": "US English",
+      "stratum": "Australian English",
       "wc": 152,
       "err1": 65,
       "err2": 152,
@@ -3827,7 +3834,7 @@
     },
     {
       "speaker_id": "9a04bcba72f1eaa756250be12979072a71accd2c1afb1eec8bc76c5e431aea80fb4d70d60de444e05fd2d181adb6e841e3367bf4eaaacdecb721b6d7643c2949",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 135,
       "err1": 28,
       "err2": 135,
@@ -3840,7 +3847,7 @@
     },
     {
       "speaker_id": "9a073ef61d8e3c5d236eb5e007526ec831de6be213a28cd51d3afe8b845714be67f47209486e4c053d3c84bb1e6d9445b66d202f239b86cfca8c5e037662ac22",
-      "stratum": "England English",
+      "stratum": "Canadian English",
       "wc": 151,
       "err1": 30,
       "err2": 151,
@@ -3866,7 +3873,7 @@
     },
     {
       "speaker_id": "9a70b0d67a7f44741b874bcce4213c70cbf7797bec93d5c153c433a78087dfcc0b62ee3a7c3cea040a8866d4af584f2e547c38a302e79d1667c3c26208e7c096",
-      "stratum": "Australian English",
+      "stratum": "Canadian English",
       "wc": 124,
       "err1": 6,
       "err2": 124,
@@ -3879,7 +3886,7 @@
     },
     {
       "speaker_id": "9b03c2618565b778a76778f9bbc6fa779b47d53aa7b92964786856dd497aee63350e9e3c8be926cf4a0e713efb8280bb70698e8732ae5c8d113f460c1845c4b7",
-      "stratum": "Canadian English",
+      "stratum": "Australian English",
       "wc": 121,
       "err1": 29,
       "err2": 121,
@@ -3892,7 +3899,7 @@
     },
     {
       "speaker_id": "9b36d25d5ca61875b52aa5ac986e582417366913effa37a27ffe0c064ba8ab79ec1196552c4e700dcfaf6daf251ade983f711e423577b4b47a2646e9913f95e0",
-      "stratum": "Australian English",
+      "stratum": "US English",
       "wc": 132,
       "err1": 16,
       "err2": 132,
@@ -3918,7 +3925,7 @@
     },
     {
       "speaker_id": "9cda5525285e24b3e83fdd3421441c00270d8f8c5fe76759aac45f4ab70e4f327b86dbec8fc4dc6863bf548e8f16953332f074fcdf43d0c9cd28d633047f42bc",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 144,
       "err1": 28,
       "err2": 144,
@@ -3931,7 +3938,7 @@
     },
     {
       "speaker_id": "9d3e2a6ae787ab0c7795f18eeeed4f86767fc635b97ef9ab6dda59d2803cd3354aa4a04a9cbd37bcd4f2703967a1438e29c65d4c0e49afcb8f37a46f88e4e422",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 158,
       "err1": 38,
       "err2": 158,
@@ -3970,7 +3977,7 @@
     },
     {
       "speaker_id": "9e91ae93bf0e7d12a7f8065cdc03b55696a17e283dd262218575a93430dc1dd5aa24143d924bc736990084b7d3d71e1154c9b51e63e6d3a7697a1687008ec40c",
-      "stratum": "Australian English",
+      "stratum": "South Asian English",
       "wc": 111,
       "err1": 33,
       "err2": 111,
@@ -3983,7 +3990,7 @@
     },
     {
       "speaker_id": "9ea8a6a192d17ddb4bf01a9174a183798648b49a76483044c8c66493a2c7816c98cc212d5ecf728cb9d001ce53869453412d45dda7c254a273cd51df6bd604b4",
-      "stratum": "South Asian English",
+      "stratum": "Australian English",
       "wc": 156,
       "err1": 39,
       "err2": 156,
@@ -3996,7 +4003,7 @@
     },
     {
       "speaker_id": "a11a25dea4fd92d7973f778b65f31ec9cbf3b01398fe02fbf9accdf519a95d0ae849e38b6112282dcb8367dc0313a4a5560809d154552b91674ee5f2538266dc",
-      "stratum": "Australian English",
+      "stratum": "Canadian English",
       "wc": 148,
       "err1": 22,
       "err2": 148,
@@ -4022,7 +4029,7 @@
     },
     {
       "speaker_id": "a1e18446cae199638e690eed93b38708a7a7e4089b951398b355a76c5955066d162f48130976ff0f345214dbdd7f942c67971ce108a1534e3835292e747f04da",
-      "stratum": "Canadian English",
+      "stratum": "US English",
       "wc": 175,
       "err1": 47,
       "err2": 175,
@@ -4035,7 +4042,7 @@
     },
     {
       "speaker_id": "a22721fa679ec702c9306f00becf645a864dbbe305fe6ff39e01e9fb780ccc8ad7913af19c3f1aebd4211cde70ed4cf17e23154c65125df7bdb3adfe3be7a2bc",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 171,
       "err1": 48,
       "err2": 171,
@@ -4048,7 +4055,7 @@
     },
     {
       "speaker_id": "a2576ccf04ad8c0dbe2b29f3843c1ed984d8bd91480766f4bf99c933d99ae8d2b32afc34c7e185b06c2b16deae4fbabb8030906be2455973e2d85d92b0afbc6e",
-      "stratum": "England English",
+      "stratum": "Canadian English",
       "wc": 158,
       "err1": 16,
       "err2": 158,
@@ -4074,7 +4081,7 @@
     },
     {
       "speaker_id": "a317d4dec2ac7c987dbf01f9a4a2be5c875ff5612c0e04be79eb7ff80a49a9f7d462d394aef13909fb0f195287510993e715de8daf1be5624cf3a551b0cbc2cf",
-      "stratum": "US English",
+      "stratum": "Irish English",
       "wc": 159,
       "err1": 28,
       "err2": 159,
@@ -4087,7 +4094,7 @@
     },
     {
       "speaker_id": "a3dd5c99ac626f3d03aaf3109517e77c9d5e065291ad5574bad53f27623d2c56e22de51982d7b7a25c9e5ec9223a7c3d8bb5e35f40a1ce07c4be71fd69708ea5",
-      "stratum": "Irish English",
+      "stratum": "England English",
       "wc": 165,
       "err1": 44,
       "err2": 165,
@@ -4100,7 +4107,7 @@
     },
     {
       "speaker_id": "a40029e1f34924fe49b26bd74d614f6306a8ed20163e410d8c5a534117c7b75af1e27e5875784842dd608d83d06782f0b124bc7ab3e3156edc18779565520d31",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 158,
       "err1": 29,
       "err2": 158,
@@ -4126,7 +4133,7 @@
     },
     {
       "speaker_id": "a5ce984b990c9962f6e394e1befd06e529a28d98169f5deaf51ff3618990c016a34f093ef380b31372105de51a833b4398b6fd5398f9019c9ac5792e80d4edfe",
-      "stratum": "US English",
+      "stratum": "Irish English",
       "wc": 161,
       "err1": 36,
       "err2": 161,
@@ -4139,7 +4146,7 @@
     },
     {
       "speaker_id": "a6b9f8e65441068915451e09cb9d71367e6739bfc7663637da7a60c4ae7a234fe9e5f696ee69db3c50579d303f8fde2afa607e38135f18cbd55dedd4362947d9",
-      "stratum": "Irish English",
+      "stratum": "Canadian English",
       "wc": 139,
       "err1": 10,
       "err2": 139,
@@ -4152,7 +4159,7 @@
     },
     {
       "speaker_id": "a6fe3b7fdd1a0521b78c2eab265c8acf616665733d94e4c7b602c143342b9c3828673e3261988cff87074c7b034118664f51a0da75fe6db6c0c3bb18e8495f74",
-      "stratum": "Canadian English",
+      "stratum": "South Asian English",
       "wc": 122,
       "err1": 43,
       "err2": 122,
@@ -4178,7 +4185,7 @@
     },
     {
       "speaker_id": "a87ee22ab21c01cf6a16f4f4a50c5f7131721bbaf1db5f0aef4f20092f3e8f517e34c23757e167042145b297b1ea28749e3562a048a14c3da1f2581753c85e3c",
-      "stratum": "Canadian English",
+      "stratum": "Australian English",
       "wc": 118,
       "err1": 6,
       "err2": 118,
@@ -4204,7 +4211,7 @@
     },
     {
       "speaker_id": "aa01443a7ec842617c9dcd86abc470be3ce8d316902938c7ca55006deaaad3f371ecab2228beede9f058435e1ca5c6a52c14b2dafa3e2384f7c755ca9b12a3f2",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 160,
       "err1": 38,
       "err2": 160,
@@ -4230,7 +4237,7 @@
     },
     {
       "speaker_id": "abd30813fef9d483d767b02e8149d376f8f501de07d51bbfe44419e6188b4ebd00d9f381b4574818b46fabb57da225bed044bdc54c8a10e2a1784fe564294adc",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 156,
       "err1": 69,
       "err2": 156,
@@ -4243,7 +4250,7 @@
     },
     {
       "speaker_id": "ac50d5964e22bc8474ef97867ca86eead07534eb58a7c5a8ee6b6b3fc2f6a291040d58037bf8eb77483019d25604c8da7b6ee288021464ecede0d2360e2b40e9",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 169,
       "err1": 73,
       "err2": 169,
@@ -4256,7 +4263,7 @@
     },
     {
       "speaker_id": "ac5fc0cc78c008366ea32c07e3743dc6393b6f6e6429ad794fa068462f83d6573ba3f3883955e0d65608cf8071c5cd293f1ade1e9c1a2540e3c487def0c69ed1",
-      "stratum": "South Asian English",
+      "stratum": "England English",
       "wc": 95,
       "err1": 21,
       "err2": 95,
@@ -4282,7 +4289,7 @@
     },
     {
       "speaker_id": "acda0520059ab20ae181e0f3cb6ac4bde6771b3c80ebedb8a9776ea292213ba17ac9d329287439a6318941b36a6c90bc3e41f2ee16baa990271e6db3d605e6ac",
-      "stratum": "Canadian English",
+      "stratum": "England English",
       "wc": 163,
       "err1": 10,
       "err2": 163,
@@ -4295,7 +4302,7 @@
     },
     {
       "speaker_id": "acf86c57c5c5ebb70d85dc705b2ad2d11deeebddaca9e70b6dc484763895141aeba13701369bc2b148750784207e714e4e1ee76d537f118250d1d220f20f494c",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 155,
       "err1": 28,
       "err2": 155,
@@ -4308,7 +4315,7 @@
     },
     {
       "speaker_id": "ad95e92260ba9aeb54daba0b5fd2ec97075e7951901073085e7ff049061f2561773e7050e9e575e4df5b9ba7822bd0b18dfdfaeecafaf413df9743219f6dda0f",
-      "stratum": "US English",
+      "stratum": "Australian English",
       "wc": 155,
       "err1": 40,
       "err2": 155,
@@ -4334,7 +4341,7 @@
     },
     {
       "speaker_id": "aed94d1c3f4986d95635fe51fbde0dfa7b9fa1a8180518f1f3e532aa0f71c09063080c66e621f9fd45cbc8c46874d4222f01b0b2879a2da60e18a995a4f6ec4f",
-      "stratum": "US English",
+      "stratum": "Australian English",
       "wc": 116,
       "err1": 10,
       "err2": 116,
@@ -4347,7 +4354,7 @@
     },
     {
       "speaker_id": "aef539556f10a5774e3a3809be470c0577c8b207e95f8b1372ae057651eb531bcdcd1a80bf2b736bc1f0b49f95564f5172e3754fff4288097a1f9b2b7e81661f",
-      "stratum": "Australian English",
+      "stratum": "South Asian English",
       "wc": 148,
       "err1": 53,
       "err2": 148,
@@ -4360,7 +4367,7 @@
     },
     {
       "speaker_id": "af3acb2416c8746fce74ef792abc2cb84583ebb3ddf4edfb51bc4513267ec4cb38988c3fcb2d5e639f9e99fb516a4a777b9cca4f22edeb39a3924b7a135d91db",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 175,
       "err1": 26,
       "err2": 175,
@@ -4386,7 +4393,7 @@
     },
     {
       "speaker_id": "b0b25bcd03ea5fb51003590f9df1d7bfc229e374e676df6f9bc1e5b64b8577e5f63c0374f954831a72128f4a85dd8f4103c623c2c20faeb9ac1aa2c5217a8ff7",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 158,
       "err1": 26,
       "err2": 158,
@@ -4399,7 +4406,7 @@
     },
     {
       "speaker_id": "b0cb200b16812f60c7de9c1fd341e41192b448f7004075b8b7e7f9fa075b217e52e76c18e39d3b9386ec042b0c3cdcd86c195455d885d033ba31a0b597f462cb",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 154,
       "err1": 67,
       "err2": 154,
@@ -4412,7 +4419,7 @@
     },
     {
       "speaker_id": "b12498e0e279a13c08afb5fc899adbd45ea86d8b8520c6b528876e501dd29eb04841e0dbae1a19481c4bcbff513fccc040d5f9426c72864482ddced2190c1c3a",
-      "stratum": "Irish English",
+      "stratum": "England English",
       "wc": 182,
       "err1": 11,
       "err2": 182,
@@ -4438,7 +4445,7 @@
     },
     {
       "speaker_id": "b1544dd62710516ffe8ee56331532db63d213e8c528c07c70e9331bc52b51c361c9037a297b02a4d34ea760d1151ca96762a10d01b7c601c72b658b43c3bedcb",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 126,
       "err1": 75,
       "err2": 126,
@@ -4451,7 +4458,7 @@
     },
     {
       "speaker_id": "b2f837ab03cd0fa7349dd37bc9ef8ba691e4c0a0f3fd9c09afe604656737cb1cf36c34f6d8f50587d7b632433eef27021f7652354c2f3e2b69e4bcca6b07ef56",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 102,
       "err1": 20,
       "err2": 102,
@@ -4464,7 +4471,7 @@
     },
     {
       "speaker_id": "b31374d1ecc336902127763bfc7a91a03e738b2eeb92b377fe7e10ed5235e3056eb646817a7a4f82da41accc6cda4d694d11c3e1d8e6c5df56f057cc53b5e05b",
-      "stratum": "Canadian English",
+      "stratum": "England English",
       "wc": 172,
       "err1": 20,
       "err2": 172,
@@ -4490,7 +4497,7 @@
     },
     {
       "speaker_id": "b4114163d201648cf53ce6a9ab272fb0eb9c67a2de937c78927bec4f05255e832b35286dfc10af1010441343139aaf20761175f488ad27462b6d76135eafdda2",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 147,
       "err1": 58,
       "err2": 147,
@@ -4516,7 +4523,7 @@
     },
     {
       "speaker_id": "b484ee8e6d227b801554408b175c33a0492fa0a0512da09b64c08a0f299465cfe8783e7d5664cd428167078bb99cdda99fd37057f7c16cb6df462c9aad5477a9",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 153,
       "err1": 26,
       "err2": 153,
@@ -4542,7 +4549,7 @@
     },
     {
       "speaker_id": "b4cbf884d481af77376d02038c5dd6290379426b24820310addf62b58a2f2bb5c8a2bbde366f9ba88372a9f1c843a94056455384208db6a780761070da5cfde6",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 150,
       "err1": 26,
       "err2": 150,
@@ -4555,7 +4562,7 @@
     },
     {
       "speaker_id": "b5100bd14202023e9f3d142eba260df92a1d40f7c741a9dbd854f85017e07b4ade42e6943e808650ed90ca89ce88fd8428eeafefd9cc58de75e46425cd62695e",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 148,
       "err1": 40,
       "err2": 148,
@@ -4568,7 +4575,7 @@
     },
     {
       "speaker_id": "b632fb667ffdf6adb03be67232b32560db3a816483f0c8db4fff1b89364a8b7d183ca16ecc2cea1ca2bcb5b6c13ac0d27d4ef747e75e7157cee4849ea074fb9d",
-      "stratum": "Australian English",
+      "stratum": "US English",
       "wc": 152,
       "err1": 22,
       "err2": 152,
@@ -4594,7 +4601,7 @@
     },
     {
       "speaker_id": "b6b032977640a9d9615be13f3097a58c75db731346b51bff25c7852d5be31a8534d0eee697fb06eb52c31fde77cb19ceaba289059f72dd06a0a0cc990da6620a",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 96,
       "err1": 10,
       "err2": 96,
@@ -4607,7 +4614,7 @@
     },
     {
       "speaker_id": "b78c13d540a86fd606866813a8e4c6c98e663c4e7d7216c248b87e44f044627a508108e6a1172efb0b9943ecb14e64a6ab99fe96b9815b27902a84f87b388d13",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 144,
       "err1": 23,
       "err2": 144,
@@ -4620,7 +4627,7 @@
     },
     {
       "speaker_id": "b7a61d12e5df27da729ede26093609d5a904f3f3518089a5ab5e55f991d095245fc0db9cf4565ce408507d37457b06fdeca27b03c1bf4ee1f50b5d65271dfea2",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 171,
       "err1": 29,
       "err2": 171,
@@ -4646,7 +4653,7 @@
     },
     {
       "speaker_id": "b88743c65870fef7319b18e62a0ecb665826f60e99ecd6ba7e57f5105381d188031fd7b3ca93a40665f8233a9a3ebc9da4ca3822fff4da7c2f88264c36d88ee6",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 150,
       "err1": 22,
       "err2": 150,
@@ -4659,7 +4666,7 @@
     },
     {
       "speaker_id": "b8e6a206b5dd57db50c80b3afd8df9614db08040f2eaff7c4b155ab19f94dbee99551f564cf7e0e448b32f974cd702c5ccb3ca05c7db34e46144721ed9186001",
-      "stratum": "Irish English",
+      "stratum": "Canadian English",
       "wc": 115,
       "err1": 10,
       "err2": 115,
@@ -4672,7 +4679,7 @@
     },
     {
       "speaker_id": "bafaffdc35320c5cb6f9a110f4d8dfeca350452190ff86a7f8641da9be48202abd4ad7ebea9c28b56c4a29ac9ae8680144f3eb8618c7b999c4c30d41e61fb1c8",
-      "stratum": "Canadian English",
+      "stratum": "Australian English",
       "wc": 117,
       "err1": 8,
       "err2": 117,
@@ -4698,7 +4705,7 @@
     },
     {
       "speaker_id": "bd2a40f9ab15de674b6d71df26952bd92a5392d0b897c590627b1ca1160c47c75940c66cdd8343c4d173a313d37f955406b1eb06b9fef89e3174f4cf87d12bac",
-      "stratum": "Australian English",
+      "stratum": "Canadian English",
       "wc": 166,
       "err1": 24,
       "err2": 166,
@@ -4711,7 +4718,7 @@
     },
     {
       "speaker_id": "bd3a04f4d1f1e2e4da8e2f340ea71e5bf5de2b72ea9f7e87c230debeea9d1978c1f9841c07eb82f1712684df7dae6e817bbf9b95063b70e2730b2bb1caed7f25",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 116,
       "err1": 27,
       "err2": 116,
@@ -4724,7 +4731,7 @@
     },
     {
       "speaker_id": "bdde3969049e54b39619b71aed67742465975208798f32ee76863e71ee93354081e0e0098fa3e85d0c945f3a62b69e32df1074a275db736dd23895a023518b2c",
-      "stratum": "Irish English",
+      "stratum": "Canadian English",
       "wc": 167,
       "err1": 28,
       "err2": 167,
@@ -4750,7 +4757,7 @@
     },
     {
       "speaker_id": "be1acd5832628f37b5347a371fc3ab4afa0805730d627214255830040332970a7ad671d1857592f8cdac398a6b48687849b415ed2d8d69a3708d5b9ec9950002",
-      "stratum": "Australian English",
+      "stratum": "South Asian English",
       "wc": 158,
       "err1": 118,
       "err2": 158,
@@ -4763,7 +4770,7 @@
     },
     {
       "speaker_id": "be2ff569cbdf4688864e3aa7bf6c2e0b2a68353cbca1caf59ec9e5469804d1540f2444bb70ac9e0fa51f446f0c4fa62ebbc65d5883393d063b3d5d75518c13e8",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 157,
       "err1": 27,
       "err2": 157,
@@ -4776,7 +4783,7 @@
     },
     {
       "speaker_id": "befad7802768602b65a025d961a9a23552a2d32cc5faa038dbb889fd42feea99d8bf17daefd88b6d5a005b71b855ea63eddc80df5c07aa92258ef6c3b035ffa5",
-      "stratum": "Canadian English",
+      "stratum": "Australian English",
       "wc": 173,
       "err1": 105,
       "err2": 173,
@@ -4802,7 +4809,7 @@
     },
     {
       "speaker_id": "c052c5fc64aaa39ddf67324617d732404c9e7d660b49f9be382367a4c0eea24d3e71525241c90c9d8cee878c0ca7081c5fb9ad1df85751017571765f560d7b20",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 166,
       "err1": 30,
       "err2": 166,
@@ -4815,7 +4822,7 @@
     },
     {
       "speaker_id": "c0e911f6c9a36df008eb7d856dbad7f3ae70cfdb9e877583aef47cfb3f915a08476902e67641dcbc40ddd37b92434bfa99c76730f26e9e27d53604fb239fe64a",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 158,
       "err1": 23,
       "err2": 158,
@@ -4828,7 +4835,7 @@
     },
     {
       "speaker_id": "c184db00920edd1673bb95432820bffd90f09938e07424ab6c88f5e5d3725fd1a727c6de4c5851bdfebe094023f7e44cc12bc0b09f3354aa8287e5f09004d5b0",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 175,
       "err1": 40,
       "err2": 175,
@@ -4854,7 +4861,7 @@
     },
     {
       "speaker_id": "c1eccc85c3d52e5db2c10f030b24d87bda23a7c3e498c985b09462b2bc6dd814b34f9050b92f5d31fac1ae5827a98088c3f07145b10ff44a9ced6d14623ba7e9",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 158,
       "err1": 29,
       "err2": 158,
@@ -4867,7 +4874,7 @@
     },
     {
       "speaker_id": "c1f88403a5c342a85936b30cc33371d0b55274d3bf27ddfc8d5dd3dee92497f26460d557dda9a90e95037e82aa480da0bf41bb9672b6b38cbe3750101646d83c",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 164,
       "err1": 82,
       "err2": 164,
@@ -4880,7 +4887,7 @@
     },
     {
       "speaker_id": "c24e02c207bc0a98be7e02d573e868e932c1d58f6d798a499adaf6da476b7293ff35f8b3613fdb774254175242808e331c1e29fe8f1c2e82d394d2343cdfc44b",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 180,
       "err1": 28,
       "err2": 180,
@@ -4906,7 +4913,7 @@
     },
     {
       "speaker_id": "c3b879809a9ebf0d819103be644fbf3fee1c8cafd1e2c2f905c8d6d5c2497bcd47b0cb932bb4106b5729479e89ca660253ad1158181c72462d1ce0499047db90",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 163,
       "err1": 131,
       "err2": 163,
@@ -4932,7 +4939,7 @@
     },
     {
       "speaker_id": "c43ab0023333254e7299ba83d9abff2304f63c6afe3e31efd98b7f8a520b210e5e7655b8b7a41c9fe70096ee94366c4aa3801b9cd8cd1d295e3c66425b832d0e",
-      "stratum": "South Asian English",
+      "stratum": "US English",
       "wc": 147,
       "err1": 16,
       "err2": 147,
@@ -4971,7 +4978,7 @@
     },
     {
       "speaker_id": "c51d80fd0c539bed8a3d6ebd59dd7a92dc611a983db14bb4dc13435131f7ab9db0c0aec04e29460648f8a8be284385f3111c2416940e856852e703083fc50d12",
-      "stratum": "US English",
+      "stratum": "Irish English",
       "wc": 180,
       "err1": 28,
       "err2": 180,
@@ -4984,7 +4991,7 @@
     },
     {
       "speaker_id": "c5e6fd979dbd161abf0a06095a27ae6eef6fe2eeca9cf50588d911623674a0a7d8057137559b416189d982182f4613294d17d57a6d422683f2b7c959db089f26",
-      "stratum": "Irish English",
+      "stratum": "US English",
       "wc": 127,
       "err1": 11,
       "err2": 127,
@@ -5010,7 +5017,7 @@
     },
     {
       "speaker_id": "c6eb6062f5ff532fb5b782152c5299fa30a52546f74be1b9f0b7391ff0bfe96ae7908ca0ba4231205df9c9db03eb2b49ff77c586a73cc0cd4371ff5aa494efe2",
-      "stratum": "England English",
+      "stratum": "South Asian English",
       "wc": 127,
       "err1": 39,
       "err2": 127,
@@ -5036,7 +5043,7 @@
     },
     {
       "speaker_id": "c8559eb5eaa7f33082a03d57ccf1cd328f6c142885564c4da3712819adb131f64a079e944c8f5c8db00f3349f7a6bc194ab6133d9432e515da18fa0ad5e5e1c9",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 152,
       "err1": 2,
       "err2": 152,
@@ -5062,7 +5069,7 @@
     },
     {
       "speaker_id": "c8ffe7c4a34c316583ede16f6bb9223296c47b02af744e119de2c69b502fbf31d46acc2b6f152a4ae4e4f2bc75d6c5e11ceb805bd6cfe877a8c2257ac3184044",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 152,
       "err1": 49,
       "err2": 152,
@@ -5075,7 +5082,7 @@
     },
     {
       "speaker_id": "cb10039326bbca402cae8da5d53c24fa47ef7814132afec3707b3e8082cc8c9081f3cb40a500bb4fc5226a505224a67fdad376c9c7d25d67811d763c5ee9516c",
-      "stratum": "South Asian English",
+      "stratum": "Irish English",
       "wc": 159,
       "err1": 18,
       "err2": 159,
@@ -5088,7 +5095,7 @@
     },
     {
       "speaker_id": "cbe5ebf5c32d8ebeb1894e7dc8e6e0448c6cd3370d2e2b0cb60db2d1a375cc897a20b1106c01a53442f327efe35f6e9b91832a87e72d3a0e519d0a3644349659",
-      "stratum": "Irish English",
+      "stratum": "US English",
       "wc": 130,
       "err1": 11,
       "err2": 130,
@@ -5114,7 +5121,7 @@
     },
     {
       "speaker_id": "cf20a39943b7a02ce78fa98e38f53f403423f97d40d7b465465b15a257533af24c21e875191ac05776be14cba71c2b58c4a4d35c7dc388634f02c6ca69a1ec6c",
-      "stratum": "South Asian English",
+      "stratum": "Australian English",
       "wc": 163,
       "err1": 29,
       "err2": 163,
@@ -5127,7 +5134,7 @@
     },
     {
       "speaker_id": "d0b62ac1e57e267f16088ee614cdaf09a9826c3b704ce2f79746ef16e248c19f9ff54ab124c25647def1f4414dc2a510eb8b6cfd3a41ae6681571b91b2a6f9df",
-      "stratum": "Australian English",
+      "stratum": "South Asian English",
       "wc": 127,
       "err1": 20,
       "err2": 127,
@@ -5140,7 +5147,7 @@
     },
     {
       "speaker_id": "d161bb2f97a3772fa7f6d0c7e68e1b24650fb6caef458718c63c0bc780a9901ad90098e962e2772692fe8ac1e076b7ed547eeae638a1df922d479485b676245e",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 105,
       "err1": 9,
       "err2": 105,
@@ -5166,7 +5173,7 @@
     },
     {
       "speaker_id": "d2b5f2284a9e3782c1e4b63425314625e20405bf0eafe679fbeac06178b6071a6151bda5aab896c3e9476d845e6fd2543da5411dbe7a1b2eda8993f9bc42c404",
-      "stratum": "England English",
+      "stratum": "Canadian English",
       "wc": 167,
       "err1": 29,
       "err2": 167,
@@ -5179,7 +5186,7 @@
     },
     {
       "speaker_id": "d3db215e9633f878c7da965a477ba649539c9c6106f4493a308e5a382fd0d947522c5e9b34e7a9f06b4046be582c70055b8ee3bcb9b8d0689937dc58c6398794",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 122,
       "err1": 28,
       "err2": 122,
@@ -5192,7 +5199,7 @@
     },
     {
       "speaker_id": "d452e4b5f4dece0312ca3297432fa680d7f072f60cc23efb655cb781d568200a7d585abaa7ffc789a2a310f769ed7fe133b125d10f85e441291d1351b3c9bdbc",
-      "stratum": "Irish English",
+      "stratum": "Canadian English",
       "wc": 126,
       "err1": 30,
       "err2": 126,
@@ -5218,7 +5225,7 @@
     },
     {
       "speaker_id": "d593a89157e45185058f4c89a94c77f6b292f619ac8bd29ad5dc52fd840ee46f5a69020cf039adcf2585e627d15ff104ead08d673e0d8087606bee31725bb67b",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 136,
       "err1": 13,
       "err2": 136,
@@ -5231,7 +5238,7 @@
     },
     {
       "speaker_id": "d6d8d4bf397c2b1824b43ce531fbe9228cb58d40a24b4f4026ebf5a8dcc42cde56e5b0d0f9e95b710e70d7cce1f3e8f5359332fa2a9c0a70ddfa877d86f3a81d",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 150,
       "err1": 13,
       "err2": 150,
@@ -5244,7 +5251,7 @@
     },
     {
       "speaker_id": "d7485d8940154b344c6ee583aa4f3e543abc30e94f5d7411c6d90831da59fab72333824845a973fde6661042dbd5f9b692a8bc3b7f2acd6ba8cf9f3de2043329",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 148,
       "err1": 44,
       "err2": 148,
@@ -5270,7 +5277,7 @@
     },
     {
       "speaker_id": "d8248cc7b44b79f0d91afa66c2fe5e91553d67a9e06464feb04225de0978941807b355879fd521e78be04ee3a45d9c859f63cfbf5486c6b542c22bbd5a9c2606",
-      "stratum": "England English",
+      "stratum": "South Asian English",
       "wc": 102,
       "err1": 35,
       "err2": 102,
@@ -5283,7 +5290,7 @@
     },
     {
       "speaker_id": "d8829b98666ea53ef2ffd9d8ae1e10868244c31f247315649288bfee40500e1be81079173a558f8cb21042ea22e42616952c68d4c2ab7cc5a1554e21b2e4ef31",
-      "stratum": "South Asian English",
+      "stratum": "US English",
       "wc": 153,
       "err1": 21,
       "err2": 153,
@@ -5296,7 +5303,7 @@
     },
     {
       "speaker_id": "dafdb6964fb931087763487754ad8d8dc1459c02a29fd65c1797adeee6ed776ab6261514256a0fa01c85103b6b8e019b6b2110a4499fd4366d8885e23fd4f30f",
-      "stratum": "US English",
+      "stratum": "South Asian English",
       "wc": 161,
       "err1": 90,
       "err2": 161,
@@ -5322,7 +5329,7 @@
     },
     {
       "speaker_id": "dc6adb8fdf9768b70286e54e61515c3b8e71086e678fb7d0f1688749349706cf5db7a298e30992422d320cd0cece96b795c162e4148f259cf49f3a027ef11c61",
-      "stratum": "US English",
+      "stratum": "Australian English",
       "wc": 158,
       "err1": 11,
       "err2": 158,
@@ -5335,7 +5342,7 @@
     },
     {
       "speaker_id": "dd1fbe11bee9a77e00571efaaf985d1354635e19af9abcef027df1738e394c0fb902ec84c248eb4ee3a811d83a8766b4911bd9892eb91baa7e4b9219e534ed3d",
-      "stratum": "Australian English",
+      "stratum": "Irish English",
       "wc": 172,
       "err1": 65,
       "err2": 172,
@@ -5348,7 +5355,7 @@
     },
     {
       "speaker_id": "ddbe47affb6dbfa908dcae44c2ae83de681141a218150b4dca1b66b4ed5b1fa4d7c0a67b6aa4c418a9f4a11f3af2d0e1034972eb06b1fcb0045f38bc41df0a2d",
-      "stratum": "Irish English",
+      "stratum": "US English",
       "wc": 158,
       "err1": 12,
       "err2": 158,
@@ -5374,7 +5381,7 @@
     },
     {
       "speaker_id": "dfdf5b24937e645ae08d7ea680c89eb0b7d9491675f73c5a4f47abc51a1ad7f97cd2077fcbcefe2b36dce1c07d174c7a01dbf9d14d9ccfca350afbcfeb389a91",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 145,
       "err1": 32,
       "err2": 145,
@@ -5387,7 +5394,7 @@
     },
     {
       "speaker_id": "e02ffe55357061a9fcb24d26b93c8c831da50a62fe055458d1227cab271578e4c1a9f7b8eb764834982979d3e1bfc616ab67c099013b69602cb4d89019f8b1d6",
-      "stratum": "Irish English",
+      "stratum": "England English",
       "wc": 116,
       "err1": 13,
       "err2": 116,
@@ -5400,7 +5407,7 @@
     },
     {
       "speaker_id": "e14e67c5c8833e3ffba487ed75b51839bbd43d0f9dcbc5154c86a0a5f79c582f66f159b519d1a2dcaf915835701d8e34ad9cc0da87576d60e127489aa2796d26",
-      "stratum": "England English",
+      "stratum": "Canadian English",
       "wc": 148,
       "err1": 52,
       "err2": 148,
@@ -5426,7 +5433,7 @@
     },
     {
       "speaker_id": "e2ae9dd2a15f61f479fb8e3e2b55f2ca15a281f91bfde62e0e53bebed6f2b0eb365603b7ad7c49947befb3de402a3b57401e22976e14e8d3c7fb0abd2401bde2",
-      "stratum": "South Asian English",
+      "stratum": "US English",
       "wc": 128,
       "err1": 19,
       "err2": 128,
@@ -5439,7 +5446,7 @@
     },
     {
       "speaker_id": "e33aa919ee9e8443af3c2ecbf7d6660f31c164cdabc9b7659fd72e2b33cf9db8166d5cadb860dc70b0d09069024b383e1c1ad647005c5fc07fc865d756f7985b",
-      "stratum": "US English",
+      "stratum": "Irish English",
       "wc": 107,
       "err1": 19,
       "err2": 107,
@@ -5478,7 +5485,7 @@
     },
     {
       "speaker_id": "e4922b258851cf5cc16f15cd81bb9feacbf80b933145f5f02738ff5ba4f1c7ea83777961d1356a0c9643c9a34c481b1d569c12f68780cfab6fd0ac52144ce5a5",
-      "stratum": "Irish English",
+      "stratum": "Australian English",
       "wc": 152,
       "err1": 12,
       "err2": 152,
@@ -5491,7 +5498,7 @@
     },
     {
       "speaker_id": "e492fdf34ec7ba28396c208a302c474ffe5c7bccff502ae47499af02cccfced416b93f56087c25881b70ccda1fde7d92bfd9999b3e7f32f8b74c4356f3fa6e69",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 112,
       "err1": 23,
       "err2": 112,
@@ -5543,7 +5550,7 @@
     },
     {
       "speaker_id": "e862b40d4a583bf89f876b2f90689bcf274c242743abf13472c362973110783216b588451f7b0789b0019ecc165dd3d2840d9edecf58ad3d03a7bad55fe4a8ef",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 117,
       "err1": 28,
       "err2": 117,
@@ -5582,7 +5589,7 @@
     },
     {
       "speaker_id": "e99957f1cbac6eb6043975149e04d8f79ec27f86e08931af9917d4a6f7fb762ae938d3c041a6a6795b4eebedd43a4d9860dcdc3e2cd311933dc416917e5af5f5",
-      "stratum": "Canadian English",
+      "stratum": "England English",
       "wc": 164,
       "err1": 36,
       "err2": 164,
@@ -5595,7 +5602,7 @@
     },
     {
       "speaker_id": "e9c90b7ef648efb10b3f170c6a28f08fc4cc796656e8f86574425d25fbaf29d2bcc37ffacee97879b70b847c0499a0cce36baf31d2a98c7dd391cd2ff6943ea3",
-      "stratum": "England English",
+      "stratum": "Canadian English",
       "wc": 121,
       "err1": 24,
       "err2": 121,
@@ -5608,7 +5615,7 @@
     },
     {
       "speaker_id": "ea03678a2d5acb403392528fd1f6a2dde8ea2c51f3e1cf39db118aea8b7fdc159cb1e0066905a91a9e987faf2e8cd8be3c94edc97591c827380bacc8730c3c67",
-      "stratum": "Canadian English",
+      "stratum": "South Asian English",
       "wc": 128,
       "err1": 42,
       "err2": 128,
@@ -5634,7 +5641,7 @@
     },
     {
       "speaker_id": "ea58a6a1a4d126baf4167861bcaaf05e6ffa3833bc8fc86f655c79f6093a795b8db31042845bd2a16d54ba1d2af6799d331c988723d181ce7ef2968a247e60a1",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 173,
       "err1": 25,
       "err2": 173,
@@ -5647,7 +5654,7 @@
     },
     {
       "speaker_id": "ea7fa3986328da47ddeb47e30370cdb8aecfd08c639b601120e1fab784cef0bca9f65d1ccbb22b0d81c26903efebda8c66b0f38e2f432481aedb14fa0f63f0cc",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 108,
       "err1": 12,
       "err2": 108,
@@ -5660,7 +5667,7 @@
     },
     {
       "speaker_id": "ea850c724f088530c41fe1c55ecffb37991dcfd4cdd0e975fb63465f754d12562416161fe4be7ac5321a118f221a7c1d5a4c4deb8568e1433833c163cc590ecc",
-      "stratum": "Irish English",
+      "stratum": "England English",
       "wc": 157,
       "err1": 41,
       "err2": 157,
@@ -5686,7 +5693,7 @@
     },
     {
       "speaker_id": "ed94c2f5fe4ccda236d77a0b2557e8fc40c5aad3a003dfacf4dc50989a2da63a243cb078fba99c5b42d2cf087989d8a252cf9943479aba8be7c2ca53ad7c21ea",
-      "stratum": "Canadian English",
+      "stratum": "England English",
       "wc": 172,
       "err1": 88,
       "err2": 172,
@@ -5699,7 +5706,7 @@
     },
     {
       "speaker_id": "ee18b6a99ca8a17c61258c3856cde5f4f1879b6ffa1bc2c2498b02536b6c75c3016b6108ff421f3168d26b8875c00feda94637ac2bc09c5da94c3d5bb783f34c",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 136,
       "err1": 15,
       "err2": 136,
@@ -5712,7 +5719,7 @@
     },
     {
       "speaker_id": "ee3ac7744c02eea3e64128abaf16114df05d2ac3f1ad869665623838c43d6fad45b298f9251ba965150b57b153858e5423d869c260ffc3c116ea3f8b5fe88ff3",
-      "stratum": "Australian English",
+      "stratum": "Canadian English",
       "wc": 162,
       "err1": 14,
       "err2": 162,
@@ -5738,7 +5745,7 @@
     },
     {
       "speaker_id": "ee790789728c01269668b55bfacee556123cbba3c10124ca0bfde37ca55e5079e2542e7b3059927920573b56d88af10d999f6fb8916310463ba6beddea948df7",
-      "stratum": "Irish English",
+      "stratum": "Canadian English",
       "wc": 157,
       "err1": 31,
       "err2": 157,
@@ -5751,7 +5758,7 @@
     },
     {
       "speaker_id": "eeb4cdd7043531f8b61cdae18627fa8e8c2dfe7199599d81440282409851ab6d1388c658f0f77e6479148f978c68fa3c0c3fdd9ce82209a6c838ce5611264100",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 108,
       "err1": 9,
       "err2": 108,
@@ -5764,7 +5771,7 @@
     },
     {
       "speaker_id": "ef4b5ccb8620955265c71b79bb77623f278512fa69ab7ce3e836d81e81855b4252a7e6c434fae0e047551c590df9f477baac803a4f3e9ccac9d59f9d75e03f3a",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 158,
       "err1": 45,
       "err2": 158,
@@ -5790,7 +5797,7 @@
     },
     {
       "speaker_id": "f0d246b76f2cbae374f47162702f20390f0c84b8357926b17092e0ad9bc42119a3f11715a48d97d4d52799cfcb4f9d5af5255c255e9c34b2d5d9a1634843d91a",
-      "stratum": "Australian English",
+      "stratum": "US English",
       "wc": 195,
       "err1": 20,
       "err2": 195,
@@ -5803,7 +5810,7 @@
     },
     {
       "speaker_id": "f11bbaf10dbb365a81e9cebe3e8adefced99bf591492e236652d41483afa946a49290138f4f62a5ce7f4ac3df448a5585d065a4bbdeb09256831fed6408b5f0f",
-      "stratum": "US English",
+      "stratum": "Australian English",
       "wc": 105,
       "err1": 19,
       "err2": 105,
@@ -5816,7 +5823,7 @@
     },
     {
       "speaker_id": "f2019c1804b18ef9c849ffc7b882eb27d85f4d8f914e8d0c9c5b54cc079fe443a788c5d7ed49ccd42d28f509dc66ce7b908656819a767418a4bab827c35df0a1",
-      "stratum": "Australian English",
+      "stratum": "Canadian English",
       "wc": 113,
       "err1": 16,
       "err2": 113,
@@ -5855,7 +5862,7 @@
     },
     {
       "speaker_id": "f303784caaf70496db39108c2f4a42100a6438319681b1ded683c596cdf7c9936b9438a3e883d75b3e98f7f34f9f712b9423ffb65ad96b6bb588df6f1ce2a7ac",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 158,
       "err1": 21,
       "err2": 158,
@@ -5868,7 +5875,7 @@
     },
     {
       "speaker_id": "f388d7e4d31442c244ef5193941aa6c90b333bb5df3f725224354d875782c3fba9b2ef2fdcede70d91c3a99894481b132e106ab24f479f7a3aacff765ee685a0",
-      "stratum": "England English",
+      "stratum": "Irish English",
       "wc": 132,
       "err1": 19,
       "err2": 132,
@@ -5894,7 +5901,7 @@
     },
     {
       "speaker_id": "f3e455ac7676a99e9aa8014355b7a206d0c8d995993724c5bd29fa1847bc73ea44e87a9c3fda5dc132446f24e11cadcfc43cf67b9755f0a47b674d43ed7b8f4e",
-      "stratum": "England English",
+      "stratum": "Australian English",
       "wc": 160,
       "err1": 19,
       "err2": 160,
@@ -5907,7 +5914,7 @@
     },
     {
       "speaker_id": "f423e3bcaa299c37a26510090d7e7718d2776208de4214b6736c41cd03697f6b6f53d914812a0e8e5ac70c97d8f0585ffec88e307431acbbc2fafac9c481d344",
-      "stratum": "Australian English",
+      "stratum": "England English",
       "wc": 110,
       "err1": 15,
       "err2": 110,
@@ -5920,7 +5927,7 @@
     },
     {
       "speaker_id": "f43ec7f4e494aa0dc253a4090f80864ec961ce9c3c350134172e2207e0c4e7f60a1d08c1378f328394a4b91c65e890e7f81630bc593b5fccdc323520d16a9c35",
-      "stratum": "England English",
+      "stratum": "Canadian English",
       "wc": 148,
       "err1": 15,
       "err2": 148,
@@ -5946,7 +5953,7 @@
     },
     {
       "speaker_id": "f4f0c4eaaef29d18086f786938d0366c12c9c7fd5c26433587263bd2b488c95829139d0cd163a101989334f90c031781436c1a721cb710dd98d82776db896f65",
-      "stratum": "Australian English",
+      "stratum": "US English",
       "wc": 156,
       "err1": 27,
       "err2": 156,
@@ -5959,7 +5966,7 @@
     },
     {
       "speaker_id": "f5a76af72b8696c951712d2a336e7f9143cec1186fb2a1ef2b5a7c329db88d9767a2a7b472bc3fb8d3c97505ac0479833818b5d106b027661dacb50170d3c7c3",
-      "stratum": "US English",
+      "stratum": "Irish English",
       "wc": 123,
       "err1": 13,
       "err2": 123,
@@ -5972,7 +5979,7 @@
     },
     {
       "speaker_id": "f6462410c1b2266a4dc2c897e70e63807355de7da8d25648554fae02937d9c487343cb0eb8e009868920d489d8b8ff243a24b06243c67532a4e1e6c4bf3a7495",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 156,
       "err1": 105,
       "err2": 156,
@@ -6011,7 +6018,7 @@
     },
     {
       "speaker_id": "f677ad599864b6390e760bed31440cd88a9e1f94f2792a5a7ff4df5a88a601c8fe5acd8a5d4d1dec003e591bd46ad790fd4bce9bfbac8f13b116d98077c7a19b",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 120,
       "err1": 28,
       "err2": 120,
@@ -6024,7 +6031,7 @@
     },
     {
       "speaker_id": "f71fa5667f402961b2c692882b59a17c588aad7404c38688f1172c274e8e8ebf6c553c2fb8e26c22a33c419ce5f0a69aeb6ef8a457957e188fad7f4f9ce97895",
-      "stratum": "US English",
+      "stratum": "Canadian English",
       "wc": 138,
       "err1": 15,
       "err2": 138,
@@ -6050,7 +6057,7 @@
     },
     {
       "speaker_id": "f795de2ff31915fb136c3024cdbf597a1e2450ed695f52741ded36af31613c59d426b364b89394d975d5947ebf27ddef57274d957982e8020a0ed0fe147c30c1",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 139,
       "err1": 23,
       "err2": 139,
@@ -6063,7 +6070,7 @@
     },
     {
       "speaker_id": "f7e69faf5f7a90f1a50358acbd1f54b446714b8092f54de37c84524dff1b9d56b0d6b636788ea6e7441c357f30eee1107e9d56b54841e8751bbe035257a9fcdf",
-      "stratum": "Irish English",
+      "stratum": "South Asian English",
       "wc": 142,
       "err1": 57,
       "err2": 142,
@@ -6076,7 +6083,7 @@
     },
     {
       "speaker_id": "f7e94a3504c890618866b892c5ffd372d8e4ea5a47aac494922493ea432f7063e5275316efc706bd7989f9e23f4438d0e60205d706bf7d2c28e9b108f2958c97",
-      "stratum": "South Asian English",
+      "stratum": "Australian English",
       "wc": 123,
       "err1": 15,
       "err2": 123,
@@ -6102,7 +6109,7 @@
     },
     {
       "speaker_id": "f915452439a6139f440468593abc1e0064a59ba368c6303fa939ade41f9b06c91bc7747bde9f3df2d5d9f3a2dfbfb66ffd027f24d03061fe9b207fa9de64381b",
-      "stratum": "US English",
+      "stratum": "England English",
       "wc": 122,
       "err1": 24,
       "err2": 122,
@@ -6128,7 +6135,7 @@
     },
     {
       "speaker_id": "fa26b8b900c448470b5ea9c3e36b68a076d12135cde175ca0586ddb3a4035cf196b028830b48ec4581a2306ba0997b6cbaae11ae4c48a001a7c1553b3ede45cb",
-      "stratum": "England English",
+      "stratum": "US English",
       "wc": 110,
       "err1": 29,
       "err2": 110,
@@ -6154,7 +6161,7 @@
     },
     {
       "speaker_id": "fdf639ebb01299345dcc612cac9f4fcdadf5004c349a8ddeaf69ec6ee7878dd05a8656597cf87590c63c5ffb23673dcd0e9a37aee41e70469288a37d4ce5d1b6",
-      "stratum": "South Asian English",
+      "stratum": "Canadian English",
       "wc": 130,
       "err1": 18,
       "err2": 130,
@@ -6167,7 +6174,7 @@
     },
     {
       "speaker_id": "fe045d361b28301554bafbd7979898fa09eba9a86f4d3edc0b06d3b9e11e56d514f6c25ce47249836ad6eca0fceda91aa57202ca63007897c584acc94274f06e",
-      "stratum": "Canadian English",
+      "stratum": "Irish English",
       "wc": 163,
       "err1": 21,
       "err2": 163,
