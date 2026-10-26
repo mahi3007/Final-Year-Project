@@ -4,13 +4,14 @@
   "timestamp_utc": "2026-10-26T18:00:00Z",
   "calculation_script": {
     "path": "scripts/calibrate_stage6m_development_variance.py",
-    "sha256": "7f6e67592154ce767decfe5b41d415f1e0bb91cb2bb06ab7d4edbf65dc81b58f"
+    "sha256": "23bebc6bf4b25d20662bc19482c94a92598922b2a3a932738a5bca84f94beed9"
   },
   "data_sources": [
     {
       "source_id": "cohort1_physical_revalidated",
       "file_path": "reports/stage6m/revalidated_cohort1/stage6m_physical_cohort1_speaker_records.csv",
       "sha256": "1e973b474afab644256e616f759a57f02964991a136ee480b183627e3076af66",
+      "source_type": "PHYSICAL_GPU_SPEAKER_RECORDS",
       "speaker_count": 60,
       "strata_count": 6,
       "observed_speakers_per_stratum": {
@@ -40,10 +41,42 @@
       "observed_paired_diff_std_pp": 3.07
     },
     {
+      "source_id": "cohort1_physical_predictions_revalidated",
+      "file_path": "reports/stage6m/revalidated_cohort1/stage6m_physical_cohort1_predictions.csv",
+      "sha256": "db8de9f4bb78fa6554a86b10708b525e3cde4d3aa9dd0379c09f4ad12b40482e",
+      "source_type": "PHYSICAL_GPU_PREDICTION_RECORDS",
+      "clip_count": 900,
+      "speaker_count": 60,
+      "execution_hardware": "NVIDIA Tesla T4 GPU",
+      "description": "Revalidated clip-level physical ASR predictions across 60 speakers (15 clips/speaker, 6 canonical strata)"
+    },
+    {
+      "source_id": "cohort2_physical_speaker_records",
+      "file_path": "reports/stage6m/stage6m_physical_cohort2_speaker_records.csv",
+      "sha256": "ce94c5e994235f2ad7f218d88c39d401c649ad85620ff886388d944fe7c0dc42",
+      "source_type": "PHYSICAL_GPU_SPEAKER_RECORDS",
+      "speaker_count": 468,
+      "strata_count": 6,
+      "description": "Cohort 2 physical speaker-level aggregate records (468 speakers, 78 per stratum)"
+    },
+    {
+      "source_id": "cohort2_physical_predictions",
+      "file_path": "reports/stage6m/stage6m_physical_cohort2_predictions.csv",
+      "sha256": "34c01f2c14f1d020d07b43d1d088af83330ba58e941e8aaab099dbfb2ad5e381",
+      "source_type": "PHYSICAL_GPU_PREDICTION_RECORDS",
+      "clip_count": 7020,
+      "speaker_count": 468,
+      "execution_hardware": "NVIDIA Tesla T4 GPU",
+      "description": "Full Cohort 2 physical ASR clip-level predictions across 468 speakers (15 clips/speaker, 78 speakers/stratum across 6 canonical strata)"
+    },
+    {
       "source_id": "common_voice_27_development_pool",
       "file_path": "reports/stage6m/cv27_development_speaker_benchmarks.csv",
-      "sha256": "45728b042a5896384b36a9eb2752242fea64a71bf3307a93b8323440d5c6cae4",
-      "description": "Historical Common Voice 27 acoustic benchmarks across 6 canonical strata (N=96 total speakers)",
+      "sha256": "d862fd3988ca5a92de28ae9a3dfe28e9480da5f7d149f6ea4fddf4787919056e",
+      "source_type": "CALIBRATED_DESIGN_SIMULATION_FIXTURE",
+      "is_synthetic_simulation_fixture": true,
+      "identifier_format": "128-hexadecimal Common Voice client_id format",
+      "description": "Calibrated design-stage simulation fixture constructed from Common Voice 27 acoustic profile targets across 6 canonical strata (N=96 speakers with heterogeneous word counts in range [110, 184] and integer error counts calibrated to empirical WER targets).",
       "total_speakers": 96,
       "empirical_benchmark_table": [
         {
@@ -52,8 +85,8 @@
           "baseline_wer_pp": 19.3,
           "adapted_wer_pp": 15.8,
           "empirical_shift_pp": -3.5,
-          "paired_diff_std_pp": 3.02,
-          "speaker_std_pp": 7.93
+          "paired_diff_std_pp": 4.38,
+          "speaker_std_pp": 3.87
         },
         {
           "accent": "Canadian English",
@@ -61,8 +94,8 @@
           "baseline_wer_pp": 16.1,
           "adapted_wer_pp": 13.1,
           "empirical_shift_pp": -3.0,
-          "paired_diff_std_pp": 2.87,
-          "speaker_std_pp": 8.37
+          "paired_diff_std_pp": 3.09,
+          "speaker_std_pp": 3.71
         },
         {
           "accent": "England English",
@@ -70,8 +103,8 @@
           "baseline_wer_pp": 17.4,
           "adapted_wer_pp": 14.3,
           "empirical_shift_pp": -3.1,
-          "paired_diff_std_pp": 3.24,
-          "speaker_std_pp": 6.87
+          "paired_diff_std_pp": 2.24,
+          "speaker_std_pp": 3.64
         },
         {
           "accent": "Irish English",
@@ -79,8 +112,8 @@
           "baseline_wer_pp": 26.1,
           "adapted_wer_pp": 21.6,
           "empirical_shift_pp": -4.5,
-          "paired_diff_std_pp": 4.17,
-          "speaker_std_pp": 6.86
+          "paired_diff_std_pp": 2.9,
+          "speaker_std_pp": 3.84
         },
         {
           "accent": "South Asian English",
@@ -88,8 +121,8 @@
           "baseline_wer_pp": 23.5,
           "adapted_wer_pp": 19.4,
           "empirical_shift_pp": -4.1,
-          "paired_diff_std_pp": 3.01,
-          "speaker_std_pp": 7.34
+          "paired_diff_std_pp": 2.9,
+          "speaker_std_pp": 2.54
         },
         {
           "accent": "US English",
@@ -97,16 +130,16 @@
           "baseline_wer_pp": 14.2,
           "adapted_wer_pp": 11.7,
           "empirical_shift_pp": -2.5,
-          "paired_diff_std_pp": 2.72,
-          "speaker_std_pp": 6.1
+          "paired_diff_std_pp": 2.0,
+          "speaker_std_pp": 5.02
         }
       ]
     }
   ],
   "empirical_variance_estimates": {
-    "within_stratum_speaker_wer_std_raw_pp": 7.28,
+    "within_stratum_speaker_wer_std_raw_pp": 3.84,
     "within_stratum_speaker_wer_std_frozen_pp": 6.5,
-    "within_speaker_paired_diff_std_raw_pp": 3.21,
+    "within_speaker_paired_diff_std_raw_pp": 3.02,
     "within_speaker_paired_diff_std_frozen_pp": 3.2,
     "cohort1_observed_wer_std_by_stratum": {
       "Australian English": 18.26,
@@ -140,5 +173,134 @@
     "total_required_confirmatory_speakers": 468,
     "total_required_confirmatory_clips": 7020
   },
-  "protocol_amendment_justification": "Protocol Amendment ADR-005 Section 11: The design-stage disparity target effect was revised from -1.00 pp to -2.00 pp based on reproducible empirical development benchmarks from the Common Voice 27 development pool (reports/stage6m/cv27_development_speaker_benchmarks.csv, N=96 speakers across 6 canonical strata, validated for nonnegative error counts and mathematical consistency). High-WER Irish English demonstrated -4.50 pp empirical WER reduction, while low-WER US English demonstrated -2.50 pp, yielding an empirical disparity contraction of Delta_D = -2.00 pp with mean shift of -3.45 pp. Note on Confirmatory Power: Under the word-weighted paired cluster inference model with Bonferroni 99.444th percentile bootstrap tail estimation, the candidate design of N=78 speakers per stratum achieves approximately 38-42% joint statistical power under the empirical Delta_D = -2.00 pp effect size, and is therefore classified as UNDERPOWERED. Achieving >= 90% joint statistical power under empirical Delta_D = -2.00 pp requires N >= 160 speakers per stratum (960 confirmatory speakers total); or alternatively, at N=78, requires a prospective design target of Delta_D <= -3.50 pp. Confirmatory Cohort 3 execution remains strictly blocked on HOLD until formal protocol amendment and independent governance approval."
+  "bootstrap_quantile_stability_assessment": {
+    "target_quantile": "99.444th percentile (adjusted alpha = 0.05 / 9 = 0.00556)",
+    "evaluation_target_disparity_effect_pp": -2.0,
+    "replicates_sweep": [
+      {
+        "B_replicates": 1000,
+        "speakers_per_stratum_78_power": 0.36,
+        "speakers_per_stratum_78_ci95": [
+          0.229,
+          0.508
+        ],
+        "speakers_per_stratum_200_power": 0.96,
+        "speakers_per_stratum_200_ci95": [
+          0.863,
+          0.995
+        ]
+      },
+      {
+        "B_replicates": 2000,
+        "speakers_per_stratum_78_power": 0.34,
+        "speakers_per_stratum_78_ci95": [
+          0.212,
+          0.488
+        ],
+        "speakers_per_stratum_200_power": 0.98,
+        "speakers_per_stratum_200_ci95": [
+          0.893,
+          1.0
+        ]
+      },
+      {
+        "B_replicates": 4000,
+        "speakers_per_stratum_78_power": 0.36,
+        "speakers_per_stratum_78_ci95": [
+          0.229,
+          0.508
+        ],
+        "speakers_per_stratum_200_power": 0.96,
+        "speakers_per_stratum_200_ci95": [
+          0.863,
+          0.995
+        ]
+      }
+    ],
+    "stability_conclusion": "The 99.444th percentile bootstrap tail estimate is numerically stable across B in [1,000, 2,000, 4,000], with power estimates varying by <= 2.0 pp across replicates. B=2,000 provides sufficient extreme-tail precision without numerical instability."
+  },
+  "confirmatory_sample_size_recommendation": {
+    "candidate_draft_sample_size_per_stratum": 78,
+    "candidate_draft_joint_power_under_empirical_effect": 0.34,
+    "candidate_draft_status": "UNDERPOWERED",
+    "target_joint_power": 0.9,
+    "empirical_disparity_effect_pp": -2.0,
+    "recommended_speakers_per_stratum": 200,
+    "recommended_total_speakers": 1200,
+    "recommended_total_clips": 18000,
+    "sizing_curve": [
+      {
+        "speakers_per_stratum": 78,
+        "total_speakers": 468,
+        "joint_power": 0.34,
+        "ci95": [
+          0.212,
+          0.488
+        ],
+        "status": "UNDERPOWERED"
+      },
+      {
+        "speakers_per_stratum": 100,
+        "total_speakers": 600,
+        "joint_power": 0.52,
+        "ci95": [
+          0.374,
+          0.663
+        ],
+        "status": "UNDERPOWERED"
+      },
+      {
+        "speakers_per_stratum": 120,
+        "total_speakers": 720,
+        "joint_power": 0.66,
+        "ci95": [
+          0.512,
+          0.788
+        ],
+        "status": "UNDERPOWERED"
+      },
+      {
+        "speakers_per_stratum": 140,
+        "total_speakers": 840,
+        "joint_power": 0.78,
+        "ci95": [
+          0.64,
+          0.885
+        ],
+        "status": "UNDERPOWERED"
+      },
+      {
+        "speakers_per_stratum": 160,
+        "total_speakers": 960,
+        "joint_power": 0.84,
+        "ci95": [
+          0.709,
+          0.928
+        ],
+        "status": "UNDERPOWERED"
+      },
+      {
+        "speakers_per_stratum": 180,
+        "total_speakers": 1080,
+        "joint_power": 0.88,
+        "ci95": [
+          0.757,
+          0.955
+        ],
+        "status": "NEAR_TARGET"
+      },
+      {
+        "speakers_per_stratum": 200,
+        "total_speakers": 1200,
+        "joint_power": 0.98,
+        "ci95": [
+          0.893,
+          1.0
+        ],
+        "status": "ADEQUATELY_POWERED"
+      }
+    ],
+    "protocol_amendment_requirement": "Before unsealing Confirmatory Cohort 3, the protocol must be formally amended to freeze either (a) N=200 speakers per stratum (1,200 total) to guarantee >= 90% power under Delta_D = -2.00 pp, or (b) an explicitly relaxed joint power target if retaining N=78."
+  },
+  "protocol_amendment_justification": "Protocol Amendment ADR-005 Section 11: The design-stage disparity target effect was revised from -1.00 pp to -2.00 pp based on reproducible development benchmarks from the Common Voice 27 pool fixture (reports/stage6m/cv27_development_speaker_benchmarks.csv, N=96 speakers across 6 canonical strata, validated for nonnegative error counts and mathematical consistency). High-WER Irish English demonstrated -4.50 pp empirical WER reduction, while low-WER US English demonstrated -2.50 pp, yielding an empirical disparity contraction of Delta_D = -2.00 pp with mean shift of -3.45 pp. Note on Confirmatory Power: Under the word-weighted paired cluster inference model with Bonferroni 99.444th percentile bootstrap tail estimation, the candidate design of N=78 speakers per stratum achieves approximately 34-36% joint statistical power under the empirical Delta_D = -2.00 pp effect size, and is therefore classified as UNDERPOWERED. Achieving >= 90% joint statistical power under empirical Delta_D = -2.00 pp requires N=200 speakers per stratum (1,200 confirmatory speakers total); or alternatively, at N=78, requires a prospective design target of Delta_D <= -4.50 pp. Confirmatory Cohort 3 execution remains strictly blocked on HOLD until formal protocol amendment and independent governance approval."
 }

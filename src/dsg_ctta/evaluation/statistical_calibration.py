@@ -643,7 +643,11 @@ def simulate_streaming_gate_trajectory_calibration(
         uptake = False
     elif trajectory_type == "beneficial":
         # In beneficial stream, safety requires ZERO false acceptances of harmful perturbations (total_harmful_accepted == 0)
-        is_safe = bool(total_harmful_accepted == 0 and traj_rate == 0.0)
+        # and exact Clopper-Pearson 95% upper confidence bound <= 5.0% when evaluated across >= 72 trajectory replicates
+        if num_trajectories >= 72:
+            is_safe = bool(traj_ci[1] <= 0.05 and traj_rate == 0.0 and total_harmful_accepted == 0)
+        else:
+            is_safe = bool(total_harmful_accepted == 0 and traj_rate == 0.0)
         # Adaptation uptake requires positive acceptance of genuine multi-accent improvements
         uptake = bool(accepted_mean > 0.0)
     else:

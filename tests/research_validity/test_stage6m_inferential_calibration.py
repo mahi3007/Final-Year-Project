@@ -313,14 +313,15 @@ def test_streaming_gate_trajectory_harm_rejection():
 
 def test_streaming_gate_trajectory_production_length_beneficial_control():
     """
-    Test Case 10: Full Consecutive 1,754-Look Streaming Gate Beneficial Trajectory Acceptance.
-    Verifies that under the full consecutive 1,754-look schedule with 120 reference speakers,
-    genuine multi-accent improvements are accepted by the sequential gate with positive mean update rate,
-    while zero interleaved harmful perturbations are falsely accepted.
+    Test Case 10: Full Consecutive 1,754-Look Streaming Gate Beneficial Trajectory Acceptance (75 Trajectories).
+    Verifies that under the full consecutive 1,754-look schedule with 120 reference speakers across 75 trajectories:
+    1. Zero interleaved harmful candidate perturbations are accepted across all 75 trajectories
+       (false acceptance rate = 0.0%, Clopper-Pearson 95% upper bound <= 5.0%).
+    2. Genuine multi-accent improvements are accepted by the sequential gate with positive mean update rate.
     """
     res = simulate_streaming_gate_trajectory_calibration(
         trajectory_type="beneficial",
-        num_trajectories=15,
+        num_trajectories=75,
         num_candidate_looks=1754,
         num_reference_speakers=120,
         seed=911,
@@ -328,7 +329,9 @@ def test_streaming_gate_trajectory_production_length_beneficial_control():
     )
     assert res.is_full_sequential_evaluation
     assert res.num_candidate_looks == 1754
+    assert res.num_trajectories == 75
     assert res.accepted_updates_mean > 0.0
     assert res.adaptation_uptake_demonstrated is True
     assert res.is_safely_controlled is True
     assert res.trajectory_false_acceptance_rate == 0.0
+    assert res.trajectory_false_acceptance_ci_upper <= 0.05

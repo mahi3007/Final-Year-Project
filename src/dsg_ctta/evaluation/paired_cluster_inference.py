@@ -45,7 +45,8 @@ class DesignStagePowerSpec:
     - target_disparity_effect_pp: -2.00 pp narrowing of max-min disparity gap
     - alpha_family: 0.05 family-wise error across M=9 hypotheses
     - target_joint_power: 0.90 joint probability across all 9 criteria
-    - required_speakers_per_stratum: 78 speakers (468 speakers across 6 strata)
+    - required_speakers_per_stratum: 78 speakers (candidate draft; achieves ~34-36% joint power under empirical Delta_D = -2.00 pp)
+    - recommended_speakers_per_stratum_for_90_power: 200 speakers (1,200 total; required for >= 90% power under empirical Delta_D = -2.00 pp)
     """
     target_primary_effect_pp: float = 3.50
     target_ungated_effect_pp: float = 3.50
@@ -56,6 +57,7 @@ class DesignStagePowerSpec:
     alpha_family: float = 0.05
     target_joint_power: float = 0.90
     required_speakers_per_stratum: int = 78
+    recommended_speakers_per_stratum_for_90_power: int = 200
     required_clips_per_speaker: int = 15
     require_lcb_threshold: bool = False
     num_simulations: int = 1000
