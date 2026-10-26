@@ -85,9 +85,9 @@ class SutaAdapter(BaseTestTimeAdapter):
         flat_probs = probs.view(-1, C)
 
         # Class correlation matrix C_tilde
-        # Correlation between class j and class k: sum_t(p_j * p_k) / (sqrt(sum p_j) * sqrt(sum p_k))
+        # Correlation between class j and class k: sum_t(p_j * p_k) / (sqrt(sum p_j * sum p_k + eps))
         class_sums = torch.sum(flat_probs, dim=0)  # (C,)
-        norm_factor = torch.sqrt(class_sums.unsqueeze(1) @ class_sums.unsqueeze(0)) + 1e-8
+        norm_factor = torch.sqrt(class_sums.unsqueeze(1) @ class_sums.unsqueeze(0) + 1e-8)
         corr_matrix = (flat_probs.T @ flat_probs) / norm_factor
 
         # Penalize off-diagonal elements
@@ -130,26 +130,31 @@ class SutaAdapter(BaseTestTimeAdapter):
         )
         input_values = inputs.input_values.to(device)
 
-        model.train()  # Enable grad computation
         loss_history: List[float] = []
+        last_safe_res = None
 
         for _ in range(self.steps):
-            self.optimizer.zero_grad()
-            outputs = model(input_values)
-            logits = outputs.logits  # (B, T, C)
+            def loss_fn():
+                outputs = model(input_values)
+                logits = outputs.logits  # (B, T, C)
+                scaled_logits = logits / self.temperature
+                probs = torch.softmax(scaled_logits, dim=-1)
+                l_em = self._compute_entropy_loss(probs)
+                l_mcc = self._compute_mcc_loss(probs)
+                return self.alpha * l_em + (1.0 - self.alpha) * l_mcc
 
-            # Temperature-scaled probabilities
-            scaled_logits = logits / self.temperature
-            probs = torch.softmax(scaled_logits, dim=-1)
-
-            # Compute SUTA loss
-            l_em = self._compute_entropy_loss(probs)
-            l_mcc = self._compute_mcc_loss(probs)
-            total_loss = self.alpha * l_em + (1.0 - self.alpha) * l_mcc
-
-            total_loss.backward()
-            self.optimizer.step()
-            loss_history.append(float(total_loss.item()))
+            from dsg_ctta.adaptation.safe_update import execute_safe_adaptation_transaction
+            safe_res = execute_safe_adaptation_transaction(
+                model=model,
+                optimizer=self.optimizer,
+                loss_fn=loss_fn,
+                max_grad_norm=1.0
+            )
+            last_safe_res = safe_res
+            if safe_res.loss is not None:
+                loss_history.append(safe_res.loss)
+            if not safe_res.is_success:
+                break
 
         model.eval()
         self.step_count += 1

@@ -80,7 +80,7 @@ class DsutaAdapter(BaseTestTimeAdapter):
         B, T, C = probs.shape
         flat_probs = probs.view(-1, C)
         class_sums = torch.sum(flat_probs, dim=0)
-        norm_factor = torch.sqrt(class_sums.unsqueeze(1) @ class_sums.unsqueeze(0)) + 1e-8
+        norm_factor = torch.sqrt(class_sums.unsqueeze(1) @ class_sums.unsqueeze(0) + 1e-8)
         corr_matrix = (flat_probs.T @ flat_probs) / norm_factor
         diagonal = torch.diag(corr_matrix)
         off_diag_sum = torch.sum(corr_matrix) - torch.sum(diagonal)

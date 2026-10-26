@@ -60,6 +60,7 @@ from dsg_ctta.data.cohort2_preflight import Cohort1PreflightValidator, Cohort2Pr
 from dsg_ctta.offline.metrics import compute_utterance_metrics
 from dsg_ctta.controller.shadow import compute_model_parameter_hash
 from dsg_ctta.controller.streaming_gate import StreamingSentinelSafetyGate, compute_calibrated_obf_schedule
+from dsg_ctta.adaptation.safe_update import SafeUpdateResult, execute_safe_adaptation_transaction
 
 
 def verify_gpu() -> str:
@@ -115,45 +116,39 @@ def suta_adaptation_step_gpu(
     temperature: float = 2.5,
     alpha: float = 0.5,
     device: str = "cuda"
-) -> float:
-    model.train()
+) -> SafeUpdateResult:
     inputs = processor(waveforms, sampling_rate=16000, padding=True, return_tensors="pt")
     input_values = inputs.input_values.to(device)
 
-    optimizer.zero_grad()
-    outputs = model(input_values)
-    logits = outputs.logits
+    def loss_fn() -> torch.Tensor:
+        outputs = model(input_values)
+        logits = outputs.logits
+        scaled_logits = logits / temperature
+        probs = torch.softmax(scaled_logits, dim=-1)
 
-    scaled_logits = logits / temperature
-    probs = torch.softmax(scaled_logits, dim=-1)
+        # Entropy
+        log_probs = torch.log(probs + 1e-8)
+        entropy = -torch.sum(probs * log_probs, dim=-1)
+        l_em = torch.mean(entropy)
 
-    # Entropy
-    log_probs = torch.log(probs + 1e-8)
-    entropy = -torch.sum(probs * log_probs, dim=-1)
-    l_em = torch.mean(entropy)
+        # MCC
+        B, T, C = probs.shape
+        flat_probs = probs.view(-1, C)
+        class_sums = torch.sum(flat_probs, dim=0)
+        norm_factor = torch.sqrt(class_sums.unsqueeze(1) @ class_sums.unsqueeze(0) + 1e-8)
+        corr_matrix = (flat_probs.T @ flat_probs) / norm_factor
+        diagonal = torch.diag(corr_matrix)
+        off_diag_sum = torch.sum(corr_matrix) - torch.sum(diagonal)
+        l_mcc = off_diag_sum / (C * (C - 1) + 1e-8)
 
-    # MCC
-    B, T, C = probs.shape
-    flat_probs = probs.view(-1, C)
-    class_sums = torch.sum(flat_probs, dim=0)
-    norm_factor = torch.sqrt(class_sums.unsqueeze(1) @ class_sums.unsqueeze(0) + 1e-8)
-    corr_matrix = (flat_probs.T @ flat_probs) / norm_factor
-    diagonal = torch.diag(corr_matrix)
-    off_diag_sum = torch.sum(corr_matrix) - torch.sum(diagonal)
-    l_mcc = off_diag_sum / (C * (C - 1) + 1e-8)
+        return alpha * l_em + (1.0 - alpha) * l_mcc
 
-    total_loss = alpha * l_em + (1.0 - alpha) * l_mcc
-    if not torch.isfinite(total_loss):
-        optimizer.zero_grad()
-        model.eval()
-        return float("nan")
-
-    total_loss.backward()
-    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-    optimizer.step()
-    model.eval()
-
-    return float(total_loss.item())
+    return execute_safe_adaptation_transaction(
+        model=model,
+        optimizer=optimizer,
+        loss_fn=loss_fn,
+        max_grad_norm=1.0
+    )
 
 
 def preload_waveforms(file_list: List[Tuple[str, Path]], sample_rate: int = 16000) -> Dict[str, np.ndarray]:
@@ -489,7 +484,7 @@ def main():
 
         if win_idx < num_updates:
             # Arm 2: Unconditional adaptation
-            suta_adaptation_step_gpu(
+            arm2_step_res = suta_adaptation_step_gpu(
                 model=arm2_model, processor=processor, waveforms=batch_waveforms,
                 optimizer=arm2_optimizer, temperature=2.5, alpha=0.5, device=device
             )
@@ -499,72 +494,111 @@ def main():
             candidate_model = copy.deepcopy(arm3_model).to(device)
             candidate_optimizer = setup_suta_optimizer(candidate_model, lr=1e-4)
 
-            loss_val = suta_adaptation_step_gpu(
+            cand_step_res = suta_adaptation_step_gpu(
                 model=candidate_model, processor=processor, waveforms=batch_waveforms,
                 optimizer=candidate_optimizer, temperature=2.5, alpha=0.5, device=device
             )
 
-            if cached_live_hash != current_arm3_hash or cached_live_core_hyps is None:
-                cached_live_core_hyps = batch_transcribe_gpu(arm3_model, processor, core_sentinel_waveforms, device)
-                cached_live_hash = current_arm3_hash
+            loss_val = cand_step_res.loss if cand_step_res.loss is not None else float("nan")
 
-            cand_core_hyps = batch_transcribe_gpu(candidate_model, processor, core_sentinel_waveforms, device)
-
-            # Compute Sentinel Utterance Metrics
-            sent_live_errors = []
-            sent_cand_errors = []
-            sent_ref_lengths = []
-
-            for s_idx in range(len(core_sentinel_ids)):
-                r_norm = core_sentinel_refs[s_idx]
-                m_live = compute_utterance_metrics(r_norm, TextNormalizer.normalize(cached_live_core_hyps[s_idx]))
-                m_cand = compute_utterance_metrics(r_norm, TextNormalizer.normalize(cand_core_hyps[s_idx]))
-
-                sent_live_errors.append(m_live.substitutions + m_live.deletions + m_live.insertions)
-                sent_cand_errors.append(m_cand.substitutions + m_cand.deletions + m_cand.insertions)
-                sent_ref_lengths.append(m_live.reference_length)
-
-            # Shared Canonical Safety Gate Evaluation
-            gate_dec = safety_gate.evaluate_candidate(
-                window_id=win_idx,
-                speaker_ids=core_sentinel_speaker_ids,
-                stratum_groups=core_sentinel_strata,
-                live_errors=sent_live_errors,
-                cand_errors=sent_cand_errors,
-                ref_lengths=sent_ref_lengths,
-            )
-
-            if gate_dec.passed_gate:
-                arm3_model = candidate_model
-                arm3_optimizer = candidate_optimizer
-                gate_decision_str = f"ACCEPT (Delta_R={gate_dec.delta_r:+.2f}%)"
-                cached_live_hash = None
-            else:
+            if not cand_step_res.is_success:
+                # Fail-closed numerical rejection: do not run sentinel panel on invalid candidate
                 del candidate_model
                 del candidate_optimizer
-                gate_decision_str = f"REJECT (UCB={gate_dec.ucb_r:+.2f}%)"
+                gate_decision_str = f"REJECT ({cand_step_res.numerical_status})"
+                gate_decision_records.append({
+                    "window_id": win_idx,
+                    "stratum": window_primary_stratum,
+                    "loss": round(cand_step_res.loss, 4) if (cand_step_res.loss is not None and np.isfinite(cand_step_res.loss)) else None,
+                    "decision": "REJECT",
+                    "decision_raw": gate_decision_str,
+                    "numerical_status": cand_step_res.numerical_status,
+                    "loss_finite": cand_step_res.loss_finite,
+                    "gradient_finite": cand_step_res.gradient_finite,
+                    "parameter_finite": cand_step_res.parameter_finite,
+                    "failure_reason": cand_step_res.failure_reason,
+                    "delta_r": None,
+                    "delta_d": None,
+                    "se_r_raw": None,
+                    "se_r_adjusted": None,
+                    "se_r_floor": None,
+                    "se_sent": None,
+                    "se_d": None,
+                    "z_obf": None,
+                    "ucb_r": None,
+                    "ucb_max_group": None,
+                    "worst_group": None,
+                    "ucb_d": None,
+                    "rejection_reason": f"Numerical failure: {cand_step_res.failure_reason}",
+                    "duration_seconds": round(time.time() - t_win_start, 2)
+                })
+            else:
+                if cached_live_hash != current_arm3_hash or cached_live_core_hyps is None:
+                    cached_live_core_hyps = batch_transcribe_gpu(arm3_model, processor, core_sentinel_waveforms, device)
+                    cached_live_hash = current_arm3_hash
 
-            gate_decision_records.append({
-                "window_id": win_idx,
-                "stratum": window_primary_stratum,
-                "loss": round(loss_val, 4) if np.isfinite(loss_val) else None,
-                "decision": gate_dec.decision,
-                "decision_raw": gate_decision_str,
-                "delta_r": gate_dec.delta_r,
-                "delta_d": gate_dec.delta_d,
-                "se_r_raw": gate_dec.se_r_raw,
-                "se_r_adjusted": gate_dec.se_r_adjusted,
-                "se_r_floor": gate_dec.se_r_floor,
-                "se_sent": gate_dec.se_r,
-                "se_d": gate_dec.se_d,
-                "z_obf": gate_dec.z_obf,
-                "ucb_r": gate_dec.ucb_r,
-                "ucb_max_group": gate_dec.ucb_max_group,
-                "worst_group": gate_dec.worst_group,
-                "ucb_d": gate_dec.ucb_d,
-                "rejection_reason": "; ".join(gate_dec.rejection_reasons) if not gate_dec.passed_gate else "NONE_ACCEPTED",
-                "duration_seconds": round(time.time() - t_win_start, 2)
-            })
+                cand_core_hyps = batch_transcribe_gpu(candidate_model, processor, core_sentinel_waveforms, device)
+
+                # Compute Sentinel Utterance Metrics
+                sent_live_errors = []
+                sent_cand_errors = []
+                sent_ref_lengths = []
+
+                for s_idx in range(len(core_sentinel_ids)):
+                    r_norm = core_sentinel_refs[s_idx]
+                    m_live = compute_utterance_metrics(r_norm, TextNormalizer.normalize(cached_live_core_hyps[s_idx]))
+                    m_cand = compute_utterance_metrics(r_norm, TextNormalizer.normalize(cand_core_hyps[s_idx]))
+
+                    sent_live_errors.append(m_live.substitutions + m_live.deletions + m_live.insertions)
+                    sent_cand_errors.append(m_cand.substitutions + m_cand.deletions + m_cand.insertions)
+                    sent_ref_lengths.append(m_live.reference_length)
+
+                # Shared Canonical Safety Gate Evaluation
+                gate_dec = safety_gate.evaluate_candidate(
+                    window_id=win_idx,
+                    speaker_ids=core_sentinel_speaker_ids,
+                    stratum_groups=core_sentinel_strata,
+                    live_errors=sent_live_errors,
+                    cand_errors=sent_cand_errors,
+                    ref_lengths=sent_ref_lengths,
+                )
+
+                if gate_dec.passed_gate:
+                    arm3_model = candidate_model
+                    arm3_optimizer = candidate_optimizer
+                    gate_decision_str = f"ACCEPT (Delta_R={gate_dec.delta_r:+.2f}%)"
+                    cached_live_hash = None
+                else:
+                    del candidate_model
+                    del candidate_optimizer
+                    gate_decision_str = f"REJECT (UCB={gate_dec.ucb_r:+.2f}%)"
+
+                gate_decision_records.append({
+                    "window_id": win_idx,
+                    "stratum": window_primary_stratum,
+                    "loss": round(loss_val, 4) if np.isfinite(loss_val) else None,
+                    "decision": gate_dec.decision,
+                    "decision_raw": gate_decision_str,
+                    "numerical_status": cand_step_res.numerical_status,
+                    "loss_finite": cand_step_res.loss_finite,
+                    "gradient_finite": cand_step_res.gradient_finite,
+                    "parameter_finite": cand_step_res.parameter_finite,
+                    "failure_reason": cand_step_res.failure_reason,
+                    "delta_r": gate_dec.delta_r,
+                    "delta_d": gate_dec.delta_d,
+                    "se_r_raw": gate_dec.se_r_raw,
+                    "se_r_adjusted": gate_dec.se_r_adjusted,
+                    "se_r_floor": gate_dec.se_r_floor,
+                    "se_sent": gate_dec.se_r,
+                    "se_d": gate_dec.se_d,
+                    "z_obf": gate_dec.z_obf,
+                    "ucb_r": gate_dec.ucb_r,
+                    "ucb_max_group": gate_dec.ucb_max_group,
+                    "worst_group": gate_dec.worst_group,
+                    "ucb_d": gate_dec.ucb_d,
+                    "rejection_reason": "; ".join(gate_dec.rejection_reasons) if not gate_dec.passed_gate else "NONE_ACCEPTED",
+                    "duration_seconds": round(time.time() - t_win_start, 2)
+                })
 
         win_elapsed = time.time() - t_win_start
         print(f"{win_idx+1:3d}/{num_windows} | {window_primary_stratum[:12]:12s} | {wer1:6.1f}%  | {wer2:6.1f}%  | {wer3:6.1f}%  | {gate_decision_str:18s} | {loss_val:6.3f} | {win_elapsed:.1f}s")

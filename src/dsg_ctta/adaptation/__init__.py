@@ -13,11 +13,15 @@ from dsg_ctta.adaptation.suta import SutaAdapter
 from dsg_ctta.adaptation.dsuta import DsutaAdapter
 from dsg_ctta.adaptation.dmsuta import DmsutaAdapter
 
+from dsg_ctta.adaptation.safe_update import SafeUpdateResult, execute_safe_adaptation_transaction
+
 __all__ = [
     "BaseTestTimeAdapter",
     "AdaptationStepResult",
     "NoAdaptationAdapter",
     "SutaAdapter",
     "DsutaAdapter",
-    "DmsutaAdapter"
+    "DmsutaAdapter",
+    "SafeUpdateResult",
+    "execute_safe_adaptation_transaction",
 ]
