@@ -68,6 +68,7 @@ from dsg_ctta.adaptation.safe_update import (
     AtomicCandidateManager,
     compute_optimizer_state_hash,
 )
+from dsg_ctta.evaluation.paired_cluster_inference import run_confirmatory_paired_cluster_inference
 
 
 def verify_gpu() -> str:
@@ -117,6 +118,38 @@ def validate_sentinel_panel_against_canonical_protocol(
     if "speaker_id" not in sentinel_df.columns:
         raise ValueError("Sentinel panel CSV missing required column 'speaker_id'.")
 
+    # 1. Source row validation: non-blank IDs, non-blank labels, single accent assignment per speaker
+    spk_to_accent: Dict[str, str] = {}
+    for idx, row in sentinel_df.iterrows():
+        raw_spk = row["speaker_id"]
+        raw_grp = row["stage5_accent_group"]
+
+        if pd.isna(raw_spk):
+            raise ValueError(f"Sentinel panel row {idx} has missing/NaN speaker_id.")
+        s_id = str(raw_spk).strip()
+        if not s_id or s_id.lower() in ("nan", "none"):
+            raise ValueError(f"Sentinel panel row {idx} has blank/empty speaker_id.")
+
+        if pd.isna(raw_grp):
+            raise ValueError(f"Sentinel panel row {idx} has missing/NaN stage5_accent_group.")
+        grp = str(raw_grp).strip()
+        if not grp or grp.lower() in ("nan", "none"):
+            raise ValueError(f"Sentinel panel row {idx} has blank/empty stage5_accent_group.")
+
+        if grp not in canonical_accents:
+            raise ValueError(
+                f"Sentinel panel row {idx} contains non-canonical accent '{grp}'. "
+                f"Expected one of: {sorted(list(canonical_accents))}."
+            )
+
+        if s_id in spk_to_accent and spk_to_accent[s_id] != grp:
+            raise ValueError(
+                f"Inconsistent speaker-to-accent mapping in source sentinel panel: speaker '{s_id}' "
+                f"is assigned to multiple accents ('{spk_to_accent[s_id]}' vs '{grp}')."
+            )
+        spk_to_accent[s_id] = grp
+
+    # 2. Deduplicate to core panel (1 clip per speaker)
     core_df = sentinel_df.groupby("speaker_id").first().reset_index()
     observed_strata = set(core_df["stage5_accent_group"].astype(str))
 
@@ -924,10 +957,23 @@ def main():
         and float(spk_wer3_unrounded.mean()) < float(spk_wer1_unrounded.mean())
     )
 
+    # Stage 6M v1.4.0 Confirmatory Inferential Analysis
+    print("      Executing Confirmatory Paired Cluster Inference and Holm Multiplicity Adjustment...")
+    confirmatory_report = run_confirmatory_paired_cluster_inference(
+        speaker_records=spk_stats,
+        num_bootstrap_replicates=2000 if args.cohort in ("cohort1", "cohort2") else 20000,
+        seed=42,
+        alpha_family=0.05,
+        epsilon_g_margin_pp=2.00,
+        epsilon_d_margin_pp=0.00,
+    )
+
     report_payload = {
         "metadata": {
             "protocol_version": protocol_version,
             "gate_version": args.gate_version,
+            "confirmatory_decision_verdict": confirmatory_report.verdict,
+            "confirmatory_all_criteria_passed": confirmatory_report.all_criteria_passed,
             "execution_commit_sha": git_commit_sha,
             "git_tree_dirty": git_tree_dirty,
             "configuration_hash_sha256": config_hash,
@@ -1000,7 +1046,8 @@ def main():
         "stratum_breakdown": strata_results,
         "speaker_level_paired_records": spk_stats,
         "candidate_gate_decisions": gate_decision_records,
-        "arm2_adaptation_failures": arm2_failure_records
+        "arm2_adaptation_failures": arm2_failure_records,
+        "confirmatory_protocol_inference": confirmatory_report.to_dict(),
     }
 
     out_json = results_dir / f"stage6m_physical_{args.cohort}_report.json"

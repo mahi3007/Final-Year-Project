@@ -1097,12 +1097,152 @@ def test_runner_sentinel_panel_canonical_accent_validation():
         "transcript": "hello"
     }])
     unexpected_df = pd.concat([valid_df, extra_row], ignore_index=True)
-    with pytest.raises(ValueError, match="unexpected accent strata.*Alien English"):
+    with pytest.raises(ValueError, match="non-canonical accent 'Alien English'"):
         validate_sentinel_panel_against_canonical_protocol(unexpected_df)
 
     # 3. Wrong speaker count (4 speakers instead of 5 for US English)
     short_us_df = valid_df[valid_df["speaker_id"] != "US English_spk_4"]
     with pytest.raises(ValueError, match="stratum 'US English' has 4 unique speakers"):
         validate_sentinel_panel_against_canonical_protocol(short_us_df)
+
+
+def test_runner_sentinel_panel_rejects_conflicting_speaker_accent_labels():
+    """
+    Test Case 31: Pre-deduplication speaker-to-accent consistency check.
+    Asserts validate_sentinel_panel_against_canonical_protocol fails closed if
+    the same speaker appears with conflicting accent labels in the source CSV,
+    even if deduplication would yield valid counts.
+    """
+    from cloud.kaggle.run_stage6m_cohort2_benchmark import (
+        validate_sentinel_panel_against_canonical_protocol,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    # Valid panel: 6 accents, 5 speakers each (30 rows total)
+    valid_rows = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(5):
+            valid_rows.append({
+                "speaker_id": f"{acc}_spk_{s}",
+                "stage5_accent_group": acc,
+                "sentinel_id": f"{acc}_sentinel_{s}",
+                "transcript": "hello world"
+            })
+
+    # Add a second row for "US English_spk_0" with conflicting accent "Irish English"
+    conflicting_row = {
+        "speaker_id": "US English_spk_0",
+        "stage5_accent_group": "Irish English",
+        "sentinel_id": "conflicting_sentinel_0",
+        "transcript": "conflict"
+    }
+    conflicted_df = pd.DataFrame(valid_rows + [conflicting_row])
+
+    # Must raise ValueError before deduplication
+    with pytest.raises(ValueError, match="Inconsistent speaker-to-accent mapping in source sentinel panel"):
+        validate_sentinel_panel_against_canonical_protocol(conflicted_df)
+
+
+def test_confirmatory_paired_cluster_inference_passes_on_superiority():
+    """
+    Test Case 32: Confirmatory paired cluster inference passes on genuine superiority.
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import (
+        run_confirmatory_paired_cluster_inference,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    # Build synthetic speaker records where Arm 3 is superior to both Arm 1 and Arm 2
+    # with no accent regression and no disparity growth
+    records = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(10):  # 10 speakers per accent
+            records.append({
+                "speaker_id": f"{acc}_spk_{s}",
+                "stratum": acc,
+                "wc": 100,
+                "err1": 25,  # Arm 1 Static: 25% WER
+                "err2": 35,  # Arm 2 Ungated: 35% WER
+                "err3": 15,  # Arm 3 DSG: 15% WER (clear superiority!)
+            })
+
+    report = run_confirmatory_paired_cluster_inference(
+        speaker_records=records,
+        num_bootstrap_replicates=500,
+        seed=42,
+    )
+
+    assert report.verdict == "PASS"
+    assert report.all_criteria_passed
+    assert report.criteria["primary_superiority_static"].is_success
+    assert report.criteria["primary_superiority_ungated"].is_success
+    assert report.criteria["disparity_non_increase"].is_success
+
+
+def test_confirmatory_paired_cluster_inference_fails_when_identical_to_static():
+    """
+    Test Case 33: Confirmatory paired cluster inference fails when Arm 3 reproduces static.
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import (
+        run_confirmatory_paired_cluster_inference,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    records = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(5):
+            records.append({
+                "speaker_id": f"{acc}_spk_{s}",
+                "stratum": acc,
+                "wc": 100,
+                "err1": 20,
+                "err2": 40,
+                "err3": 20,  # Exactly identical to static baseline!
+            })
+
+    report = run_confirmatory_paired_cluster_inference(
+        speaker_records=records,
+        num_bootstrap_replicates=200,
+        seed=42,
+    )
+
+    assert report.verdict == "FAIL"
+    assert not report.all_criteria_passed
+    assert any("identical to Static Baseline" in r for r in report.failure_reasons)
+
+
+def test_confirmatory_paired_cluster_inference_fails_on_accent_regression():
+    """
+    Test Case 34: Confirmatory paired cluster inference fails if any accent exceeds regression margin.
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import (
+        run_confirmatory_paired_cluster_inference,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    records = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(5):
+            # In Irish English, severe regression (err3 = 35 vs err1 = 20)
+            e3 = 35 if acc == "Irish English" else 15
+            records.append({
+                "speaker_id": f"{acc}_spk_{s}",
+                "stratum": acc,
+                "wc": 100,
+                "err1": 20,
+                "err2": 30,
+                "err3": e3,
+            })
+
+    report = run_confirmatory_paired_cluster_inference(
+        speaker_records=records,
+        num_bootstrap_replicates=200,
+        seed=42,
+        epsilon_g_margin_pp=2.0,
+    )
+
+    assert report.verdict == "FAIL"
+    assert not report.criteria["accent_safety_irish_english"].is_success
+
 
 
