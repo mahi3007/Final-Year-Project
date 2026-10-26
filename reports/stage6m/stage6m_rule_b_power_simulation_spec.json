@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "document_id": "SPEC-STAGE6M-RULE-B-POWER-SIM-001",
+  "specification_version": "v1.4.0",
+  "title": "Pre-Registered Independent Power-Sizing Simulation Specification for Protocol v1.4.0 Decision Rule B",
+  "status": "PRE_REGISTERED_FROZEN",
+  "preregistration_timestamp_utc": "2026-10-26T21:00:00Z",
+  "governance_binding": {
+    "protocol": "Protocol v1.4.0-stage6m-selective-adaptation-draft",
+    "adr_reference": "ADR-005 Section 11",
+    "decision_rule": "Decision Rule B (Prespecified N=220, Require Clopper-Pearson LCB >= 90.0%)",
+    "cohort_scope": "Confirmatory Cohort 3 Sizing Simulation under Declared Scenario Assumptions",
+    "confirmatory_status": "HOLD"
+  },
+  "simulation_design_specification": {
+    "strata_count": 6,
+    "canonical_strata": [
+      "US English",
+      "England English",
+      "South Asian English",
+      "Australian English",
+      "Canadian English",
+      "Irish English"
+    ],
+    "prespecified_speakers_per_stratum": 220,
+    "clips_per_speaker": 15,
+    "total_simulated_speakers": 1320,
+    "total_simulated_clips": 19800,
+    "outer_simulations_count": 200,
+    "bootstrap_replicates_per_study": 1000,
+    "master_seed": 20261028,
+    "trajectory_seed_allocation_formula": "20261028 + sim_idx * 37 for sim_idx in 0..199",
+    "trajectory_seed_range": [
+      20261028,
+      20268391
+    ],
+    "exploratory_seed_grid_disjointness": {
+      "exploratory_seeds_min": 42,
+      "exploratory_seeds_max": 5555,
+      "is_disjoint": true
+    }
+  },
+  "calibrated_scenario_assumptions": {
+    "baseline_wer_mean_pp": 27.5,
+    "between_speaker_wer_std_pp": 6.5,
+    "within_speaker_paired_difference_std_pp": 3.2,
+    "modeled_selective_adaptation_disparity_effect_pp": -2.0,
+    "modeled_selective_adaptation_wer_effect_pp": -1.5,
+    "calibration_source": "Tesla T4 Physical Hardware Calibration across Cohort 1 (N=60) and Cohort 2 (N=468) physical evaluations."
+  },
+  "inferential_procedure": {
+    "hypotheses_evaluated_per_study": 9,
+    "multiplicity_correction": "Holm-Bonferroni across all 9 hypotheses",
+    "family_alpha": 0.05,
+    "disparity_margin_epsilon_d_pp": 0.0,
+    "utility_margin_epsilon_g_pp": 2.0,
+    "study_success_definition": "All 9 confirmatory hypotheses rejected simultaneously under Holm-Bonferroni correction."
+  },
+  "decision_criteria": {
+    "decision_rule": "Decision Rule B",
+    "target_joint_power": 0.9,
+    "exact_binomial_confidence_interval": "Clopper-Pearson 95% two-sided",
+    "enforced_criterion": "Exact 95% Lower Confidence Bound (LCB) on estimated joint power must satisfy LCB >= 0.90 (90.0%)."
+  },
+  "methodological_caveats_and_scope": {
+    "simulation_nature": "INDEPENDENT_POWER_SIZING_SIMULATION",
+    "scope_limitation": "This specification pre-registers an in silico power-sizing simulation designed to evaluate whether the proposed N=220 sample size has sufficient statistical power under the declared scenario assumptions. It is NOT a physical Cohort 3 experiment or confirmatory evaluation on real audio files.",
+    "prospective_claim_boundary": "Study power is conditional on the declared between-speaker variance, paired-difference standard deviation, and hypothesized -2.00 pp disparity reduction effect. It does not guarantee real-world power if real-world speech data violates these modeling assumptions."
+  }
+}

@@ -619,7 +619,7 @@ def run_development_variance_calibration() -> Dict[str, Any]:
             "3. Confirmatory Sample Size: Under the scenario Delta_D = -2.00 pp effect size, the preliminary draft design of N=78 speakers per stratum provides only approximately 40.7% joint power [32.7%, 49.0%] and is strictly UNDERPOWERED. "
             "At N=210, estimated power reaches 89.33% [83.3%, 93.8%] (near target). "
             "At N=220, estimated power reaches 95.00% with a 95% Clopper-Pearson LCB of 91.00% >= 90.0% in the fresh independent simulation with non-overlapping trajectories (seed=20261028), strictly satisfying Decision Rule B (LCB >= 90%) conditional on the calibrated scenario simulation assumptions. "
-            "Both exploratory and independent confirmatory evaluations recommend adopting N=220 speakers per stratum (1,320 total confirmatory speakers, 19,800 clips) in the formal protocol amendment. "
+            "Both exploratory grid sizing and independent power-sizing simulations under declared scenario assumptions recommend adopting N=220 speakers per stratum (1,320 total confirmatory speakers, 19,800 clips) in the formal protocol amendment. "
             "Confirmatory Cohort 3 unsealing remains on HOLD pending formal protocol amendment, physical audio manifest locking, and independent governance authorization."
         ),
     }

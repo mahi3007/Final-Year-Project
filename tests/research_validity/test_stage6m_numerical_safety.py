@@ -1642,19 +1642,140 @@ def test_runner_execution_passes_rule_b_to_paired_cluster_inference(monkeypatch)
     assert captured_call_args["design_spec"] is None
 
 
-def test_runner_cohort3_structural_target_requires_19800_clips():
+def test_runner_cohort3_structural_validator_accepts_valid_design():
     """
-    Test Case 42E: Runner structural validation target under Decision Rule B is exactly 19,800 clips.
-    Verifies that the target constants in the runner align with the 220 speakers per accent mandate:
-    6 accents * 220 speakers * 15 clips = 19,800 clips.
+    Test Case 42E (Part 1 - Acceptance): Runner structural validator accepts valid Decision Rule B design.
+    Directly exercises validate_cohort3_structural_design() on a complete, balanced 19,800-clip structure:
+    6 canonical accents * 220 speakers * 15 clips = 19,800 clips, with unique recording IDs and valid manifest.
     """
-    from cloud.kaggle.run_stage6m_cohort2_benchmark import CANONICAL_PROTOCOL_ACCENTS
+    from cloud.kaggle.run_stage6m_cohort2_benchmark import (
+        validate_cohort3_structural_design,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
 
-    target_speakers = 220
-    clips_per_speaker = 15
-    target_clips = len(CANONICAL_PROTOCOL_ACCENTS) * target_speakers * clips_per_speaker
-    assert target_clips == 19800
-    assert len(CANONICAL_PROTOCOL_ACCENTS) == 6
+    accents = sorted(list(CANONICAL_PROTOCOL_ACCENTS))
+    records = []
+    for a_idx, acc in enumerate(accents):
+        for s_idx in range(220):
+            spk_id = f"valid_spk_{a_idx:02d}_{s_idx:04d}"
+            for c_idx in range(15):
+                records.append({
+                    "recording_id": f"rec_{a_idx:02d}_{s_idx:04d}_{c_idx:02d}",
+                    "speaker_id": spk_id,
+                    "stage5_accent_group": acc,
+                    "transcript": "the quick brown fox jumps over the lazy dog",
+                })
+    valid_df = pd.DataFrame(records)
+    assert len(valid_df) == 19800
+
+    # 1. Valid structure with matching manifest succeeds without error
+    manifest_data = {"files": {"csv": {"row_count": 19800}}}
+    validate_cohort3_structural_design(valid_df, c3_manifest_data=manifest_data)
+
+    # 2. Valid structure without manifest data succeeds without error
+    validate_cohort3_structural_design(valid_df, c3_manifest_data=None)
+
+
+def test_runner_cohort3_structural_validator_fails_closed_on_structural_violations():
+    """
+    Test Case 42E (Part 2 - Fail-Closed Rejection): Runner structural validator strictly rejects malformed Cohort 3 designs.
+    Proves fail-closed rejection for:
+    1. Missing required structural columns ('recording_id', 'speaker_id', 'stage5_accent_group').
+    2. Row count shortfall / excess (e.g. 7,020 rows like Cohort 2, or 19,799 rows).
+    3. Manifest row count discrepancy.
+    4. Duplicate recording IDs.
+    5. Non-canonical or missing accent strata.
+    6. Inconsistent speaker-to-accent mappings (speaker assigned to multiple accents).
+    7. Unbalanced stratum speaker counts (e.g. 219 vs 221 speakers).
+    8. Non-15 clip counts per speaker (e.g. 14 vs 16 clips).
+    """
+    from cloud.kaggle.run_stage6m_cohort2_benchmark import (
+        validate_cohort3_structural_design,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    accents = sorted(list(CANONICAL_PROTOCOL_ACCENTS))
+    records = []
+    for a_idx, acc in enumerate(accents):
+        for s_idx in range(220):
+            spk_id = f"spk_{a_idx:02d}_{s_idx:04d}"
+            for c_idx in range(15):
+                records.append({
+                    "recording_id": f"rec_{a_idx:02d}_{s_idx:04d}_{c_idx:02d}",
+                    "speaker_id": spk_id,
+                    "stage5_accent_group": acc,
+                    "transcript": "valid reference sentence for testing",
+                })
+    base_df = pd.DataFrame(records)
+
+    # 1. Missing required columns
+    for col in ["recording_id", "speaker_id", "stage5_accent_group"]:
+        bad_col_df = base_df.drop(columns=[col])
+        with pytest.raises(ValueError) as excinfo:
+            validate_cohort3_structural_design(bad_col_df)
+        assert f"Missing required column '{col}'" in str(excinfo.value)
+
+    # 2. Row count violation (e.g. Cohort 2 size 7,020, or off-by-one 19,799)
+    with pytest.raises(ValueError) as excinfo:
+        validate_cohort3_structural_design(base_df.iloc[:7020].copy())
+    assert "Confirmatory Row Count Violation: Cohort 3 has 7020 clips, expected exactly 19800 clips" in str(excinfo.value)
+
+    with pytest.raises(ValueError) as excinfo:
+        validate_cohort3_structural_design(base_df.iloc[:19799].copy())
+    assert "Confirmatory Row Count Violation: Cohort 3 has 19799 clips, expected exactly 19800 clips" in str(excinfo.value)
+
+    # 3. Manifest row count mismatch
+    bad_manifest = {"files": {"csv": {"row_count": 19801}}}
+    with pytest.raises(ValueError) as excinfo:
+        validate_cohort3_structural_design(base_df, c3_manifest_data=bad_manifest)
+    assert "Confirmatory Manifest Violation: manifest row_count is 19801, must be exactly 19800" in str(excinfo.value)
+
+    # 4. Duplicate recording IDs
+    dup_rec_df = base_df.copy()
+    dup_rec_df.iloc[1, dup_rec_df.columns.get_loc("recording_id")] = dup_rec_df.iloc[0]["recording_id"]
+    with pytest.raises(ValueError) as excinfo:
+        validate_cohort3_structural_design(dup_rec_df)
+    assert "Confirmatory Integrity Violation: Duplicate recording_ids detected in Cohort 3" in str(excinfo.value)
+
+    # 5. Non-canonical stratum
+    non_canonical_df = base_df.copy()
+    # Replace US English with Scottish English
+    non_canonical_df.loc[non_canonical_df["stage5_accent_group"] == "US English", "stage5_accent_group"] = "Scottish English"
+    with pytest.raises(ValueError) as excinfo:
+        validate_cohort3_structural_design(non_canonical_df)
+    assert "Cohort 3 accents" in str(excinfo.value)
+    assert "do not match canonical set" in str(excinfo.value)
+
+    # 6. Speaker assigned to multiple accents
+    multi_accent_df = base_df.copy()
+    # Assign one clip of spk_00_0000 (US English) to England English
+    multi_accent_df.iloc[0, multi_accent_df.columns.get_loc("stage5_accent_group")] = "England English"
+    with pytest.raises(ValueError) as excinfo:
+        validate_cohort3_structural_design(multi_accent_df)
+    assert "Confirmatory Accent Mapping Violation" in str(excinfo.value)
+    assert "speakers mapped to multiple accents" in str(excinfo.value)
+
+    # 7. Stratum balance violation (one accent has 219 speakers, another has 221 speakers, total rows = 19,800)
+    unbalanced_spk_df = base_df.copy()
+    acc0 = accents[0]
+    acc1 = accents[1]
+    spk_to_move = "spk_00_0219"
+    unbalanced_spk_df.loc[unbalanced_spk_df["speaker_id"] == spk_to_move, "stage5_accent_group"] = acc1
+    unbalanced_spk_df.loc[unbalanced_spk_df["speaker_id"] == spk_to_move, "speaker_id"] = "spk_01_0220"
+    with pytest.raises(ValueError) as excinfo:
+        validate_cohort3_structural_design(unbalanced_spk_df)
+    assert "Confirmatory Stratum Balance Violation" in str(excinfo.value)
+    assert f"Stratum '{acc0}' has 219 unique speakers, expected exactly 220" in str(excinfo.value)
+
+    # 8. Speaker clip count violation (one speaker has 14 clips, another has 16 clips within acc0)
+    bad_clips_df = base_df.copy()
+    # Reassign 1 clip from spk_00_0000 to spk_00_0001
+    bad_clips_df.iloc[0, bad_clips_df.columns.get_loc("speaker_id")] = "spk_00_0001"
+    with pytest.raises(ValueError) as excinfo:
+        validate_cohort3_structural_design(bad_clips_df)
+    assert f"Confirmatory Speaker Clip Count Violation in stratum '{acc0}'" in str(excinfo.value)
+    assert "speakers have non-15 clips" in str(excinfo.value)
+
 
 
 def test_confirmatory_power_strictly_enforces_78_speaker_design_spec_over_default_argument():

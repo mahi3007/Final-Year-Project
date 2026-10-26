@@ -592,6 +592,85 @@ def validate_cohort_reference_transcripts(
             )
 
 
+def validate_cohort3_structural_design(
+    eval_df: pd.DataFrame,
+    c3_manifest_data: Optional[Dict[str, Any]] = None,
+    canonical_accents: FrozenSet[str] = CANONICAL_PROTOCOL_ACCENTS,
+    target_speakers_per_accent: int = 220,
+    target_clips_per_speaker: int = 15,
+) -> None:
+    """
+    Strict Cohort 3 Structural Design Validation (Protocol v1.4.0 frozen requirement under Decision Rule B: exactly 19,800 clips).
+
+    Enforces:
+    - Exactly len(canonical_accents) * target_speakers_per_accent * target_clips_per_speaker rows (6 * 220 * 15 = 19,800 clips).
+    - Manifest row_count match if manifest metadata is supplied.
+    - All recording_ids are strictly unique across the cohort.
+    - Exactly the canonical protocol accent strata are present.
+    - Every speaker is assigned to exactly one accent stratum (no multi-accent mapping).
+    - Exactly target_speakers_per_accent unique speakers exist in each accent stratum.
+    - Exactly target_clips_per_speaker clips exist for every speaker in every stratum.
+
+    Fails closed with ValueError upon detecting any structural violation.
+    """
+    if "recording_id" not in eval_df.columns:
+        raise ValueError("Confirmatory Structural Violation: Missing required column 'recording_id'.")
+    if "speaker_id" not in eval_df.columns:
+        raise ValueError("Confirmatory Structural Violation: Missing required column 'speaker_id'.")
+    if "stage5_accent_group" not in eval_df.columns:
+        raise ValueError("Confirmatory Structural Violation: Missing required column 'stage5_accent_group'.")
+
+    target_cohort3_clips = len(canonical_accents) * target_speakers_per_accent * target_clips_per_speaker
+
+    if len(eval_df) != target_cohort3_clips:
+        raise ValueError(
+            f"Confirmatory Row Count Violation: Cohort 3 has {len(eval_df)} clips, "
+            f"expected exactly {target_cohort3_clips} clips (6 accents * {target_speakers_per_accent} speakers * {target_clips_per_speaker} clips)."
+        )
+
+    if c3_manifest_data is not None:
+        expected_rows = c3_manifest_data.get("files", {}).get("csv", {}).get("row_count")
+        if expected_rows is not None and int(expected_rows) != target_cohort3_clips:
+            raise ValueError(
+                f"Confirmatory Manifest Violation: manifest row_count is {expected_rows}, "
+                f"must be exactly {target_cohort3_clips}."
+            )
+
+    # Unique recording IDs check
+    if eval_df["recording_id"].nunique() != len(eval_df):
+        raise ValueError("Confirmatory Integrity Violation: Duplicate recording_ids detected in Cohort 3.")
+
+    # Accents and balance check: 6 canonical strata
+    c3_strata = set(eval_df["stage5_accent_group"].astype(str))
+    if c3_strata != set(canonical_accents):
+        raise ValueError(f"Cohort 3 accents {c3_strata} do not match canonical set {set(canonical_accents)}")
+
+    # Unique speaker-to-accent mapping (no speaker assigned to multiple accents)
+    spk_accent_counts = eval_df.groupby("speaker_id")["stage5_accent_group"].nunique()
+    inconsistent_spks = spk_accent_counts[spk_accent_counts > 1].index.tolist()
+    if inconsistent_spks:
+        raise ValueError(
+            f"Confirmatory Accent Mapping Violation: {len(inconsistent_spks)} speakers mapped to multiple accents "
+            f"in Cohort 3 (e.g. {inconsistent_spks[:5]})."
+        )
+
+    # Exact speakers per accent and clips per speaker (Decision Rule B: 220 speakers, 15 clips)
+    for acc in sorted(list(canonical_accents)):
+        acc_df = eval_df[eval_df["stage5_accent_group"] == acc]
+        acc_spks = acc_df["speaker_id"].nunique()
+        if acc_spks != target_speakers_per_accent:
+            raise ValueError(
+                f"Confirmatory Stratum Balance Violation: Stratum '{acc}' has {acc_spks} unique speakers, "
+                f"expected exactly {target_speakers_per_accent}."
+            )
+        spk_clip_counts = acc_df.groupby("speaker_id")["recording_id"].count()
+        bad_clip_spks = spk_clip_counts[spk_clip_counts != target_clips_per_speaker].to_dict()
+        if bad_clip_spks:
+            raise ValueError(
+                f"Confirmatory Speaker Clip Count Violation in stratum '{acc}': speakers have non-{target_clips_per_speaker} clips: {list(bad_clip_spks.items())[:5]}."
+            )
+
+
 def preload_waveforms(file_list: List[Tuple[str, Path]], sample_rate: int = 16000) -> Dict[str, np.ndarray]:
     cache = {}
     n = len(file_list)
@@ -1035,56 +1114,13 @@ def main():
 
         # Strict Cohort 3 Structural Design Validation (Protocol v1.4.0 frozen requirement under Decision Rule B: exactly 19,800 clips)
         # 6 canonical accents * 220 speakers * 15 clips = 19,800 clips
-        TARGET_SPEAKERS_PER_ACCENT = 220
-        TARGET_CLIPS_PER_SPEAKER = 15
-        TARGET_COHORT3_CLIPS = len(CANONICAL_PROTOCOL_ACCENTS) * TARGET_SPEAKERS_PER_ACCENT * TARGET_CLIPS_PER_SPEAKER
-
-        if len(eval_df) != TARGET_COHORT3_CLIPS:
-            raise ValueError(
-                f"Confirmatory Row Count Violation: Cohort 3 has {len(eval_df)} clips, "
-                f"expected exactly {TARGET_COHORT3_CLIPS} clips (6 accents * {TARGET_SPEAKERS_PER_ACCENT} speakers * {TARGET_CLIPS_PER_SPEAKER} clips)."
-            )
-
-        expected_rows = c3_manifest_data.get("files", {}).get("csv", {}).get("row_count")
-        if expected_rows is not None and int(expected_rows) != TARGET_COHORT3_CLIPS:
-            raise ValueError(
-                f"Confirmatory Manifest Violation: manifest row_count is {expected_rows}, "
-                f"must be exactly {TARGET_COHORT3_CLIPS}."
-            )
-
-        # Unique recording IDs check
-        if eval_df["recording_id"].nunique() != len(eval_df):
-            raise ValueError("Confirmatory Integrity Violation: Duplicate recording_ids detected in Cohort 3.")
-
-        # Accents and balance check: 6 canonical strata
-        c3_strata = set(eval_df["stage5_accent_group"].astype(str))
-        if c3_strata != set(CANONICAL_PROTOCOL_ACCENTS):
-            raise ValueError(f"Cohort 3 accents {c3_strata} do not match canonical set {CANONICAL_PROTOCOL_ACCENTS}")
-
-        # Unique speaker-to-accent mapping (no speaker assigned to multiple accents)
-        spk_accent_counts = eval_df.groupby("speaker_id")["stage5_accent_group"].nunique()
-        inconsistent_spks = spk_accent_counts[spk_accent_counts > 1].index.tolist()
-        if inconsistent_spks:
-            raise ValueError(
-                f"Confirmatory Accent Mapping Violation: {len(inconsistent_spks)} speakers mapped to multiple accents "
-                f"in Cohort 3 (e.g. {inconsistent_spks[:5]})."
-            )
-
-        # Exact 78 speakers per accent and 15 clips per speaker
-        for acc in CANONICAL_PROTOCOL_ACCENTS:
-            acc_df = eval_df[eval_df["stage5_accent_group"] == acc]
-            acc_spks = acc_df["speaker_id"].nunique()
-            if acc_spks != TARGET_SPEAKERS_PER_ACCENT:
-                raise ValueError(
-                    f"Confirmatory Stratum Balance Violation: Stratum '{acc}' has {acc_spks} unique speakers, "
-                    f"expected exactly {TARGET_SPEAKERS_PER_ACCENT}."
-                )
-            spk_clip_counts = acc_df.groupby("speaker_id")["recording_id"].count()
-            bad_clip_spks = spk_clip_counts[spk_clip_counts != TARGET_CLIPS_PER_SPEAKER].to_dict()
-            if bad_clip_spks:
-                raise ValueError(
-                    f"Confirmatory Speaker Clip Count Violation in stratum '{acc}': speakers have non-15 clips: {list(bad_clip_spks.items())[:5]}."
-                )
+        validate_cohort3_structural_design(
+            eval_df=eval_df,
+            c3_manifest_data=c3_manifest_data,
+            canonical_accents=CANONICAL_PROTOCOL_ACCENTS,
+            target_speakers_per_accent=220,
+            target_clips_per_speaker=15,
+        )
 
         # Verify audio file existence, non-zero size, path consistency, and mandatory content hash lock
         audio_hashes_manifest = c3_manifest_data.get("audio_hashes") or c3_manifest_data.get("files", {}).get("audio_sha256", {})
