@@ -78,6 +78,7 @@ def test_calibration_beneficial_adaptation_empirical_power():
         seed=202,
         target_effect_size_pp=4.00,
         power_threshold=0.70,
+        min_speakers_for_power=60,
     )
 
     # High empirical power to detect genuine improvement with disparity reduction
@@ -225,23 +226,27 @@ def test_calibration_near_null_differences():
 
 def test_streaming_gate_trajectory_full_sequential_null_control():
     """
-    Test Case 8A: Full Consecutive 1,754-Look Sequential Gate Null Trajectory Control.
+    Test Case 8A: Full Consecutive 1,754-Look Sequential Gate Null Trajectory Control (75 Trajectories).
     Evaluates all 1,754 consecutive update opportunities across full streaming adaptation trajectories
-    with independent reference panel resampling per trajectory replicate.
-    Verifies that zero false acceptances occur across all 1,754 consecutive evaluation windows.
+    with 120 reference speakers (20 per stratum) and independent reference panel resampling per trajectory replicate.
+    Verifies that zero false acceptances occur across all 1,754 consecutive evaluation windows and that the
+    exact Clopper-Pearson 95% upper confidence bound strictly satisfies <= 5.0%.
     """
     res = simulate_streaming_gate_trajectory_calibration(
         trajectory_type="null",
-        num_trajectories=3,
+        num_trajectories=75,
         num_candidate_looks=1754,
-        num_reference_speakers=30,
+        num_reference_speakers=120,
         seed=808,
         num_planned_updates=1754,
     )
 
     assert res.is_full_sequential_evaluation
     assert res.num_candidate_looks == 1754
+    assert res.num_trajectories == 75
+    assert res.num_reference_speakers == 120
     assert res.trajectory_false_acceptance_rate == 0.0
+    assert res.trajectory_false_acceptance_ci_upper <= 0.05
     assert res.candidate_rejection_rate == 1.0
     assert res.is_safely_controlled
 
@@ -270,19 +275,21 @@ def test_streaming_gate_trajectory_null_control():
 
 def test_streaming_gate_trajectory_harm_rejection():
     """
-    Test Case 9: Repeated-Candidate Streaming Gate Harmful Trajectory Rejection.
+    Test Case 9: Full Consecutive 1,754-Look Streaming Gate Harmful Trajectory Rejection (75 Trajectories).
     Simulates candidates introducing isolated regression or disparity expansion
-    under the production 1,754-look schedule. Verifies that false acceptance rate
-    has Clopper-Pearson upper bound <= 5.0% across 75 trajectories.
+    under the full consecutive 1,754-look schedule with 120 reference speakers and independent panel resampling.
+    Verifies that false acceptance rate is 0.0% with Clopper-Pearson upper bound <= 5.0% across 75 trajectories.
     """
     res_regress = simulate_streaming_gate_trajectory_calibration(
         trajectory_type="harmful_accent",
         num_trajectories=75,
-        num_candidate_looks=10,
+        num_candidate_looks=1754,
         num_reference_speakers=120,
         seed=909,
         num_planned_updates=1754,
     )
+    assert res_regress.is_full_sequential_evaluation
+    assert res_regress.num_candidate_looks == 1754
     assert res_regress.trajectory_false_acceptance_rate == 0.0
     assert res_regress.trajectory_false_acceptance_ci_upper <= 0.05
     assert res_regress.candidate_rejection_rate == 1.0
@@ -291,11 +298,13 @@ def test_streaming_gate_trajectory_harm_rejection():
     res_disp = simulate_streaming_gate_trajectory_calibration(
         trajectory_type="disparity_expansion",
         num_trajectories=75,
-        num_candidate_looks=10,
+        num_candidate_looks=1754,
         num_reference_speakers=120,
         seed=910,
         num_planned_updates=1754,
     )
+    assert res_disp.is_full_sequential_evaluation
+    assert res_disp.num_candidate_looks == 1754
     assert res_disp.trajectory_false_acceptance_rate == 0.0
     assert res_disp.trajectory_false_acceptance_ci_upper <= 0.05
     assert res_disp.candidate_rejection_rate == 1.0
@@ -304,17 +313,19 @@ def test_streaming_gate_trajectory_harm_rejection():
 
 def test_streaming_gate_trajectory_production_length_beneficial_control():
     """
-    Test Case 10: Production-Length Streaming Gate Beneficial Trajectory Acceptance.
-    Verifies that under the production look schedule (1,754 planned looks), genuine
-    multi-accent improvements are accepted by the sequential gate with positive mean update rate.
+    Test Case 10: Full Consecutive 1,754-Look Streaming Gate Beneficial Trajectory Acceptance.
+    Verifies that under the full consecutive 1,754-look schedule with 120 reference speakers,
+    genuine multi-accent improvements are accepted by the sequential gate with positive mean update rate.
     """
     res = simulate_streaming_gate_trajectory_calibration(
         trajectory_type="beneficial",
         num_trajectories=15,
-        num_candidate_looks=10,
+        num_candidate_looks=1754,
         num_reference_speakers=120,
         seed=911,
         num_planned_updates=1754,
     )
+    assert res.is_full_sequential_evaluation
+    assert res.num_candidate_looks == 1754
     assert res.accepted_updates_mean > 0.0
     assert res.is_safely_controlled

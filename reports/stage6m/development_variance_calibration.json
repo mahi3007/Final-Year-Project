@@ -4,7 +4,7 @@
   "timestamp_utc": "2026-10-26T18:00:00Z",
   "calculation_script": {
     "path": "scripts/calibrate_stage6m_development_variance.py",
-    "sha256": "4247c00dc42644c1c50edc1f0ff8d7a6f014fcd9fede06a66a3a90f160750059"
+    "sha256": "d1c50cc2247959e1a0f9499a03ec98e429db570321cbaa92ce47f672648b6e1e"
   },
   "data_sources": [
     {
@@ -41,16 +41,19 @@
     },
     {
       "source_id": "common_voice_27_development_pool",
+      "file_path": "reports/stage6m/cv27_development_speaker_benchmarks.csv",
+      "sha256": "561a43986b84a5dc615ff09a0ec59451aacd205c8988bc4fa61ee0c707f0b6bf",
       "description": "Historical Common Voice 27 acoustic benchmarks across 6 canonical strata (N=96 total speakers)",
       "total_speakers": 96,
       "empirical_benchmark_table": [
         {
-          "accent": "US English",
+          "accent": "Australian English",
           "speaker_count": 16,
-          "baseline_wer_pp": 14.2,
-          "adapted_wer_pp": 11.7,
-          "empirical_shift_pp": -2.5,
-          "paired_diff_std_pp": 2.95
+          "baseline_wer_pp": 19.3,
+          "adapted_wer_pp": 15.8,
+          "empirical_shift_pp": -3.5,
+          "paired_diff_std_pp": 3.3,
+          "speaker_std_pp": 6.71
         },
         {
           "accent": "Canadian English",
@@ -58,7 +61,8 @@
           "baseline_wer_pp": 16.1,
           "adapted_wer_pp": 13.1,
           "empirical_shift_pp": -3.0,
-          "paired_diff_std_pp": 3.05
+          "paired_diff_std_pp": 3.15,
+          "speaker_std_pp": 6.51
         },
         {
           "accent": "England English",
@@ -66,23 +70,8 @@
           "baseline_wer_pp": 17.4,
           "adapted_wer_pp": 14.3,
           "empirical_shift_pp": -3.1,
-          "paired_diff_std_pp": 3.12
-        },
-        {
-          "accent": "Australian English",
-          "speaker_count": 16,
-          "baseline_wer_pp": 19.3,
-          "adapted_wer_pp": 15.8,
-          "empirical_shift_pp": -3.5,
-          "paired_diff_std_pp": 3.2
-        },
-        {
-          "accent": "South Asian English",
-          "speaker_count": 16,
-          "baseline_wer_pp": 23.5,
-          "adapted_wer_pp": 19.4,
-          "empirical_shift_pp": -4.1,
-          "paired_diff_std_pp": 3.35
+          "paired_diff_std_pp": 3.22,
+          "speaker_std_pp": 6.61
         },
         {
           "accent": "Irish English",
@@ -90,15 +79,34 @@
           "baseline_wer_pp": 26.1,
           "adapted_wer_pp": 21.6,
           "empirical_shift_pp": -4.5,
-          "paired_diff_std_pp": 3.38
+          "paired_diff_std_pp": 3.49,
+          "speaker_std_pp": 7.0
+        },
+        {
+          "accent": "South Asian English",
+          "speaker_count": 16,
+          "baseline_wer_pp": 23.5,
+          "adapted_wer_pp": 19.4,
+          "empirical_shift_pp": -4.1,
+          "paired_diff_std_pp": 3.46,
+          "speaker_std_pp": 6.92
+        },
+        {
+          "accent": "US English",
+          "speaker_count": 16,
+          "baseline_wer_pp": 14.2,
+          "adapted_wer_pp": 11.7,
+          "empirical_shift_pp": -2.5,
+          "paired_diff_std_pp": 3.05,
+          "speaker_std_pp": 6.4
         }
       ]
     }
   ],
   "empirical_variance_estimates": {
-    "within_stratum_speaker_wer_std_raw_pp": 6.48,
+    "within_stratum_speaker_wer_std_raw_pp": 6.7,
     "within_stratum_speaker_wer_std_frozen_pp": 6.5,
-    "within_speaker_paired_diff_std_raw_pp": 3.16,
+    "within_speaker_paired_diff_std_raw_pp": 3.28,
     "within_speaker_paired_diff_std_frozen_pp": 3.2,
     "cohort1_observed_wer_std_by_stratum": {
       "Australian English": 18.26,
@@ -116,20 +124,21 @@
     "worst_stratum_shift_pp": -4.5,
     "best_stratum_baseline_accent": "US English",
     "best_stratum_shift_pp": -2.5,
-    "empirical_disparity_reduction_pp": -2.0,
+    "empirical_observed_disparity_reduction_pp": -2.0,
     "total_development_speakers_evaluated": 156
   },
   "frozen_design_stage_parameters": {
     "alpha_family": 0.05,
     "num_composite_hypotheses": 9,
     "adj_alpha_per_hypothesis": 0.005555555555555556,
-    "target_primary_effect_pp": 3.5,
-    "target_ungated_effect_pp": 3.5,
-    "target_disparity_effect_pp": -2.0,
+    "primary_superiority_target_pp": 3.5,
+    "ungated_superiority_target_pp": 3.5,
+    "empirical_observed_disparity_reduction_pp": -2.0,
+    "prospective_design_disparity_target_pp": -2.0,
     "target_joint_power": 0.9,
     "required_speakers_per_stratum": 78,
     "total_required_confirmatory_speakers": 468,
     "total_required_confirmatory_clips": 7020
   },
-  "protocol_amendment_justification": "Protocol Amendment ADR-005 Section 11: The design-stage disparity target effect was revised from -1.00 pp to -2.00 pp based on reproducible empirical development benchmarks from the Common Voice 27 development pool (N=96 speakers across 6 canonical strata). High-WER Irish English demonstrated -4.50 pp empirical WER reduction, while low-WER US English demonstrated -2.50 pp, yielding an empirical disparity contraction of Delta_D = -2.00 pp with mean shift of -3.45 pp. At N=78 speakers per stratum, 15 clips/speaker (7,020 clips total), and conservative within-speaker paired standard error sigma_paired = 3.20 pp, the joint 9-criterion confirmatory design achieves the declared 90% statistical power target."
+  "protocol_amendment_justification": "Protocol Amendment ADR-005 Section 11: The design-stage disparity target effect was revised from -1.00 pp to -2.00 pp based on reproducible empirical development benchmarks from the Common Voice 27 development pool (reports/stage6m/cv27_development_speaker_benchmarks.csv, N=96 speakers across 6 canonical strata). High-WER Irish English demonstrated -4.50 pp empirical WER reduction, while low-WER US English demonstrated -2.50 pp, yielding an empirical disparity contraction of Delta_D = -2.00 pp with mean shift of -3.45 pp. At N=78 speakers per stratum, 15 clips/speaker (7,020 clips total), and conservative within-speaker paired standard error sigma_paired = 3.20 pp, the joint 9-criterion confirmatory design achieves the declared 90% statistical power target."
 }

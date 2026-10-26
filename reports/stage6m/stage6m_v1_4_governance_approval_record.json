@@ -1,0 +1,14 @@
+{
+  "schema_version": "v1.4.0",
+  "record_type": "independent_governance_approval_lock",
+  "audit_authority": "Independent Scientific Audit Committee",
+  "protocol_version": "v1.4.0",
+  "governance_status": "DRAFT_HOLD",
+  "status_rationale": "Confirmatory Cohort 3 execution remains strictly on HOLD pending physical audio materialization, protocol freezing, and formal independent sign-off.",
+  "expected_manifest_path": "datasets/splits/stage6m_cohort3_manifest.json",
+  "approved_manifest_sha256": "LOCKED_UPON_CONFIRMATORY_MATERIALIZATION",
+  "approved_protocol_sha256": "LOCKED_UPON_PROTOCOL_FREEZING",
+  "approved_commits": [
+    "9fd40da63bc76b4dfcf04562ef56cd02c42f57e7"
+  ]
+}

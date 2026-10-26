@@ -252,6 +252,7 @@ def run_scenario_monte_carlo_calibration(
             epsilon_d_margin_pp=epsilon_d_margin_pp,
             min_speakers_per_stratum_for_power=min_speakers_for_power,
             target_effect_size_pp=target_effect_size_pp,
+            target_disparity_effect_pp=true_delta_disp if true_delta_disp < 0 else -2.00,
             power_threshold=power_threshold,
         )
         
@@ -549,36 +550,39 @@ def simulate_streaming_gate_trajectory_calibration(
         current_live_errors = list(ref_base_errors)
         accepted_in_trajectory = 0
 
-        for look_idx in look_indices:
-            cand_errors = list(current_live_errors)
+        ref_lengths_arr = np.asarray(ref_lengths, dtype=np.int64)
+        ref_strata_arr = np.asarray(ref_strata)
 
+        for look_idx in look_indices:
             if trajectory_type == "null":
                 # Candidate has zero true effect (pure random fluctuation)
-                noise_arr = traj_rng.choice([-1, 0, 1], size=len(cand_errors), p=[0.25, 0.50, 0.25])
-                for i in range(len(cand_errors)):
-                    cand_errors[i] = max(0, min(ref_lengths[i], current_live_errors[i] + int(noise_arr[i])))
+                noise_arr = traj_rng.choice([-1, 0, 1], size=len(current_live_errors), p=[0.25, 0.50, 0.25])
+                cand_errors = np.clip(np.asarray(current_live_errors) + noise_arr, 0, ref_lengths_arr).tolist()
 
             elif trajectory_type == "harmful_accent":
                 # Candidate regresses on Irish English by +5% WER, neutral on others
-                for i in range(len(cand_errors)):
-                    if ref_strata[i] == "Irish English":
-                        cand_errors[i] = min(ref_lengths[i], current_live_errors[i] + max(1, int(0.05 * ref_lengths[i])))
+                shift_arr = np.zeros(len(current_live_errors), dtype=np.int64)
+                irish_mask = (ref_strata_arr == "Irish English")
+                shift_arr[irish_mask] = np.maximum(1, (0.05 * ref_lengths_arr[irish_mask]).astype(np.int64))
+                cand_errors = np.clip(np.asarray(current_live_errors) + shift_arr, 0, ref_lengths_arr).tolist()
 
             elif trajectory_type == "disparity_expansion":
                 # Candidate improves US English (-3%) but degrades Irish English (+3%)
-                for i in range(len(cand_errors)):
-                    if ref_strata[i] == "Irish English":
-                        cand_errors[i] = min(ref_lengths[i], current_live_errors[i] + max(1, int(0.03 * ref_lengths[i])))
-                    elif ref_strata[i] == "US English":
-                        cand_errors[i] = max(0, current_live_errors[i] - max(1, int(0.03 * ref_lengths[i])))
+                shift_arr = np.zeros(len(current_live_errors), dtype=np.int64)
+                irish_mask = (ref_strata_arr == "Irish English")
+                us_mask = (ref_strata_arr == "US English")
+                shift_arr[irish_mask] = np.maximum(1, (0.03 * ref_lengths_arr[irish_mask]).astype(np.int64))
+                shift_arr[us_mask] = -np.maximum(1, (0.03 * ref_lengths_arr[us_mask]).astype(np.int64))
+                cand_errors = np.clip(np.asarray(current_live_errors) + shift_arr, 0, ref_lengths_arr).tolist()
 
             elif trajectory_type == "beneficial":
                 # Selective adaptation: high-WER accents improve more (-5%), low-WER accents improve (-2%)
-                for i in range(len(cand_errors)):
-                    acc = ref_strata[i]
-                    red_rate = 0.05 if acc == "Irish English" else (0.02 if acc == "US English" else 0.035)
-                    reduction = max(1, int(red_rate * ref_lengths[i]))
-                    cand_errors[i] = max(0, current_live_errors[i] - reduction)
+                rates = np.where(ref_strata_arr == "Irish English", 0.05, np.where(ref_strata_arr == "US English", 0.02, 0.035))
+                red = np.maximum(1, (rates * ref_lengths_arr).astype(np.int64))
+                cand_errors = np.clip(np.asarray(current_live_errors) - red, 0, ref_lengths_arr).tolist()
+
+            else:
+                cand_errors = list(current_live_errors)
 
             dec = gate.evaluate_candidate(
                 window_id=look_idx,

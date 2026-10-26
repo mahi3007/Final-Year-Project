@@ -198,12 +198,17 @@ class StreamingSentinelSafetyGateV14:
 
         # Per-stratum regression bounds
         unique_strata = sorted(list(observed_strata))
+        # Pre-group speakers by stratum for efficient iteration
+        stratum_to_spks: Dict[str, List[str]] = {grp: [] for grp in unique_strata}
+        for s in spk_list:
+            stratum_to_spks[spk_data[s]["grp"]].append(s)
+
         group_deltas: Dict[str, float] = {}
         group_ucbs: Dict[str, float] = {}
         group_ses: Dict[str, float] = {}
 
         for grp in unique_strata:
-            grp_spks = [s for s in spk_list if spk_data[s]["grp"] == grp]
+            grp_spks = stratum_to_spks[grp]
             n_grp_spk = len(grp_spks)
             grp_words = sum(spk_data[s]["n_words"] for s in grp_spks)
             if grp_words == 0 or n_grp_spk == 0:
@@ -236,8 +241,14 @@ class StreamingSentinelSafetyGateV14:
         max_delta_g = max(group_deltas.values()) if group_deltas else 0.0
 
         # Disparity calculation: D = max_g(WER_g) - min_g(WER_g)
-        grp_live_wers = {grp: (sum(spk_data[s]["e_live"] for s in spk_list if spk_data[s]["grp"] == grp) / float(strata_words[grp])) * 100.0 for grp in unique_strata}
-        grp_cand_wers = {grp: (sum(spk_data[s]["e_cand"] for s in spk_list if spk_data[s]["grp"] == grp) / float(strata_words[grp])) * 100.0 for grp in unique_strata}
+        grp_live_wers = {
+            grp: (sum(spk_data[s]["e_live"] for s in stratum_to_spks[grp]) / float(strata_words[grp])) * 100.0
+            for grp in unique_strata
+        }
+        grp_cand_wers = {
+            grp: (sum(spk_data[s]["e_cand"] for s in stratum_to_spks[grp]) / float(strata_words[grp])) * 100.0
+            for grp in unique_strata
+        }
 
         D_live = max(grp_live_wers.values()) - min(grp_live_wers.values())
         D_cand = max(grp_cand_wers.values()) - min(grp_cand_wers.values())
@@ -251,7 +262,7 @@ class StreamingSentinelSafetyGateV14:
         b_cand_cols = []
 
         for grp in unique_strata:
-            grp_s_list = [s for s in spk_list if spk_data[s]["grp"] == grp]
+            grp_s_list = stratum_to_spks[grp]
             n_g = len(grp_s_list)
             g_w = np.array([spk_data[s]["n_words"] for s in grp_s_list], dtype=np.float64)
             g_l = np.array([spk_data[s]["e_live"] for s in grp_s_list], dtype=np.float64)

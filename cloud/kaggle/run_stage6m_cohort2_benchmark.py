@@ -251,17 +251,20 @@ def validate_frozen_execution_contract(
     manifest_data: Dict[str, Any],
     git_commit_sha: str,
     protocol_path: Path,
+    governance_approval_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
     """
     Validates the frozen execution contract under Protocol v1.4.0 with strict fail-closed semantics.
+    Enforces independent cryptographic trust anchor verification.
     Fails closed if:
-    1. approved_commits list is missing, empty, or not a list.
-    2. Current git_commit_sha is not in approved_commits.
-    3. protocol_sha256 is missing, empty, or not a string.
-    4. protocol_path does not exist or its SHA-256 does not match protocol_sha256.
-    5. The protocol document is in 'draft' or 'proposal' status.
-    6. governance_status is not 'APPROVED'.
-    7. Any contradictory status exists (e.g. manifest claims APPROVED while protocol says draft).
+    1. Independent governance approval record is missing, corrupted, or not 'APPROVED'.
+    2. approved_commits list is missing, empty, or not a list in manifest or trust anchor.
+    3. Current git_commit_sha is not in approved_commits of manifest or trust anchor.
+    4. protocol_sha256 is missing, empty, or does not match trust anchor.
+    5. protocol_path does not exist or its SHA-256 does not match protocol_sha256.
+    6. The protocol document is in 'draft' or 'proposal' status.
+    7. Manifest governance_status is not 'APPROVED'.
+    8. Any contradictory status exists (e.g. manifest claims APPROVED while protocol says draft).
     """
     if not isinstance(manifest_data, dict):
         raise ValueError("Confirmatory Contract Violation: Manifest data must be a valid dictionary.")
@@ -270,7 +273,29 @@ def validate_frozen_execution_contract(
     if not frozen_contract or not isinstance(frozen_contract, dict):
         frozen_contract = manifest_data
 
-    # 1. Approved Commit List (Mandatory non-empty list)
+    # 1. Independent Governance Approval Record (Cryptographic Trust Anchor)
+    if governance_approval_path is None:
+        governance_approval_path = PROJECT_ROOT / "reports" / "stage6m" / "stage6m_v1_4_governance_approval_record.json"
+
+    if not governance_approval_path.exists():
+        raise FileNotFoundError(
+            f"Confirmatory Contract Violation: Independent governance approval record missing at '{governance_approval_path}'. "
+            "Execution requires an independent, signed approval trust anchor."
+        )
+
+    try:
+        gov_record = json.loads(governance_approval_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        raise ValueError(f"Confirmatory Contract Violation: Corrupted governance approval record at '{governance_approval_path}': {e}")
+
+    trusted_gov_status = str(gov_record.get("governance_status", "DRAFT_HOLD")).strip().upper()
+    if trusted_gov_status != "APPROVED":
+        raise PermissionError(
+            f"Independent Governance Lock: Approval record status is '{trusted_gov_status}' (must be 'APPROVED'). "
+            "Confirmatory Cohort 3 execution remains strictly locked on HOLD."
+        )
+
+    # 2. Approved Commit List (Mandatory non-empty list in both manifest and trust anchor)
     approved_commits = frozen_contract.get("approved_commits")
     if approved_commits is None and "approved_commits" in manifest_data:
         approved_commits = manifest_data.get("approved_commits")
@@ -281,14 +306,24 @@ def validate_frozen_execution_contract(
             "Confirmatory execution requires a non-empty list of preapproved, audited commit hashes."
         )
 
+    trusted_approved_commits = gov_record.get("approved_commits", [])
+    if not trusted_approved_commits or not isinstance(trusted_approved_commits, list):
+        raise PermissionError(
+            "Independent Governance Lock: Independent approval record has empty or missing approved_commits list."
+        )
+
     clean_sha = str(git_commit_sha).strip() if git_commit_sha else ""
     if not clean_sha or clean_sha not in approved_commits:
         raise PermissionError(
             f"Confirmatory Execution Commit Authorization Violation: Current commit '{clean_sha}' "
             f"is NOT in preapproved whitelist: {approved_commits}."
         )
+    if clean_sha not in trusted_approved_commits:
+        raise PermissionError(
+            f"Independent Governance Lock: Current commit '{clean_sha}' is NOT in independent approval record whitelist."
+        )
 
-    # 2. Frozen Protocol Hash (Mandatory non-empty string)
+    # 3. Frozen Protocol Hash (Mandatory non-empty string matching trust anchor)
     expected_proto_sha = frozen_contract.get("protocol_sha256")
     if expected_proto_sha is None and "protocol_sha256" in manifest_data:
         expected_proto_sha = manifest_data.get("protocol_sha256")
@@ -298,6 +333,13 @@ def validate_frozen_execution_contract(
             "Confirmatory Contract Violation: 'protocol_sha256' is missing or empty in frozen execution contract."
         )
     expected_proto_sha = expected_proto_sha.strip()
+
+    trusted_proto_sha = gov_record.get("approved_protocol_sha256") or gov_record.get("protocol_sha256")
+    if trusted_proto_sha and expected_proto_sha != trusted_proto_sha:
+        raise ValueError(
+            f"Independent Governance Lock: Protocol hash in manifest '{expected_proto_sha}' does not match "
+            f"independent approval record '{trusted_proto_sha}'."
+        )
 
     if not protocol_path.exists():
         raise FileNotFoundError(f"Confirmatory Protocol Violation: Missing protocol file at '{protocol_path}'.")
@@ -309,7 +351,7 @@ def validate_frozen_execution_contract(
             f"frozen contract hash '{expected_proto_sha}'."
         )
 
-    # 3. Protocol Draft / Proposal Status Check (Rejects unapproved / draft documents)
+    # 4. Protocol Draft / Proposal Status Check (Rejects unapproved / draft documents)
     protocol_text = protocol_path.read_text(encoding="utf-8")
     lower_text = protocol_text.lower()
     if (
@@ -323,7 +365,7 @@ def validate_frozen_execution_contract(
             "Confirmatory execution requires a frozen, finalized protocol document."
         )
 
-    # 4. Governance Status Check (Mandatory 'APPROVED')
+    # 5. Manifest Governance Status Check (Mandatory 'APPROVED')
     gov_status = frozen_contract.get("governance_status")
     if gov_status is None and "governance_status" in manifest_data:
         gov_status = manifest_data.get("governance_status")
@@ -340,6 +382,7 @@ def validate_frozen_execution_contract(
         "protocol_sha256": actual_proto_sha,
         "governance_status": clean_gov,
         "contract_status": "APPROVED",
+        "governance_approval_authority": gov_record.get("audit_authority", "Independent Scientific Audit Committee"),
     }
 
 
@@ -915,6 +958,15 @@ def main():
                     f"Gate reference panel stratum '{acc}' has {acc_spks} speakers, "
                     f"below required precision threshold of {expected_ref_spks_per_stratum}."
                 )
+
+        # Verify gate reference audio payloads existence, non-zero size, path consistency, and mandatory content hash lock
+        gate_ref_audio_hashes = ref_manifest_data.get("audio_hashes") or ref_manifest_data.get("files", {}).get("audio_sha256", {})
+        verified_gate_ref_audio_paths = validate_and_resolve_audio_payloads(
+            eval_df=gate_ref_df,
+            audio_dir=sentinel_audio_dir,
+            expected_audio_hashes=gate_ref_audio_hashes,
+            cohort_name="Gate Reference Panel",
+        )
 
         # 5. Fail-closed Pairwise Disjointness Verification across ALL Relevant Partitions
         hist_c1 = PROJECT_ROOT / "datasets" / "splits" / "stage5_external_eval.csv"
