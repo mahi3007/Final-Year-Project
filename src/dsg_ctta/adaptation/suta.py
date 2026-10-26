@@ -130,23 +130,38 @@ class SutaAdapter(BaseTestTimeAdapter):
         )
         input_values = inputs.input_values.to(device)
 
+        audio_lengths = [len(w) for w in waveforms]
+        from dsg_ctta.adaptation.safe_update import (
+            AtomicCandidateManager,
+            compute_masked_suta_loss,
+        )
+
+        manager = AtomicCandidateManager(
+            live_model=model,
+            live_optimizer=self.optimizer,
+            device=device
+        )
+        cand_model, cand_optimizer = manager.create_candidate()
+
         loss_history: List[float] = []
         last_safe_res = None
+        step_success = True
 
         for _ in range(self.steps):
             def loss_fn():
-                outputs = model(input_values)
-                logits = outputs.logits  # (B, T, C)
-                scaled_logits = logits / self.temperature
-                probs = torch.softmax(scaled_logits, dim=-1)
-                l_em = self._compute_entropy_loss(probs)
-                l_mcc = self._compute_mcc_loss(probs)
-                return self.alpha * l_em + (1.0 - self.alpha) * l_mcc
+                # Uses padded-frame masking to exclude silence blanks from loss
+                total_loss, _, _ = compute_masked_suta_loss(
+                    model=cand_model,
+                    input_values=input_values,
+                    audio_lengths=audio_lengths,
+                    temperature=self.temperature,
+                    alpha=self.alpha,
+                )
+                return total_loss
 
-            from dsg_ctta.adaptation.safe_update import execute_safe_adaptation_transaction
-            safe_res = execute_safe_adaptation_transaction(
-                model=model,
-                optimizer=self.optimizer,
+            safe_res = manager.execute_candidate_transaction(
+                candidate_model=cand_model,
+                candidate_optimizer=cand_optimizer,
                 loss_fn=loss_fn,
                 max_grad_norm=1.0
             )
@@ -154,28 +169,41 @@ class SutaAdapter(BaseTestTimeAdapter):
             if safe_res.loss is not None:
                 loss_history.append(safe_res.loss)
             if not safe_res.is_success:
+                step_success = False
                 break
 
+        if step_success:
+            manager.promote_candidate(cand_model, cand_optimizer)
+            updated = True
+        else:
+            manager.discard_candidate(cand_model, cand_optimizer)
+            updated = False
+
         model.eval()
-        self.step_count += 1
+        if updated:
+            self.step_count += 1
         elapsed = time.time() - start_time
         self.total_adaptation_time += elapsed
 
         theta_after_hash = self.compute_model_hash()
+
+        details = {
+            "steps": self.steps,
+            "final_loss": loss_history[-1] if loss_history else 0.0,
+            "alpha": self.alpha,
+            "temperature": self.temperature,
+            "numerical_status": last_safe_res.numerical_status if last_safe_res else "NO_STEPS",
+            "failure_reason": last_safe_res.failure_reason if last_safe_res else None,
+        }
 
         return AdaptationStepResult(
             batch_idx=batch.batch_idx,
             method_id="suta",
             theta_before_hash=theta_before_hash,
             theta_after_hash=theta_after_hash,
-            updated=True,
+            updated=updated,
             reset_occurred=False,
             adaptation_time_seconds=elapsed,
             loss_history=loss_history,
-            details={
-                "steps": self.steps,
-                "final_loss": loss_history[-1] if loss_history else 0.0,
-                "alpha": self.alpha,
-                "temperature": self.temperature
-            }
+            details=details
         )

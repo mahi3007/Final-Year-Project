@@ -60,7 +60,14 @@ from dsg_ctta.data.cohort2_preflight import Cohort1PreflightValidator, Cohort2Pr
 from dsg_ctta.offline.metrics import compute_utterance_metrics
 from dsg_ctta.controller.shadow import compute_model_parameter_hash
 from dsg_ctta.controller.streaming_gate import StreamingSentinelSafetyGate, compute_calibrated_obf_schedule
-from dsg_ctta.adaptation.safe_update import SafeUpdateResult, execute_safe_adaptation_transaction
+from dsg_ctta.controller.streaming_gate_v14 import StreamingSentinelSafetyGateV14
+from dsg_ctta.adaptation.safe_update import (
+    SafeUpdateResult,
+    execute_safe_adaptation_transaction,
+    compute_masked_suta_loss,
+    AtomicCandidateManager,
+    compute_optimizer_state_hash,
+)
 
 
 def verify_gpu() -> str:
@@ -119,29 +126,20 @@ def suta_adaptation_step_gpu(
 ) -> SafeUpdateResult:
     inputs = processor(waveforms, sampling_rate=16000, padding=True, return_tensors="pt")
     input_values = inputs.input_values.to(device)
+    audio_lengths = [len(w) for w in waveforms]
+
+    # Gradient-based adaptation operates strictly in evaluation mode (frozen dropout)
+    model.eval()
 
     def loss_fn() -> torch.Tensor:
-        outputs = model(input_values)
-        logits = outputs.logits
-        scaled_logits = logits / temperature
-        probs = torch.softmax(scaled_logits, dim=-1)
-
-        # Entropy
-        log_probs = torch.log(probs + 1e-8)
-        entropy = -torch.sum(probs * log_probs, dim=-1)
-        l_em = torch.mean(entropy)
-
-        # MCC
-        B, T, C = probs.shape
-        flat_probs = probs.view(-1, C)
-        class_sums = torch.sum(flat_probs, dim=0)
-        norm_factor = torch.sqrt(class_sums.unsqueeze(1) @ class_sums.unsqueeze(0) + 1e-8)
-        corr_matrix = (flat_probs.T @ flat_probs) / norm_factor
-        diagonal = torch.diag(corr_matrix)
-        off_diag_sum = torch.sum(corr_matrix) - torch.sum(diagonal)
-        l_mcc = off_diag_sum / (C * (C - 1) + 1e-8)
-
-        return alpha * l_em + (1.0 - alpha) * l_mcc
+        total_loss, _, _ = compute_masked_suta_loss(
+            model=model,
+            input_values=input_values,
+            audio_lengths=audio_lengths,
+            temperature=temperature,
+            alpha=alpha,
+        )
+        return total_loss
 
     return execute_safe_adaptation_transaction(
         model=model,
@@ -198,6 +196,12 @@ def parse_args():
         type=Path,
         default=PROJECT_ROOT / "results" / "stage6m_kaggle",
         help="Directory to save benchmark execution results."
+    )
+    parser.add_argument(
+        "--gate-version",
+        choices=["v13", "v14"],
+        default="v13",
+        help="Gate protocol version: 'v13' (legacy epsilon_d_pp=2.0) or 'v14' (Protocol v1.4.0 zero-disparity tolerance epsilon_d_pp=0.0 with strict point improvement)."
     )
     return parser.parse_args()
 
@@ -403,13 +407,34 @@ def main():
     num_windows = (num_clips + window_size_k - 1) // window_size_k
     num_updates = num_windows - 1
 
-    safety_gate = StreamingSentinelSafetyGate(
-        epsilon_r_pp=0.0000,
-        epsilon_g_pp=2.0000,
-        epsilon_d_pp=2.0000,
-        num_updates=num_updates,
-        alpha_target=0.05,
-    )
+    if args.gate_version == "v14":
+        print("      Constructing Protocol v1.4.0 Streaming Gate (StreamingSentinelSafetyGateV14):")
+        print("        epsilon_r_pp = 0.0000 pp (strict point improvement: Delta_R < 0)")
+        print("        epsilon_g_pp = 2.0000 pp (accent non-inferiority bound)")
+        print("        epsilon_d_pp = 0.0000 pp (zero disparity growth tolerance: UCB_D <= 0)")
+        safety_gate = StreamingSentinelSafetyGateV14(
+            epsilon_r_pp=0.0000,
+            epsilon_g_pp=2.0000,
+            epsilon_d_pp=0.0000,
+            num_updates=num_updates,
+            alpha_target=0.05,
+        )
+    else:
+        print("      Constructing Historical Protocol v1.3 Streaming Gate (StreamingSentinelSafetyGate):")
+        print("        epsilon_r_pp = 0.0000 pp")
+        print("        epsilon_g_pp = 2.0000 pp")
+        print("        epsilon_d_pp = 2.0000 pp")
+        safety_gate = StreamingSentinelSafetyGate(
+            epsilon_r_pp=0.0000,
+            epsilon_g_pp=2.0000,
+            epsilon_d_pp=2.0000,
+            num_updates=num_updates,
+            alpha_target=0.05,
+        )
+
+    # Initialize Atomic Candidate Managers for matched optimizer & model isolation
+    arm2_manager = AtomicCandidateManager(live_model=arm2_model, live_optimizer=arm2_optimizer, device=device)
+    arm3_manager = AtomicCandidateManager(live_model=arm3_model, live_optimizer=arm3_optimizer, device=device)
 
     cached_live_core_hyps: Optional[List[str]] = None
     cached_live_hash: Optional[str] = None
@@ -483,28 +508,31 @@ def main():
         loss_val = 0.0
 
         if win_idx < num_updates:
-            # Arm 2: Unconditional adaptation
+            # Arm 2 (Arm B): Candidate isolation and unconditional promotion if numerically safe
+            cand_arm2_model, cand_arm2_opt = arm2_manager.create_candidate()
             arm2_step_res = suta_adaptation_step_gpu(
-                model=arm2_model, processor=processor, waveforms=batch_waveforms,
-                optimizer=arm2_optimizer, temperature=2.5, alpha=0.5, device=device
+                model=cand_arm2_model, processor=processor, waveforms=batch_waveforms,
+                optimizer=cand_arm2_opt, temperature=2.5, alpha=0.5, device=device
             )
+            if arm2_step_res.is_success:
+                arm2_manager.promote_candidate(cand_arm2_model, cand_arm2_opt)
+            else:
+                arm2_manager.discard_candidate(cand_arm2_model, cand_arm2_opt)
 
-            # Arm 3: Candidate clone & evaluation
-            current_arm3_hash = compute_model_parameter_hash(arm3_model)
-            candidate_model = copy.deepcopy(arm3_model).to(device)
-            candidate_optimizer = setup_suta_optimizer(candidate_model, lr=1e-4)
+            # Arm 3 (Arm C): Candidate clone & evaluation with matched optimizer-state semantics
+            current_arm3_hash = arm3_manager.get_live_model_hash()
+            cand_arm3_model, cand_arm3_opt = arm3_manager.create_candidate()
 
             cand_step_res = suta_adaptation_step_gpu(
-                model=candidate_model, processor=processor, waveforms=batch_waveforms,
-                optimizer=candidate_optimizer, temperature=2.5, alpha=0.5, device=device
+                model=cand_arm3_model, processor=processor, waveforms=batch_waveforms,
+                optimizer=cand_arm3_opt, temperature=2.5, alpha=0.5, device=device
             )
 
             loss_val = cand_step_res.loss if cand_step_res.loss is not None else float("nan")
 
             if not cand_step_res.is_success:
-                # Fail-closed numerical rejection: do not run sentinel panel on invalid candidate
-                del candidate_model
-                del candidate_optimizer
+                # Fail-closed numerical rejection: discard candidate and leave live state untouched
+                arm3_manager.discard_candidate(cand_arm3_model, cand_arm3_opt)
                 gate_decision_str = f"REJECT ({cand_step_res.numerical_status})"
                 gate_decision_records.append({
                     "window_id": win_idx,
@@ -516,6 +544,7 @@ def main():
                     "loss_finite": cand_step_res.loss_finite,
                     "gradient_finite": cand_step_res.gradient_finite,
                     "parameter_finite": cand_step_res.parameter_finite,
+                    "optimizer_state_finite": cand_step_res.optimizer_state_finite,
                     "failure_reason": cand_step_res.failure_reason,
                     "delta_r": None,
                     "delta_d": None,
@@ -537,7 +566,7 @@ def main():
                     cached_live_core_hyps = batch_transcribe_gpu(arm3_model, processor, core_sentinel_waveforms, device)
                     cached_live_hash = current_arm3_hash
 
-                cand_core_hyps = batch_transcribe_gpu(candidate_model, processor, core_sentinel_waveforms, device)
+                cand_core_hyps = batch_transcribe_gpu(cand_arm3_model, processor, core_sentinel_waveforms, device)
 
                 # Compute Sentinel Utterance Metrics
                 sent_live_errors = []
@@ -564,13 +593,11 @@ def main():
                 )
 
                 if gate_dec.passed_gate:
-                    arm3_model = candidate_model
-                    arm3_optimizer = candidate_optimizer
+                    arm3_manager.promote_candidate(cand_arm3_model, cand_arm3_opt)
                     gate_decision_str = f"ACCEPT (Delta_R={gate_dec.delta_r:+.2f}%)"
                     cached_live_hash = None
                 else:
-                    del candidate_model
-                    del candidate_optimizer
+                    arm3_manager.discard_candidate(cand_arm3_model, cand_arm3_opt)
                     gate_decision_str = f"REJECT (UCB={gate_dec.ucb_r:+.2f}%)"
 
                 gate_decision_records.append({
@@ -583,6 +610,7 @@ def main():
                     "loss_finite": cand_step_res.loss_finite,
                     "gradient_finite": cand_step_res.gradient_finite,
                     "parameter_finite": cand_step_res.parameter_finite,
+                    "optimizer_state_finite": cand_step_res.optimizer_state_finite,
                     "failure_reason": cand_step_res.failure_reason,
                     "delta_r": gate_dec.delta_r,
                     "delta_d": gate_dec.delta_d,
