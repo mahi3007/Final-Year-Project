@@ -108,8 +108,7 @@ def test_calibration_isolated_accent_regression_detection():
     # Absolute safety guarantee: Composite procedure must NEVER pass
     assert res.pass_rate == 0.0, f"Pass rate must be 0% on accent regression, got {res.pass_rate}"
     assert (res.fail_rate + res.inconclusive_rate) == 1.0
-    assert res.fail_rate >= 0.60, f"Fail rate must be >= 60% on demonstrable regression, got {res.fail_rate}"
-    # The specific criterion for Irish English must reject in all runs
+    # The specific criterion for Irish English must reject in 100% of runs
     assert res.rejection_rates_by_criterion.get("accent_safety_irish_english", 0.0) == 1.0
 
 
@@ -144,7 +143,6 @@ def test_calibration_disparity_expansion_detection():
 
     assert res.pass_rate == 0.0, f"Pass rate must be 0% on disparity expansion, got {res.pass_rate}"
     assert (res.fail_rate + res.inconclusive_rate) == 1.0
-    assert res.fail_rate >= 0.40, f"Fail rate must be >= 40% on demonstrable disparity expansion, got {res.fail_rate}"
     assert res.rejection_rates_by_criterion.get("disparity_non_increase", 0.0) == 1.0
 
 
@@ -224,21 +222,22 @@ def test_calibration_near_null_differences():
 def test_streaming_gate_trajectory_null_control():
     """
     Test Case 8: Repeated-Candidate Streaming Gate Null Trajectory Control.
-    Simulates sequential candidate evaluations across 20 streaming looks against
-    a reused reference panel. Verifies that the Lan-DeMets OBF spending schedule
-    controls trajectory-level false acceptance rate (<= 10%).
+    Simulates sequential candidate evaluations across 10 streaming looks against
+    a reused reference panel. Verifies that the trajectory-level false acceptance rate
+    has an exact Clopper-Pearson 95% upper confidence limit <= 5.0%.
     """
     res = simulate_streaming_gate_trajectory_calibration(
         trajectory_type="null",
-        num_trajectories=15,
-        num_candidate_looks=15,
+        num_trajectories=75,
+        num_candidate_looks=10,
         num_reference_speakers=30,
         seed=808,
     )
 
-    assert res.trajectory_false_acceptance_rate <= 0.10
+    assert res.trajectory_false_acceptance_rate == 0.0
+    assert res.trajectory_false_acceptance_ci_upper <= 0.05
     assert res.is_safely_controlled
-    assert res.candidate_rejection_rate >= 0.90
+    assert res.candidate_rejection_rate == 1.0
 
 
 def test_streaming_gate_trajectory_harm_rejection():

@@ -35,8 +35,20 @@ CANONICAL_PROTOCOL_ACCENTS: FrozenSet[str] = frozenset([
 
 @dataclass
 class DesignStagePowerSpec:
-    """Design-stage simulation power specification derived from development data."""
+    """Design-stage simulation power specification derived from development data.
+
+    Variance parameters and effect sizes are frozen based on Common Voice 27 development data:
+    - between_speaker_wer_std: 6.50 pp (cross-speaker variability within accent strata)
+    - paired_diff_std: 3.20 pp (within-speaker paired difference standard deviation)
+    - target_primary_effect_pp: 3.50 pp superiority vs static baseline
+    - target_ungated_effect_pp: 3.50 pp superiority vs corrected ungated SUTA
+    - target_disparity_effect_pp: -1.00 pp narrowing of max-min disparity gap
+    - alpha_family: 0.05 family-wise error across M=9 hypotheses
+    - target_joint_power: 0.90 joint probability across all 9 criteria
+    - required_speakers_per_stratum: 78 speakers (468 speakers across 6 strata)
+    """
     target_primary_effect_pp: float = 3.50
+    target_ungated_effect_pp: float = 3.50
     target_disparity_effect_pp: float = -1.00
     between_speaker_wer_std: float = 6.50
     paired_diff_std: float = 3.20
@@ -78,6 +90,7 @@ class CriterionResult:
     bootstrap_std: float
     raw_lcb_95: float
     raw_ucb_95: float
+    adjusted_lcb: float
     adjusted_ucb: float
     raw_p_value: float
     adjusted_p_value: float
@@ -204,13 +217,14 @@ def simulate_design_stage_joint_power(
     }
 
     # Shifts to achieve target primary effect (-3.5 pp) and disparity narrowing (-1.0 pp)
+    scale = spec.target_primary_effect_pp / 3.50 if spec.target_primary_effect_pp > 0 else 1.0
     accent_shifts = {
-        "US English": -2.5,
-        "England English": -3.0,
-        "Canadian English": -3.0,
-        "Australian English": -3.5,
-        "South Asian English": -4.5,
-        "Irish English": -4.5,
+        "US English": -2.5 * scale,
+        "England English": -3.0 * scale,
+        "Canadian English": -3.0 * scale,
+        "Australian English": -3.5 * scale,
+        "South Asian English": -4.5 * scale,
+        "Irish English": -4.5 * scale,
     }
 
     n_spk = num_speakers_per_stratum
@@ -224,17 +238,18 @@ def simulate_design_stage_joint_power(
         ucb_static = obs_delta_static + z_crit * se_primary
         pass_static = bool(ucb_static < 0.0 and obs_delta_static < 0.0)
 
-        # 2. Primary ungated difference (ungated has +30 pp regression)
-        obs_delta_ungated = -30.0 + rng.normal(0, se_primary)
+        # 2. Primary ungated difference (modeled against corrected ungated SUTA with realistic effect)
+        ungated_eff = max(spec.target_ungated_effect_pp, spec.target_primary_effect_pp)
+        obs_delta_ungated = ungated_eff * -1.0 + rng.normal(0, se_primary)
         ucb_ungated = obs_delta_ungated + z_crit * se_primary
-        pass_ungated = bool(ucb_ungated < 0.0)
+        pass_ungated = bool(ucb_ungated < 0.0 and obs_delta_ungated < 0.0)
 
         # 3. Accent non-inferiority
         accent_passes = True
         obs_acc_w1 = {}
         obs_acc_w3 = {}
         for acc in accents:
-            shift = accent_shifts.get(acc, -3.0)
+            shift = accent_shifts.get(acc, -3.0 * scale)
             obs_delta_g = shift + rng.normal(0, se_accent)
             ucb_g = obs_delta_g + z_crit * se_accent
             if ucb_g > 2.0:
@@ -286,7 +301,10 @@ def evaluate_confirmatory_power(
         seed=123,
     )
 
-    is_powered = bool(min_spks_obs >= req_spks)
+    is_powered = bool(
+        min_spks_obs >= req_spks
+        and est_joint_power >= (design_spec.target_joint_power - 0.05)
+    )
 
     status = "ADEQUATE" if is_powered else "UNDERPOWERED"
     summary = (
@@ -568,31 +586,70 @@ def run_confirmatory_paired_cluster_inference(
         pt = spec["pt"]
         strict = spec["strict_less"]
 
-        # Simultaneous upper confidence bound and raw bounds
-        adj_ucb = float(np.percentile(dist, simultaneous_percentile))
-        raw_ucb_95 = float(np.percentile(dist, nominal_95_percentile))
-        raw_lcb_95 = float(np.percentile(dist, alpha_family * 100.0))
+    alpha_family_per_crit = alpha_family / float(m_hypotheses)
+    simultaneous_percentile = 100.0 * (1.0 - alpha_family_per_crit)
+    nominal_95_percentile = 95.0
 
-        # Inverted confidence bound p-value for the bootstrap
-        p_raw = float(np.mean(dist >= thresh))
-        p_adj = min(1.0, float(m_hypotheses) * p_raw)
+    criteria_results: Dict[str, CriterionResult] = {}
+    failure_reasons: List[str] = []
 
-        # Cluster-robust linearized ratio t-test for ratio hypotheses
-        t_stat = None
-        p_linear = None
+    for spec in test_specs:
+        dist = spec["dist"]
+        thresh = spec["threshold"]
+        pt = spec["pt"]
+        strict = spec["strict_less"]
+
+        # 1. Hypothesis Inference: Ratio (Criteria 1-8) vs Disparity (Criterion 9)
         if spec["err_test"] is not None:
+            # Cluster-robust linearized ratio t-inference (Criteria 1-8)
             e_t = spec["err_test"]
             e_r = spec["err_ref"]
             w = spec["wc"]
             n_clusters = len(w)
-            if n_clusters > 1:
-                z_s = (e_t - e_r) - (thresh / 100.0) * w
-                z_bar = float(np.mean(z_s))
-                s_z = float(np.std(z_s, ddof=1))
-                se_z = s_z / math.sqrt(n_clusters)
-                if se_z > 0:
-                    t_stat = z_bar / se_z
-                    p_linear = float(stats.t.cdf(t_stat, df=n_clusters - 1))
+            df = max(1, n_clusters - 1)
+
+            # Linearized score at threshold for hypothesis testing: H0: theta >= thresh vs H1: theta < thresh
+            z_s = (e_t - e_r) - (thresh / 100.0) * w
+            z_bar = float(np.mean(z_s))
+            s_z = float(np.std(z_s, ddof=1)) if n_clusters > 1 else 0.0
+            se_z = s_z / math.sqrt(n_clusters) if n_clusters > 0 else 0.0
+
+            if se_z > 0:
+                t_stat = z_bar / se_z
+                p_raw = float(stats.t.cdf(t_stat, df=df))
+            else:
+                t_stat = -999.0 if z_bar < 0 else (999.0 if z_bar > 0 else 0.0)
+                p_raw = 0.0 if z_bar < 0 else (1.0 if z_bar > 0 else 0.5)
+
+            p_adj = min(1.0, float(m_hypotheses) * p_raw)
+
+            # Delta-method cluster-robust standard error for ratio difference point estimate
+            u_s = (e_t - e_r) - (pt / 100.0) * w
+            s_u = float(np.std(u_s, ddof=1)) if n_clusters > 1 else 0.0
+            se_theta = 100.0 * (s_u / math.sqrt(n_clusters)) / float(np.mean(w)) if float(np.mean(w)) > 0 else 0.0
+
+            t_crit = float(stats.t.ppf(1.0 - alpha_family_per_crit, df=df))
+            t_95 = float(stats.t.ppf(0.95, df=df))
+
+            adj_ucb = pt + t_crit * se_theta
+            adj_lcb = pt - t_crit * se_theta
+            raw_ucb_95 = pt + t_95 * se_theta
+            raw_lcb_95 = pt - t_95 * se_theta
+
+        else:
+            # Disparity Non-Increase (Criterion 9): Centered Null Bootstrap
+            # Null boundary: delta_disp = thresh = 0.0
+            dist_mean = float(np.mean(dist))
+            dist_null = dist - dist_mean + thresh
+            # Empirical probability under H0 of observing statistic <= observed pt
+            p_raw = float(np.mean(dist_null <= pt))
+            p_adj = min(1.0, float(m_hypotheses) * p_raw)
+
+            adj_ucb = float(np.percentile(dist, simultaneous_percentile))
+            adj_lcb = float(np.percentile(dist, alpha_family_per_crit * 100.0))
+            raw_ucb_95 = float(np.percentile(dist, nominal_95_percentile))
+            raw_lcb_95 = float(np.percentile(dist, alpha_family * 100.0))
+            t_stat = None
 
         # Verification: simultaneous UCB <= threshold (and < 0 for strict primary)
         if strict:
@@ -620,46 +677,47 @@ def run_confirmatory_paired_cluster_inference(
             bootstrap_std=round(float(np.std(dist, ddof=1)), 4),
             raw_lcb_95=round(raw_lcb_95, 4),
             raw_ucb_95=round(raw_ucb_95, 4),
+            adjusted_lcb=round(adj_lcb, 4),
             adjusted_ucb=round(adj_ucb, 4),
             raw_p_value=round(p_raw, 6),
             adjusted_p_value=round(p_adj, 6),
             is_success=passed,
             interpretation=interp,
             linear_t_statistic=round(t_stat, 4) if t_stat is not None else None,
-            linear_p_value=round(p_linear, 6) if p_linear is not None else None,
+            linear_p_value=round(p_raw, 6) if spec["err_test"] is not None else None,
         )
 
     all_passed = len(failure_reasons) == 0
 
     # 7. Overall Protocol Verdict: Statistically Demonstrable Harm vs Imprecision vs Invariance
-    # Harmful regression is defined as valid inferential evidence that performance degraded:
-    # i.e. the lower confidence bound at level (1 - alpha_family) exceeds the safety boundary.
+    # Harmful regression requires valid inferential evidence: observed point estimate in harmful
+    # direction AND simultaneous multiplicity-adjusted lower confidence bound exceeds safety margin.
     demonstrated_harm_reasons: List[str] = []
 
-    lcb_static = criteria_results["primary_superiority_static"].raw_lcb_95
-    if delta_static > 0.0000 and lcb_static > 0.0000:
+    crit_static = criteria_results["primary_superiority_static"]
+    if delta_static > 0.0000 and crit_static.adjusted_lcb > 0.0000:
         demonstrated_harm_reasons.append(
-            f"Statistically Demonstrable Harm vs Static Baseline: point={delta_static:+.2f} pp, LCB_95={lcb_static:+.2f} pp > 0.00 pp"
+            f"Statistically Demonstrable Harm vs Static Baseline: point={delta_static:+.2f} pp, simultaneous_LCB={crit_static.adjusted_lcb:+.2f} pp > 0.00 pp"
         )
 
-    lcb_ungated = criteria_results["primary_superiority_ungated"].raw_lcb_95
-    if delta_ungated > 0.0000 and lcb_ungated > 0.0000:
+    crit_ungated = criteria_results["primary_superiority_ungated"]
+    if delta_ungated > 0.0000 and crit_ungated.adjusted_lcb > 0.0000:
         demonstrated_harm_reasons.append(
-            f"Statistically Demonstrable Harm vs Ungated Baseline: point={delta_ungated:+.2f} pp, LCB_95={lcb_ungated:+.2f} pp > 0.00 pp"
+            f"Statistically Demonstrable Harm vs Ungated Baseline: point={delta_ungated:+.2f} pp, simultaneous_LCB={crit_ungated.adjusted_lcb:+.2f} pp > 0.00 pp"
         )
 
     for acc in sorted(list(canonical_accents)):
         acc_key = f"accent_safety_{acc.lower().replace(' ', '_')}"
-        acc_lcb = criteria_results[acc_key].raw_lcb_95
-        if accent_deltas[acc] > epsilon_g_margin_pp and acc_lcb > epsilon_g_margin_pp:
+        crit_acc = criteria_results[acc_key]
+        if accent_deltas[acc] > epsilon_g_margin_pp and crit_acc.adjusted_lcb > epsilon_g_margin_pp:
             demonstrated_harm_reasons.append(
-                f"Statistically Demonstrable Accent Regression on '{acc}': point={accent_deltas[acc]:+.2f} pp, LCB_95={acc_lcb:+.2f} pp exceeds margin {epsilon_g_margin_pp:+.2f} pp"
+                f"Statistically Demonstrable Accent Regression on '{acc}': point={accent_deltas[acc]:+.2f} pp, simultaneous_LCB={crit_acc.adjusted_lcb:+.2f} pp exceeds margin {epsilon_g_margin_pp:+.2f} pp"
             )
 
-    lcb_disp = criteria_results["disparity_non_increase"].raw_lcb_95
-    if delta_disp > epsilon_d_margin_pp and lcb_disp > epsilon_d_margin_pp:
+    crit_disp = criteria_results["disparity_non_increase"]
+    if delta_disp > epsilon_d_margin_pp and crit_disp.adjusted_lcb > epsilon_d_margin_pp:
         demonstrated_harm_reasons.append(
-            f"Statistically Demonstrable Disparity Growth: point={delta_disp:+.2f} pp, LCB_95={lcb_disp:+.2f} pp > {epsilon_d_margin_pp:+.2f} pp"
+            f"Statistically Demonstrable Disparity Growth: point={delta_disp:+.2f} pp, simultaneous_LCB={crit_disp.adjusted_lcb:+.2f} pp > {epsilon_d_margin_pp:+.2f} pp"
         )
 
     has_demonstrated_harm = len(demonstrated_harm_reasons) > 0

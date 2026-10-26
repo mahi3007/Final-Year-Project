@@ -353,6 +353,15 @@ def main():
     args = parse_args()
     device = verify_gpu()
 
+    # Confirmatory Protocol v1.4.0 Enforcement: Cohort 3 requires gate-version v14
+    if args.cohort == "cohort3" and args.gate_version != "v14":
+        print("\n" + "!" * 80)
+        print("[FAIL-CLOSED INTEGRITY CHECK]")
+        print(f"Confirmatory Protocol Violation: Cohort 3 requires --gate-version v14, got '{args.gate_version}'.")
+        print("Legacy v1.3 gate with +2.0 pp disparity tolerance cannot be used for confirmatory execution.")
+        print("!" * 80 + "\n")
+        sys.exit(1)
+
     manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
     sentinel_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
     sentinel_lock = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.lock.json"
@@ -614,6 +623,54 @@ def main():
                 f"between Cohort 3 and historical/reference partitions (e.g. {sorted(list(overlapping))[:5]})."
             )
 
+        # 5. Full Validation of Dedicated Gate-Reference Panel Manifest and Data Lock
+        with open(gate_ref_manifest, "r", encoding="utf-8") as f:
+            ref_manifest_data = json.load(f)
+
+        if ref_manifest_data.get("role") != "gate_reference_panel":
+            raise ValueError(
+                f"Confirmatory Integrity Violation: gate_ref_manifest role='{ref_manifest_data.get('role')}' "
+                "must be 'gate_reference_panel'."
+            )
+        if ref_manifest_data.get("manifest_version") != "v1.4.0":
+            raise ValueError(
+                f"Confirmatory Integrity Violation: gate_ref_manifest version='{ref_manifest_data.get('manifest_version')}' "
+                "must be 'v1.4.0'."
+            )
+
+        ref_csv_bytes = gate_ref_panel_csv.read_bytes()
+        actual_ref_sha256 = hashlib.sha256(ref_csv_bytes).hexdigest()
+        expected_ref_sha256 = ref_manifest_data.get("files", {}).get("csv", {}).get("sha256")
+        if actual_ref_sha256 != expected_ref_sha256:
+            raise ValueError(
+                f"Confirmatory Hash Violation: gate_ref_panel_csv SHA-256 '{actual_ref_sha256}' does not match "
+                f"manifest lock hash '{expected_ref_sha256}'."
+            )
+
+        gate_ref_df = pd.read_csv(gate_ref_panel_csv)
+        expected_ref_rows = ref_manifest_data.get("files", {}).get("csv", {}).get("row_count")
+        if expected_ref_rows is not None and len(gate_ref_df) != int(expected_ref_rows):
+            raise ValueError(
+                f"Confirmatory Row Count Violation: gate_ref_panel_csv has {len(gate_ref_df)} rows, expected {expected_ref_rows}."
+            )
+
+        if gate_ref_df["recording_id"].nunique() != len(gate_ref_df):
+            raise ValueError("Confirmatory Integrity Violation: Duplicate recording_ids in gate reference panel.")
+
+        ref_strata = set(gate_ref_df["stage5_accent_group"].astype(str))
+        if ref_strata != set(CANONICAL_PROTOCOL_ACCENTS):
+            raise ValueError(f"Gate reference panel accents {ref_strata} do not match canonical set {CANONICAL_PROTOCOL_ACCENTS}")
+
+        # Power/precision sized reference panel (defaults to >= 20 speakers per accent)
+        expected_ref_spks_per_stratum = int(ref_manifest_data.get("speakers_per_accent", 20))
+        for acc in CANONICAL_PROTOCOL_ACCENTS:
+            acc_spks = gate_ref_df[gate_ref_df["stage5_accent_group"] == acc]["speaker_id"].nunique()
+            if acc_spks < expected_ref_spks_per_stratum:
+                raise ValueError(
+                    f"Gate reference panel stratum '{acc}' has {acc_spks} speakers, "
+                    f"below required precision threshold of {expected_ref_spks_per_stratum}."
+                )
+
     if not sentinel_csv.exists():
         raise FileNotFoundError(f"Missing sentinel panel CSV: {sentinel_csv}")
     sentinel_df = pd.read_csv(sentinel_csv)
@@ -625,8 +682,15 @@ def main():
     ]
     eval_cache = preload_waveforms(eval_file_list, sample_rate=16000)
 
-    # Core Stratified Sentinel Panel: 1 clip per sentinel speaker (30 clips, exactly 5/stratum)
-    core_sentinel_df = validate_sentinel_panel_against_canonical_protocol(sentinel_df)
+    # Core Stratified Sentinel Panel: 1 clip per sentinel speaker
+    if args.cohort == "cohort3":
+        core_sentinel_df = validate_sentinel_panel_against_canonical_protocol(
+            sentinel_df,
+            expected_speakers_per_accent=expected_ref_spks_per_stratum,
+            expected_total_speakers=expected_ref_spks_per_stratum * len(CANONICAL_PROTOCOL_ACCENTS),
+        )
+    else:
+        core_sentinel_df = validate_sentinel_panel_against_canonical_protocol(sentinel_df)
     core_sentinel_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_sentinel_df.iterrows()]
 
     sentinel_file_list = []
@@ -719,8 +783,16 @@ def main():
         batch_rows = eval_df.iloc[start_idx:end_idx]
 
         batch_waveforms = [eval_cache[r["recording_id"]] for _, r in batch_rows.iterrows()]
-        batch_raw_refs = [str(r["transcript"]) for _, r in batch_rows.iterrows()]
-        batch_norm_refs = [TextNormalizer.normalize(t) for t in batch_raw_refs]
+        is_sealed = bool(args.cohort == "cohort3")
+
+        if is_sealed:
+            # Confirmatory Cohort 3: Reference transcripts are strictly inaccessible during streaming
+            batch_raw_refs = None
+            batch_norm_refs = None
+        else:
+            batch_raw_refs = [str(r["transcript"]) for _, r in batch_rows.iterrows()]
+            batch_norm_refs = [TextNormalizer.normalize(t) for t in batch_raw_refs]
+
         window_primary_stratum = str(batch_rows.iloc[0].get("stage5_accent_group") or batch_rows.iloc[0].get("accent_group"))
 
         # Prequential Inference
@@ -728,7 +800,6 @@ def main():
         hyps_arm2 = batch_transcribe_gpu(arm2_model, processor, batch_waveforms, device)
         hyps_arm3 = batch_transcribe_gpu(arm3_model, processor, batch_waveforms, device)
 
-        is_sealed = bool(args.cohort == "cohort3")
         win_err_arm1, win_words_arm1 = 0, 0
         win_err_arm2, win_words_arm2 = 0, 0
         win_err_arm3, win_words_arm3 = 0, 0
@@ -1155,7 +1226,13 @@ def main():
     # Stage 6M v1.4.0 Confirmatory Inferential Analysis
     is_confirmatory = bool(args.cohort == "cohort3")
     n_boot_rep = 20000 if is_confirmatory else 2000
-    print(f"      Executing Paired Cluster Inference ({n_boot_rep} replicates) and Holm Multiplicity Adjustment...")
+    print(f"      Executing Paired Cluster Inference ({n_boot_rep} replicates) with Simultaneous Multiplicity Adjustment...")
+
+    conf_design_spec = DesignStagePowerSpec(
+        required_speakers_per_stratum=78,
+        target_joint_power=0.90,
+    ) if is_confirmatory else None
+
     confirmatory_report = run_confirmatory_paired_cluster_inference(
         speaker_records=spk_stats,
         num_bootstrap_replicates=n_boot_rep,
@@ -1163,7 +1240,7 @@ def main():
         alpha_family=0.05,
         epsilon_g_margin_pp=2.00,
         epsilon_d_margin_pp=0.00,
-        min_speakers_per_stratum_for_power=5,
+        design_spec=conf_design_spec,
     )
 
     report_payload = {

@@ -1150,6 +1150,7 @@ def test_confirmatory_paired_cluster_inference_passes_on_superiority():
     from dsg_ctta.evaluation.paired_cluster_inference import (
         run_confirmatory_paired_cluster_inference,
         CANONICAL_PROTOCOL_ACCENTS,
+        DesignStagePowerSpec,
     )
 
     # Build synthetic speaker records where Arm 3 is superior to both Arm 1 and Arm 2
@@ -1166,10 +1167,17 @@ def test_confirmatory_paired_cluster_inference_passes_on_superiority():
                 "err3": 15,  # Arm 3 DSG: 15% WER (clear superiority!)
             })
 
+    spec = DesignStagePowerSpec(
+        required_speakers_per_stratum=10,
+        target_primary_effect_pp=10.0,
+        target_joint_power=0.65,
+    )
+
     report = run_confirmatory_paired_cluster_inference(
         speaker_records=records,
         num_bootstrap_replicates=500,
         seed=42,
+        design_spec=spec,
     )
 
     assert report.verdict == "PASS"
@@ -1474,7 +1482,7 @@ def test_runner_cli_supports_cohort3_and_fails_closed_when_data_missing(monkeypa
     import sys
 
     # 1. Verify parser accepts cohort3
-    monkeypatch.setattr(sys, "argv", ["run_benchmark.py", "--cohort", "cohort3", "--preflight-only"])
+    monkeypatch.setattr(sys, "argv", ["run_benchmark.py", "--cohort", "cohort3", "--gate-version", "v14", "--preflight-only"])
     args = parse_args()
     assert args.cohort == "cohort3"
 
@@ -1498,7 +1506,7 @@ def test_runner_enforces_clean_git_tree_for_cohort3(monkeypatch, capsys):
     from cloud.kaggle.run_stage6m_cohort2_benchmark import main
     import sys
 
-    monkeypatch.setattr(sys, "argv", ["run_benchmark.py", "--cohort", "cohort3"])
+    monkeypatch.setattr(sys, "argv", ["run_benchmark.py", "--cohort", "cohort3", "--gate-version", "v14"])
     monkeypatch.setenv("STAGE6M_GIT_DIRTY", "true")
     monkeypatch.setenv("STAGE6M_GIT_COMMIT_SHA", "dirty_commit_sha_12345")
 
@@ -1509,6 +1517,23 @@ def test_runner_enforces_clean_git_tree_for_cohort3(monkeypatch, capsys):
     captured = capsys.readouterr()
     assert "Confirmatory Execution Provenance Violation" in captured.out
     assert "uncommitted modifications" in captured.out
+
+
+def test_runner_cohort3_rejects_legacy_v13_gate(monkeypatch, capsys):
+    """
+    Test Case 42: Runner rejects legacy v1.3 gate when executing Confirmatory Cohort 3.
+    """
+    from cloud.kaggle.run_stage6m_cohort2_benchmark import main
+    import sys
+
+    monkeypatch.setattr(sys, "argv", ["run_benchmark.py", "--cohort", "cohort3", "--gate-version", "v13"])
+    with pytest.raises(SystemExit) as excinfo:
+        main()
+    assert excinfo.value.code == 1
+
+    captured = capsys.readouterr()
+    assert "Confirmatory Protocol Violation" in captured.out
+    assert "requires --gate-version v14" in captured.out
 
 
 
