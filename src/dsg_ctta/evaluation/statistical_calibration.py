@@ -108,6 +108,8 @@ class StreamingGateTrajectoryResult:
     is_safely_controlled: bool
     adaptation_uptake_demonstrated: bool
     summary: str
+    total_harmful_proposals: int = 0
+    total_harmful_accepted: int = 0
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -658,6 +660,7 @@ def simulate_streaming_gate_trajectory_calibration(
     summary = (
         f"Trajectory Scenario '{trajectory_type}' [{mode_label}, Panel Resampling]: "
         f"Harmful False Acceptance Rate={traj_rate:.1%} (95% CI [{traj_ci[0]:.1%}, {traj_ci[1]:.1%}]), "
+        f"Harmful Proposals={total_harmful_accepted}/{total_harmful_proposals} accepted, "
         f"Candidate Rejection Rate={rejection_rate:.1%}, Accepted Updates/Traj={accepted_mean:.2f}, "
         f"Safety Controlled={is_safe}, Adaptation Uptake={uptake}."
     )
@@ -677,4 +680,6 @@ def simulate_streaming_gate_trajectory_calibration(
         is_safely_controlled=is_safe,
         adaptation_uptake_demonstrated=uptake,
         summary=summary,
+        total_harmful_proposals=total_harmful_proposals,
+        total_harmful_accepted=total_harmful_accepted,
     )

@@ -335,3 +335,5 @@ def test_streaming_gate_trajectory_production_length_beneficial_control():
     assert res.is_safely_controlled is True
     assert res.trajectory_false_acceptance_rate == 0.0
     assert res.trajectory_false_acceptance_ci_upper <= 0.05
+    assert res.total_harmful_proposals == 13200
+    assert res.total_harmful_accepted == 0

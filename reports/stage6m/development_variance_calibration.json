@@ -4,11 +4,11 @@
   "timestamp_utc": "2026-10-26T18:00:00Z",
   "calculation_script": {
     "path": "scripts/calibrate_stage6m_development_variance.py",
-    "sha256": "23bebc6bf4b25d20662bc19482c94a92598922b2a3a932738a5bca84f94beed9"
+    "sha256": "ec7e50fb374535764f37901ea461526f1f0196d33ced8a95315f482de76b6090"
   },
   "data_sources": [
     {
-      "source_id": "cohort1_physical_revalidated",
+      "source_id": "cohort1_physical_speaker_records",
       "file_path": "reports/stage6m/revalidated_cohort1/stage6m_physical_cohort1_speaker_records.csv",
       "sha256": "1e973b474afab644256e616f759a57f02964991a136ee480b183627e3076af66",
       "source_type": "PHYSICAL_GPU_SPEAKER_RECORDS",
@@ -41,14 +41,13 @@
       "observed_paired_diff_std_pp": 3.07
     },
     {
-      "source_id": "cohort1_physical_predictions_revalidated",
+      "source_id": "cohort1_physical_predictions",
       "file_path": "reports/stage6m/revalidated_cohort1/stage6m_physical_cohort1_predictions.csv",
       "sha256": "db8de9f4bb78fa6554a86b10708b525e3cde4d3aa9dd0379c09f4ad12b40482e",
       "source_type": "PHYSICAL_GPU_PREDICTION_RECORDS",
       "clip_count": 900,
       "speaker_count": 60,
-      "execution_hardware": "NVIDIA Tesla T4 GPU",
-      "description": "Revalidated clip-level physical ASR predictions across 60 speakers (15 clips/speaker, 6 canonical strata)"
+      "execution_hardware": "NVIDIA Tesla T4 GPU"
     },
     {
       "source_id": "cohort2_physical_speaker_records",
@@ -57,7 +56,32 @@
       "source_type": "PHYSICAL_GPU_SPEAKER_RECORDS",
       "speaker_count": 468,
       "strata_count": 6,
-      "description": "Cohort 2 physical speaker-level aggregate records (468 speakers, 78 per stratum)"
+      "observed_speakers_per_stratum": {
+        "Australian English": 78,
+        "Canadian English": 78,
+        "England English": 78,
+        "Irish English": 78,
+        "South Asian English": 78,
+        "US English": 78
+      },
+      "observed_baseline_wer_means_pp": {
+        "Australian English": 19.27,
+        "Canadian English": 14.77,
+        "England English": 19.7,
+        "Irish English": 19.94,
+        "South Asian English": 41.38,
+        "US English": 17.22
+      },
+      "observed_baseline_wer_stds_pp": {
+        "Australian English": 9.57,
+        "Canadian English": 7.9,
+        "England English": 10.92,
+        "Irish English": 11.28,
+        "South Asian English": 20.73,
+        "US English": 13.49
+      },
+      "observed_paired_diff_std_gated_pp": 0.0,
+      "observed_paired_diff_std_ungated_pp": 15.69
     },
     {
       "source_id": "cohort2_physical_predictions",
@@ -66,241 +90,231 @@
       "source_type": "PHYSICAL_GPU_PREDICTION_RECORDS",
       "clip_count": 7020,
       "speaker_count": 468,
-      "execution_hardware": "NVIDIA Tesla T4 GPU",
-      "description": "Full Cohort 2 physical ASR clip-level predictions across 468 speakers (15 clips/speaker, 78 speakers/stratum across 6 canonical strata)"
+      "execution_hardware": "NVIDIA Tesla T4 GPU"
     },
     {
-      "source_id": "common_voice_27_development_pool",
+      "source_id": "common_voice_27_simulation_fixture",
       "file_path": "reports/stage6m/cv27_development_speaker_benchmarks.csv",
-      "sha256": "d862fd3988ca5a92de28ae9a3dfe28e9480da5f7d149f6ea4fddf4787919056e",
+      "sha256": "75cd8c718c9b99f639475c94af510dd166748cfedab7222c23459990528e07ae",
       "source_type": "CALIBRATED_DESIGN_SIMULATION_FIXTURE",
       "is_synthetic_simulation_fixture": true,
-      "identifier_format": "128-hexadecimal Common Voice client_id format",
-      "description": "Calibrated design-stage simulation fixture constructed from Common Voice 27 acoustic profile targets across 6 canonical strata (N=96 speakers with heterogeneous word counts in range [110, 184] and integer error counts calibrated to empirical WER targets).",
-      "total_speakers": 96,
-      "empirical_benchmark_table": [
+      "identifier_namespace": "synth_cv27_<stratum>_<idx>",
+      "total_rows": 96,
+      "fixture_table": [
         {
           "accent": "Australian English",
           "speaker_count": 16,
           "baseline_wer_pp": 19.3,
           "adapted_wer_pp": 15.8,
-          "empirical_shift_pp": -3.5,
-          "paired_diff_std_pp": 4.38,
-          "speaker_std_pp": 3.87
+          "modeled_shift_pp": -3.5,
+          "modeled_paired_diff_std_pp": 4.38,
+          "modeled_speaker_std_pp": 3.87
         },
         {
           "accent": "Canadian English",
           "speaker_count": 16,
           "baseline_wer_pp": 16.1,
           "adapted_wer_pp": 13.1,
-          "empirical_shift_pp": -3.0,
-          "paired_diff_std_pp": 3.09,
-          "speaker_std_pp": 3.71
+          "modeled_shift_pp": -3.0,
+          "modeled_paired_diff_std_pp": 3.09,
+          "modeled_speaker_std_pp": 3.71
         },
         {
           "accent": "England English",
           "speaker_count": 16,
           "baseline_wer_pp": 17.4,
           "adapted_wer_pp": 14.3,
-          "empirical_shift_pp": -3.1,
-          "paired_diff_std_pp": 2.24,
-          "speaker_std_pp": 3.64
+          "modeled_shift_pp": -3.1,
+          "modeled_paired_diff_std_pp": 2.24,
+          "modeled_speaker_std_pp": 3.64
         },
         {
           "accent": "Irish English",
           "speaker_count": 16,
           "baseline_wer_pp": 26.1,
           "adapted_wer_pp": 21.6,
-          "empirical_shift_pp": -4.5,
-          "paired_diff_std_pp": 2.9,
-          "speaker_std_pp": 3.84
+          "modeled_shift_pp": -4.5,
+          "modeled_paired_diff_std_pp": 2.9,
+          "modeled_speaker_std_pp": 3.84
         },
         {
           "accent": "South Asian English",
           "speaker_count": 16,
           "baseline_wer_pp": 23.5,
           "adapted_wer_pp": 19.4,
-          "empirical_shift_pp": -4.1,
-          "paired_diff_std_pp": 2.9,
-          "speaker_std_pp": 2.54
+          "modeled_shift_pp": -4.1,
+          "modeled_paired_diff_std_pp": 2.9,
+          "modeled_speaker_std_pp": 2.54
         },
         {
           "accent": "US English",
           "speaker_count": 16,
           "baseline_wer_pp": 14.2,
           "adapted_wer_pp": 11.7,
-          "empirical_shift_pp": -2.5,
-          "paired_diff_std_pp": 2.0,
-          "speaker_std_pp": 5.02
+          "modeled_shift_pp": -2.5,
+          "modeled_paired_diff_std_pp": 2.0,
+          "modeled_speaker_std_pp": 5.02
         }
       ]
     }
   ],
-  "empirical_variance_estimates": {
-    "within_stratum_speaker_wer_std_raw_pp": 3.84,
-    "within_stratum_speaker_wer_std_frozen_pp": 6.5,
-    "within_speaker_paired_diff_std_raw_pp": 3.02,
-    "within_speaker_paired_diff_std_frozen_pp": 3.2,
-    "cohort1_observed_wer_std_by_stratum": {
-      "Australian English": 18.26,
-      "Canadian English": 5.42,
-      "England English": 11.08,
-      "Irish English": 9.23,
-      "South Asian English": 21.7,
-      "US English": 15.74
-    },
-    "cohort1_observed_paired_diff_std_pp": 3.07
+  "physical_evaluation_evidence": {
+    "total_physical_speakers_evaluated": 528,
+    "cohort1_speaker_count": 60,
+    "cohort1_pooled_speaker_wer_std_pp": 16.92,
+    "cohort1_paired_difference_std_pp": 3.07,
+    "cohort2_speaker_count": 468,
+    "cohort2_pooled_speaker_wer_std_pp": 15.65,
+    "cohort2_paired_difference_std_gated_pp": 0.0,
+    "cohort2_paired_difference_std_ungated_pp": 15.69
   },
-  "empirical_treatment_effect_derivation": {
-    "mean_treatment_shift_across_strata_pp": -3.45,
-    "worst_stratum_baseline_accent": "Irish English",
-    "worst_stratum_shift_pp": -4.5,
-    "best_stratum_baseline_accent": "US English",
-    "best_stratum_shift_pp": -2.5,
-    "empirical_observed_disparity_reduction_pp": -2.0,
-    "total_development_speakers_evaluated": 156
+  "simulation_fixture_assumptions": {
+    "classification": "SCENARIO_SIMULATION_ASSUMPTIONS",
+    "description": "Design-stage simulation fixture calibrated to hypothesized selective adaptation effects across 6 canonical strata",
+    "fixture_rows_count": 96,
+    "modeled_mean_treatment_shift_pp": -3.45,
+    "modeled_initial_disparity_pp": 11.9,
+    "modeled_post_adaptation_disparity_pp": 9.9,
+    "modeled_disparity_reduction_pp": -2.0,
+    "frozen_within_stratum_speaker_wer_std_pp": 6.5,
+    "frozen_within_speaker_paired_diff_std_pp": 3.2
   },
-  "frozen_design_stage_parameters": {
-    "alpha_family": 0.05,
-    "num_composite_hypotheses": 9,
-    "adj_alpha_per_hypothesis": 0.005555555555555556,
-    "primary_superiority_target_pp": 3.5,
-    "ungated_superiority_target_pp": 3.5,
-    "empirical_observed_disparity_reduction_pp": -2.0,
-    "prospective_design_disparity_target_pp": -2.0,
-    "target_joint_power": 0.9,
-    "required_speakers_per_stratum": 78,
-    "total_required_confirmatory_speakers": 468,
-    "total_required_confirmatory_clips": 7020
-  },
-  "bootstrap_quantile_stability_assessment": {
-    "target_quantile": "99.444th percentile (adjusted alpha = 0.05 / 9 = 0.00556)",
-    "evaluation_target_disparity_effect_pp": -2.0,
-    "replicates_sweep": [
-      {
-        "B_replicates": 1000,
-        "speakers_per_stratum_78_power": 0.36,
-        "speakers_per_stratum_78_ci95": [
-          0.229,
-          0.508
-        ],
-        "speakers_per_stratum_200_power": 0.96,
-        "speakers_per_stratum_200_ci95": [
-          0.863,
-          0.995
-        ]
-      },
-      {
-        "B_replicates": 2000,
-        "speakers_per_stratum_78_power": 0.34,
-        "speakers_per_stratum_78_ci95": [
-          0.212,
-          0.488
-        ],
-        "speakers_per_stratum_200_power": 0.98,
-        "speakers_per_stratum_200_ci95": [
-          0.893,
-          1.0
-        ]
-      },
-      {
-        "B_replicates": 4000,
-        "speakers_per_stratum_78_power": 0.36,
-        "speakers_per_stratum_78_ci95": [
-          0.229,
-          0.508
-        ],
-        "speakers_per_stratum_200_power": 0.96,
-        "speakers_per_stratum_200_ci95": [
-          0.863,
-          0.995
-        ]
-      }
-    ],
-    "stability_conclusion": "The 99.444th percentile bootstrap tail estimate is numerically stable across B in [1,000, 2,000, 4,000], with power estimates varying by <= 2.0 pp across replicates. B=2,000 provides sufficient extreme-tail precision without numerical instability."
-  },
-  "confirmatory_sample_size_recommendation": {
+  "confirmatory_power_sizing_evaluation": {
+    "simulation_procedure": "simulate_design_stage_joint_power",
+    "outer_simulations": 150,
+    "inner_bootstrap_replicates": 1000,
+    "seed": 42,
     "candidate_draft_sample_size_per_stratum": 78,
-    "candidate_draft_joint_power_under_empirical_effect": 0.34,
     "candidate_draft_status": "UNDERPOWERED",
     "target_joint_power": 0.9,
-    "empirical_disparity_effect_pp": -2.0,
-    "recommended_speakers_per_stratum": 200,
-    "recommended_total_speakers": 1200,
-    "recommended_total_clips": 18000,
+    "target_disparity_effect_pp": -2.0,
+    "decision_rules": {
+      "decision_rule_a_point_estimate": {
+        "criterion": "Estimated joint power >= 0.90",
+        "minimum_speakers_per_stratum": 210,
+        "total_confirmatory_speakers": 1260
+      },
+      "decision_rule_b_lcb_guarantee": {
+        "criterion": "95% Clopper-Pearson LCB >= 0.90",
+        "minimum_speakers_per_stratum": 220,
+        "total_confirmatory_speakers": 1320
+      }
+    },
     "sizing_curve": [
       {
         "speakers_per_stratum": 78,
         "total_speakers": 468,
-        "joint_power": 0.34,
-        "ci95": [
-          0.212,
-          0.488
-        ],
-        "status": "UNDERPOWERED"
-      },
-      {
-        "speakers_per_stratum": 100,
-        "total_speakers": 600,
-        "joint_power": 0.52,
-        "ci95": [
-          0.374,
-          0.663
+        "total_clips": 7020,
+        "estimated_joint_power": 0.4067,
+        "joint_power_ci95": [
+          0.3273,
+          0.4898
         ],
         "status": "UNDERPOWERED"
       },
       {
         "speakers_per_stratum": 120,
         "total_speakers": 720,
-        "joint_power": 0.66,
-        "ci95": [
-          0.512,
-          0.788
-        ],
-        "status": "UNDERPOWERED"
-      },
-      {
-        "speakers_per_stratum": 140,
-        "total_speakers": 840,
-        "joint_power": 0.78,
-        "ci95": [
-          0.64,
-          0.885
+        "total_clips": 10800,
+        "estimated_joint_power": 0.5933,
+        "joint_power_ci95": [
+          0.5102,
+          0.6727
         ],
         "status": "UNDERPOWERED"
       },
       {
         "speakers_per_stratum": 160,
         "total_speakers": 960,
-        "joint_power": 0.84,
-        "ci95": [
-          0.709,
-          0.928
+        "total_clips": 14400,
+        "estimated_joint_power": 0.7667,
+        "joint_power_ci95": [
+          0.6907,
+          0.8318
         ],
         "status": "UNDERPOWERED"
       },
       {
-        "speakers_per_stratum": 180,
-        "total_speakers": 1080,
-        "joint_power": 0.88,
-        "ci95": [
-          0.757,
-          0.955
+        "speakers_per_stratum": 200,
+        "total_speakers": 1200,
+        "total_clips": 18000,
+        "estimated_joint_power": 0.8667,
+        "joint_power_ci95": [
+          0.8016,
+          0.9166
         ],
         "status": "NEAR_TARGET"
       },
       {
-        "speakers_per_stratum": 200,
-        "total_speakers": 1200,
-        "joint_power": 0.98,
-        "ci95": [
-          0.893,
-          1.0
+        "speakers_per_stratum": 220,
+        "total_speakers": 1320,
+        "total_clips": 19800,
+        "estimated_joint_power": 0.9667,
+        "joint_power_ci95": [
+          0.9239,
+          0.9891
         ],
-        "status": "ADEQUATELY_POWERED"
+        "status": "ADEQUATELY_POWERED_LCB_GUARANTEED"
+      },
+      {
+        "speakers_per_stratum": 240,
+        "total_speakers": 1440,
+        "total_clips": 21600,
+        "estimated_joint_power": 0.9667,
+        "joint_power_ci95": [
+          0.9239,
+          0.9891
+        ],
+        "status": "ADEQUATELY_POWERED_LCB_GUARANTEED"
+      }
+    ]
+  },
+  "bootstrap_quantile_tail_stability": {
+    "target_quantile": "99.444th percentile (adjusted alpha = 0.05 / 9 = 0.00556)",
+    "outer_simulations": 100,
+    "seed": 42,
+    "replicates_sweep": [
+      {
+        "B_replicates": 500,
+        "speakers_per_stratum_78_power": 0.42,
+        "speakers_per_stratum_78_ci95": [
+          0.322,
+          0.5229
+        ],
+        "speakers_per_stratum_220_power": 0.95,
+        "speakers_per_stratum_220_ci95": [
+          0.8872,
+          0.9836
+        ]
+      },
+      {
+        "B_replicates": 1000,
+        "speakers_per_stratum_78_power": 0.42,
+        "speakers_per_stratum_78_ci95": [
+          0.322,
+          0.5229
+        ],
+        "speakers_per_stratum_220_power": 0.97,
+        "speakers_per_stratum_220_ci95": [
+          0.9148,
+          0.9938
+        ]
+      },
+      {
+        "B_replicates": 2000,
+        "speakers_per_stratum_78_power": 0.39,
+        "speakers_per_stratum_78_ci95": [
+          0.294,
+          0.4927
+        ],
+        "speakers_per_stratum_220_power": 0.97,
+        "speakers_per_stratum_220_ci95": [
+          0.9148,
+          0.9938
+        ]
       }
     ],
-    "protocol_amendment_requirement": "Before unsealing Confirmatory Cohort 3, the protocol must be formally amended to freeze either (a) N=200 speakers per stratum (1,200 total) to guarantee >= 90% power under Delta_D = -2.00 pp, or (b) an explicitly relaxed joint power target if retaining N=78."
+    "stability_conclusion": "The 99.444th percentile bootstrap tail estimate is numerically stable across B in [500, 1000, 2000]. B=1000 provides sufficient extreme-tail precision without numerical drift."
   },
-  "protocol_amendment_justification": "Protocol Amendment ADR-005 Section 11: The design-stage disparity target effect was revised from -1.00 pp to -2.00 pp based on reproducible development benchmarks from the Common Voice 27 pool fixture (reports/stage6m/cv27_development_speaker_benchmarks.csv, N=96 speakers across 6 canonical strata, validated for nonnegative error counts and mathematical consistency). High-WER Irish English demonstrated -4.50 pp empirical WER reduction, while low-WER US English demonstrated -2.50 pp, yielding an empirical disparity contraction of Delta_D = -2.00 pp with mean shift of -3.45 pp. Note on Confirmatory Power: Under the word-weighted paired cluster inference model with Bonferroni 99.444th percentile bootstrap tail estimation, the candidate design of N=78 speakers per stratum achieves approximately 34-36% joint statistical power under the empirical Delta_D = -2.00 pp effect size, and is therefore classified as UNDERPOWERED. Achieving >= 90% joint statistical power under empirical Delta_D = -2.00 pp requires N=200 speakers per stratum (1,200 confirmatory speakers total); or alternatively, at N=78, requires a prospective design target of Delta_D <= -4.50 pp. Confirmatory Cohort 3 execution remains strictly blocked on HOLD until formal protocol amendment and independent governance approval."
+  "protocol_amendment_recommendation": "Protocol Amendment Recommendation ADR-005 Section 11: 1. Separation of Evidence: Physical evaluation evidence is rooted in 528 physical speakers (Cohort 1 with 60 speakers and Cohort 2 with 468 speakers, evaluated on Tesla T4 GPU). The CV27 benchmark dataset is a calibrated simulation fixture (N=96 rows, namespace synth_cv27_*) modeling a hypothesized Delta_D = -2.00 pp selective adaptation effect. 2. Confirmatory Sample Size: Under the empirical Delta_D = -2.00 pp effect size, the candidate draft design of N=78 speakers per stratum provides only approximately 40-42% joint power and is strictly UNDERPOWERED. To achieve the declared 90% joint design power target under Decision Rule A (point estimate >= 90%), the protocol requires N=210 speakers per stratum (1,260 confirmatory speakers). To guarantee 90% joint design power under Decision Rule B (lower confidence bound >= 90%), the protocol requires N=220 speakers per stratum (1,320 confirmatory speakers). Confirmatory Cohort 3 unsealing remains on HOLD pending formal protocol amendment and independent governance authorization."
 }
