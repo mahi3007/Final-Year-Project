@@ -34,6 +34,22 @@ CANONICAL_PROTOCOL_ACCENTS: FrozenSet[str] = frozenset([
 
 
 @dataclass
+class PowerAssessment:
+    """Simulation/analytical power assessment for the confirmatory study design."""
+    min_speakers_per_stratum_observed: int
+    min_speakers_required_for_power: int
+    is_adequately_powered: bool
+    estimated_primary_power_vs_static: float
+    estimated_primary_power_vs_ungated: float
+    power_threshold: float
+    power_status: str  # "ADEQUATE" | "UNDERPOWERED"
+    power_summary: str
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
 class CriterionResult:
     """Detailed inferential evaluation of a single confirmatory criterion."""
     criterion_id: str
@@ -87,11 +103,120 @@ class ConfirmatoryAnalysisReport:
     criteria: Dict[str, CriterionResult]
     all_criteria_passed: bool
     failure_reasons: List[str] = field(default_factory=list)
+    power_assessment: Optional[PowerAssessment] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d = asdict(self)
         d["criteria"] = {k: v.to_dict() for k, v in self.criteria.items()}
+        if self.power_assessment is not None:
+            d["power_assessment"] = self.power_assessment.to_dict()
         return d
+
+
+def _validate_raw_integer_count(
+    val: Any,
+    name: str,
+    speaker_id: str,
+    min_val: int = 0,
+    is_strictly_positive: bool = False
+) -> int:
+    """Validates raw numeric count without silent truncation or conversion."""
+    if val is None or pd.isna(val):
+        raise ValueError(f"Missing/NaN {name} for speaker '{speaker_id}'.")
+    if isinstance(val, bool) or not isinstance(val, (int, float, np.integer, np.floating)):
+        raise ValueError(f"Invalid non-numeric type for {name} for speaker '{speaker_id}': {type(val).__name__} ('{val}').")
+    fval = float(val)
+    if not math.isfinite(fval):
+        raise ValueError(f"Non-finite {name} '{val}' for speaker '{speaker_id}'.")
+    if isinstance(val, (float, np.floating)):
+        if not fval.is_integer():
+            raise ValueError(
+                f"Fractional count '{val}' for {name} for speaker '{speaker_id}' is not an exact integer."
+            )
+    ival = int(fval)
+    if is_strictly_positive:
+        if ival <= 0:
+            raise ValueError(f"Non-positive word count {name}='{ival}' for speaker '{speaker_id}'; must be > 0.")
+    else:
+        if ival < min_val:
+            raise ValueError(f"Invalid error count {name}='{ival}' for speaker '{speaker_id}'; must be >= {min_val}.")
+    return ival
+
+
+def _validate_identifier(val: Any, name: str, index: int) -> str:
+    """Validates raw string identifier ensuring non-blank and non-null values."""
+    if val is None or pd.isna(val):
+        raise ValueError(f"Record at index {index} has missing/NaN {name}.")
+    s = str(val).strip()
+    if not s or s.lower() in ("nan", "none"):
+        raise ValueError(f"Record at index {index} has blank/empty {name}.")
+    return s
+
+
+def evaluate_confirmatory_power(
+    spk_df: pd.DataFrame,
+    target_effect_size_pp: float = 2.00,
+    power_threshold: float = 0.90,
+    min_speakers_per_stratum_required: int = 5,
+    alpha_family: float = 0.05,
+    num_hypotheses: int = 9,
+) -> PowerAssessment:
+    """
+    Evaluates statistical power for detecting target effect sizes under Holm multiplicity adjustment.
+    """
+    from scipy import stats
+    n_speakers = len(spk_df)
+    spks_per_stratum = spk_df.groupby("stratum")["speaker_id"].count()
+    min_spks_obs = int(spks_per_stratum.min()) if len(spks_per_stratum) > 0 else 0
+
+    spk_wer1 = (spk_df["err1"] / spk_df["wc"]) * 100.0
+    spk_wer2 = (spk_df["err2"] / spk_df["wc"]) * 100.0
+    spk_wer3 = (spk_df["err3"] / spk_df["wc"]) * 100.0
+
+    diff_static = spk_wer3 - spk_wer1
+    diff_ungated = spk_wer3 - spk_wer2
+
+    s_static = float(diff_static.std(ddof=1)) if n_speakers > 1 else 0.0
+    s_ungated = float(diff_ungated.std(ddof=1)) if n_speakers > 1 else 0.0
+
+    s_eff_static = max(s_static, 3.0)
+    s_eff_ungated = max(s_ungated, 3.0)
+
+    alpha_1 = alpha_family / float(num_hypotheses)
+    z_crit = float(stats.norm.ppf(1.0 - alpha_1))
+
+    se_static = s_eff_static / math.sqrt(n_speakers)
+    se_ungated = s_eff_ungated / math.sqrt(n_speakers)
+
+    z_stat = (target_effect_size_pp / se_static) - z_crit
+    z_ung = (target_effect_size_pp / se_ungated) - z_crit
+
+    power_static = float(stats.norm.cdf(z_stat))
+    power_ungated = float(stats.norm.cdf(z_ung))
+
+    is_powered = (
+        min_spks_obs >= min_speakers_per_stratum_required
+        and power_static >= power_threshold
+        and power_ungated >= power_threshold
+    )
+
+    status = "ADEQUATE" if is_powered else "UNDERPOWERED"
+    summary = (
+        f"Design achieves {power_static:.1%} power vs static and {power_ungated:.1%} vs ungated "
+        f"at effect size={target_effect_size_pp:.2f} pp (target={power_threshold:.0%}, "
+        f"observed min speakers/stratum={min_spks_obs}, required={min_speakers_per_stratum_required})."
+    )
+
+    return PowerAssessment(
+        min_speakers_per_stratum_observed=min_spks_obs,
+        min_speakers_required_for_power=min_speakers_per_stratum_required,
+        is_adequately_powered=is_powered,
+        estimated_primary_power_vs_static=round(power_static, 4),
+        estimated_primary_power_vs_ungated=round(power_ungated, 4),
+        power_threshold=power_threshold,
+        power_status=status,
+        power_summary=summary,
+    )
 
 
 def run_confirmatory_paired_cluster_inference(
@@ -102,6 +227,9 @@ def run_confirmatory_paired_cluster_inference(
     epsilon_g_margin_pp: float = 2.00,
     epsilon_d_margin_pp: float = 0.00,
     canonical_accents: FrozenSet[str] = CANONICAL_PROTOCOL_ACCENTS,
+    min_speakers_per_stratum_for_power: int = 5,
+    target_effect_size_pp: float = 2.00,
+    power_threshold: float = 0.90,
 ) -> ConfirmatoryAnalysisReport:
     """
     Executes the frozen Stage 6M v1.4.0 final inferential analysis.
@@ -111,40 +239,70 @@ def run_confirmatory_paired_cluster_inference(
     speaker_records: List of speaker-level evaluation records containing:
         - speaker_id: Unique speaker identifier
         - stratum: Accent stratum group
-        - wc: Reference word count for the speaker
-        - err1: Total edit distance errors under Arm 1 (Static)
-        - err2: Total edit distance errors under Arm 2 (Ungated)
-        - err3: Total edit distance errors under Arm 3 (DSG)
+        - wc: Reference word count for the speaker (strictly positive integer)
+        - err1: Total edit distance errors under Arm 1 (Static) (non-negative integer)
+        - err2: Total edit distance errors under Arm 2 (Ungated) (non-negative integer)
+        - err3: Total edit distance errors under Arm 3 (DSG) (non-negative integer)
     num_bootstrap_replicates: Number of paired stratified cluster replicates (default 20,000).
     seed: Random seed for bootstrap reproducibility.
     alpha_family: Family-wise error rate budget across all criteria (default 0.05).
     epsilon_g_margin_pp: Accent regression non-inferiority margin (+2.00 pp).
     epsilon_d_margin_pp: Disparity growth tolerance margin (0.00 pp).
     canonical_accents: Frozen set of 6 required accent strata.
+    min_speakers_per_stratum_for_power: Minimum speakers per stratum required for adequate power.
+    target_effect_size_pp: Target WER reduction in percentage points for power assessment (default 2.00 pp).
+    power_threshold: Minimum power threshold for confirmatory declaration (default 0.90).
     """
-    # 1. Input Validation
+    # 1. Configuration Validation
+    if not isinstance(num_bootstrap_replicates, (int, np.integer)) or isinstance(num_bootstrap_replicates, bool) or num_bootstrap_replicates <= 0:
+        raise ValueError(f"num_bootstrap_replicates must be a positive integer, got '{num_bootstrap_replicates}'.")
+
+    if not isinstance(alpha_family, (int, float, np.floating)) or isinstance(alpha_family, bool) or not math.isfinite(alpha_family) or not (0.0 < float(alpha_family) < 1.0):
+        raise ValueError(f"alpha_family must be a finite float strictly in (0.0, 1.0), got '{alpha_family}'.")
+
+    if not isinstance(epsilon_g_margin_pp, (int, float, np.floating)) or isinstance(epsilon_g_margin_pp, bool) or not math.isfinite(epsilon_g_margin_pp) or float(epsilon_g_margin_pp) < 0.0:
+        raise ValueError(f"epsilon_g_margin_pp must be a finite non-negative float, got '{epsilon_g_margin_pp}'.")
+
+    if not isinstance(epsilon_d_margin_pp, (int, float, np.floating)) or isinstance(epsilon_d_margin_pp, bool) or not math.isfinite(epsilon_d_margin_pp) or float(epsilon_d_margin_pp) < 0.0:
+        raise ValueError(f"epsilon_d_margin_pp must be a finite non-negative float, got '{epsilon_d_margin_pp}'.")
+
+    # 2. Input Records Validation (prior to any conversion or DataFrame manipulation)
     if not speaker_records:
         raise ValueError("Confirmatory inference input cannot be empty.")
 
-    spk_df = pd.DataFrame(speaker_records)
-    required_cols = {"speaker_id", "stratum", "wc", "err1", "err2", "err3"}
-    missing_cols = required_cols - set(spk_df.columns)
-    if missing_cols:
-        raise ValueError(f"Missing required columns in speaker_records: {sorted(list(missing_cols))}")
+    cleaned_records: List[Dict[str, Any]] = []
+    seen_speakers: Dict[str, str] = {}
 
-    # Check for duplicate speaker entries
-    if spk_df["speaker_id"].duplicated().any():
-        dups = spk_df[spk_df["speaker_id"].duplicated()]["speaker_id"].tolist()
-        raise ValueError(f"Duplicate speaker IDs detected in speaker_records: {dups[:5]}")
+    for idx, r in enumerate(speaker_records):
+        if not isinstance(r, dict):
+            raise ValueError(f"speaker_records entry {idx} is not a dictionary.")
 
-    # Validate non-negativity and positive word counts
-    for idx, r in spk_df.iterrows():
-        wc = int(r["wc"])
-        e1, e2, e3 = int(r["err1"]), int(r["err2"]), int(r["err3"])
-        if wc <= 0 or not math.isfinite(wc):
-            raise ValueError(f"Invalid reference word count '{wc}' for speaker '{r['speaker_id']}'.")
-        if e1 < 0 or e2 < 0 or e3 < 0:
-            raise ValueError(f"Negative error counts for speaker '{r['speaker_id']}': err1={e1}, err2={e2}, err3={e3}.")
+        for req_k in ("speaker_id", "stratum", "wc", "err1", "err2", "err3"):
+            if req_k not in r:
+                raise ValueError(f"Missing required field '{req_k}' in record at index {idx}.")
+
+        spk_id = _validate_identifier(r["speaker_id"], "speaker_id", idx)
+        strat = _validate_identifier(r["stratum"], "stratum", idx)
+
+        if spk_id in seen_speakers:
+            raise ValueError(f"Duplicate speaker ID detected in speaker_records: '{spk_id}'.")
+        seen_speakers[spk_id] = strat
+
+        wc = _validate_raw_integer_count(r["wc"], "wc", spk_id, is_strictly_positive=True)
+        e1 = _validate_raw_integer_count(r["err1"], "err1", spk_id, min_val=0)
+        e2 = _validate_raw_integer_count(r["err2"], "err2", spk_id, min_val=0)
+        e3 = _validate_raw_integer_count(r["err3"], "err3", spk_id, min_val=0)
+
+        cleaned_records.append({
+            "speaker_id": spk_id,
+            "stratum": strat,
+            "wc": wc,
+            "err1": e1,
+            "err2": e2,
+            "err3": e3,
+        })
+
+    spk_df = pd.DataFrame(cleaned_records)
 
     # Validate accent set against canonical protocol
     observed_accents = set(spk_df["stratum"].astype(str))
@@ -161,7 +319,17 @@ def run_confirmatory_paired_cluster_inference(
         if spk_cnt < 2:
             raise ValueError(f"Stratum '{acc}' has only {spk_cnt} speakers; minimum 2 required for cluster bootstrap.")
 
-    # 2. Point Estimates Computation
+    # 3. Power Assessment
+    power_assessment = evaluate_confirmatory_power(
+        spk_df=spk_df,
+        target_effect_size_pp=target_effect_size_pp,
+        power_threshold=power_threshold,
+        min_speakers_per_stratum_required=min_speakers_per_stratum_for_power,
+        alpha_family=alpha_family,
+        num_hypotheses=9,
+    )
+
+    # 4. Point Estimates Computation
     total_words = float(spk_df["wc"].sum())
     total_e1 = float(spk_df["err1"].sum())
     total_e2 = float(spk_df["err2"].sum())
@@ -196,8 +364,7 @@ def run_confirmatory_paired_cluster_inference(
     disp3 = max(accent_wers3.values()) - min(accent_wers3.values())
     delta_disp = disp3 - disp1
 
-    # 3. Stratified Paired Speaker-Cluster Bootstrap
-    # Pre-index speaker records by accent stratum
+    # 5. Stratified Paired Speaker-Cluster Bootstrap
     stratum_speakers: Dict[str, List[Dict[str, Any]]] = {
         acc: spk_df[spk_df["stratum"] == acc].to_dict(orient="records")
         for acc in sorted(list(canonical_accents))
@@ -251,12 +418,7 @@ def run_confirmatory_paired_cluster_inference(
         b_disp3 = max(b_w3_accents.values()) - min(b_w3_accents.values())
         boot_delta_disp.append(b_disp3 - b_disp1)
 
-    # 4. Multiplicity Control: Holm-Bonferroni Step-Down Adjustment across 9 hypotheses
-    # The family of 9 hypotheses:
-    # 1. Delta_static < 0 (Superiority vs Static)
-    # 2. Delta_ungated < 0 (Superiority vs Ungated)
-    # 3-8. Delta_g <= +2.00 pp for each of 6 accents
-    # 9. Delta_D <= 0.00 pp (Disparity Non-increase)
+    # 6. Multiplicity Control: Holm-Bonferroni Step-Down Adjustment across 9 hypotheses
     test_specs: List[Dict[str, Any]] = [
         {
             "id": "primary_superiority_static",
@@ -265,7 +427,7 @@ def run_confirmatory_paired_cluster_inference(
             "pt": delta_static,
             "dist": np.array(boot_delta_static, dtype=np.float64),
             "threshold": 0.0000,
-            "strict_less": True,  # Must be strictly < 0.0
+            "strict_less": True,
         },
         {
             "id": "primary_superiority_ungated",
@@ -274,7 +436,7 @@ def run_confirmatory_paired_cluster_inference(
             "pt": delta_ungated,
             "dist": np.array(boot_delta_ungated, dtype=np.float64),
             "threshold": 0.0000,
-            "strict_less": True,  # Must be strictly < 0.0
+            "strict_less": True,
         },
     ]
 
@@ -286,7 +448,7 @@ def run_confirmatory_paired_cluster_inference(
             "pt": accent_deltas[acc],
             "dist": np.array(boot_accent_deltas[acc], dtype=np.float64),
             "threshold": epsilon_g_margin_pp,
-            "strict_less": False,  # UCB <= margin
+            "strict_less": False,
         })
 
     test_specs.append({
@@ -296,31 +458,22 @@ def run_confirmatory_paired_cluster_inference(
         "pt": delta_disp,
         "dist": np.array(boot_delta_disp, dtype=np.float64),
         "threshold": epsilon_d_margin_pp,
-        "strict_less": False,  # UCB <= 0.0
+        "strict_less": False,
     })
 
-    m_hypotheses = len(test_specs)  # 9 hypotheses
+    m_hypotheses = len(test_specs)
 
-    # Compute unadjusted empirical one-sided p-values:
-    # For H0: theta >= threshold vs H1: theta < threshold (or <= threshold)
-    # p = proportion of bootstrap replicates where replicate >= threshold
     for spec in test_specs:
         dist = spec["dist"]
         thresh = spec["threshold"]
-        # Empirical p-value under the bootstrap distribution
         p_emp = float(np.mean(dist >= thresh))
-        # Ensure finite non-zero floor for numerical reporting
         spec["raw_p_value"] = max(p_emp, 1.0 / (num_bootstrap_replicates + 1))
         spec["raw_ucb_95"] = float(np.percentile(dist, (1.0 - alpha_family) * 100))
         spec["b_mean"] = float(np.mean(dist))
         spec["b_std"] = float(np.std(dist, ddof=1)) if len(dist) > 1 else 0.0
 
-    # Sort tests by raw p-value ascending for Holm-Bonferroni step-down
     indexed_tests = sorted(enumerate(test_specs), key=lambda x: x[1]["raw_p_value"])
 
-    # Holm-Bonferroni correction
-    # Rank k = 1..m: adjusted_alpha_k = alpha / (m - k + 1)
-    # adjusted_p_value_k = min(1.0, max(prev_adj_p, p_k * (m - k + 1)))
     prev_adj_p = 0.0
     for rank_idx, (orig_idx, spec) in enumerate(indexed_tests):
         k = rank_idx + 1
@@ -334,7 +487,6 @@ def run_confirmatory_paired_cluster_inference(
         spec["adjusted_p_value"] = adj_p
         spec["adjusted_ucb"] = float(np.percentile(spec["dist"], (1.0 - adj_alpha_k) * 100))
 
-    # Evaluate each criterion against frozen decision rules
     criteria_results: Dict[str, CriterionResult] = {}
     failure_reasons: List[str] = []
 
@@ -346,9 +498,6 @@ def run_confirmatory_paired_cluster_inference(
         adj_p = spec["adjusted_p_value"]
         strict = spec["strict_less"]
 
-        # Decision rule:
-        # Superiority requires point improvement (pt < 0) AND adjusted UCB < 0.00
-        # Non-inferiority requires adjusted UCB <= margin
         if strict:
             passed = bool(pt < thresh and adj_ucb < thresh)
         else:
@@ -382,15 +531,40 @@ def run_confirmatory_paired_cluster_inference(
 
     all_passed = len(failure_reasons) == 0
 
-    # Determine overall protocol verdict
+    # 7. Overall Protocol Verdict: Distinguish PASS, FAIL, and INCONCLUSIVE
+    has_harmful_regression = (
+        delta_static > 0.0000
+        or delta_ungated > 0.0000
+        or any(accent_deltas[acc] > epsilon_g_margin_pp for acc in canonical_accents)
+        or delta_disp > max(epsilon_d_margin_pp, 1.40)
+    )
+
+    is_zero_updates = bool(delta_static == 0.0 and wer_arm3 == wer_arm1)
+
     if all_passed:
-        verdict = "PASS"
-    elif delta_static == 0.0 and wer_arm3 == wer_arm1:
-        # Zero accepted updates / exact replication of baseline
+        if not power_assessment.is_adequately_powered:
+            verdict = "INCONCLUSIVE"
+            failure_reasons.append(
+                f"Study is underpowered for confirmatory declaration: {power_assessment.power_summary}"
+            )
+        else:
+            verdict = "PASS"
+    elif has_harmful_regression:
         verdict = "FAIL"
-        failure_reasons.insert(0, "Primary Objective Failed: Arm 3 identical to Static Baseline (0 updates promoted).")
+    elif is_zero_updates:
+        verdict = "INCONCLUSIVE"
+        failure_reasons.insert(
+            0,
+            "Primary Objective Inconclusive: Arm 3 identical to Static Baseline (0 updates promoted; "
+            "protective invariance verified, but selective adaptation benefit not established)."
+        )
     else:
-        verdict = "FAIL"
+        verdict = "INCONCLUSIVE"
+        failure_reasons.insert(
+            0,
+            "Inconclusive Evidence: Point estimates indicate no harmful regression, but confidence bounds "
+            "exceed target thresholds due to sample variance or insufficient precision."
+        )
 
     return ConfirmatoryAnalysisReport(
         verdict=verdict,
@@ -417,4 +591,5 @@ def run_confirmatory_paired_cluster_inference(
         criteria=criteria_results,
         all_criteria_passed=all_passed,
         failure_reasons=failure_reasons,
+        power_assessment=power_assessment,
     )

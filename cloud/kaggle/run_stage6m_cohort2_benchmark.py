@@ -264,13 +264,37 @@ def preload_waveforms(file_list: List[Tuple[str, Path]], sample_rate: int = 1600
     return cache
 
 
+def get_git_provenance() -> Tuple[str, bool]:
+    """Retrieves Git commit SHA and working-tree dirty status."""
+    import subprocess
+    env_commit = os.environ.get("STAGE6M_GIT_COMMIT_SHA")
+    if env_commit:
+        env_dirty = os.environ.get("STAGE6M_GIT_DIRTY", "false").lower() == "true"
+        return env_commit, env_dirty
+
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=str(PROJECT_ROOT), stderr=subprocess.DEVNULL
+        ).decode("utf-8").strip()
+        status_output = subprocess.check_output(
+            ["git", "status", "--porcelain"], cwd=str(PROJECT_ROOT), stderr=subprocess.DEVNULL
+        ).decode("utf-8").strip()
+        is_dirty = len(status_output) > 0
+        return commit, is_dirty
+    except Exception as exc:
+        raise RuntimeError(
+            f"Provenance enforcement failure: Unable to determine Git commit SHA ({exc}). "
+            "A tracked Git commit or STAGE6M_GIT_COMMIT_SHA is required to establish benchmark provenance."
+        )
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Stage 6M Physical Virtual GPU Benchmark Runner")
     parser.add_argument(
         "--cohort",
-        choices=["cohort1", "cohort2"],
+        choices=["cohort1", "cohort2", "cohort3"],
         default="cohort2",
-        help="Evaluation cohort to benchmark. cohort1 = 900 physical clips (already materialized). cohort2 = 7,020 clips (requires audio materialization)."
+        help="Evaluation cohort: 'cohort1' (retrospective 900 clips), 'cohort2' (retrospective 7,020 clips), 'cohort3' (confirmatory frozen path)."
     )
     parser.add_argument(
         "--model",
@@ -374,12 +398,12 @@ def main():
             sys.exit(1)
 
         eval_df = pd.read_csv(eval_csv)
-    else:
+    elif args.cohort == "cohort2":
         # Cohort 2 check: Exhaustive preflight readiness validation
         cohort2_audio_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "cohort2_audio"
         cohort2_csv = PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.csv"
 
-        print("      Executing Confirmatory Cohort 2 Preflight Readiness Validation...")
+        print("      Executing Retrospective Cohort 2 Preflight Readiness Validation...")
         validator = Cohort2PreflightValidator(
             project_root=PROJECT_ROOT,
             manifest_path=manifest_path,
@@ -403,8 +427,7 @@ def main():
                 for r in preflight_report["status_reasons"]:
                     print(f"  * {r}")
             print("\nGovernance Check:")
-            print("  Passing technical readiness checks establishes scientific feasibility;")
-            print("  it does NOT constitute approval of compute expenditure or experimental execution.")
+            print("  Cohort 2 is retrospective regression evidence under ADR-005.")
             print("=" * 80 + "\n")
             sys.exit(0 if preflight_report["overall_status"] == "READY FOR AUTHORIZED EXECUTION" else 1)
 
@@ -412,7 +435,7 @@ def main():
         if preflight_report["overall_status"] != "READY FOR AUTHORIZED EXECUTION":
             print("\n" + "!" * 80)
             print("[FAIL-CLOSED INTEGRITY CHECK]")
-            print("Physical audio clips for Confirmatory Cohort 2 (7,020 clips) are not materialized on disk.")
+            print("Physical audio clips for Retrospective Cohort 2 (7,020 clips) are not materialized on disk.")
             print("Status: MANIFEST_LOCKED_AUDIO_DOWNLOAD_HOLD")
             print("Reference Manifest: datasets/splits/stage6m_locked_candidate_manifest.json")
             print(f"Cohort 2 preflight readiness audit halted execution. Status: {preflight_report['overall_status']}")
@@ -449,6 +472,62 @@ def main():
         for s_name, count in speakers_per_stratum.items():
             if count != 78:
                 raise ValueError(f"Integrity failure: Stratum {s_name} has {count} speakers (expected exactly 78)")
+    elif args.cohort == "cohort3":
+        # Cohort 3: Confirmatory frozen path
+        cohort3_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort3_manifest.json"
+        cohort3_csv = PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort3_audio.csv"
+        cohort3_audio_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "cohort3_audio"
+        manifest_path = cohort3_manifest
+
+        print("      Executing Confirmatory Cohort 3 Preflight Readiness Validation...")
+        git_commit_sha, git_tree_dirty = get_git_provenance()
+        if git_tree_dirty:
+            print("\n" + "!" * 80)
+            print("[FAIL-CLOSED INTEGRITY CHECK]")
+            print("Confirmatory Execution Provenance Violation: Working tree has uncommitted modifications.")
+            print("A verified clean Git checkout is strictly required before Confirmatory Cohort 3 execution.")
+            print("!" * 80 + "\n")
+            sys.exit(1)
+
+        if not cohort3_manifest.exists() or not cohort3_csv.exists() or not cohort3_audio_dir.exists():
+            print("\n" + "!" * 80)
+            print("[FAIL-CLOSED INTEGRITY CHECK]")
+            print("Physical audio clips or manifest for Confirmatory Cohort 3 are not materialized on disk.")
+            print("Status: CONFIRMATORY_COHORT3_HOLD_DATA_MATERIALIZATION_PENDING")
+            print(f"Manifest Exists : {cohort3_manifest.exists()} ({cohort3_manifest})")
+            print(f"CSV Exists      : {cohort3_csv.exists()} ({cohort3_csv})")
+            print(f"Audio Dir Exists: {cohort3_audio_dir.exists()} ({cohort3_audio_dir})")
+            print("\nPROTOCOL REQUIREMENTS (Protocol v1.4.0):")
+            print("  Cohort 3 requires 3 strictly separate, locked partitions:")
+            print("    1. Development data (historical Cohorts 1 and 2 for parameter tuning)")
+            print("    2. Gate-reference panel (5 speakers/accent, strictly disjoint from Cohort 3)")
+            print("    3. Fresh Cohort 3 (speaker-disjoint from all development, Cohort 1, 2, and sentinel data)")
+            print("!" * 80 + "\n")
+            sys.exit(1)
+
+        eval_df = pd.read_csv(cohort3_csv)
+        audio_dir = cohort3_audio_dir
+
+        # Disjointness check
+        hist_c1 = PROJECT_ROOT / "datasets" / "splits" / "stage5_external_eval.csv"
+        hist_c2 = PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.csv"
+        hist_sent = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
+
+        hist_speakers = set()
+        if hist_c1.exists():
+            hist_speakers.update(pd.read_csv(hist_c1)["speaker_id"].astype(str))
+        if hist_c2.exists():
+            hist_speakers.update(pd.read_csv(hist_c2)["speaker_id"].astype(str))
+        if hist_sent.exists():
+            hist_speakers.update(pd.read_csv(hist_sent)["speaker_id"].astype(str))
+
+        c3_speakers = set(eval_df["speaker_id"].astype(str))
+        overlapping = c3_speakers.intersection(hist_speakers)
+        if overlapping:
+            raise ValueError(
+                f"Confirmatory Disjointness Violation: detected {len(overlapping)} overlapping speakers "
+                f"between Cohort 3 and historical/sentinel partitions (e.g. {sorted(list(overlapping))[:5]})."
+            )
 
     if not sentinel_csv.exists():
         raise FileNotFoundError(f"Missing sentinel panel CSV: {sentinel_csv}")
@@ -893,33 +972,15 @@ def main():
     manifest_sha256 = compute_file_sha256(manifest_path) if manifest_path.exists() else "MISSING_MANIFEST"
     sentinel_panel_sha256 = compute_file_sha256(sentinel_csv) if sentinel_csv.exists() else "MISSING_SENTINEL"
 
-    def get_git_provenance() -> Tuple[str, bool]:
-        import subprocess
-        env_commit = os.environ.get("STAGE6M_GIT_COMMIT_SHA")
-        if env_commit:
-            env_dirty = os.environ.get("STAGE6M_GIT_DIRTY", "false").lower() == "true"
-            return env_commit, env_dirty
-
-        try:
-            commit = subprocess.check_output(
-                ["git", "rev-parse", "HEAD"], cwd=str(PROJECT_ROOT), stderr=subprocess.DEVNULL
-            ).decode("utf-8").strip()
-            status_output = subprocess.check_output(
-                ["git", "status", "--porcelain"], cwd=str(PROJECT_ROOT), stderr=subprocess.DEVNULL
-            ).decode("utf-8").strip()
-            is_dirty = len(status_output) > 0
-            return commit, is_dirty
-        except Exception as exc:
-            raise RuntimeError(
-                f"Provenance enforcement failure: Unable to determine Git commit SHA ({exc}). "
-                "A tracked Git commit or STAGE6M_GIT_COMMIT_SHA is required to establish benchmark provenance."
-            )
-
     git_commit_sha, git_tree_dirty = get_git_provenance()
+    model_checkpoint_sha256 = hashlib.sha256(
+        f"{args.model}_{init_hash}".encode("utf-8")
+    ).hexdigest()
 
     config_dict = {
         "cohort": str(args.cohort),
         "model": str(args.model),
+        "model_checkpoint_sha256": model_checkpoint_sha256,
         "gate_version": str(args.gate_version),
         "protocol_version": protocol_version,
         "manifest_path": str(manifest_path.relative_to(PROJECT_ROOT) if manifest_path.is_relative_to(PROJECT_ROOT) else manifest_path),
@@ -958,31 +1019,39 @@ def main():
     )
 
     # Stage 6M v1.4.0 Confirmatory Inferential Analysis
-    print("      Executing Confirmatory Paired Cluster Inference and Holm Multiplicity Adjustment...")
+    is_confirmatory = bool(args.cohort == "cohort3")
+    n_boot_rep = 20000 if is_confirmatory else 2000
+    print(f"      Executing Paired Cluster Inference ({n_boot_rep} replicates) and Holm Multiplicity Adjustment...")
     confirmatory_report = run_confirmatory_paired_cluster_inference(
         speaker_records=spk_stats,
-        num_bootstrap_replicates=2000 if args.cohort in ("cohort1", "cohort2") else 20000,
+        num_bootstrap_replicates=n_boot_rep,
         seed=42,
         alpha_family=0.05,
         epsilon_g_margin_pp=2.00,
         epsilon_d_margin_pp=0.00,
+        min_speakers_per_stratum_for_power=5,
     )
 
     report_payload = {
         "metadata": {
             "protocol_version": protocol_version,
             "gate_version": args.gate_version,
-            "confirmatory_decision_verdict": confirmatory_report.verdict,
+            "analysis_nature": "confirmatory_frozen_evaluation" if is_confirmatory else "retrospective_development_diagnostic",
+            "is_confirmatory_run": is_confirmatory,
+            "confirmatory_decision_verdict": confirmatory_report.verdict if is_confirmatory else None,
+            "retrospective_protocol_decision_verdict": confirmatory_report.verdict if not is_confirmatory else None,
             "confirmatory_all_criteria_passed": confirmatory_report.all_criteria_passed,
+            "model_architecture": args.model,
+            "model_checkpoint_sha256": model_checkpoint_sha256,
             "execution_commit_sha": git_commit_sha,
             "git_tree_dirty": git_tree_dirty,
             "configuration_hash_sha256": config_hash,
             "manifest_sha256": manifest_sha256,
             "sentinel_panel_sha256": sentinel_panel_sha256,
             "execution_scope": (
-                f"Development/Regression Physical {args.cohort.upper()} Prequential Stream on Virtual GPU"
-                if args.cohort in ("cohort1", "cohort2")
-                else f"Confirmatory Physical {args.cohort.upper()} Prequential Stream on Virtual GPU"
+                f"Confirmatory Physical COHORT3 Prequential Stream on Virtual GPU"
+                if is_confirmatory
+                else f"Retrospective Development/Regression Physical {args.cohort.upper()} Prequential Stream on Virtual GPU"
             ),
             "execution_mode": f"Physical PyTorch {args.model} Acoustic Forward Passes",
             "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -1054,7 +1123,17 @@ def main():
     with open(out_json, "w", encoding="utf-8") as f:
         json.dump(report_payload, f, indent=2)
 
-    print(f"\n[PASS] Physical GPU Benchmark Complete. Artifacts saved in: {results_dir}")
+    print("\n" + "=" * 80)
+    print("STAGE 6M PHYSICAL GPU BENCHMARK COMPLETE")
+    print(f"Cohort Scope     : {args.cohort.upper()} ({'CONFIRMATORY' if is_confirmatory else 'RETROSPECTIVE DEVELOPMENT'})")
+    print(f"Execution Status : SUCCESSFUL (Neural forward passes and adaptation finished)")
+    print(f"Protocol Verdict : [{confirmatory_report.verdict}]")
+    if confirmatory_report.verdict != "PASS":
+        print("Protocol Status / Non-Passing Criteria:")
+        for r in confirmatory_report.failure_reasons:
+            print(f"  * {r}")
+    print(f"Artifacts saved in: {results_dir}")
+    print("=" * 80 + "\n")
 
 
 if __name__ == "__main__":

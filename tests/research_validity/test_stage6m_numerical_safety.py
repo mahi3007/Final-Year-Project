@@ -1181,7 +1181,8 @@ def test_confirmatory_paired_cluster_inference_passes_on_superiority():
 
 def test_confirmatory_paired_cluster_inference_fails_when_identical_to_static():
     """
-    Test Case 33: Confirmatory paired cluster inference fails when Arm 3 reproduces static.
+    Test Case 33: Confirmatory paired cluster inference yields INCONCLUSIVE when Arm 3 reproduces static.
+    Zero accepted updates validates protective safety invariance, but is inconclusive for adaptation benefit.
     """
     from dsg_ctta.evaluation.paired_cluster_inference import (
         run_confirmatory_paired_cluster_inference,
@@ -1206,7 +1207,7 @@ def test_confirmatory_paired_cluster_inference_fails_when_identical_to_static():
         seed=42,
     )
 
-    assert report.verdict == "FAIL"
+    assert report.verdict == "INCONCLUSIVE"
     assert not report.all_criteria_passed
     assert any("identical to Static Baseline" in r for r in report.failure_reasons)
 
@@ -1243,6 +1244,273 @@ def test_confirmatory_paired_cluster_inference_fails_on_accent_regression():
 
     assert report.verdict == "FAIL"
     assert not report.criteria["accent_safety_irish_english"].is_success
+
+
+def test_confirmatory_paired_cluster_inference_rejects_fractional_counts():
+    """
+    Test Case 35: Confirmatory inference input validation rejects fractional counts
+    without silent integer truncation (P1 data validation defect).
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import (
+        run_confirmatory_paired_cluster_inference,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    def _make_valid_records():
+        records = []
+        for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+            for s in range(3):
+                records.append({
+                    "speaker_id": f"{acc}_spk_{s}",
+                    "stratum": acc,
+                    "wc": 100,
+                    "err1": 20,
+                    "err2": 30,
+                    "err3": 15,
+                })
+        return records
+
+    # 1. Fractional word count: 100.9
+    rec1 = _make_valid_records()
+    rec1[0]["wc"] = 100.9
+    with pytest.raises(ValueError, match="Fractional count '100.9' for wc"):
+        run_confirmatory_paired_cluster_inference(rec1, num_bootstrap_replicates=50)
+
+    # 2. Fractional error count: 15.5
+    rec2 = _make_valid_records()
+    rec2[0]["err3"] = 15.5
+    with pytest.raises(ValueError, match="Fractional count '15.5' for err3"):
+        run_confirmatory_paired_cluster_inference(rec2, num_bootstrap_replicates=50)
+
+    # 3. Fractional negative error count: -0.9
+    rec3 = _make_valid_records()
+    rec3[0]["err1"] = -0.9
+    with pytest.raises(ValueError, match="Fractional count '-0.9' for err1"):
+        run_confirmatory_paired_cluster_inference(rec3, num_bootstrap_replicates=50)
+
+
+def test_confirmatory_paired_cluster_inference_rejects_nan_inf_negative_and_zero_counts():
+    """
+    Test Case 36: Confirmatory inference input validation rejects NaN, Inf, negative errors,
+    and non-positive word counts.
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import (
+        run_confirmatory_paired_cluster_inference,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    def _make_valid_records():
+        records = []
+        for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+            for s in range(3):
+                records.append({
+                    "speaker_id": f"{acc}_spk_{s}",
+                    "stratum": acc,
+                    "wc": 100,
+                    "err1": 20,
+                    "err2": 30,
+                    "err3": 15,
+                })
+        return records
+
+    # 1. NaN in word count
+    r_nan_wc = _make_valid_records()
+    r_nan_wc[0]["wc"] = float("nan")
+    with pytest.raises(ValueError, match="Missing/NaN wc"):
+        run_confirmatory_paired_cluster_inference(r_nan_wc, num_bootstrap_replicates=50)
+
+    # 2. Inf in err2
+    r_inf_err = _make_valid_records()
+    r_inf_err[0]["err2"] = float("inf")
+    with pytest.raises(ValueError, match="Non-finite err2 'inf'"):
+        run_confirmatory_paired_cluster_inference(r_inf_err, num_bootstrap_replicates=50)
+
+    # 3. Zero word count
+    r_zero_wc = _make_valid_records()
+    r_zero_wc[0]["wc"] = 0
+    with pytest.raises(ValueError, match="Non-positive word count wc='0'"):
+        run_confirmatory_paired_cluster_inference(r_zero_wc, num_bootstrap_replicates=50)
+
+    # 4. Negative integer error count
+    r_neg_err = _make_valid_records()
+    r_neg_err[0]["err1"] = -5
+    with pytest.raises(ValueError, match="Invalid error count err1='-5'"):
+        run_confirmatory_paired_cluster_inference(r_neg_err, num_bootstrap_replicates=50)
+
+
+def test_confirmatory_paired_cluster_inference_validates_configuration_ranges():
+    """
+    Test Case 37: Confirmatory inference validates alpha, margin, and replicate bounds.
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import (
+        run_confirmatory_paired_cluster_inference,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    records = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(3):
+            records.append({
+                "speaker_id": f"{acc}_spk_{s}",
+                "stratum": acc,
+                "wc": 100,
+                "err1": 20,
+                "err2": 30,
+                "err3": 15,
+            })
+
+    # 1. Invalid replicates (0 or negative)
+    with pytest.raises(ValueError, match="num_bootstrap_replicates must be a positive integer"):
+        run_confirmatory_paired_cluster_inference(records, num_bootstrap_replicates=0)
+
+    # 2. Invalid alpha (outside (0, 1))
+    with pytest.raises(ValueError, match="alpha_family must be a finite float strictly in"):
+        run_confirmatory_paired_cluster_inference(records, alpha_family=1.5)
+
+    # 3. Negative regression margin
+    with pytest.raises(ValueError, match="epsilon_g_margin_pp must be a finite non-negative float"):
+        run_confirmatory_paired_cluster_inference(records, epsilon_g_margin_pp=-1.0)
+
+
+def test_confirmatory_paired_cluster_inference_distinguishes_fail_and_inconclusive():
+    """
+    Test Case 38: Confirmatory inference distinguishes affirmative FAIL from INCONCLUSIVE.
+    - Demonstrable regression in point estimate yields FAIL.
+    - Non-harmful point estimate with imprecise confidence bound yields INCONCLUSIVE.
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import (
+        run_confirmatory_paired_cluster_inference,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    # Scenario A: Affirmative Harm / Regression (Arm 3 WER is WORSE than Static Arm 1)
+    # err3 = 30% vs err1 = 20% -> delta_static = +10.0 pp
+    records_harm = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(10):
+            records_harm.append({
+                "speaker_id": f"{acc}_spk_{s}",
+                "stratum": acc,
+                "wc": 100,
+                "err1": 20,
+                "err2": 35,
+                "err3": 30,  # Explicit harmful degradation
+            })
+
+    rep_fail = run_confirmatory_paired_cluster_inference(
+        speaker_records=records_harm,
+        num_bootstrap_replicates=200,
+        seed=42,
+    )
+    assert rep_fail.verdict == "FAIL"
+
+    # Scenario B: Minor improvement, but high speaker variance causes UCB to span zero
+    # delta_static is slightly negative (-0.5 pp), but confidence interval is wide
+    records_imprecise = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(5):
+            # Alternating speakers create high paired variance
+            e3 = 18 if s % 2 == 0 else 22
+            records_imprecise.append({
+                "speaker_id": f"{acc}_spk_{s}",
+                "stratum": acc,
+                "wc": 100,
+                "err1": 20,
+                "err2": 35,
+                "err3": e3,
+            })
+
+    rep_inconclusive = run_confirmatory_paired_cluster_inference(
+        speaker_records=records_imprecise,
+        num_bootstrap_replicates=200,
+        seed=42,
+    )
+    # Since point estimate is not harmful but UCB spans across zero, verdict must be INCONCLUSIVE
+    assert rep_inconclusive.verdict == "INCONCLUSIVE"
+
+
+def test_confirmatory_paired_cluster_inference_power_assessment_underpowered():
+    """
+    Test Case 39: Small sample sizes are explicitly classified as UNDERPOWERED in PowerAssessment.
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import (
+        run_confirmatory_paired_cluster_inference,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    # 2 speakers per accent (12 speakers total): underpowered
+    records_small = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(2):
+            records_small.append({
+                "speaker_id": f"{acc}_spk_{s}",
+                "stratum": acc,
+                "wc": 100,
+                "err1": 25,
+                "err2": 35,
+                "err3": 15,
+            })
+
+    report = run_confirmatory_paired_cluster_inference(
+        speaker_records=records_small,
+        num_bootstrap_replicates=100,
+        seed=42,
+        min_speakers_per_stratum_for_power=5,
+    )
+
+    assert report.power_assessment is not None
+    assert report.power_assessment.power_status == "UNDERPOWERED"
+    assert not report.power_assessment.is_adequately_powered
+    assert report.verdict == "INCONCLUSIVE"
+    assert any("underpowered" in r.lower() for r in report.failure_reasons)
+
+
+def test_runner_cli_supports_cohort3_and_fails_closed_when_data_missing(monkeypatch, capsys):
+    """
+    Test Case 40: Runner CLI accepts --cohort cohort3 and fails closed with descriptive
+    HOLD diagnostic if physical clips or manifest are not materialized on disk.
+    """
+    from cloud.kaggle.run_stage6m_cohort2_benchmark import parse_args, main
+    import sys
+
+    # 1. Verify parser accepts cohort3
+    monkeypatch.setattr(sys, "argv", ["run_benchmark.py", "--cohort", "cohort3", "--preflight-only"])
+    args = parse_args()
+    assert args.cohort == "cohort3"
+
+    # 2. Verify main() halts closed with status code 1 when data missing
+    monkeypatch.setenv("STAGE6M_GIT_DIRTY", "false")
+    monkeypatch.setenv("STAGE6M_GIT_COMMIT_SHA", "test_commit_sha_123456789")
+
+    with pytest.raises(SystemExit) as excinfo:
+        main()
+    assert excinfo.value.code == 1
+
+    captured = capsys.readouterr()
+    assert "CONFIRMATORY_COHORT3_HOLD_DATA_MATERIALIZATION_PENDING" in captured.out
+
+
+def test_runner_enforces_clean_git_tree_for_cohort3(monkeypatch, capsys):
+    """
+    Test Case 41: Runner rejects uncommitted working tree modifications when attempting
+    Confirmatory Cohort 3 execution.
+    """
+    from cloud.kaggle.run_stage6m_cohort2_benchmark import main
+    import sys
+
+    monkeypatch.setattr(sys, "argv", ["run_benchmark.py", "--cohort", "cohort3"])
+    monkeypatch.setenv("STAGE6M_GIT_DIRTY", "true")
+    monkeypatch.setenv("STAGE6M_GIT_COMMIT_SHA", "dirty_commit_sha_12345")
+
+    with pytest.raises(SystemExit) as excinfo:
+        main()
+    assert excinfo.value.code == 1
+
+    captured = capsys.readouterr()
+    assert "Confirmatory Execution Provenance Violation" in captured.out
+    assert "uncommitted modifications" in captured.out
+
+
 
 
 
