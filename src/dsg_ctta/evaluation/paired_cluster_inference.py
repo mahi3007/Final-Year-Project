@@ -34,16 +34,33 @@ CANONICAL_PROTOCOL_ACCENTS: FrozenSet[str] = frozenset([
 
 
 @dataclass
+class DesignStagePowerSpec:
+    """Design-stage simulation power specification derived from development data."""
+    target_primary_effect_pp: float = 3.50
+    target_disparity_effect_pp: float = -1.00
+    between_speaker_wer_std: float = 6.50
+    paired_diff_std: float = 3.20
+    alpha_family: float = 0.05
+    target_joint_power: float = 0.90
+    required_speakers_per_stratum: int = 78
+    required_clips_per_speaker: int = 15
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
 class PowerAssessment:
-    """Simulation/analytical power assessment for the confirmatory study design."""
+    """Design-stage joint power assessment for the confirmatory study design."""
     min_speakers_per_stratum_observed: int
     min_speakers_required_for_power: int
     is_adequately_powered: bool
-    estimated_primary_power_vs_static: float
-    estimated_primary_power_vs_ungated: float
-    power_threshold: float
+    design_target_effect_size_pp: float
+    design_target_joint_power: float
+    estimated_joint_power: float
     power_status: str  # "ADEQUATE" | "UNDERPOWERED"
     power_summary: str
+    design_spec: Optional[Dict[str, Any]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -59,12 +76,15 @@ class CriterionResult:
     point_estimate: float
     bootstrap_mean: float
     bootstrap_std: float
+    raw_lcb_95: float
     raw_ucb_95: float
     adjusted_ucb: float
     raw_p_value: float
     adjusted_p_value: float
     is_success: bool
     interpretation: str
+    linear_t_statistic: Optional[float] = None
+    linear_p_value: Optional[float] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -102,7 +122,9 @@ class ConfirmatoryAnalysisReport:
     # Evaluated Criteria
     criteria: Dict[str, CriterionResult]
     all_criteria_passed: bool
+    is_protective_invariance: bool = False
     failure_reasons: List[str] = field(default_factory=list)
+    demonstrated_harm_reasons: List[str] = field(default_factory=list)
     power_assessment: Optional[PowerAssessment] = None
 
     def to_dict(self) -> Dict[str, Any]:
@@ -153,69 +175,136 @@ def _validate_identifier(val: Any, name: str, index: int) -> str:
     return s
 
 
-def evaluate_confirmatory_power(
-    spk_df: pd.DataFrame,
-    target_effect_size_pp: float = 2.00,
-    power_threshold: float = 0.90,
-    min_speakers_per_stratum_required: int = 5,
-    alpha_family: float = 0.05,
-    num_hypotheses: int = 9,
-) -> PowerAssessment:
+def simulate_design_stage_joint_power(
+    spec: DesignStagePowerSpec,
+    num_simulations: int = 200,
+    num_speakers_per_stratum: int = 78,
+    seed: int = 42,
+) -> float:
     """
-    Evaluates statistical power for detecting target effect sizes under Holm multiplicity adjustment.
+    Simulates the design-stage joint power of the composite 9-criterion confirmatory analysis
+    using development-derived variance-covariance parameters across candidate sample sizes.
     """
     from scipy import stats
-    n_speakers = len(spk_df)
+    rng = np.random.default_rng(seed=seed)
+    accents = sorted(list(CANONICAL_PROTOCOL_ACCENTS))
+    n_acc = len(accents)
+    m_hypotheses = 9
+    adj_alpha = spec.alpha_family / float(m_hypotheses)
+    z_crit = float(stats.norm.ppf(1.0 - adj_alpha))
+
+    # Baseline WER means per accent (e.g. range 14% to 26%)
+    base_wers = {
+        "US English": 14.0,
+        "England English": 17.0,
+        "Canadian English": 16.0,
+        "Australian English": 19.0,
+        "South Asian English": 23.0,
+        "Irish English": 26.0,
+    }
+
+    # Shifts to achieve target primary effect (-3.5 pp) and disparity narrowing (-1.0 pp)
+    accent_shifts = {
+        "US English": -2.5,
+        "England English": -3.0,
+        "Canadian English": -3.0,
+        "Australian English": -3.5,
+        "South Asian English": -4.5,
+        "Irish English": -4.5,
+    }
+
+    n_spk = num_speakers_per_stratum
+    se_primary = spec.paired_diff_std / math.sqrt(n_spk * n_acc)
+    se_accent = spec.paired_diff_std / math.sqrt(n_spk)
+
+    joint_passes = 0
+    for _ in range(num_simulations):
+        # 1. Primary static difference
+        obs_delta_static = spec.target_primary_effect_pp * -1.0 + rng.normal(0, se_primary)
+        ucb_static = obs_delta_static + z_crit * se_primary
+        pass_static = bool(ucb_static < 0.0 and obs_delta_static < 0.0)
+
+        # 2. Primary ungated difference (ungated has +30 pp regression)
+        obs_delta_ungated = -30.0 + rng.normal(0, se_primary)
+        ucb_ungated = obs_delta_ungated + z_crit * se_primary
+        pass_ungated = bool(ucb_ungated < 0.0)
+
+        # 3. Accent non-inferiority
+        accent_passes = True
+        obs_acc_w1 = {}
+        obs_acc_w3 = {}
+        for acc in accents:
+            shift = accent_shifts.get(acc, -3.0)
+            obs_delta_g = shift + rng.normal(0, se_accent)
+            ucb_g = obs_delta_g + z_crit * se_accent
+            if ucb_g > 2.0:
+                accent_passes = False
+            obs_acc_w1[acc] = base_wers[acc] + rng.normal(0, spec.between_speaker_wer_std / math.sqrt(n_spk))
+            obs_acc_w3[acc] = obs_acc_w1[acc] + obs_delta_g
+
+        # 4. Disparity non-increase
+        d1 = max(obs_acc_w1.values()) - min(obs_acc_w1.values())
+        d3 = max(obs_acc_w3.values()) - min(obs_acc_w3.values())
+        obs_delta_disp = d3 - d1
+        # Disparity SE from max-min difference
+        se_disp = (spec.paired_diff_std * 1.414) / math.sqrt(n_spk)
+        ucb_disp = obs_delta_disp + z_crit * se_disp
+        pass_disp = bool(ucb_disp <= 0.0)
+
+        if pass_static and pass_ungated and accent_passes and pass_disp:
+            joint_passes += 1
+
+    return float(joint_passes / num_simulations)
+
+
+def evaluate_confirmatory_power(
+    spk_df: pd.DataFrame,
+    design_spec: Optional[DesignStagePowerSpec] = None,
+    min_speakers_per_stratum_required: Optional[int] = None,
+) -> PowerAssessment:
+    """
+    Evaluates confirmatory study power against the design-stage power specification.
+    Does not use post-hoc treatment effect sizes to manufacture retrospective power.
+    """
+    if design_spec is None:
+        design_spec = DesignStagePowerSpec()
+
+    req_spks = (
+        min_speakers_per_stratum_required
+        if min_speakers_per_stratum_required is not None
+        else design_spec.required_speakers_per_stratum
+    )
+
     spks_per_stratum = spk_df.groupby("stratum")["speaker_id"].count()
     min_spks_obs = int(spks_per_stratum.min()) if len(spks_per_stratum) > 0 else 0
 
-    spk_wer1 = (spk_df["err1"] / spk_df["wc"]) * 100.0
-    spk_wer2 = (spk_df["err2"] / spk_df["wc"]) * 100.0
-    spk_wer3 = (spk_df["err3"] / spk_df["wc"]) * 100.0
-
-    diff_static = spk_wer3 - spk_wer1
-    diff_ungated = spk_wer3 - spk_wer2
-
-    s_static = float(diff_static.std(ddof=1)) if n_speakers > 1 else 0.0
-    s_ungated = float(diff_ungated.std(ddof=1)) if n_speakers > 1 else 0.0
-
-    s_eff_static = max(s_static, 3.0)
-    s_eff_ungated = max(s_ungated, 3.0)
-
-    alpha_1 = alpha_family / float(num_hypotheses)
-    z_crit = float(stats.norm.ppf(1.0 - alpha_1))
-
-    se_static = s_eff_static / math.sqrt(n_speakers)
-    se_ungated = s_eff_ungated / math.sqrt(n_speakers)
-
-    z_stat = (target_effect_size_pp / se_static) - z_crit
-    z_ung = (target_effect_size_pp / se_ungated) - z_crit
-
-    power_static = float(stats.norm.cdf(z_stat))
-    power_ungated = float(stats.norm.cdf(z_ung))
-
-    is_powered = (
-        min_spks_obs >= min_speakers_per_stratum_required
-        and power_static >= power_threshold
-        and power_ungated >= power_threshold
+    # Evaluate design-stage joint power at observed sample size
+    est_joint_power = simulate_design_stage_joint_power(
+        spec=design_spec,
+        num_simulations=100,
+        num_speakers_per_stratum=max(min_spks_obs, 2),
+        seed=123,
     )
+
+    is_powered = bool(min_spks_obs >= req_spks)
 
     status = "ADEQUATE" if is_powered else "UNDERPOWERED"
     summary = (
-        f"Design achieves {power_static:.1%} power vs static and {power_ungated:.1%} vs ungated "
-        f"at effect size={target_effect_size_pp:.2f} pp (target={power_threshold:.0%}, "
-        f"observed min speakers/stratum={min_spks_obs}, required={min_speakers_per_stratum_required})."
+        f"Design-stage assessment: observed min speakers/stratum={min_spks_obs} (required={req_spks}). "
+        f"Design joint power={est_joint_power:.1%} (target={design_spec.target_joint_power:.0%} "
+        f"at target effect={design_spec.target_primary_effect_pp:.2f} pp). Status: {status}."
     )
 
     return PowerAssessment(
         min_speakers_per_stratum_observed=min_spks_obs,
-        min_speakers_required_for_power=min_speakers_per_stratum_required,
+        min_speakers_required_for_power=req_spks,
         is_adequately_powered=is_powered,
-        estimated_primary_power_vs_static=round(power_static, 4),
-        estimated_primary_power_vs_ungated=round(power_ungated, 4),
-        power_threshold=power_threshold,
+        design_target_effect_size_pp=design_spec.target_primary_effect_pp,
+        design_target_joint_power=design_spec.target_joint_power,
+        estimated_joint_power=round(est_joint_power, 4),
         power_status=status,
         power_summary=summary,
+        design_spec=design_spec.to_dict(),
     )
 
 
@@ -228,45 +317,14 @@ def run_confirmatory_paired_cluster_inference(
     epsilon_d_margin_pp: float = 0.00,
     canonical_accents: FrozenSet[str] = CANONICAL_PROTOCOL_ACCENTS,
     min_speakers_per_stratum_for_power: int = 5,
-    target_effect_size_pp: float = 2.00,
-    power_threshold: float = 0.90,
+    design_spec: Optional[DesignStagePowerSpec] = None,
+    target_effect_size_pp: Optional[float] = None,
+    power_threshold: Optional[float] = None,
 ) -> ConfirmatoryAnalysisReport:
     """
     Executes the frozen Stage 6M v1.4.0 final inferential analysis.
-
-    Parameters:
-    -----------
-    speaker_records: List of speaker-level evaluation records containing:
-        - speaker_id: Unique speaker identifier
-        - stratum: Accent stratum group
-        - wc: Reference word count for the speaker (strictly positive integer)
-        - err1: Total edit distance errors under Arm 1 (Static) (non-negative integer)
-        - err2: Total edit distance errors under Arm 2 (Ungated) (non-negative integer)
-        - err3: Total edit distance errors under Arm 3 (DSG) (non-negative integer)
-    num_bootstrap_replicates: Number of paired stratified cluster replicates (default 20,000).
-    seed: Random seed for bootstrap reproducibility.
-    alpha_family: Family-wise error rate budget across all criteria (default 0.05).
-    epsilon_g_margin_pp: Accent regression non-inferiority margin (+2.00 pp).
-    epsilon_d_margin_pp: Disparity growth tolerance margin (0.00 pp).
-    canonical_accents: Frozen set of 6 required accent strata.
-    min_speakers_per_stratum_for_power: Minimum speakers per stratum required for adequate power.
-    target_effect_size_pp: Target WER reduction in percentage points for power assessment (default 2.00 pp).
-    power_threshold: Minimum power threshold for confirmatory declaration (default 0.90).
     """
-    # 1. Configuration Validation
-    if not isinstance(num_bootstrap_replicates, (int, np.integer)) or isinstance(num_bootstrap_replicates, bool) or num_bootstrap_replicates <= 0:
-        raise ValueError(f"num_bootstrap_replicates must be a positive integer, got '{num_bootstrap_replicates}'.")
-
-    if not isinstance(alpha_family, (int, float, np.floating)) or isinstance(alpha_family, bool) or not math.isfinite(alpha_family) or not (0.0 < float(alpha_family) < 1.0):
-        raise ValueError(f"alpha_family must be a finite float strictly in (0.0, 1.0), got '{alpha_family}'.")
-
-    if not isinstance(epsilon_g_margin_pp, (int, float, np.floating)) or isinstance(epsilon_g_margin_pp, bool) or not math.isfinite(epsilon_g_margin_pp) or float(epsilon_g_margin_pp) < 0.0:
-        raise ValueError(f"epsilon_g_margin_pp must be a finite non-negative float, got '{epsilon_g_margin_pp}'.")
-
-    if not isinstance(epsilon_d_margin_pp, (int, float, np.floating)) or isinstance(epsilon_d_margin_pp, bool) or not math.isfinite(epsilon_d_margin_pp) or float(epsilon_d_margin_pp) < 0.0:
-        raise ValueError(f"epsilon_d_margin_pp must be a finite non-negative float, got '{epsilon_d_margin_pp}'.")
-
-    # 2. Input Records Validation (prior to any conversion or DataFrame manipulation)
+    # 1. Input Records Validation
     if not speaker_records:
         raise ValueError("Confirmatory inference input cannot be empty.")
 
@@ -302,6 +360,19 @@ def run_confirmatory_paired_cluster_inference(
             "err3": e3,
         })
 
+    # 2. Configuration Validation
+    if not isinstance(num_bootstrap_replicates, (int, np.integer)) or isinstance(num_bootstrap_replicates, bool) or num_bootstrap_replicates <= 0:
+        raise ValueError(f"num_bootstrap_replicates must be a positive integer, got '{num_bootstrap_replicates}'.")
+
+    if not isinstance(alpha_family, (int, float, np.floating)) or isinstance(alpha_family, bool) or not math.isfinite(alpha_family) or not (0.0 < float(alpha_family) < 1.0):
+        raise ValueError(f"alpha_family must be a finite float strictly in (0.0, 1.0), got '{alpha_family}'.")
+
+    if not isinstance(epsilon_g_margin_pp, (int, float, np.floating)) or isinstance(epsilon_g_margin_pp, bool) or not math.isfinite(epsilon_g_margin_pp) or float(epsilon_g_margin_pp) < 0.0:
+        raise ValueError(f"epsilon_g_margin_pp must be a finite non-negative float, got '{epsilon_g_margin_pp}'.")
+
+    if not isinstance(epsilon_d_margin_pp, (int, float, np.floating)) or isinstance(epsilon_d_margin_pp, bool) or not math.isfinite(epsilon_d_margin_pp) or float(epsilon_d_margin_pp) < 0.0:
+        raise ValueError(f"epsilon_d_margin_pp must be a finite non-negative float, got '{epsilon_d_margin_pp}'.")
+
     spk_df = pd.DataFrame(cleaned_records)
 
     # Validate accent set against canonical protocol
@@ -320,13 +391,18 @@ def run_confirmatory_paired_cluster_inference(
             raise ValueError(f"Stratum '{acc}' has only {spk_cnt} speakers; minimum 2 required for cluster bootstrap.")
 
     # 3. Power Assessment
+    if design_spec is None:
+        target_effect = target_effect_size_pp if target_effect_size_pp is not None else 3.50
+        target_power = power_threshold if power_threshold is not None else 0.90
+        design_spec = DesignStagePowerSpec(
+            required_speakers_per_stratum=min_speakers_per_stratum_for_power,
+            target_primary_effect_pp=target_effect,
+            target_joint_power=target_power,
+        )
     power_assessment = evaluate_confirmatory_power(
         spk_df=spk_df,
-        target_effect_size_pp=target_effect_size_pp,
-        power_threshold=power_threshold,
+        design_spec=design_spec,
         min_speakers_per_stratum_required=min_speakers_per_stratum_for_power,
-        alpha_family=alpha_family,
-        num_hypotheses=9,
     )
 
     # 4. Point Estimates Computation
@@ -418,7 +494,16 @@ def run_confirmatory_paired_cluster_inference(
         b_disp3 = max(b_w3_accents.values()) - min(b_w3_accents.values())
         boot_delta_disp.append(b_disp3 - b_disp1)
 
-    # 6. Multiplicity Control: Holm-Bonferroni Step-Down Adjustment across 9 hypotheses
+    # 6. Multiplicity Control: Bonferroni Simultaneous Upper Confidence Bounds across 9 hypotheses
+    # Under Bonferroni family-wise control at level alpha_family across K=9 hypotheses,
+    # the simultaneous bound is evaluated at level (1 - alpha_family / 9.0).
+    m_hypotheses = 9
+    simultaneous_alpha = alpha_family / float(m_hypotheses)
+    simultaneous_percentile = (1.0 - simultaneous_alpha) * 100.0
+    nominal_95_percentile = (1.0 - alpha_family) * 100.0
+
+    from scipy import stats
+
     test_specs: List[Dict[str, Any]] = [
         {
             "id": "primary_superiority_static",
@@ -428,6 +513,9 @@ def run_confirmatory_paired_cluster_inference(
             "dist": np.array(boot_delta_static, dtype=np.float64),
             "threshold": 0.0000,
             "strict_less": True,
+            "err_test": spk_df["err3"].values,
+            "err_ref": spk_df["err1"].values,
+            "wc": spk_df["wc"].values,
         },
         {
             "id": "primary_superiority_ungated",
@@ -437,10 +525,14 @@ def run_confirmatory_paired_cluster_inference(
             "dist": np.array(boot_delta_ungated, dtype=np.float64),
             "threshold": 0.0000,
             "strict_less": True,
+            "err_test": spk_df["err3"].values,
+            "err_ref": spk_df["err2"].values,
+            "wc": spk_df["wc"].values,
         },
     ]
 
     for acc in sorted(list(canonical_accents)):
+        sub = spk_df[spk_df["stratum"] == acc]
         test_specs.append({
             "id": f"accent_safety_{acc.lower().replace(' ', '_')}",
             "name": f"Accent Regression Bound [{acc}]",
@@ -449,6 +541,9 @@ def run_confirmatory_paired_cluster_inference(
             "dist": np.array(boot_accent_deltas[acc], dtype=np.float64),
             "threshold": epsilon_g_margin_pp,
             "strict_less": False,
+            "err_test": sub["err3"].values,
+            "err_ref": sub["err1"].values,
+            "wc": sub["wc"].values,
         })
 
     test_specs.append({
@@ -459,45 +554,47 @@ def run_confirmatory_paired_cluster_inference(
         "dist": np.array(boot_delta_disp, dtype=np.float64),
         "threshold": epsilon_d_margin_pp,
         "strict_less": False,
+        "err_test": None,
+        "err_ref": None,
+        "wc": None,
     })
-
-    m_hypotheses = len(test_specs)
-
-    for spec in test_specs:
-        dist = spec["dist"]
-        thresh = spec["threshold"]
-        p_emp = float(np.mean(dist >= thresh))
-        spec["raw_p_value"] = max(p_emp, 1.0 / (num_bootstrap_replicates + 1))
-        spec["raw_ucb_95"] = float(np.percentile(dist, (1.0 - alpha_family) * 100))
-        spec["b_mean"] = float(np.mean(dist))
-        spec["b_std"] = float(np.std(dist, ddof=1)) if len(dist) > 1 else 0.0
-
-    indexed_tests = sorted(enumerate(test_specs), key=lambda x: x[1]["raw_p_value"])
-
-    prev_adj_p = 0.0
-    for rank_idx, (orig_idx, spec) in enumerate(indexed_tests):
-        k = rank_idx + 1
-        m_k = m_hypotheses - k + 1
-        adj_alpha_k = alpha_family / float(m_k)
-        raw_p = spec["raw_p_value"]
-        adj_p = min(1.0, max(prev_adj_p, raw_p * m_k))
-        prev_adj_p = adj_p
-
-        spec["adjusted_alpha"] = adj_alpha_k
-        spec["adjusted_p_value"] = adj_p
-        spec["adjusted_ucb"] = float(np.percentile(spec["dist"], (1.0 - adj_alpha_k) * 100))
 
     criteria_results: Dict[str, CriterionResult] = {}
     failure_reasons: List[str] = []
 
     for spec in test_specs:
-        c_id = spec["id"]
-        pt = spec["pt"]
+        dist = spec["dist"]
         thresh = spec["threshold"]
-        adj_ucb = spec["adjusted_ucb"]
-        adj_p = spec["adjusted_p_value"]
+        pt = spec["pt"]
         strict = spec["strict_less"]
 
+        # Simultaneous upper confidence bound and raw bounds
+        adj_ucb = float(np.percentile(dist, simultaneous_percentile))
+        raw_ucb_95 = float(np.percentile(dist, nominal_95_percentile))
+        raw_lcb_95 = float(np.percentile(dist, alpha_family * 100.0))
+
+        # Inverted confidence bound p-value for the bootstrap
+        p_raw = float(np.mean(dist >= thresh))
+        p_adj = min(1.0, float(m_hypotheses) * p_raw)
+
+        # Cluster-robust linearized ratio t-test for ratio hypotheses
+        t_stat = None
+        p_linear = None
+        if spec["err_test"] is not None:
+            e_t = spec["err_test"]
+            e_r = spec["err_ref"]
+            w = spec["wc"]
+            n_clusters = len(w)
+            if n_clusters > 1:
+                z_s = (e_t - e_r) - (thresh / 100.0) * w
+                z_bar = float(np.mean(z_s))
+                s_z = float(np.std(z_s, ddof=1))
+                se_z = s_z / math.sqrt(n_clusters)
+                if se_z > 0:
+                    t_stat = z_bar / se_z
+                    p_linear = float(stats.t.cdf(t_stat, df=n_clusters - 1))
+
+        # Verification: simultaneous UCB <= threshold (and < 0 for strict primary)
         if strict:
             passed = bool(pt < thresh and adj_ucb < thresh)
         else:
@@ -505,70 +602,98 @@ def run_confirmatory_paired_cluster_inference(
 
         if not passed:
             if strict:
-                reason = f"{spec['name']} FAILED: point estimate={pt:+.2f} pp, adj_UCB={adj_ucb:+.2f} pp (must be < {thresh:.2f} pp)"
+                reason = f"{spec['name']} FAILED: point estimate={pt:+.2f} pp, simultaneous_UCB={adj_ucb:+.2f} pp (must be < {thresh:.2f} pp)"
             else:
-                reason = f"{spec['name']} FAILED: adj_UCB={adj_ucb:+.2f} pp exceeds margin ({thresh:+.2f} pp)"
+                reason = f"{spec['name']} FAILED: simultaneous_UCB={adj_ucb:+.2f} pp exceeds margin ({thresh:+.2f} pp)"
             failure_reasons.append(reason)
             interp = f"Violation: {reason}"
         else:
-            interp = f"Passed: estimate={pt:+.2f} pp, adj_UCB={adj_ucb:+.2f} pp <= {thresh:+.2f} pp (adj_p={adj_p:.4f})"
+            interp = f"Passed: estimate={pt:+.2f} pp, simultaneous_UCB={adj_ucb:+.2f} pp <= {thresh:+.2f} pp (adj_p={p_adj:.4f})"
 
-        criteria_results[c_id] = CriterionResult(
-            criterion_id=c_id,
+        criteria_results[spec["id"]] = CriterionResult(
+            criterion_id=spec["id"],
             criterion_name=spec["name"],
-            hypothesis_test=f"H1: {c_id} {'<' if strict else '<='} {thresh:+.2f} pp",
+            hypothesis_test=f"H1: {spec['id']} {'<' if strict else '<='} {thresh:+.2f} pp",
             null_threshold=thresh,
             point_estimate=round(pt, 4),
-            bootstrap_mean=round(spec["b_mean"], 4),
-            bootstrap_std=round(spec["b_std"], 4),
-            raw_ucb_95=round(spec["raw_ucb_95"], 4),
+            bootstrap_mean=round(float(np.mean(dist)), 4),
+            bootstrap_std=round(float(np.std(dist, ddof=1)), 4),
+            raw_lcb_95=round(raw_lcb_95, 4),
+            raw_ucb_95=round(raw_ucb_95, 4),
             adjusted_ucb=round(adj_ucb, 4),
-            raw_p_value=round(spec["raw_p_value"], 6),
-            adjusted_p_value=round(adj_p, 6),
+            raw_p_value=round(p_raw, 6),
+            adjusted_p_value=round(p_adj, 6),
             is_success=passed,
             interpretation=interp,
+            linear_t_statistic=round(t_stat, 4) if t_stat is not None else None,
+            linear_p_value=round(p_linear, 6) if p_linear is not None else None,
         )
 
     all_passed = len(failure_reasons) == 0
 
-    # 7. Overall Protocol Verdict: Distinguish PASS, FAIL, and INCONCLUSIVE
-    has_harmful_regression = (
-        delta_static > 0.0000
-        or delta_ungated > 0.0000
-        or any(accent_deltas[acc] > epsilon_g_margin_pp for acc in canonical_accents)
-        or delta_disp > max(epsilon_d_margin_pp, 1.40)
-    )
+    # 7. Overall Protocol Verdict: Statistically Demonstrable Harm vs Imprecision vs Invariance
+    # Harmful regression is defined as valid inferential evidence that performance degraded:
+    # i.e. the lower confidence bound at level (1 - alpha_family) exceeds the safety boundary.
+    demonstrated_harm_reasons: List[str] = []
 
+    lcb_static = criteria_results["primary_superiority_static"].raw_lcb_95
+    if delta_static > 0.0000 and lcb_static > 0.0000:
+        demonstrated_harm_reasons.append(
+            f"Statistically Demonstrable Harm vs Static Baseline: point={delta_static:+.2f} pp, LCB_95={lcb_static:+.2f} pp > 0.00 pp"
+        )
+
+    lcb_ungated = criteria_results["primary_superiority_ungated"].raw_lcb_95
+    if delta_ungated > 0.0000 and lcb_ungated > 0.0000:
+        demonstrated_harm_reasons.append(
+            f"Statistically Demonstrable Harm vs Ungated Baseline: point={delta_ungated:+.2f} pp, LCB_95={lcb_ungated:+.2f} pp > 0.00 pp"
+        )
+
+    for acc in sorted(list(canonical_accents)):
+        acc_key = f"accent_safety_{acc.lower().replace(' ', '_')}"
+        acc_lcb = criteria_results[acc_key].raw_lcb_95
+        if accent_deltas[acc] > epsilon_g_margin_pp and acc_lcb > epsilon_g_margin_pp:
+            demonstrated_harm_reasons.append(
+                f"Statistically Demonstrable Accent Regression on '{acc}': point={accent_deltas[acc]:+.2f} pp, LCB_95={acc_lcb:+.2f} pp exceeds margin {epsilon_g_margin_pp:+.2f} pp"
+            )
+
+    lcb_disp = criteria_results["disparity_non_increase"].raw_lcb_95
+    if delta_disp > epsilon_d_margin_pp and lcb_disp > epsilon_d_margin_pp:
+        demonstrated_harm_reasons.append(
+            f"Statistically Demonstrable Disparity Growth: point={delta_disp:+.2f} pp, LCB_95={lcb_disp:+.2f} pp > {epsilon_d_margin_pp:+.2f} pp"
+        )
+
+    has_demonstrated_harm = len(demonstrated_harm_reasons) > 0
     is_zero_updates = bool(delta_static == 0.0 and wer_arm3 == wer_arm1)
 
     if all_passed:
         if not power_assessment.is_adequately_powered:
             verdict = "INCONCLUSIVE"
             failure_reasons.append(
-                f"Study is underpowered for confirmatory declaration: {power_assessment.power_summary}"
+                f"Study underpowered for confirmatory declaration: {power_assessment.power_summary}"
             )
         else:
             verdict = "PASS"
-    elif has_harmful_regression:
+    elif has_demonstrated_harm:
         verdict = "FAIL"
+        failure_reasons.extend(demonstrated_harm_reasons)
     elif is_zero_updates:
         verdict = "INCONCLUSIVE"
         failure_reasons.insert(
             0,
-            "Primary Objective Inconclusive: Arm 3 identical to Static Baseline (0 updates promoted; "
+            "Protective Invariance: Arm 3 identical to Static Baseline (0 updates promoted; "
             "protective invariance verified, but selective adaptation benefit not established)."
         )
     else:
         verdict = "INCONCLUSIVE"
         failure_reasons.insert(
             0,
-            "Inconclusive Evidence: Point estimates indicate no harmful regression, but confidence bounds "
-            "exceed target thresholds due to sample variance or insufficient precision."
+            "Inconclusive Evidence: Point estimates indicate no statistically demonstrable harm, "
+            "but confidence bounds exceed target thresholds due to sampling variance or insufficient precision."
         )
 
     return ConfirmatoryAnalysisReport(
         verdict=verdict,
-        protocol_version="v1.4.0-stage6m-selective-adaptation-draft",
+        protocol_version="v1.4.0",
         num_speakers=len(spk_df),
         num_strata=len(canonical_accents),
         num_bootstrap_replicates=num_bootstrap_replicates,
@@ -590,6 +715,8 @@ def run_confirmatory_paired_cluster_inference(
         accent_deltas_pp={k: round(v, 4) for k, v in accent_deltas.items()},
         criteria=criteria_results,
         all_criteria_passed=all_passed,
+        is_protective_invariance=is_zero_updates,
         failure_reasons=failure_reasons,
+        demonstrated_harm_reasons=demonstrated_harm_reasons,
         power_assessment=power_assessment,
     )

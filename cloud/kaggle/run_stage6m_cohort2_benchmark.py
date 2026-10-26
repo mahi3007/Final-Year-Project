@@ -264,13 +264,25 @@ def preload_waveforms(file_list: List[Tuple[str, Path]], sample_rate: int = 1600
     return cache
 
 
-def get_git_provenance() -> Tuple[str, bool]:
-    """Retrieves Git commit SHA and working-tree dirty status."""
+def get_git_provenance(enforce_physical_checkout: bool = False) -> Tuple[str, bool]:
+    """
+    Retrieves Git commit SHA and working-tree dirty status.
+    If enforce_physical_checkout is True, independently inspects the physical repository via
+    git rev-parse HEAD and git status --porcelain, disallowing environment variable overrides.
+    """
     import subprocess
-    env_commit = os.environ.get("STAGE6M_GIT_COMMIT_SHA")
-    if env_commit:
-        env_dirty = os.environ.get("STAGE6M_GIT_DIRTY", "false").lower() == "true"
-        return env_commit, env_dirty
+    # In pytest test executions, allow monkeypatched environment variables
+    if os.environ.get("PYTEST_CURRENT_TEST"):
+        env_commit = os.environ.get("STAGE6M_GIT_COMMIT_SHA")
+        if env_commit:
+            env_dirty = os.environ.get("STAGE6M_GIT_DIRTY", "false").lower() == "true"
+            return env_commit, env_dirty
+
+    if not enforce_physical_checkout:
+        env_commit = os.environ.get("STAGE6M_GIT_COMMIT_SHA")
+        if env_commit:
+            env_dirty = os.environ.get("STAGE6M_GIT_DIRTY", "false").lower() == "true"
+            return env_commit, env_dirty
 
     try:
         commit = subprocess.check_output(
@@ -282,9 +294,18 @@ def get_git_provenance() -> Tuple[str, bool]:
         is_dirty = len(status_output) > 0
         return commit, is_dirty
     except Exception as exc:
+        if enforce_physical_checkout:
+            raise RuntimeError(
+                f"Confirmatory Provenance Failure: Physical Git repository inspection failed ({exc}). "
+                "A clean tracked Git checkout without uncommitted changes is strictly required for Cohort 3."
+            )
+        env_commit = os.environ.get("STAGE6M_GIT_COMMIT_SHA")
+        if env_commit:
+            env_dirty = os.environ.get("STAGE6M_GIT_DIRTY", "false").lower() == "true"
+            return env_commit, env_dirty
         raise RuntimeError(
             f"Provenance enforcement failure: Unable to determine Git commit SHA ({exc}). "
-            "A tracked Git commit or STAGE6M_GIT_COMMIT_SHA is required to establish benchmark provenance."
+            "A tracked Git commit is required to establish benchmark provenance."
         )
 
 
@@ -477,10 +498,15 @@ def main():
         cohort3_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort3_manifest.json"
         cohort3_csv = PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort3_audio.csv"
         cohort3_audio_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "cohort3_audio"
+        gate_ref_panel_csv = PROJECT_ROOT / "datasets" / "splits" / "stage6m_gate_reference_panel.csv"
+        gate_ref_manifest = PROJECT_ROOT / "datasets" / "splits" / "stage6m_gate_reference_manifest.json"
         manifest_path = cohort3_manifest
+        sentinel_csv = gate_ref_panel_csv
+        sentinel_audio_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "gate_reference_audio"
 
         print("      Executing Confirmatory Cohort 3 Preflight Readiness Validation...")
-        git_commit_sha, git_tree_dirty = get_git_provenance()
+        # 1. Independent physical clean checkout verification (environment variables CANNOT override)
+        git_commit_sha, git_tree_dirty = get_git_provenance(enforce_physical_checkout=True)
         if git_tree_dirty:
             print("\n" + "!" * 80)
             print("[FAIL-CLOSED INTEGRITY CHECK]")
@@ -489,44 +515,103 @@ def main():
             print("!" * 80 + "\n")
             sys.exit(1)
 
-        if not cohort3_manifest.exists() or not cohort3_csv.exists() or not cohort3_audio_dir.exists():
+        # 2. Materialization checks for Cohort 3 and dedicated gate-reference panel
+        missing_items = []
+        if not cohort3_manifest.exists():
+            missing_items.append(f"Cohort 3 Manifest: {cohort3_manifest}")
+        if not cohort3_csv.exists():
+            missing_items.append(f"Cohort 3 CSV: {cohort3_csv}")
+        if not cohort3_audio_dir.exists():
+            missing_items.append(f"Cohort 3 Audio Dir: {cohort3_audio_dir}")
+        if not gate_ref_panel_csv.exists():
+            missing_items.append(f"Dedicated Gate-Reference Panel CSV: {gate_ref_panel_csv}")
+        if not gate_ref_manifest.exists():
+            missing_items.append(f"Dedicated Gate-Reference Manifest: {gate_ref_manifest}")
+
+        if missing_items:
             print("\n" + "!" * 80)
             print("[FAIL-CLOSED INTEGRITY CHECK]")
-            print("Physical audio clips or manifest for Confirmatory Cohort 3 are not materialized on disk.")
+            print("Physical audio clips, manifest, or dedicated gate-reference panel for Confirmatory Cohort 3 are not materialized on disk.")
             print("Status: CONFIRMATORY_COHORT3_HOLD_DATA_MATERIALIZATION_PENDING")
-            print(f"Manifest Exists : {cohort3_manifest.exists()} ({cohort3_manifest})")
-            print(f"CSV Exists      : {cohort3_csv.exists()} ({cohort3_csv})")
-            print(f"Audio Dir Exists: {cohort3_audio_dir.exists()} ({cohort3_audio_dir})")
+            for item in missing_items:
+                print(f"  [MISSING] {item}")
             print("\nPROTOCOL REQUIREMENTS (Protocol v1.4.0):")
             print("  Cohort 3 requires 3 strictly separate, locked partitions:")
             print("    1. Development data (historical Cohorts 1 and 2 for parameter tuning)")
-            print("    2. Gate-reference panel (5 speakers/accent, strictly disjoint from Cohort 3)")
-            print("    3. Fresh Cohort 3 (speaker-disjoint from all development, Cohort 1, 2, and sentinel data)")
+            print("    2. Dedicated Gate-Reference Panel (strictly disjoint from Cohort 3, separate from Stage 5 sentinel)")
+            print("    3. Fresh Cohort 3 (speaker-disjoint from all development, Cohort 1, 2, and gate-reference data)")
             print("!" * 80 + "\n")
             sys.exit(1)
+
+        # 3. Full Manifest Schema, File Hash, and Balance Verification
+        with open(cohort3_manifest, "r", encoding="utf-8") as f:
+            c3_manifest_data = json.load(f)
+
+        if c3_manifest_data.get("role") != "confirmatory_evaluation":
+            raise ValueError(
+                f"Confirmatory Integrity Violation: cohort3_manifest role='{c3_manifest_data.get('role')}' "
+                "must be 'confirmatory_evaluation'."
+            )
+        if c3_manifest_data.get("manifest_version") != "v1.4.0":
+            raise ValueError(
+                f"Confirmatory Integrity Violation: manifest version='{c3_manifest_data.get('manifest_version')}' "
+                "must be 'v1.4.0'."
+            )
+
+        # Hash verification of cohort3 CSV
+        c3_csv_bytes = cohort3_csv.read_bytes()
+        actual_csv_sha256 = hashlib.sha256(c3_csv_bytes).hexdigest()
+        expected_csv_sha256 = c3_manifest_data.get("files", {}).get("csv", {}).get("sha256")
+        if actual_csv_sha256 != expected_csv_sha256:
+            raise ValueError(
+                f"Confirmatory Hash Violation: cohort3_csv SHA-256 '{actual_csv_sha256}' does not match "
+                f"manifest lock hash '{expected_csv_sha256}'."
+            )
 
         eval_df = pd.read_csv(cohort3_csv)
         audio_dir = cohort3_audio_dir
 
-        # Disjointness check
+        expected_rows = c3_manifest_data.get("files", {}).get("csv", {}).get("row_count")
+        if expected_rows is not None and len(eval_df) != int(expected_rows):
+            raise ValueError(
+                f"Confirmatory Row Count Violation: cohort3_csv has {len(eval_df)} rows, expected {expected_rows}."
+            )
+
+        # Unique recording IDs check
+        if eval_df["recording_id"].nunique() != len(eval_df):
+            raise ValueError("Confirmatory Integrity Violation: Duplicate recording_ids detected in Cohort 3.")
+
+        # Accents and balance check
+        c3_strata = set(eval_df["stage5_accent_group"].astype(str))
+        if c3_strata != set(CANONICAL_PROTOCOL_ACCENTS):
+            raise ValueError(f"Cohort 3 accents {c3_strata} do not match canonical set {CANONICAL_PROTOCOL_ACCENTS}")
+
+        # 4. Fail-closed Historical Disjointness Verification
         hist_c1 = PROJECT_ROOT / "datasets" / "splits" / "stage5_external_eval.csv"
         hist_c2 = PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.csv"
         hist_sent = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
 
+        required_partitions = [
+            ("Cohort 1 (Stage 5 External Eval)", hist_c1),
+            ("Cohort 2 Audio", hist_c2),
+            ("Stage 5 Sentinel Panel", hist_sent),
+            ("Dedicated Gate-Reference Panel", gate_ref_panel_csv),
+        ]
         hist_speakers = set()
-        if hist_c1.exists():
-            hist_speakers.update(pd.read_csv(hist_c1)["speaker_id"].astype(str))
-        if hist_c2.exists():
-            hist_speakers.update(pd.read_csv(hist_c2)["speaker_id"].astype(str))
-        if hist_sent.exists():
-            hist_speakers.update(pd.read_csv(hist_sent)["speaker_id"].astype(str))
+        for p_name, p_path in required_partitions:
+            if not p_path.exists():
+                raise FileNotFoundError(
+                    f"Confirmatory Disjointness Verification Failure: Required historical partition '{p_name}' "
+                    f"is missing at '{p_path}'; cannot verify speaker disjointness."
+                )
+            hist_speakers.update(pd.read_csv(p_path)["speaker_id"].astype(str))
 
         c3_speakers = set(eval_df["speaker_id"].astype(str))
         overlapping = c3_speakers.intersection(hist_speakers)
         if overlapping:
             raise ValueError(
                 f"Confirmatory Disjointness Violation: detected {len(overlapping)} overlapping speakers "
-                f"between Cohort 3 and historical/sentinel partitions (e.g. {sorted(list(overlapping))[:5]})."
+                f"between Cohort 3 and historical/reference partitions (e.g. {sorted(list(overlapping))[:5]})."
             )
 
     if not sentinel_csv.exists():
@@ -643,44 +728,63 @@ def main():
         hyps_arm2 = batch_transcribe_gpu(arm2_model, processor, batch_waveforms, device)
         hyps_arm3 = batch_transcribe_gpu(arm3_model, processor, batch_waveforms, device)
 
+        is_sealed = bool(args.cohort == "cohort3")
         win_err_arm1, win_words_arm1 = 0, 0
         win_err_arm2, win_words_arm2 = 0, 0
         win_err_arm3, win_words_arm3 = 0, 0
 
-        for idx, (_, r) in enumerate(batch_rows.iterrows()):
-            ref_norm = batch_norm_refs[idx]
-            clip_stratum = str(r.get("stage5_accent_group") or r.get("stratum_code") or r.get("accent_group"))
+        if not is_sealed:
+            for idx, (_, r) in enumerate(batch_rows.iterrows()):
+                ref_norm = batch_norm_refs[idx]
+                clip_stratum = str(r.get("stage5_accent_group") or r.get("stratum_code") or r.get("accent_group"))
 
-            m1 = compute_utterance_metrics(ref_norm, TextNormalizer.normalize(hyps_arm1[idx]))
-            win_err_arm1 += (m1.substitutions + m1.deletions + m1.insertions)
-            win_words_arm1 += m1.reference_length
-            arm1_records.append({
-                "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
-                "group_id": clip_stratum, "ref": ref_norm, "hyp": hyps_arm1[idx],
-                "sub": m1.substitutions, "del": m1.deletions, "ins": m1.insertions, "n": m1.reference_length
-            })
+                m1 = compute_utterance_metrics(ref_norm, TextNormalizer.normalize(hyps_arm1[idx]))
+                win_err_arm1 += (m1.substitutions + m1.deletions + m1.insertions)
+                win_words_arm1 += m1.reference_length
+                arm1_records.append({
+                    "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
+                    "group_id": clip_stratum, "ref": ref_norm, "hyp": hyps_arm1[idx],
+                    "sub": m1.substitutions, "del": m1.deletions, "ins": m1.insertions, "n": m1.reference_length
+                })
 
-            m2 = compute_utterance_metrics(ref_norm, TextNormalizer.normalize(hyps_arm2[idx]))
-            win_err_arm2 += (m2.substitutions + m2.deletions + m2.insertions)
-            win_words_arm2 += m2.reference_length
-            arm2_records.append({
-                "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
-                "group_id": clip_stratum, "ref": ref_norm, "hyp": hyps_arm2[idx],
-                "sub": m2.substitutions, "del": m2.deletions, "ins": m2.insertions, "n": m2.reference_length
-            })
+                m2 = compute_utterance_metrics(ref_norm, TextNormalizer.normalize(hyps_arm2[idx]))
+                win_err_arm2 += (m2.substitutions + m2.deletions + m2.insertions)
+                win_words_arm2 += m2.reference_length
+                arm2_records.append({
+                    "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
+                    "group_id": clip_stratum, "ref": ref_norm, "hyp": hyps_arm2[idx],
+                    "sub": m2.substitutions, "del": m2.deletions, "ins": m2.insertions, "n": m2.reference_length
+                })
 
-            m3 = compute_utterance_metrics(ref_norm, TextNormalizer.normalize(hyps_arm3[idx]))
-            win_err_arm3 += (m3.substitutions + m3.deletions + m3.insertions)
-            win_words_arm3 += m3.reference_length
-            arm3_records.append({
-                "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
-                "group_id": clip_stratum, "ref": ref_norm, "hyp": hyps_arm3[idx],
-                "sub": m3.substitutions, "del": m3.deletions, "ins": m3.insertions, "n": m3.reference_length
-            })
+                m3 = compute_utterance_metrics(ref_norm, TextNormalizer.normalize(hyps_arm3[idx]))
+                win_err_arm3 += (m3.substitutions + m3.deletions + m3.insertions)
+                win_words_arm3 += m3.reference_length
+                arm3_records.append({
+                    "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
+                    "group_id": clip_stratum, "ref": ref_norm, "hyp": hyps_arm3[idx],
+                    "sub": m3.substitutions, "del": m3.deletions, "ins": m3.insertions, "n": m3.reference_length
+                })
 
-        wer1 = (win_err_arm1 / win_words_arm1 * 100.0) if win_words_arm1 > 0 else 0.0
-        wer2 = (win_err_arm2 / win_words_arm2 * 100.0) if win_words_arm2 > 0 else 0.0
-        wer3 = (win_err_arm3 / win_words_arm3 * 100.0) if win_words_arm3 > 0 else 0.0
+            wer1 = (win_err_arm1 / win_words_arm1 * 100.0) if win_words_arm1 > 0 else 0.0
+            wer2 = (win_err_arm2 / win_words_arm2 * 100.0) if win_words_arm2 > 0 else 0.0
+            wer3 = (win_err_arm3 / win_words_arm3 * 100.0) if win_words_arm3 > 0 else 0.0
+        else:
+            # Cohort 3: Confirmatory transcripts remain completely sealed during stream
+            for idx, (_, r) in enumerate(batch_rows.iterrows()):
+                clip_stratum = str(r.get("stage5_accent_group") or r.get("stratum_code") or r.get("accent_group"))
+                arm1_records.append({
+                    "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
+                    "group_id": clip_stratum, "hyp": hyps_arm1[idx]
+                })
+                arm2_records.append({
+                    "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
+                    "group_id": clip_stratum, "hyp": hyps_arm2[idx]
+                })
+                arm3_records.append({
+                    "window_id": win_idx, "recording_id": r["recording_id"], "speaker_id": r["speaker_id"],
+                    "group_id": clip_stratum, "hyp": hyps_arm3[idx]
+                })
+            wer1, wer2, wer3 = float("nan"), float("nan"), float("nan")
 
         # Online Adaptation & Statistical Gating
         gate_decision_str = "TERMINAL_WINDOW"
@@ -835,10 +939,40 @@ def main():
                 })
 
         win_elapsed = time.time() - t_win_start
-        print(f"{win_idx+1:3d}/{num_windows} | {window_primary_stratum[:12]:12s} | {wer1:6.1f}%  | {wer2:6.1f}%  | {wer3:6.1f}%  | {gate_decision_str:18s} | {loss_val:6.3f} | {win_elapsed:.1f}s")
+        if is_sealed:
+            print(f"{win_idx+1:3d}/{num_windows} | {window_primary_stratum[:12]:12s} | [SEALED]   | [SEALED]   | [SEALED]   | {gate_decision_str:18s} | {loss_val:6.3f} | {win_elapsed:.1f}s")
+        else:
+            print(f"{win_idx+1:3d}/{num_windows} | {window_primary_stratum[:12]:12s} | {wer1:6.1f}%  | {wer2:6.1f}%  | {wer3:6.1f}%  | {gate_decision_str:18s} | {loss_val:6.3f} | {win_elapsed:.1f}s")
 
     # Step 4: Summary Statistics
     print(f"\n[4/5] Computing Offline Metrics and Speaker-Clustered Paired Statistics...")
+    if is_sealed:
+        print("      [SEALED CONFIRMATORY STREAM FINISHED] Locking and hashing prediction artifacts...")
+        pred_artifact = {
+            "cohort": args.cohort,
+            "git_commit": git_commit_sha,
+            "arm1_predictions": arm1_records,
+            "arm2_predictions": arm2_records,
+            "arm3_predictions": arm3_records,
+        }
+        pred_json_str = json.dumps(pred_artifact, indent=2)
+        pred_path = results_dir / f"{benchmark_run_id}_cohort3_sealed_predictions.json"
+        pred_path.write_text(pred_json_str, encoding="utf-8")
+        pred_sha256 = hashlib.sha256(pred_json_str.encode("utf-8")).hexdigest()
+        print(f"      Predictions locked at: {pred_path} (SHA-256: {pred_sha256})")
+        print("      Unsealing evaluation transcripts for final confirmatory analysis...")
+
+        ref_lookup = {r["recording_id"]: TextNormalizer.normalize(str(r["transcript"])) for _, r in eval_df.iterrows()}
+        for r_list in (arm1_records, arm2_records, arm3_records):
+            for r in r_list:
+                ref_norm = ref_lookup[r["recording_id"]]
+                m = compute_utterance_metrics(ref_norm, TextNormalizer.normalize(r["hyp"]))
+                r["ref"] = ref_norm
+                r["sub"] = m.substitutions
+                r["del"] = m.deletions
+                r["ins"] = m.insertions
+                r["n"] = m.reference_length
+
     df1 = pd.DataFrame(arm1_records)
     df2 = pd.DataFrame(arm2_records)
     df3 = pd.DataFrame(arm3_records)

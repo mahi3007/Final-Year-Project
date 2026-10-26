@@ -27,6 +27,25 @@ from dsg_ctta.evaluation.paired_cluster_inference import (
 )
 
 
+def compute_clopper_pearson_interval(
+    successes: int,
+    total: int,
+    confidence: float = 0.95
+) -> Tuple[float, float]:
+    """
+    Computes exact Clopper-Pearson (Beta distribution) confidence interval for a binomial proportion.
+    """
+    from scipy import stats
+    if total <= 0:
+        return 0.0, 1.0
+    alpha = 1.0 - confidence
+    k = successes
+    n = total
+    lower = 0.0 if k == 0 else float(stats.beta.ppf(alpha / 2.0, k, n - k + 1))
+    upper = 1.0 if k == n else float(stats.beta.ppf(1.0 - alpha / 2.0, k + 1, n - k))
+    return round(lower, 4), round(upper, 4)
+
+
 @dataclass
 class ScenarioCalibrationResult:
     """Empirical calibration metrics for a specific simulation scenario."""
@@ -39,13 +58,19 @@ class ScenarioCalibrationResult:
     true_delta_ungated_pp: float
     true_delta_disparity_pp: float
     
-    # Empirical Verdict Rates
+    # Empirical Verdict Rates with Exact Clopper-Pearson Confidence Intervals
     pass_rate: float
     pass_rate_se: float
+    pass_rate_ci_lower: float
+    pass_rate_ci_upper: float
     fail_rate: float
     fail_rate_se: float
+    fail_rate_ci_lower: float
+    fail_rate_ci_upper: float
     inconclusive_rate: float
     inconclusive_rate_se: float
+    inconclusive_rate_ci_lower: float
+    inconclusive_rate_ci_upper: float
     
     # Hypothesis Rejection Rates across 9 Criteria
     rejection_rates_by_criterion: Dict[str, float]
@@ -55,10 +80,31 @@ class ScenarioCalibrationResult:
     mean_adjusted_ucb_ungated: float
     mean_adjusted_ucb_disparity: float
     disparity_ucb_coverage: float  # Proportion where adj_UCB >= true_delta_D
+    disparity_ucb_coverage_ci_lower: float
+    disparity_ucb_coverage_ci_upper: float
     
     # Qualitative Interpretation
     is_valid_error_control: bool
     summary_verdict: str
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
+class StreamingGateTrajectoryResult:
+    """Calibration results for repeated-candidate streaming gate over full adaptation trajectories."""
+    trajectory_scenario: str
+    num_trajectories: int
+    num_candidate_looks: int
+    num_reference_speakers: int
+    accepted_updates_mean: float
+    trajectory_false_acceptance_rate: float
+    trajectory_false_acceptance_ci_lower: float
+    trajectory_false_acceptance_ci_upper: float
+    candidate_rejection_rate: float
+    is_safely_controlled: bool
+    summary: str
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -231,15 +277,19 @@ def run_scenario_monte_carlo_calibration(
             
     p_pass = n_pass / num_simulations
     se_pass = math.sqrt(p_pass * (1.0 - p_pass) / num_simulations) if num_simulations > 1 else 0.0
+    pass_ci = compute_clopper_pearson_interval(n_pass, num_simulations, confidence=0.95)
     
     p_fail = n_fail / num_simulations
     se_fail = math.sqrt(p_fail * (1.0 - p_fail) / num_simulations) if num_simulations > 1 else 0.0
+    fail_ci = compute_clopper_pearson_interval(n_fail, num_simulations, confidence=0.95)
     
     p_inc = n_inconclusive / num_simulations
     se_inc = math.sqrt(p_inc * (1.0 - p_inc) / num_simulations) if num_simulations > 1 else 0.0
+    inc_ci = compute_clopper_pearson_interval(n_inconclusive, num_simulations, confidence=0.95)
     
     rejection_rates = {k: v / num_simulations for k, v in criterion_rejections.items()}
     coverage_disp = disp_coverage_count / num_simulations
+    coverage_disp_ci = compute_clopper_pearson_interval(disp_coverage_count, num_simulations, confidence=0.95)
     
     # Error control check
     if delta_static_pp >= 0.0:
@@ -250,8 +300,10 @@ def run_scenario_monte_carlo_calibration(
         valid_control = True
         
     summary = (
-        f"{scenario_name}: PASS={p_pass:.1%} (SE={se_pass:.1%}), FAIL={p_fail:.1%}, "
-        f"INCONCLUSIVE={p_inc:.1%}, Disparity UCB Coverage={coverage_disp:.1%}."
+        f"{scenario_name}: PASS={p_pass:.1%} (95% CI [{pass_ci[0]:.1%}, {pass_ci[1]:.1%}]), "
+        f"FAIL={p_fail:.1%} (95% CI [{fail_ci[0]:.1%}, {fail_ci[1]:.1%}]), "
+        f"INCONCLUSIVE={p_inc:.1%}, Disparity UCB Coverage={coverage_disp:.1%} "
+        f"(95% CI [{coverage_disp_ci[0]:.1%}, {coverage_disp_ci[1]:.1%}])."
     )
     
     return ScenarioCalibrationResult(
@@ -265,15 +317,23 @@ def run_scenario_monte_carlo_calibration(
         true_delta_disparity_pp=true_delta_disp,
         pass_rate=round(p_pass, 4),
         pass_rate_se=round(se_pass, 4),
+        pass_rate_ci_lower=pass_ci[0],
+        pass_rate_ci_upper=pass_ci[1],
         fail_rate=round(p_fail, 4),
         fail_rate_se=round(se_fail, 4),
+        fail_rate_ci_lower=fail_ci[0],
+        fail_rate_ci_upper=fail_ci[1],
         inconclusive_rate=round(p_inc, 4),
         inconclusive_rate_se=round(se_inc, 4),
+        inconclusive_rate_ci_lower=inc_ci[0],
+        inconclusive_rate_ci_upper=inc_ci[1],
         rejection_rates_by_criterion={k: round(v, 4) for k, v in rejection_rates.items()},
         mean_adjusted_ucb_static=round(float(np.mean(adj_ucb_static_list)), 4),
         mean_adjusted_ucb_ungated=round(float(np.mean(adj_ucb_ungated_list)), 4),
         mean_adjusted_ucb_disparity=round(float(np.mean(adj_ucb_disp_list)), 4),
         disparity_ucb_coverage=round(coverage_disp, 4),
+        disparity_ucb_coverage_ci_lower=coverage_disp_ci[0],
+        disparity_ucb_coverage_ci_upper=coverage_disp_ci[1],
         is_valid_error_control=valid_control,
         summary_verdict=summary,
     )
@@ -409,3 +469,133 @@ def run_full_statistical_calibration_suite(
     )
     
     return results
+
+
+def simulate_streaming_gate_trajectory_calibration(
+    trajectory_type: str = "null",  # "null" | "harmful_accent" | "disparity_expansion" | "beneficial"
+    num_trajectories: int = 20,
+    num_candidate_looks: int = 20,
+    num_reference_speakers: int = 30,
+    seed: int = 42,
+) -> StreamingGateTrajectoryResult:
+    """
+    Simulates sequential candidate evaluations across complete adaptation trajectories
+    using StreamingSentinelSafetyGateV14 against a reused reference panel.
+    """
+    from dsg_ctta.controller.streaming_gate_v14 import StreamingSentinelSafetyGateV14
+    rng = np.random.default_rng(seed=seed)
+    accents = sorted(list(CANONICAL_PROTOCOL_ACCENTS))
+    n_acc = len(accents)
+    spks_per_accent = num_reference_speakers // n_acc
+
+    # Build reference panel metadata (5 speakers per canonical accent)
+    ref_spk_ids = []
+    ref_strata = []
+    ref_lengths = []
+    ref_base_errors = []
+
+    for acc in accents:
+        base_wer = 0.20
+        for s_idx in range(spks_per_accent):
+            ref_spk_ids.append(f"ref_{acc[:4].lower()}_{s_idx}")
+            ref_strata.append(acc)
+            length = int(rng.integers(80, 150))
+            ref_lengths.append(length)
+            ref_base_errors.append(int(rng.binomial(length, base_wer)))
+
+    total_false_accepted_trajectories = 0
+    total_accepted_candidates = 0
+    total_evaluated_candidates = num_trajectories * num_candidate_looks
+
+    for t_idx in range(num_trajectories):
+        gate = StreamingSentinelSafetyGateV14(
+            epsilon_r_pp=0.0000,
+            epsilon_g_pp=2.0000,
+            epsilon_d_pp=0.0000,
+            num_updates=num_candidate_looks,
+            alpha_target=0.05,
+            num_boot_replicates=150,
+            required_strata=set(accents),
+        )
+
+        current_live_errors = list(ref_base_errors)
+        accepted_in_trajectory = 0
+
+        for look_idx in range(num_candidate_looks):
+            cand_errors = list(current_live_errors)
+
+            if trajectory_type == "null":
+                # Candidate has zero true effect (pure random fluctuation)
+                for i in range(len(cand_errors)):
+                    noise = int(rng.choice([-1, 0, 1], p=[0.25, 0.50, 0.25]))
+                    cand_errors[i] = max(0, min(ref_lengths[i], current_live_errors[i] + noise))
+
+            elif trajectory_type == "harmful_accent":
+                # Candidate regresses on Irish English by +5% WER, neutral on others
+                for i in range(len(cand_errors)):
+                    if ref_strata[i] == "Irish English":
+                        cand_errors[i] = min(ref_lengths[i], current_live_errors[i] + max(1, int(0.05 * ref_lengths[i])))
+
+            elif trajectory_type == "disparity_expansion":
+                # Candidate improves US English (-3%) but degrades Irish English (+3%)
+                for i in range(len(cand_errors)):
+                    if ref_strata[i] == "Irish English":
+                        cand_errors[i] = min(ref_lengths[i], current_live_errors[i] + max(1, int(0.03 * ref_lengths[i])))
+                    elif ref_strata[i] == "US English":
+                        cand_errors[i] = max(0, current_live_errors[i] - max(1, int(0.03 * ref_lengths[i])))
+
+            elif trajectory_type == "beneficial":
+                # Candidate improves all accents by -3% WER
+                for i in range(len(cand_errors)):
+                    reduction = max(1, int(0.03 * ref_lengths[i]))
+                    cand_errors[i] = max(0, current_live_errors[i] - reduction)
+
+            dec = gate.evaluate_candidate(
+                window_id=look_idx,
+                speaker_ids=ref_spk_ids,
+                stratum_groups=ref_strata,
+                live_errors=current_live_errors,
+                cand_errors=cand_errors,
+                ref_lengths=ref_lengths,
+            )
+
+            if dec.passed_gate:
+                accepted_in_trajectory += 1
+                total_accepted_candidates += 1
+                current_live_errors = cand_errors
+
+        if trajectory_type in ("null", "harmful_accent", "disparity_expansion"):
+            if accepted_in_trajectory > 0:
+                total_false_accepted_trajectories += 1
+
+    traj_rate = total_false_accepted_trajectories / float(num_trajectories)
+    traj_ci = compute_clopper_pearson_interval(total_false_accepted_trajectories, num_trajectories, confidence=0.95)
+    rejection_rate = (total_evaluated_candidates - total_accepted_candidates) / float(total_evaluated_candidates)
+    accepted_mean = total_accepted_candidates / float(num_trajectories)
+
+    if trajectory_type == "null":
+        is_safe = (traj_rate <= 0.10)
+    elif trajectory_type in ("harmful_accent", "disparity_expansion"):
+        is_safe = (traj_rate == 0.0)
+    else:
+        is_safe = (accepted_mean > 0.0)
+
+    summary = (
+        f"Trajectory Scenario '{trajectory_type}': "
+        f"False Acceptance Rate={traj_rate:.1%} (95% CI [{traj_ci[0]:.1%}, {traj_ci[1]:.1%}]), "
+        f"Candidate Rejection Rate={rejection_rate:.1%}, Accepted Updates/Traj={accepted_mean:.2f}."
+    )
+
+    return StreamingGateTrajectoryResult(
+        trajectory_scenario=trajectory_type,
+        num_trajectories=num_trajectories,
+        num_candidate_looks=num_candidate_looks,
+        num_reference_speakers=num_reference_speakers,
+        accepted_updates_mean=round(accepted_mean, 2),
+        trajectory_false_acceptance_rate=round(traj_rate, 4),
+        trajectory_false_acceptance_ci_lower=traj_ci[0],
+        trajectory_false_acceptance_ci_upper=traj_ci[1],
+        candidate_rejection_rate=round(rejection_rate, 4),
+        is_safely_controlled=is_safe,
+        summary=summary,
+    )
