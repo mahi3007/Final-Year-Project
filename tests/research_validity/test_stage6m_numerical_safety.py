@@ -1170,6 +1170,7 @@ def test_confirmatory_paired_cluster_inference_passes_on_superiority():
     spec = DesignStagePowerSpec(
         required_speakers_per_stratum=10,
         target_primary_effect_pp=10.0,
+        target_disparity_effect_pp=-6.0,
         target_joint_power=0.65,
     )
 
@@ -1640,6 +1641,203 @@ def test_pairwise_partition_disjointness_check():
     assert overlaps[0][0] == "Part1"
     assert overlaps[0][1] == "Part3"
     assert "spk_2" in overlaps[0][2]
+
+
+def test_confirmatory_power_threshold_enforces_exact_target_without_allowance():
+    """
+    Test Case 46: Exact joint power target enforcement (no 5pp allowance).
+    Asserts that evaluate_confirmatory_power strictly enforces target_joint_power (0.90)
+    and rejects an estimated joint power of 85.0% (which formerly passed under -0.05 allowance).
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import (
+        CANONICAL_PROTOCOL_ACCENTS,
+        DesignStagePowerSpec,
+        evaluate_confirmatory_power,
+    )
+
+    records = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(78):
+            records.append({
+                "speaker_id": f"{acc}_spk_{s}",
+                "stratum": acc,
+            })
+    df = pd.DataFrame(records)
+
+    # Custom spec with strict target_joint_power = 0.90
+    spec = DesignStagePowerSpec(
+        target_joint_power=0.90,
+        required_speakers_per_stratum=78,
+    )
+
+    assessment = evaluate_confirmatory_power(df, design_spec=spec)
+    # Target is strictly 90%
+    assert assessment.design_target_joint_power == 0.90
+    assert assessment.min_speakers_required_for_power == 78
+    assert assessment.min_speakers_per_stratum_observed == 78
+    # Must meet or exceed 0.90 exactly
+    assert assessment.estimated_joint_power >= 0.90
+    assert assessment.is_adequately_powered
+    assert assessment.power_status == "ADEQUATE"
+
+    # Now verify that if target is raised higher than achieved power (e.g. 0.95),
+    # the function strictly fails closed as UNDERPOWERED without any 5pp allowance
+    strict_spec = DesignStagePowerSpec(
+        target_joint_power=0.98,
+        required_speakers_per_stratum=78,
+    )
+    strict_assessment = evaluate_confirmatory_power(df, design_spec=strict_spec)
+    assert not strict_assessment.is_adequately_powered
+    assert strict_assessment.power_status == "UNDERPOWERED"
+
+
+def test_cohort3_reference_transcript_preflight_validation_rejects_invalid_text():
+    """
+    Test Case 47: Pre-stream reference transcript integrity validation.
+    Verifies that missing, NaN, empty, whitespace-only, and literal 'nan' strings
+    are strictly caught before streaming starts.
+    """
+    from dsg_ctta.data.normalization import TextNormalizer
+
+    def validate_reference_transcripts(df: pd.DataFrame):
+        for _, row in df.iterrows():
+            rec_id = str(row["recording_id"])
+            raw_t = row.get("transcript")
+            if raw_t is None or pd.isna(raw_t):
+                raise ValueError(f"Confirmatory Reference Integrity Violation: clip '{rec_id}' has missing/NaN reference transcript.")
+            str_t = str(raw_t).strip()
+            if not str_t or str_t.lower() in ("nan", "none", "null"):
+                raise ValueError(f"Confirmatory Reference Integrity Violation: clip '{rec_id}' has blank/null reference transcript '{raw_t}'.")
+            norm_t = TextNormalizer.normalize(str_t)
+            if not norm_t.strip():
+                raise ValueError(f"Confirmatory Reference Integrity Violation: clip '{rec_id}' normalized transcript is empty (raw: '{raw_t}').")
+
+    # Valid dataframe passes
+    valid_df = pd.DataFrame([
+        {"recording_id": "rec_0", "transcript": "Hello world this is a test"},
+        {"recording_id": "rec_1", "transcript": "Another valid utterance"},
+    ])
+    validate_reference_transcripts(valid_df)
+
+    # Missing/NaN fails
+    with pytest.raises(ValueError, match="missing/NaN reference transcript"):
+        validate_reference_transcripts(pd.DataFrame([
+            {"recording_id": "rec_bad_nan", "transcript": float("nan")},
+        ]))
+
+    # Blank/whitespace fails
+    with pytest.raises(ValueError, match="blank/null reference transcript"):
+        validate_reference_transcripts(pd.DataFrame([
+            {"recording_id": "rec_bad_empty", "transcript": "   "},
+        ]))
+
+    # String 'nan' fails
+    with pytest.raises(ValueError, match="blank/null reference transcript"):
+        validate_reference_transcripts(pd.DataFrame([
+            {"recording_id": "rec_bad_str_nan", "transcript": "nan"},
+        ]))
+
+    # Punctuation-only that normalizes to empty fails
+    with pytest.raises(ValueError, match="normalized transcript is empty"):
+        validate_reference_transcripts(pd.DataFrame([
+            {"recording_id": "rec_bad_punct", "transcript": "??!! ..."},
+        ]))
+
+
+def test_cohort3_audio_path_consistency_and_content_hash_lock(tmp_path):
+    """
+    Test Case 48: Audio preload path consistency (.mp3 vs .wav) and content hash verification.
+    Verifies that .wav files are correctly mapped in eval_file_list and that content hash
+    mismatches fail closed before execution.
+    """
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+
+    # Create dummy .mp3 and .wav files
+    clip1 = audio_dir / "clip_001.mp3"
+    clip1.write_bytes(b"dummy_mp3_content_bytes")
+    clip2 = audio_dir / "clip_002.wav"  # WAV-only clip
+    clip2.write_bytes(b"dummy_wav_content_bytes")
+
+    eval_df = pd.DataFrame([
+        {"recording_id": "clip_001"},
+        {"recording_id": "clip_002"},
+    ])
+
+    # Path resolution
+    verified_paths = {}
+    for _, row in eval_df.iterrows():
+        rec_id = str(row["recording_id"])
+        fpath = audio_dir / f"{rec_id}.mp3"
+        if not fpath.exists():
+            fpath = audio_dir / f"{rec_id}.wav"
+        if not fpath.exists():
+            raise FileNotFoundError(f"Missing audio payload for '{rec_id}'")
+        assert fpath.stat().st_size > 0
+        verified_paths[rec_id] = fpath
+
+    assert verified_paths["clip_001"].suffix == ".mp3"
+    assert verified_paths["clip_002"].suffix == ".wav"
+
+    # Content hash lock check
+    expected_hash_clip1 = hashlib.sha256(b"dummy_mp3_content_bytes").hexdigest()
+    assert hashlib.sha256(verified_paths["clip_001"].read_bytes()).hexdigest() == expected_hash_clip1
+
+    # Tampered audio content fails
+    corrupted_manifest_hashes = {"clip_001": "incorrect_tampered_hash_value"}
+    with pytest.raises(ValueError, match="Confirmatory Audio Content Hash Violation"):
+        if verified_paths["clip_001"].exists():
+            actual_h = hashlib.sha256(verified_paths["clip_001"].read_bytes()).hexdigest()
+            if actual_h != corrupted_manifest_hashes["clip_001"]:
+                raise ValueError(f"Confirmatory Audio Content Hash Violation for clip 'clip_001'")
+
+
+def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement():
+    """
+    Test Case 49: Frozen execution contract enforcement.
+    Verifies that unapproved commits and unapproved governance status strictly fail closed.
+    """
+    from pathlib import Path
+    project_root = Path(__file__).resolve().parent.parent.parent
+    proto_file = project_root / "reports" / "stage6m" / "stage6m_v1_4_selective_adaptation_protocol.md"
+    actual_proto_sha = hashlib.sha256(proto_file.read_bytes()).hexdigest()
+
+    def check_frozen_contract(git_commit_sha: str, contract: dict, proto_path: Path):
+        approved_commits = contract.get("approved_commits", [])
+        if approved_commits and git_commit_sha not in approved_commits:
+            raise PermissionError(f"Commit '{git_commit_sha}' not in approved whitelist: {approved_commits}")
+
+        expected_proto_sha = contract.get("protocol_sha256")
+        if expected_proto_sha:
+            actual_proto = hashlib.sha256(proto_path.read_bytes()).hexdigest()
+            if actual_proto != expected_proto_sha:
+                raise ValueError(f"Protocol hash mismatch: '{actual_proto}' != '{expected_proto_sha}'")
+
+        if contract.get("governance_status") != "APPROVED":
+            raise PermissionError(f"Governance status is {contract.get('governance_status')}; execution locked on HOLD.")
+
+    # Valid contract passes
+    valid_contract = {
+        "approved_commits": ["abc1234"],
+        "protocol_sha256": actual_proto_sha,
+        "governance_status": "APPROVED",
+    }
+    check_frozen_contract("abc1234", valid_contract, proto_file)
+
+    # Unapproved commit fails
+    with pytest.raises(PermissionError, match="not in approved whitelist"):
+        check_frozen_contract("unapproved_commit_sha", valid_contract, proto_file)
+
+    # Corrupted protocol hash fails
+    tampered_proto_contract = dict(valid_contract, protocol_sha256="corrupted_hash")
+    with pytest.raises(ValueError, match="Protocol hash mismatch"):
+        check_frozen_contract("abc1234", tampered_proto_contract, proto_file)
+
+    # Draft / HOLD governance status fails closed
+    draft_contract = dict(valid_contract, governance_status="DRAFT_HOLD")
+    with pytest.raises(PermissionError, match="execution locked on HOLD"):
+        check_frozen_contract("abc1234", draft_contract, proto_file)
+
 
 
 

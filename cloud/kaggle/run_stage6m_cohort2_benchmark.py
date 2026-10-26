@@ -577,6 +577,44 @@ def main():
                 f"manifest lock hash '{expected_csv_sha256}'."
             )
 
+        # Frozen Execution Contract & Preapproved Commit Enforcement
+        frozen_contract = c3_manifest_data.get("frozen_execution_contract", {})
+        approved_commits = frozen_contract.get("approved_commits") or c3_manifest_data.get("approved_commits", [])
+        if approved_commits:
+            if git_commit_sha not in approved_commits:
+                print("\n" + "!" * 80)
+                print("[FAIL-CLOSED INTEGRITY CHECK]")
+                print(f"Confirmatory Execution Commit Authorization Violation:")
+                print(f"  Current Git commit SHA '{git_commit_sha}' is NOT in preapproved confirmatory whitelist: {approved_commits}")
+                print("  Only preapproved, peer-reviewed frozen commits may execute Confirmatory Cohort 3.")
+                print("!" * 80 + "\n")
+                sys.exit(1)
+
+        # Frozen Protocol Hash Verification
+        protocol_file = PROJECT_ROOT / "reports" / "stage6m" / "stage6m_v1_4_selective_adaptation_protocol.md"
+        expected_proto_sha = frozen_contract.get("protocol_sha256") or c3_manifest_data.get("protocol_sha256")
+        if expected_proto_sha:
+            if not protocol_file.exists():
+                raise FileNotFoundError(f"Confirmatory Protocol Violation: Missing protocol file at '{protocol_file}'.")
+            actual_proto_sha = hashlib.sha256(protocol_file.read_bytes()).hexdigest()
+            if actual_proto_sha != expected_proto_sha:
+                raise ValueError(
+                    f"Confirmatory Protocol Hash Violation: Protocol document hash '{actual_proto_sha}' does not match "
+                    f"frozen contract hash '{expected_proto_sha}'."
+                )
+
+        # Governance Sign-off Status Check (Fail-closed on draft/pending)
+        governance_status = frozen_contract.get("governance_status") or c3_manifest_data.get("governance_status", "DRAFT_HOLD")
+        if governance_status != "APPROVED":
+            print("\n" + "!" * 80)
+            print("[FAIL-CLOSED GOVERNANCE LOCK]")
+            print(f"Confirmatory Cohort 3 Governance Status: {governance_status}")
+            print("Status: CONFIRMATORY_COHORT3_HOLD_GOVERNANCE_SIGNOFF_PENDING")
+            print("Protocol v1.4.0 is currently in draft status pending physical data materialization and independent scientific review.")
+            print("Execution of Confirmatory Cohort 3 is strictly locked on HOLD.")
+            print("!" * 80 + "\n")
+            sys.exit(1)
+
         eval_df = pd.read_csv(cohort3_csv)
         audio_dir = cohort3_audio_dir
 
@@ -633,15 +671,24 @@ def main():
                     f"Confirmatory Speaker Clip Count Violation in stratum '{acc}': speakers have non-15 clips: {list(bad_clip_spks.items())[:5]}."
                 )
 
-        # Verify audio file existence and non-zero size for all clips in Cohort 3
+        # Verify audio file existence, non-zero size, path consistency, and content hash
+        verified_audio_paths = {}
+        audio_hashes_manifest = c3_manifest_data.get("audio_hashes") or c3_manifest_data.get("files", {}).get("audio_sha256", {})
         for _, row in eval_df.iterrows():
-            fpath = audio_dir / f"{row['recording_id']}.mp3"
+            rec_id = str(row["recording_id"])
+            fpath = audio_dir / f"{rec_id}.mp3"
             if not fpath.exists():
-                fpath = audio_dir / f"{row['recording_id']}.wav"
+                fpath = audio_dir / f"{rec_id}.wav"
             if not fpath.exists():
-                raise FileNotFoundError(f"Confirmatory Audio Integrity Violation: Missing audio payload for clip '{row['recording_id']}' in '{audio_dir}'.")
+                raise FileNotFoundError(f"Confirmatory Audio Integrity Violation: Missing audio payload for clip '{rec_id}' in '{audio_dir}'.")
             if fpath.stat().st_size == 0:
-                raise ValueError(f"Confirmatory Audio Integrity Violation: Empty (0-byte) audio payload for clip '{row['recording_id']}'.")
+                raise ValueError(f"Confirmatory Audio Integrity Violation: Empty (0-byte) audio payload for clip '{rec_id}'.")
+            if audio_hashes_manifest and rec_id in audio_hashes_manifest:
+                expected_h = audio_hashes_manifest[rec_id]
+                actual_h = hashlib.sha256(fpath.read_bytes()).hexdigest()
+                if actual_h != expected_h:
+                    raise ValueError(f"Confirmatory Audio Content Hash Violation for clip '{rec_id}': expected '{expected_h}', got '{actual_h}'.")
+            verified_audio_paths[rec_id] = fpath
 
         # 4. Full Validation of Dedicated Gate-Reference Panel Manifest and Data Lock
         with open(gate_ref_manifest, "r", encoding="utf-8") as f:
@@ -733,6 +780,21 @@ def main():
                         f"between '{p1_name}' and '{p2_name}' (e.g. {sorted(list(overlap))[:5]})."
                     )
 
+        # Strict Reference Transcript Preflight Validation:
+        # Before transcripts are stripped from streaming eval_df, verify that no clip has missing,
+        # empty, NaN, or blank transcripts, and that normalized text produces valid non-empty tokens.
+        for _, row in eval_df.iterrows():
+            rec_id = str(row["recording_id"])
+            raw_t = row.get("transcript")
+            if raw_t is None or pd.isna(raw_t):
+                raise ValueError(f"Confirmatory Reference Integrity Violation: clip '{rec_id}' has missing/NaN reference transcript.")
+            str_t = str(raw_t).strip()
+            if not str_t or str_t.lower() in ("nan", "none", "null"):
+                raise ValueError(f"Confirmatory Reference Integrity Violation: clip '{rec_id}' has blank/null reference transcript '{raw_t}'.")
+            norm_t = TextNormalizer.normalize(str_t)
+            if not norm_t.strip():
+                raise ValueError(f"Confirmatory Reference Integrity Violation: clip '{rec_id}' normalized transcript is empty (raw: '{raw_t}').")
+
         # Strict Streaming Label Isolation for Cohort 3:
         # Separate reference transcripts into isolated lookup before streaming starts.
         # eval_df during stream will have NO 'transcript' column.
@@ -743,11 +805,17 @@ def main():
         raise FileNotFoundError(f"Missing sentinel panel CSV: {sentinel_csv}")
     sentinel_df = pd.read_csv(sentinel_csv)
 
-    # Preload audio waveforms
-    eval_file_list = [
-        (row["recording_id"], audio_dir / f"{row['recording_id']}.mp3")
-        for _, row in eval_df.iterrows()
-    ]
+    # Preload audio waveforms using verified audio paths
+    if args.cohort == "cohort3":
+        eval_file_list = [
+            (row["recording_id"], verified_audio_paths[str(row["recording_id"])])
+            for _, row in eval_df.iterrows()
+        ]
+    else:
+        eval_file_list = [
+            (row["recording_id"], audio_dir / f"{row['recording_id']}.mp3" if (audio_dir / f"{row['recording_id']}.mp3").exists() else audio_dir / f"{row['recording_id']}.wav")
+            for _, row in eval_df.iterrows()
+        ]
     eval_cache = preload_waveforms(eval_file_list, sample_rate=16000)
 
     # Core Stratified Sentinel Panel: 1 clip per sentinel speaker

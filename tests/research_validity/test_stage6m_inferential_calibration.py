@@ -155,7 +155,7 @@ def test_calibration_max_min_tie_disparity_ucb_coverage():
     res = run_scenario_monte_carlo_calibration(
         scenario_name="Calibration: Max-Min Tie",
         description="Assesses bootstrap UCB coverage under tied accents",
-        num_simulations=25,
+        num_simulations=45,
         num_speakers_per_stratum=10,
         num_bootstrap_replicates=150,
         base_wer_per_accent={acc: 20.0 for acc in CANONICAL_PROTOCOL_ACCENTS},
@@ -167,6 +167,10 @@ def test_calibration_max_min_tie_disparity_ucb_coverage():
     # 1-sided coverage of adjusted UCB: proportion where adj_UCB >= true_delta_D (0.0 pp)
     assert res.disparity_ucb_coverage >= 0.90, (
         f"Disparity UCB coverage at max-min tie ({res.disparity_ucb_coverage:.1%}) was below target 90%"
+    )
+    # Clopper-Pearson 95% lower bound must demonstrate true coverage >= 90%
+    assert res.disparity_ucb_coverage_ci_lower >= 0.90, (
+        f"Disparity UCB coverage lower 95% CI bound ({res.disparity_ucb_coverage_ci_lower:.1%}) below 90%"
     )
 
 
@@ -222,8 +226,8 @@ def test_calibration_near_null_differences():
 def test_streaming_gate_trajectory_null_control():
     """
     Test Case 8: Repeated-Candidate Streaming Gate Null Trajectory Control.
-    Simulates sequential candidate evaluations across 10 streaming looks against
-    a reused reference panel. Verifies that the trajectory-level false acceptance rate
+    Simulates sequential candidate evaluations across the production 1,754-look OBF schedule
+    against a reused reference panel. Verifies that the trajectory-level false acceptance rate
     has an exact Clopper-Pearson 95% upper confidence limit <= 5.0%.
     """
     res = simulate_streaming_gate_trajectory_calibration(
@@ -232,6 +236,7 @@ def test_streaming_gate_trajectory_null_control():
         num_candidate_looks=10,
         num_reference_speakers=120,
         seed=808,
+        num_planned_updates=1754,
     )
 
     assert res.trajectory_false_acceptance_rate == 0.0
@@ -243,27 +248,50 @@ def test_streaming_gate_trajectory_null_control():
 def test_streaming_gate_trajectory_harm_rejection():
     """
     Test Case 9: Repeated-Candidate Streaming Gate Harmful Trajectory Rejection.
-    Simulates candidates introducing isolated regression or disparity expansion.
-    Verifies that 100% of harmful candidates are rejected across all looks.
+    Simulates candidates introducing isolated regression or disparity expansion
+    under the production 1,754-look schedule. Verifies that false acceptance rate
+    has Clopper-Pearson upper bound <= 5.0% across 75 trajectories.
     """
     res_regress = simulate_streaming_gate_trajectory_calibration(
         trajectory_type="harmful_accent",
-        num_trajectories=15,
+        num_trajectories=75,
         num_candidate_looks=10,
-        num_reference_speakers=30,
+        num_reference_speakers=120,
         seed=909,
+        num_planned_updates=1754,
     )
     assert res_regress.trajectory_false_acceptance_rate == 0.0
+    assert res_regress.trajectory_false_acceptance_ci_upper <= 0.05
     assert res_regress.candidate_rejection_rate == 1.0
     assert res_regress.is_safely_controlled
 
     res_disp = simulate_streaming_gate_trajectory_calibration(
         trajectory_type="disparity_expansion",
-        num_trajectories=15,
+        num_trajectories=75,
         num_candidate_looks=10,
-        num_reference_speakers=30,
+        num_reference_speakers=120,
         seed=910,
+        num_planned_updates=1754,
     )
     assert res_disp.trajectory_false_acceptance_rate == 0.0
+    assert res_disp.trajectory_false_acceptance_ci_upper <= 0.05
     assert res_disp.candidate_rejection_rate == 1.0
     assert res_disp.is_safely_controlled
+
+
+def test_streaming_gate_trajectory_production_length_beneficial_control():
+    """
+    Test Case 10: Production-Length Streaming Gate Beneficial Trajectory Acceptance.
+    Verifies that under the production look schedule (1,754 planned looks), genuine
+    multi-accent improvements are accepted by the sequential gate with positive mean update rate.
+    """
+    res = simulate_streaming_gate_trajectory_calibration(
+        trajectory_type="beneficial",
+        num_trajectories=15,
+        num_candidate_looks=10,
+        num_reference_speakers=120,
+        seed=911,
+        num_planned_updates=1754,
+    )
+    assert res.accepted_updates_mean > 0.0
+    assert res.is_safely_controlled

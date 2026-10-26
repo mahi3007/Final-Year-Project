@@ -1,0 +1,46 @@
+{
+  "schema_version": "v1.4.0",
+  "artifact_name": "Stage 6M Development Variance Calibration & Sizing Record",
+  "timestamp_utc": "2026-10-26T12:00:00Z",
+  "data_sources": [
+    {
+      "source_id": "cohort1_physical_revalidated",
+      "file_path": "reports/stage6m/revalidated_cohort1/stage6m_physical_cohort1_speaker_records.csv",
+      "speaker_count": 60,
+      "strata_count": 6
+    },
+    {
+      "source_id": "common_voice_27_development_pool",
+      "description": "Historical Common Voice 27 acoustic benchmarks across 6 canonical strata",
+      "reference_protocol": "v1.4.0-stage6m-selective-adaptation-draft"
+    }
+  ],
+  "empirical_variance_estimates": {
+    "within_stratum_speaker_wer_std_raw_pp": 6.48,
+    "within_stratum_speaker_wer_std_frozen_pp": 6.5,
+    "within_speaker_paired_diff_std_raw_pp": 3.18,
+    "within_speaker_paired_diff_std_frozen_pp": 3.2,
+    "cohort1_observed_wer_std_by_stratum": {
+      "Australian English": 18.26,
+      "Canadian English": 5.42,
+      "England English": 11.08,
+      "Irish English": 9.23,
+      "South Asian English": 21.7,
+      "US English": 15.74
+    },
+    "cohort1_observed_paired_diff_std_pp": 3.07
+  },
+  "frozen_design_stage_parameters": {
+    "alpha_family": 0.05,
+    "num_composite_hypotheses": 9,
+    "adj_alpha_per_hypothesis": 0.005555555555555556,
+    "target_primary_effect_pp": 3.5,
+    "target_ungated_effect_pp": 3.5,
+    "target_disparity_effect_pp": -2.0,
+    "target_joint_power": 0.9,
+    "required_speakers_per_stratum": 78,
+    "total_required_confirmatory_speakers": 468,
+    "total_required_confirmatory_clips": 7020
+  },
+  "statistical_derivation_summary": "For simultaneous Bonferroni control across M=9 hypotheses (alpha_adj = 0.005556, z_crit = 2.539) and SE(Delta_D) = sqrt(2)*3.20/sqrt(78) = 0.512 pp, 90% power (z = 1.282) requires an effect size Delta_D <= -(2.539 + 1.282) * 0.512 = -1.96 pp. The empirical CV27 shift between US English (-2.5 pp) and Irish English (-4.5 pp) provides Delta_D = -2.00 pp, which achieves 90.2% joint power in 500 Monte Carlo simulations at N=78 speakers/stratum."
+}

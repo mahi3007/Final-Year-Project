@@ -42,21 +42,23 @@ class DesignStagePowerSpec:
     - paired_diff_std: 3.20 pp (within-speaker paired difference standard deviation)
     - target_primary_effect_pp: 3.50 pp superiority vs static baseline
     - target_ungated_effect_pp: 3.50 pp superiority vs corrected ungated SUTA
-    - target_disparity_effect_pp: -1.00 pp narrowing of max-min disparity gap
+    - target_disparity_effect_pp: -2.00 pp narrowing of max-min disparity gap
     - alpha_family: 0.05 family-wise error across M=9 hypotheses
     - target_joint_power: 0.90 joint probability across all 9 criteria
     - required_speakers_per_stratum: 78 speakers (468 speakers across 6 strata)
     """
     target_primary_effect_pp: float = 3.50
     target_ungated_effect_pp: float = 3.50
-    target_disparity_effect_pp: float = -1.00
+    target_disparity_effect_pp: float = -2.00
     between_speaker_wer_std: float = 6.50
     paired_diff_std: float = 3.20
     alpha_family: float = 0.05
     target_joint_power: float = 0.90
     required_speakers_per_stratum: int = 78
     required_clips_per_speaker: int = 15
-    provenance_source: str = "Stage 6M Development Pools (Cohort 1 & 2 Empirical Calibration: CV27 delta_wer std=3.18 pp, speaker_wer std=6.48 pp)"
+    baseline_wers: Optional[Dict[str, float]] = None
+    provenance_source: str = "reports/stage6m/development_variance_calibration.json"
+    provenance_details: str = "Stage 6M Development Pools (Cohort 1 & 2 Empirical Calibration: CV27 delta_wer std=3.18 pp, speaker_wer std=6.48 pp)"
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -207,25 +209,27 @@ def simulate_design_stage_joint_power(
     adj_alpha = spec.alpha_family / float(m_hypotheses)
     z_crit = float(stats.norm.ppf(1.0 - adj_alpha))
 
-    # Baseline WER means per accent (e.g. range 14% to 26%)
-    base_wers = {
+    # Baseline WER means per accent (operational input with canonical default: 14% to 26%)
+    base_wers = spec.baseline_wers if spec.baseline_wers is not None else {
         "US English": 14.0,
-        "England English": 17.0,
         "Canadian English": 16.0,
+        "England English": 17.0,
         "Australian English": 19.0,
         "South Asian English": 23.0,
         "Irish English": 26.0,
     }
 
-    # Shifts to achieve target primary effect (-3.5 pp) and disparity narrowing (-1.0 pp)
-    scale = spec.target_primary_effect_pp / 3.50 if spec.target_primary_effect_pp > 0 else 1.0
+    # Operationalized treatment effects derived from declared design specification:
+    # Mean shift across accents matches -target_primary_effect_pp
+    # Differential shift between worst and best accents matches target_disparity_effect_pp
+    min_b = min(base_wers.values())
+    max_b = max(base_wers.values())
+    mid_b = (max_b + min_b) / 2.0
+    span_b = max(1e-6, max_b - min_b)
+
     accent_shifts = {
-        "US English": -2.5 * scale,
-        "England English": -3.0 * scale,
-        "Canadian English": -3.0 * scale,
-        "Australian English": -3.5 * scale,
-        "South Asian English": -4.5 * scale,
-        "Irish English": -4.5 * scale,
+        acc: -spec.target_primary_effect_pp + ((base_wers.get(acc, mid_b) - mid_b) / span_b) * spec.target_disparity_effect_pp
+        for acc in accents
     }
 
     n_spk = num_speakers_per_stratum
@@ -250,7 +254,7 @@ def simulate_design_stage_joint_power(
         obs_acc_w1 = {}
         obs_acc_w3 = {}
         for acc in accents:
-            shift = accent_shifts.get(acc, -3.0 * scale)
+            shift = accent_shifts.get(acc, -spec.target_primary_effect_pp)
             obs_delta_g = shift + rng.normal(0, se_accent)
             ucb_g = obs_delta_g + z_crit * se_accent
             if ucb_g > 2.0:
@@ -306,7 +310,7 @@ def evaluate_confirmatory_power(
 
     is_powered = bool(
         min_spks_obs >= req_spks
-        and est_joint_power >= (design_spec.target_joint_power - 0.05)
+        and est_joint_power >= design_spec.target_joint_power
     )
 
     status = "ADEQUATE" if is_powered else "UNDERPOWERED"

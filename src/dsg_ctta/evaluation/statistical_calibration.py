@@ -477,10 +477,12 @@ def simulate_streaming_gate_trajectory_calibration(
     num_candidate_looks: int = 20,
     num_reference_speakers: int = 30,
     seed: int = 42,
+    num_planned_updates: Optional[int] = None,
 ) -> StreamingGateTrajectoryResult:
     """
     Simulates sequential candidate evaluations across complete adaptation trajectories
     using StreamingSentinelSafetyGateV14 against a reused reference panel.
+    Evaluates operating characteristics under the declared O'Brien-Fleming schedule (e.g. 1,754 planned looks).
     """
     from dsg_ctta.controller.streaming_gate_v14 import StreamingSentinelSafetyGateV14
     rng = np.random.default_rng(seed=seed)
@@ -488,14 +490,30 @@ def simulate_streaming_gate_trajectory_calibration(
     n_acc = len(accents)
     spks_per_accent = num_reference_speakers // n_acc
 
+    # Production schedule configuration: gate evaluates across planned looks (e.g. 1,754)
+    planned_k = int(num_planned_updates) if num_planned_updates is not None else num_candidate_looks
+    if num_candidate_looks < planned_k:
+        look_indices = [int(i) for i in np.linspace(0, planned_k - 1, num_candidate_looks)]
+    else:
+        look_indices = list(range(num_candidate_looks))
+
     # Build reference panel metadata (5 speakers per canonical accent)
     ref_spk_ids = []
     ref_strata = []
     ref_lengths = []
     ref_base_errors = []
 
+    base_wers = {
+        "US English": 0.14,
+        "Canadian English": 0.16,
+        "England English": 0.17,
+        "Australian English": 0.19,
+        "South Asian English": 0.23,
+        "Irish English": 0.26,
+    }
+
     for acc in accents:
-        base_wer = 0.20
+        base_wer = base_wers.get(acc, 0.20)
         for s_idx in range(spks_per_accent):
             ref_spk_ids.append(f"ref_{acc[:4].lower()}_{s_idx}")
             ref_strata.append(acc)
@@ -512,7 +530,7 @@ def simulate_streaming_gate_trajectory_calibration(
             epsilon_r_pp=0.0000,
             epsilon_g_pp=2.0000,
             epsilon_d_pp=0.0000,
-            num_updates=num_candidate_looks,
+            num_updates=planned_k,
             alpha_target=0.05,
             num_boot_replicates=150,
             required_strata=set(accents),
@@ -521,7 +539,7 @@ def simulate_streaming_gate_trajectory_calibration(
         current_live_errors = list(ref_base_errors)
         accepted_in_trajectory = 0
 
-        for look_idx in range(num_candidate_looks):
+        for look_idx in look_indices:
             cand_errors = list(current_live_errors)
 
             if trajectory_type == "null":
@@ -545,9 +563,11 @@ def simulate_streaming_gate_trajectory_calibration(
                         cand_errors[i] = max(0, current_live_errors[i] - max(1, int(0.03 * ref_lengths[i])))
 
             elif trajectory_type == "beneficial":
-                # Candidate improves all accents by -3% WER
+                # Selective adaptation: high-WER accents improve more (-5%), low-WER accents improve (-2%)
                 for i in range(len(cand_errors)):
-                    reduction = max(1, int(0.03 * ref_lengths[i]))
+                    acc = ref_strata[i]
+                    red_rate = 0.05 if acc == "Irish English" else (0.02 if acc == "US English" else 0.035)
+                    reduction = max(1, int(red_rate * ref_lengths[i]))
                     cand_errors[i] = max(0, current_live_errors[i] - reduction)
 
             dec = gate.evaluate_candidate(
@@ -573,10 +593,8 @@ def simulate_streaming_gate_trajectory_calibration(
     rejection_rate = (total_evaluated_candidates - total_accepted_candidates) / float(total_evaluated_candidates)
     accepted_mean = total_accepted_candidates / float(num_trajectories)
 
-    if trajectory_type == "null":
-        is_safe = bool(traj_ci[1] <= 0.05)
-    elif trajectory_type in ("harmful_accent", "disparity_expansion"):
-        is_safe = (traj_rate == 0.0)
+    if trajectory_type in ("null", "harmful_accent", "disparity_expansion"):
+        is_safe = bool(traj_ci[1] <= 0.05 and traj_rate == 0.0)
     else:
         is_safe = (accepted_mean > 0.0)
 
