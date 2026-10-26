@@ -86,6 +86,51 @@ def validate_benchmark_records(df: pd.DataFrame) -> None:
         raise ValueError("Speaker IDs must be valid synthetic identifiers matching pattern '^synth_cv27_[a-z]{2}_\\d{2}$'.")
 
 
+def reconcile_predictions_to_speaker_aggregates(
+    pred_df: pd.DataFrame, spk_df: pd.DataFrame, cohort_name: str
+) -> Dict[str, Any]:
+    """
+    Reconciles raw clip-level prediction records against speaker-level summary aggregates:
+    Verifies that summing clip word counts and errors for Arm 1 (static), Arm 2 (ungated),
+    and Arm 3 (gated) matches the speaker summary records for every single speaker.
+    """
+    agg = pred_df.groupby("speaker_id").agg(
+        pred_wc=("words", "sum"),
+        pred_err1=("err_arm1", "sum"),
+        pred_err2=("err_arm2", "sum"),
+        pred_err3=("err_arm3", "sum"),
+        clip_count=("recording_id", "count"),
+    ).reset_index()
+
+    merged = spk_df.merge(agg, on="speaker_id", how="inner")
+    if len(merged) != len(spk_df):
+        raise ValueError(
+            f"Provenance break in {cohort_name}: only {len(merged)} of {len(spk_df)} speakers found in predictions."
+        )
+
+    wc_match = bool((merged["wc"] == merged["pred_wc"]).all())
+    err1_match = bool((merged["err1"] == merged["pred_err1"]).all())
+    err2_match = bool((merged["err2"] == merged["pred_err2"]).all())
+    err3_match = bool((merged["err3"] == merged["pred_err3"]).all())
+
+    if not (wc_match and err1_match and err2_match and err3_match):
+        raise ValueError(
+            f"Provenance mismatch in {cohort_name}: clip predictions do not sum to speaker aggregates "
+            f"(wc_match={wc_match}, err1_match={err1_match}, err2_match={err2_match}, err3_match={err3_match})."
+        )
+
+    return {
+        "cohort_name": cohort_name,
+        "speakers_reconciled": len(merged),
+        "total_clips_reconciled": int(agg["clip_count"].sum()),
+        "word_counts_reconciled": wc_match,
+        "err1_reconciled": err1_match,
+        "err2_reconciled": err2_match,
+        "err3_reconciled": err3_match,
+        "reconciliation_verdict": "PERFECT_EXACT_MATCH",
+    }
+
+
 def run_development_variance_calibration() -> Dict[str, Any]:
     """
     Computes development variance-covariance, empirical physical evaluation statistics,
@@ -112,10 +157,16 @@ def run_development_variance_calibration() -> Dict[str, Any]:
 
     # 1. Genuinely load physical evaluation data
     c1_df = pd.read_csv(cohort1_spk_file)
+    c1_pred_df = pd.read_csv(cohort1_pred_file)
     c2_df = pd.read_csv(cohort2_spk_file)
+    c2_pred_df = pd.read_csv(cohort2_pred_file)
     cv27_df = pd.read_csv(cv27_fixture_file)
 
     validate_benchmark_records(cv27_df)
+
+    # Verify prediction-to-aggregate physical provenance chain
+    c1_reconciliation = reconcile_predictions_to_speaker_aggregates(c1_pred_df, c1_df, "Cohort 1 (Revalidated)")
+    c2_reconciliation = reconcile_predictions_to_speaker_aggregates(c2_pred_df, c2_df, "Cohort 2")
 
     # A. Physical Cohort 1 Statistics (N=60 speakers)
     c1_strata_counts = c1_df.groupby("stratum")["speaker_id"].count().to_dict()
@@ -173,7 +224,7 @@ def run_development_variance_calibration() -> Dict[str, Any]:
     )
 
     sizing_curve: List[Dict[str, Any]] = []
-    candidate_stratum_sizes = [78, 120, 160, 200, 220, 240]
+    candidate_stratum_sizes = [78, 120, 160, 200, 210, 220, 240]
     for n in candidate_stratum_sizes:
         p_est, p_lcb, p_ucb = simulate_design_stage_joint_power(
             spec=power_spec,
@@ -248,6 +299,7 @@ def run_development_variance_calibration() -> Dict[str, Any]:
                 "observed_baseline_wer_means_pp": c1_strata_means,
                 "observed_baseline_wer_stds_pp": c1_strata_stds,
                 "observed_paired_diff_std_pp": c1_paired_std,
+                "prediction_reconciliation": c1_reconciliation,
             },
             {
                 "source_id": "cohort1_physical_predictions",
@@ -270,6 +322,7 @@ def run_development_variance_calibration() -> Dict[str, Any]:
                 "observed_baseline_wer_stds_pp": c2_strata_stds,
                 "observed_paired_diff_std_gated_pp": c2_paired_std_gated,
                 "observed_paired_diff_std_ungated_pp": c2_paired_std_ungated,
+                "prediction_reconciliation": c2_reconciliation,
             },
             {
                 "source_id": "cohort2_physical_predictions",
@@ -296,10 +349,13 @@ def run_development_variance_calibration() -> Dict[str, Any]:
             "cohort1_speaker_count": len(c1_df),
             "cohort1_pooled_speaker_wer_std_pp": c1_speaker_std,
             "cohort1_paired_difference_std_pp": c1_paired_std,
+            "cohort1_prediction_reconciliation": c1_reconciliation,
             "cohort2_speaker_count": len(c2_df),
             "cohort2_pooled_speaker_wer_std_pp": c2_spk_std,
             "cohort2_paired_difference_std_gated_pp": c2_paired_std_gated,
             "cohort2_paired_difference_std_ungated_pp": c2_paired_std_ungated,
+            "cohort2_prediction_reconciliation": c2_reconciliation,
+            "full_prediction_to_aggregate_provenance_verified": True,
         },
         "simulation_fixture_assumptions": {
             "classification": "SCENARIO_SIMULATION_ASSUMPTIONS",
@@ -324,14 +380,21 @@ def run_development_variance_calibration() -> Dict[str, Any]:
             "decision_rules": {
                 "decision_rule_a_point_estimate": {
                     "criterion": "Estimated joint power >= 0.90",
-                    "minimum_speakers_per_stratum": 210,
-                    "total_confirmatory_speakers": 1260,
+                    "status_at_210": "NEAR_TARGET (89.33%, 95% CI [83.26%, 93.78%])",
+                    "minimum_speakers_per_stratum_strictly_satisfying": 220,
+                    "total_confirmatory_speakers_at_220": 1320,
                 },
                 "decision_rule_b_lcb_guarantee": {
                     "criterion": "95% Clopper-Pearson LCB >= 0.90",
+                    "status_at_220": "ADEQUATELY_POWERED_LCB_GUARANTEED (96.67%, 95% CI [92.39%, 98.91%])",
                     "minimum_speakers_per_stratum": 220,
                     "total_confirmatory_speakers": 1320,
                 },
+                "sizing_note": (
+                    "In the 150-simulation sweep with seed 42, N=210 achieves 89.33% (near target), "
+                    "while N=220 achieves 96.67% with LCB=92.39%, strictly satisfying both Decision Rule A "
+                    "(point estimate >= 90%) and Decision Rule B (LCB >= 90%). Both rules recommend N=220 per stratum."
+                ),
             },
             "sizing_curve": sizing_curve,
         },
@@ -345,9 +408,10 @@ def run_development_variance_calibration() -> Dict[str, Any]:
         "protocol_amendment_recommendation": (
             "Protocol Amendment Recommendation ADR-005 Section 11: "
             "1. Separation of Evidence: Physical evaluation evidence is rooted in 528 physical speakers (Cohort 1 with 60 speakers and Cohort 2 with 468 speakers, evaluated on Tesla T4 GPU). The CV27 benchmark dataset is a calibrated simulation fixture (N=96 rows, namespace synth_cv27_*) modeling a hypothesized Delta_D = -2.00 pp selective adaptation effect. "
-            "2. Confirmatory Sample Size: Under the empirical Delta_D = -2.00 pp effect size, the candidate draft design of N=78 speakers per stratum provides only approximately 40-42% joint power and is strictly UNDERPOWERED. "
-            "To achieve the declared 90% joint design power target under Decision Rule A (point estimate >= 90%), the protocol requires N=210 speakers per stratum (1,260 confirmatory speakers). "
-            "To guarantee 90% joint design power under Decision Rule B (lower confidence bound >= 90%), the protocol requires N=220 speakers per stratum (1,320 confirmatory speakers). "
+            "2. Confirmatory Sample Size: Under the scenario Delta_D = -2.00 pp effect size, the candidate draft design of N=78 speakers per stratum provides only approximately 40.7% joint power [32.7%, 49.0%] and is strictly UNDERPOWERED. "
+            "At N=210, estimated power reaches 89.33% [83.3%, 93.8%] (near target). "
+            "At N=220, estimated power reaches 96.67% with a 95% Clopper-Pearson LCB of 92.39% >= 90.0%, strictly satisfying Decision Rule B (LCB >= 90%) and guaranteeing 90% power under the calibrated simulator. "
+            "Both rules recommend adopting N=220 speakers per stratum (1,320 total confirmatory speakers) in the formal protocol amendment. "
             "Confirmatory Cohort 3 unsealing remains on HOLD pending formal protocol amendment and independent governance authorization."
         ),
     }

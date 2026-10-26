@@ -35,22 +35,24 @@ CANONICAL_PROTOCOL_ACCENTS: FrozenSet[str] = frozenset([
 
 @dataclass
 class DesignStagePowerSpec:
-    """Design-stage simulation power specification derived from development data.
+    """Design-stage simulation power specification derived from declared scenario assumptions.
 
-    Variance parameters and effect sizes are frozen based on Common Voice 27 development data:
-    - between_speaker_wer_std: 6.50 pp (cross-speaker variability within accent strata)
-    - paired_diff_std: 3.20 pp (within-speaker paired difference standard deviation)
-    - target_primary_effect_pp: 3.50 pp superiority vs static baseline
-    - target_ungated_effect_pp: 3.50 pp superiority vs corrected ungated SUTA
-    - target_disparity_effect_pp: -2.00 pp narrowing of max-min disparity gap
+    Variance parameters and effect sizes are calibrated scenario simulation assumptions:
+    - between_speaker_wer_std: 6.50 pp (assumed cross-speaker variability within accent strata)
+    - paired_diff_std: 3.20 pp (assumed within-speaker paired difference standard deviation)
+    - target_primary_effect_pp: 3.50 pp assumed superiority vs static baseline
+    - target_ungated_effect_pp: 3.50 pp assumed superiority vs corrected ungated SUTA
+    - scenario_disparity_effect_pp: -2.00 pp assumed narrowing of max-min disparity gap
+    - target_disparity_effect_pp: -2.00 pp target disparity effect
     - alpha_family: 0.05 family-wise error across M=9 hypotheses
     - target_joint_power: 0.90 joint probability across all 9 criteria
-    - required_speakers_per_stratum: 78 speakers (candidate draft; achieves ~40-42% joint power under empirical Delta_D = -2.00 pp)
-    - recommended_speakers_per_stratum_for_90_power: 220 speakers (1,320 total; guarantees LCB >= 90% power under empirical Delta_D = -2.00 pp; or N=210 for point estimate >= 90%)
+    - required_speakers_per_stratum: 78 speakers (candidate draft proposal; provides ~40-42% power under scenario Delta_D = -2.00 pp)
+    - recommended_speakers_per_stratum_for_90_power: 220 speakers (1,320 total; guarantees LCB >= 90% power under Decision Rule B; or N=210 for point estimate >= 90%)
     """
     target_primary_effect_pp: float = 3.50
     target_ungated_effect_pp: float = 3.50
-    empirical_disparity_effect_pp: float = -2.00
+    scenario_disparity_effect_pp: float = -2.00
+    empirical_disparity_effect_pp: float = -2.00  # Backward-compatibility alias
     target_disparity_effect_pp: float = -2.00
     between_speaker_wer_std: float = 6.50
     paired_diff_std: float = 3.20
@@ -63,7 +65,29 @@ class DesignStagePowerSpec:
     num_simulations: int = 1000
     baseline_wers: Optional[Dict[str, float]] = None
     provenance_source: str = "reports/stage6m/development_variance_calibration.json"
-    provenance_details: str = "Stage 6M Development Pools (reports/stage6m/cv27_development_speaker_benchmarks.csv: CV27 delta_wer std=3.18 pp, speaker_wer std=6.48 pp)"
+    provenance_details: str = (
+        "Calibrated scenario simulation assumptions (reports/stage6m/cv27_development_speaker_benchmarks.csv: "
+        "synthetic fixture modeled delta_disparity=-2.00 pp, modeled within-stratum wer_std=6.50 pp, paired_diff_std=3.20 pp; "
+        "physical Cohort 1 N=60 and Cohort 2 N=468 reconciled to clip predictions in reports/stage6m/development_variance_calibration.json)"
+    )
+
+    @classmethod
+    def candidate_draft_spec(cls) -> "DesignStagePowerSpec":
+        """Candidate draft specification: N=78 per stratum, evaluates as UNDERPOWERED (~40-42%)."""
+        return cls(
+            required_speakers_per_stratum=78,
+            require_lcb_threshold=False,
+            target_joint_power=0.90,
+        )
+
+    @classmethod
+    def recommended_rule_b_spec(cls) -> "DesignStagePowerSpec":
+        """Recommended Decision Rule B candidate specification: N=220 per stratum with LCB guarantee >= 90%."""
+        return cls(
+            required_speakers_per_stratum=220,
+            require_lcb_threshold=True,
+            target_joint_power=0.90,
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)

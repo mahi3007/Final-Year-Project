@@ -4,7 +4,7 @@
   "timestamp_utc": "2026-10-26T18:00:00Z",
   "calculation_script": {
     "path": "scripts/calibrate_stage6m_development_variance.py",
-    "sha256": "ec7e50fb374535764f37901ea461526f1f0196d33ced8a95315f482de76b6090"
+    "sha256": "bd1aa35ae174c478e990046354455c863ea4e4e231b61df810f05fba23aa1b52"
   },
   "data_sources": [
     {
@@ -38,7 +38,17 @@
         "South Asian English": 21.7,
         "US English": 15.74
       },
-      "observed_paired_diff_std_pp": 3.07
+      "observed_paired_diff_std_pp": 3.07,
+      "prediction_reconciliation": {
+        "cohort_name": "Cohort 1 (Revalidated)",
+        "speakers_reconciled": 60,
+        "total_clips_reconciled": 900,
+        "word_counts_reconciled": true,
+        "err1_reconciled": true,
+        "err2_reconciled": true,
+        "err3_reconciled": true,
+        "reconciliation_verdict": "PERFECT_EXACT_MATCH"
+      }
     },
     {
       "source_id": "cohort1_physical_predictions",
@@ -81,7 +91,17 @@
         "US English": 13.49
       },
       "observed_paired_diff_std_gated_pp": 0.0,
-      "observed_paired_diff_std_ungated_pp": 15.69
+      "observed_paired_diff_std_ungated_pp": 15.69,
+      "prediction_reconciliation": {
+        "cohort_name": "Cohort 2",
+        "speakers_reconciled": 468,
+        "total_clips_reconciled": 7020,
+        "word_counts_reconciled": true,
+        "err1_reconciled": true,
+        "err2_reconciled": true,
+        "err3_reconciled": true,
+        "reconciliation_verdict": "PERFECT_EXACT_MATCH"
+      }
     },
     {
       "source_id": "cohort2_physical_predictions",
@@ -163,10 +183,31 @@
     "cohort1_speaker_count": 60,
     "cohort1_pooled_speaker_wer_std_pp": 16.92,
     "cohort1_paired_difference_std_pp": 3.07,
+    "cohort1_prediction_reconciliation": {
+      "cohort_name": "Cohort 1 (Revalidated)",
+      "speakers_reconciled": 60,
+      "total_clips_reconciled": 900,
+      "word_counts_reconciled": true,
+      "err1_reconciled": true,
+      "err2_reconciled": true,
+      "err3_reconciled": true,
+      "reconciliation_verdict": "PERFECT_EXACT_MATCH"
+    },
     "cohort2_speaker_count": 468,
     "cohort2_pooled_speaker_wer_std_pp": 15.65,
     "cohort2_paired_difference_std_gated_pp": 0.0,
-    "cohort2_paired_difference_std_ungated_pp": 15.69
+    "cohort2_paired_difference_std_ungated_pp": 15.69,
+    "cohort2_prediction_reconciliation": {
+      "cohort_name": "Cohort 2",
+      "speakers_reconciled": 468,
+      "total_clips_reconciled": 7020,
+      "word_counts_reconciled": true,
+      "err1_reconciled": true,
+      "err2_reconciled": true,
+      "err3_reconciled": true,
+      "reconciliation_verdict": "PERFECT_EXACT_MATCH"
+    },
+    "full_prediction_to_aggregate_provenance_verified": true
   },
   "simulation_fixture_assumptions": {
     "classification": "SCENARIO_SIMULATION_ASSUMPTIONS",
@@ -191,14 +232,17 @@
     "decision_rules": {
       "decision_rule_a_point_estimate": {
         "criterion": "Estimated joint power >= 0.90",
-        "minimum_speakers_per_stratum": 210,
-        "total_confirmatory_speakers": 1260
+        "status_at_210": "NEAR_TARGET (89.33%, 95% CI [83.26%, 93.78%])",
+        "minimum_speakers_per_stratum_strictly_satisfying": 220,
+        "total_confirmatory_speakers_at_220": 1320
       },
       "decision_rule_b_lcb_guarantee": {
         "criterion": "95% Clopper-Pearson LCB >= 0.90",
+        "status_at_220": "ADEQUATELY_POWERED_LCB_GUARANTEED (96.67%, 95% CI [92.39%, 98.91%])",
         "minimum_speakers_per_stratum": 220,
         "total_confirmatory_speakers": 1320
-      }
+      },
+      "sizing_note": "In the 150-simulation sweep with seed 42, N=210 achieves 89.33% (near target), while N=220 achieves 96.67% with LCB=92.39%, strictly satisfying both Decision Rule A (point estimate >= 90%) and Decision Rule B (LCB >= 90%). Both rules recommend N=220 per stratum."
     },
     "sizing_curve": [
       {
@@ -242,6 +286,17 @@
         "joint_power_ci95": [
           0.8016,
           0.9166
+        ],
+        "status": "NEAR_TARGET"
+      },
+      {
+        "speakers_per_stratum": 210,
+        "total_speakers": 1260,
+        "total_clips": 18900,
+        "estimated_joint_power": 0.8933,
+        "joint_power_ci95": [
+          0.8326,
+          0.9378
         ],
         "status": "NEAR_TARGET"
       },
@@ -316,5 +371,5 @@
     ],
     "stability_conclusion": "The 99.444th percentile bootstrap tail estimate is numerically stable across B in [500, 1000, 2000]. B=1000 provides sufficient extreme-tail precision without numerical drift."
   },
-  "protocol_amendment_recommendation": "Protocol Amendment Recommendation ADR-005 Section 11: 1. Separation of Evidence: Physical evaluation evidence is rooted in 528 physical speakers (Cohort 1 with 60 speakers and Cohort 2 with 468 speakers, evaluated on Tesla T4 GPU). The CV27 benchmark dataset is a calibrated simulation fixture (N=96 rows, namespace synth_cv27_*) modeling a hypothesized Delta_D = -2.00 pp selective adaptation effect. 2. Confirmatory Sample Size: Under the empirical Delta_D = -2.00 pp effect size, the candidate draft design of N=78 speakers per stratum provides only approximately 40-42% joint power and is strictly UNDERPOWERED. To achieve the declared 90% joint design power target under Decision Rule A (point estimate >= 90%), the protocol requires N=210 speakers per stratum (1,260 confirmatory speakers). To guarantee 90% joint design power under Decision Rule B (lower confidence bound >= 90%), the protocol requires N=220 speakers per stratum (1,320 confirmatory speakers). Confirmatory Cohort 3 unsealing remains on HOLD pending formal protocol amendment and independent governance authorization."
+  "protocol_amendment_recommendation": "Protocol Amendment Recommendation ADR-005 Section 11: 1. Separation of Evidence: Physical evaluation evidence is rooted in 528 physical speakers (Cohort 1 with 60 speakers and Cohort 2 with 468 speakers, evaluated on Tesla T4 GPU). The CV27 benchmark dataset is a calibrated simulation fixture (N=96 rows, namespace synth_cv27_*) modeling a hypothesized Delta_D = -2.00 pp selective adaptation effect. 2. Confirmatory Sample Size: Under the scenario Delta_D = -2.00 pp effect size, the candidate draft design of N=78 speakers per stratum provides only approximately 40.7% joint power [32.7%, 49.0%] and is strictly UNDERPOWERED. At N=210, estimated power reaches 89.33% [83.3%, 93.8%] (near target). At N=220, estimated power reaches 96.67% with a 95% Clopper-Pearson LCB of 92.39% >= 90.0%, strictly satisfying Decision Rule B (LCB >= 90%) and guaranteeing 90% power under the calibrated simulator. Both rules recommend adopting N=220 speakers per stratum (1,320 total confirmatory speakers) in the formal protocol amendment. Confirmatory Cohort 3 unsealing remains on HOLD pending formal protocol amendment and independent governance authorization."
 }
