@@ -161,8 +161,7 @@ def compute_masked_suta_loss(
     # 1. Masked Entropy Minimization
     valid_probs = probs[mask]  # (N_valid_frames, C)
     if valid_probs.numel() == 0:
-        # Fallback if mask is somehow empty
-        valid_probs = probs.view(-1, C)
+        raise ValueError("No valid acoustic frames remaining after variable-length padding masking")
 
     log_probs = torch.log(valid_probs + 1e-8)
     entropy = -torch.sum(valid_probs * log_probs, dim=-1)
@@ -202,9 +201,10 @@ def execute_safe_adaptation_transaction(
     try:
         total_loss = loss_fn()
     except Exception as exc:
+        is_empty = "No valid acoustic frames" in str(exc)
         return SafeUpdateResult(
             loss=None,
-            numerical_status="FAILED_LOSS_EXCEPTION",
+            numerical_status="FAILED_EMPTY_VALID_FRAMES" if is_empty else "FAILED_LOSS_EXCEPTION",
             loss_finite=False,
             gradient_finite=False,
             parameter_finite=True,
@@ -414,15 +414,40 @@ class AtomicCandidateManager:
     ) -> Tuple[str, str]:
         """
         Atomically commits candidate model parameters and optimizer state into live model and optimizer.
+        Guarantees all-or-nothing rollback if optimizer state loading fails or post-step state is non-finite.
         """
-        self.live_model.load_state_dict(candidate_model.state_dict())
-        self.live_optimizer.load_state_dict(candidate_optimizer.state_dict())
+        model_backup = copy.deepcopy(self.live_model.state_dict())
+        opt_backup = copy.deepcopy(self.live_optimizer.state_dict())
+        try:
+            self.live_model.load_state_dict(candidate_model.state_dict())
+            self.live_optimizer.load_state_dict(candidate_optimizer.state_dict())
+        except Exception as exc:
+            try:
+                self.live_model.load_state_dict(model_backup)
+                self.live_optimizer.load_state_dict(opt_backup)
+            except Exception:
+                pass
+            raise RuntimeError(f"Atomic promotion failed; live model and optimizer state rolled back: {exc}") from exc
+
+        # Verify post-promotion finiteness
+        all_params_finite = all(torch.isfinite(p).all().item() for p in self.live_model.parameters())
+        opt_finite, opt_err = validate_optimizer_state(self.live_optimizer)
+        if not all_params_finite or not opt_finite:
+            try:
+                self.live_model.load_state_dict(model_backup)
+                self.live_optimizer.load_state_dict(opt_backup)
+            except Exception:
+                pass
+            raise RuntimeError(f"Atomic promotion aborted: post-promotion state non-finite ({opt_err}); rolled back.")
+
         return self.get_live_model_hash(), self.get_live_optimizer_hash()
 
     def discard_candidate(
         self,
         candidate_model: Optional[nn.Module] = None,
-        candidate_optimizer: Optional[torch.optim.Optimizer] = None
+        candidate_optimizer: Optional[torch.optim.Optimizer] = None,
+        expected_live_model_hash: Optional[str] = None,
+        expected_live_opt_hash: Optional[str] = None,
     ) -> None:
         """
         Safely disposes candidate copies and asserts live model & optimizer invariance.
@@ -431,3 +456,18 @@ class AtomicCandidateManager:
             del candidate_model
         if candidate_optimizer is not None:
             del candidate_optimizer
+
+        if expected_live_model_hash is not None:
+            curr_m_hash = self.get_live_model_hash()
+            if curr_m_hash != expected_live_model_hash:
+                raise AssertionError(
+                    f"Live model parameter hash mutated during candidate discard! "
+                    f"expected={expected_live_model_hash}, current={curr_m_hash}"
+                )
+        if expected_live_opt_hash is not None:
+            curr_opt_hash = self.get_live_optimizer_hash()
+            if curr_opt_hash != expected_live_opt_hash:
+                raise AssertionError(
+                    f"Live optimizer state hash mutated during candidate discard! "
+                    f"expected={expected_live_opt_hash}, current={curr_opt_hash}"
+                )

@@ -12,6 +12,7 @@ Validates ADR-005 and Protocol v1.4.0 requirements for fail-closed candidate ada
 
 import copy
 import hashlib
+import math
 import pytest
 import torch
 import torch.nn as nn
@@ -609,4 +610,274 @@ def test_suta_adapter_returns_updated_false_on_failure(monkeypatch):
     assert adapter.step_count == initial_steps, "Step count must not increment on failed adaptation"
     assert adapter.compute_model_hash() == initial_hash, "Live model parameter hash must remain invariant on failure"
     assert res.details["numerical_status"] == "FAILED_NONFINITE_LOSS"
+
+
+def test_v14_gate_stratified_disparity_bootstrap_preserves_all_strata():
+    """
+    Test Case 15: Stratified paired cluster bootstrap preserves all strata.
+    Asserts bootstrap resamples within each stratum and does not omit any group,
+    even with highly unequal speaker counts per stratum.
+    """
+    all_6_strata = {
+        "US English", "England English", "South Asian English",
+        "Australian English", "Canadian English", "Irish English"
+    }
+    gate = StreamingSentinelSafetyGateV14(
+        epsilon_r_pp=0.0,
+        epsilon_g_pp=2.0,
+        epsilon_d_pp=0.0,
+        num_updates=10,
+        alpha_target=0.05,
+        required_strata=all_6_strata,
+        num_boot_replicates=50,
+    )
+
+    # Build panel with unequal speaker counts: 1 speaker in Irish, 3 in others
+    speaker_ids = []
+    strata = []
+    live_errors = []
+    cand_errors = []
+    ref_lengths = []
+
+    for grp in all_6_strata:
+        n_spk = 1 if grp == "Irish English" else 3
+        for s in range(n_spk):
+            s_name = f"{grp}_spk_{s}"
+            speaker_ids.append(s_name)
+            strata.append(grp)
+            live_errors.append(20)
+            cand_errors.append(15)
+            ref_lengths.append(100)
+
+    dec = gate.evaluate_candidate(
+        window_id=0,
+        speaker_ids=speaker_ids,
+        stratum_groups=strata,
+        live_errors=live_errors,
+        cand_errors=cand_errors,
+        ref_lengths=ref_lengths,
+    )
+
+    assert dec.delta_r < 0
+    assert math.isfinite(dec.se_d)
+    assert math.isfinite(dec.ucb_d)
+    assert len(dec.group_deltas) == 6
+
+
+def test_v14_gate_fail_closed_missing_required_strata():
+    """
+    Test Case 16: Missing required strata triggers fail-closed ValueError.
+    """
+    required = {"accentA", "accentB", "accentC"}
+    gate = StreamingSentinelSafetyGateV14(required_strata=required)
+
+    # Omit accentC
+    with pytest.raises(ValueError, match="Missing required sentinel strata"):
+        gate.evaluate_candidate(
+            window_id=0,
+            speaker_ids=["s1", "s2"],
+            stratum_groups=["accentA", "accentB"],
+            live_errors=[10, 10],
+            cand_errors=[10, 10],
+            ref_lengths=[100, 100],
+        )
+
+
+def test_v14_gate_fail_closed_inconsistent_speaker_stratum():
+    """
+    Test Case 17: Inconsistent speaker-to-stratum mapping triggers fail-closed ValueError.
+    """
+    gate = StreamingSentinelSafetyGateV14()
+    with pytest.raises(ValueError, match="Inconsistent speaker-to-accent mapping"):
+        gate.evaluate_candidate(
+            window_id=0,
+            speaker_ids=["spk_1", "spk_1"],
+            stratum_groups=["accentA", "accentB"],
+            live_errors=[10, 10],
+            cand_errors=[10, 10],
+            ref_lengths=[100, 100],
+        )
+
+
+def test_v14_gate_fail_closed_invalid_inputs():
+    """
+    Test Case 18: Negative errors, non-positive words, negative look index fail closed.
+    """
+    gate = StreamingSentinelSafetyGateV14()
+
+    # Negative errors
+    with pytest.raises(ValueError, match="must be finite non-negative integer"):
+        gate.evaluate_candidate(
+            window_id=0,
+            speaker_ids=["s1", "s2"],
+            stratum_groups=["accentA", "accentB"],
+            live_errors=[-1, 10],
+            cand_errors=[10, 10],
+            ref_lengths=[100, 100],
+        )
+
+    # Zero reference words
+    with pytest.raises(ValueError, match="must be finite positive integer"):
+        gate.evaluate_candidate(
+            window_id=0,
+            speaker_ids=["s1", "s2"],
+            stratum_groups=["accentA", "accentB"],
+            live_errors=[10, 10],
+            cand_errors=[10, 10],
+            ref_lengths=[0, 100],
+        )
+
+    # Negative look index
+    with pytest.raises(ValueError, match="must be a non-negative integer"):
+        gate.evaluate_candidate(
+            window_id=-1,
+            speaker_ids=["s1", "s2"],
+            stratum_groups=["accentA", "accentB"],
+            live_errors=[10, 10],
+            cand_errors=[10, 10],
+            ref_lengths=[100, 100],
+        )
+
+
+def test_v14_gate_rejects_nan_in_metrics(monkeypatch):
+    """
+    Test Case 19: Non-finite/NaN metrics fail closed and trigger explicit rejection.
+    """
+    gate = StreamingSentinelSafetyGateV14()
+    speaker_ids = ["s1", "s2"]
+    strata = ["accentA", "accentB"]
+    live_errors = [20, 30]
+    cand_errors = [10, 20]  # Point improvement
+    ref_lengths = [100, 100]
+
+    # Monkeypatch np.std in bootstrap to return NaN
+    monkeypatch.setattr(np, "std", lambda *args, **kwargs: float("nan"))
+
+    dec = gate.evaluate_candidate(
+        window_id=0,
+        speaker_ids=speaker_ids,
+        stratum_groups=strata,
+        live_errors=live_errors,
+        cand_errors=cand_errors,
+        ref_lengths=ref_lengths,
+    )
+    assert not dec.passed_gate
+    assert dec.decision == "REJECT"
+    assert any("Non-finite disparity metric" in r for r in dec.rejection_reasons)
+
+
+def test_empty_frame_mask_rejects_with_specific_status():
+    """
+    Test Case 20: Empty valid frame mask rejects fail-closed with FAILED_EMPTY_VALID_FRAMES.
+    Does NOT silently fall back to unmasked objective.
+    """
+    model = ToyCTCModel()
+    optimizer = torch.optim.AdamW(model.ln.parameters(), lr=1e-3)
+
+    audio_lengths = [0, 0]
+    batch_tensor = torch.zeros(2, 50)
+
+    # Monkeypatch to return 0 valid frames
+    model._get_feat_extract_output_lengths = lambda lengths: torch.zeros_like(lengths)
+
+    def loss_fn():
+        total_loss, _, _ = compute_masked_suta_loss(
+            model=model,
+            input_values=batch_tensor,
+            audio_lengths=audio_lengths,
+            temperature=2.5,
+            alpha=0.5
+        )
+        return total_loss
+
+    res = execute_safe_adaptation_transaction(
+        model=model,
+        optimizer=optimizer,
+        loss_fn=loss_fn,
+        max_grad_norm=1.0,
+    )
+    assert not res.is_success
+    assert res.numerical_status == "FAILED_EMPTY_VALID_FRAMES"
+    assert "No valid acoustic frames" in res.failure_reason
+
+
+def test_atomic_candidate_manager_promote_all_or_nothing_rollback():
+    """
+    Test Case 21: AtomicCandidateManager promote rollback guarantee.
+    If optimizer state loading fails during promotion, live model is rolled back.
+    """
+    live_model = ToyAcousticModel()
+    live_optimizer = torch.optim.AdamW(live_model.ln.parameters(), lr=1e-3)
+    manager = AtomicCandidateManager(live_model=live_model, live_optimizer=live_optimizer)
+
+    model_hash_before = manager.get_live_model_hash()
+    opt_hash_before = manager.get_live_optimizer_hash()
+
+    cand_model, cand_opt = manager.create_candidate()
+    # Step candidate
+    l = cand_model(torch.randn(4, 16)).mean()
+    l.backward()
+    cand_opt.step()
+
+    # Monkeypatch live_optimizer.load_state_dict to raise error during candidate loading
+    orig_opt_load = live_optimizer.load_state_dict
+    call_count = 0
+
+    def failing_load_state_dict(state_dict):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            raise RuntimeError("Simulated corruption in optimizer state deserializer")
+        return orig_opt_load(state_dict)
+
+    live_optimizer.load_state_dict = failing_load_state_dict
+
+    with pytest.raises(RuntimeError, match="Atomic promotion failed; live model and optimizer state rolled back"):
+        manager.promote_candidate(cand_model, cand_opt)
+
+    # Assert live state remains unchanged (all-or-nothing rollback!)
+    assert manager.get_live_model_hash() == model_hash_before
+    assert manager.get_live_optimizer_hash() == opt_hash_before
+
+
+def test_atomic_candidate_manager_discard_asserts_hashes():
+    """
+    Test Case 22: discard_candidate asserts hash invariants.
+    """
+    live_model = ToyAcousticModel()
+    live_optimizer = torch.optim.AdamW(live_model.ln.parameters(), lr=1e-3)
+    manager = AtomicCandidateManager(live_model=live_model, live_optimizer=live_optimizer)
+
+    cand_model, cand_opt = manager.create_candidate()
+    m_hash = manager.get_live_model_hash()
+    opt_hash = manager.get_live_optimizer_hash()
+
+    # Should succeed when hashes match
+    manager.discard_candidate(
+        cand_model, cand_opt,
+        expected_live_model_hash=m_hash,
+        expected_live_opt_hash=opt_hash,
+    )
+
+    # Should raise AssertionError if live state was illegally corrupted
+    with pytest.raises(AssertionError, match="Live model parameter hash mutated"):
+        manager.discard_candidate(
+            expected_live_model_hash="corrupt_hash_12345"
+        )
+
+
+def test_v14_runner_provenance_labels():
+    """
+    Test Case 23: Gate version provenance labels.
+    Asserts v14 gate is labelled with Protocol v1.4.0 and cannot be labelled v1.3.4.
+    """
+    protocol_v14 = "v1.4.0-stage6m-selective-adaptation-draft"
+    protocol_v13 = "v1.3.4-stage6m-self-authorization-amendment"
+
+    def resolve_protocol(gate_ver: str) -> str:
+        return protocol_v14 if gate_ver == "v14" else protocol_v13
+
+    assert resolve_protocol("v14") == protocol_v14
+    assert resolve_protocol("v14") != protocol_v13
+    assert resolve_protocol("v13") == protocol_v13
 

@@ -418,6 +418,7 @@ def main():
             epsilon_d_pp=0.0000,
             num_updates=num_updates,
             alpha_target=0.05,
+            required_strata=set(core_sentinel_strata),
         )
     else:
         print("      Constructing Historical Protocol v1.3 Streaming Gate (StreamingSentinelSafetyGate):")
@@ -441,6 +442,7 @@ def main():
 
     arm1_records, arm2_records, arm3_records = [], [], []
     gate_decision_records = []
+    arm2_failure_records = []
 
     print(f"\n[3/5] Executing Matched Three-Arm Physical GPU Stream ({num_windows} windows, K={window_size_k})...")
     print("-" * 105)
@@ -509,6 +511,8 @@ def main():
 
         if win_idx < num_updates:
             # Arm 2 (Arm B): Candidate isolation and unconditional promotion if numerically safe
+            pre_arm2_m_hash = arm2_manager.get_live_model_hash()
+            pre_arm2_opt_hash = arm2_manager.get_live_optimizer_hash()
             cand_arm2_model, cand_arm2_opt = arm2_manager.create_candidate()
             arm2_step_res = suta_adaptation_step_gpu(
                 model=cand_arm2_model, processor=processor, waveforms=batch_waveforms,
@@ -517,10 +521,27 @@ def main():
             if arm2_step_res.is_success:
                 arm2_manager.promote_candidate(cand_arm2_model, cand_arm2_opt)
             else:
-                arm2_manager.discard_candidate(cand_arm2_model, cand_arm2_opt)
+                arm2_manager.discard_candidate(
+                    cand_arm2_model, cand_arm2_opt,
+                    expected_live_model_hash=pre_arm2_m_hash,
+                    expected_live_opt_hash=pre_arm2_opt_hash,
+                )
+                arm2_failure_records.append({
+                    "window_id": win_idx,
+                    "stratum": window_primary_stratum,
+                    "loss": round(arm2_step_res.loss, 4) if (arm2_step_res.loss is not None and np.isfinite(arm2_step_res.loss)) else None,
+                    "numerical_status": arm2_step_res.numerical_status,
+                    "loss_finite": arm2_step_res.loss_finite,
+                    "gradient_finite": arm2_step_res.gradient_finite,
+                    "parameter_finite": arm2_step_res.parameter_finite,
+                    "optimizer_state_finite": arm2_step_res.optimizer_state_finite,
+                    "failure_reason": arm2_step_res.failure_reason,
+                    "duration_seconds": round(time.time() - t_win_start, 2)
+                })
 
             # Arm 3 (Arm C): Candidate clone & evaluation with matched optimizer-state semantics
             current_arm3_hash = arm3_manager.get_live_model_hash()
+            current_arm3_opt_hash = arm3_manager.get_live_optimizer_hash()
             cand_arm3_model, cand_arm3_opt = arm3_manager.create_candidate()
 
             cand_step_res = suta_adaptation_step_gpu(
@@ -532,7 +553,11 @@ def main():
 
             if not cand_step_res.is_success:
                 # Fail-closed numerical rejection: discard candidate and leave live state untouched
-                arm3_manager.discard_candidate(cand_arm3_model, cand_arm3_opt)
+                arm3_manager.discard_candidate(
+                    cand_arm3_model, cand_arm3_opt,
+                    expected_live_model_hash=current_arm3_hash,
+                    expected_live_opt_hash=current_arm3_opt_hash,
+                )
                 gate_decision_str = f"REJECT ({cand_step_res.numerical_status})"
                 gate_decision_records.append({
                     "window_id": win_idx,
@@ -597,7 +622,11 @@ def main():
                     gate_decision_str = f"ACCEPT (Delta_R={gate_dec.delta_r:+.2f}%)"
                     cached_live_hash = None
                 else:
-                    arm3_manager.discard_candidate(cand_arm3_model, cand_arm3_opt)
+                    arm3_manager.discard_candidate(
+                        cand_arm3_model, cand_arm3_opt,
+                        expected_live_model_hash=current_arm3_hash,
+                        expected_live_opt_hash=current_arm3_opt_hash,
+                    )
                     gate_decision_str = f"REJECT (UCB={gate_dec.ucb_r:+.2f}%)"
 
                 gate_decision_records.append({
@@ -749,9 +778,43 @@ def main():
     spk_df.to_csv(results_dir / f"stage6m_physical_{args.cohort}_speaker_records.csv", index=False)
     dec_df.to_csv(results_dir / f"stage6m_physical_{args.cohort}_gate_decisions.csv", index=False)
 
+    # Execution Provenance & Configuration Digest
+    protocol_version = (
+        "v1.4.0-stage6m-selective-adaptation-draft"
+        if args.gate_version == "v14"
+        else "v1.3.4-stage6m-self-authorization-amendment"
+    )
+
+    def get_git_commit_sha() -> str:
+        try:
+            import subprocess
+            return subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=str(PROJECT_ROOT)
+            ).decode("utf-8").strip()
+        except Exception:
+            return "UNKNOWN_COMMIT"
+
+    git_commit_sha = get_git_commit_sha()
+
+    config_dict = {
+        "cohort": str(args.cohort),
+        "model": str(args.model),
+        "gate_version": str(args.gate_version),
+        "protocol_version": protocol_version,
+        "window_size_k": int(window_size_k),
+        "num_updates": int(num_updates),
+        "epsilon_r": float(safety_gate.epsilon_r),
+        "epsilon_g": float(safety_gate.epsilon_g),
+        "epsilon_d": float(safety_gate.epsilon_d),
+    }
+    config_hash = hashlib.sha256(json.dumps(config_dict, sort_keys=True).encode("utf-8")).hexdigest()
+
     report_payload = {
         "metadata": {
-            "protocol_version": "v1.3.4-stage6m-self-authorization-amendment",
+            "protocol_version": protocol_version,
+            "gate_version": args.gate_version,
+            "execution_commit_sha": git_commit_sha,
+            "configuration_hash_sha256": config_hash,
             "execution_scope": f"Physical {args.cohort.upper()} Prequential Stream on Virtual GPU",
             "execution_mode": f"Physical PyTorch {args.model} Acoustic Forward Passes",
             "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -806,7 +869,8 @@ def main():
         },
         "stratum_breakdown": strata_results,
         "speaker_level_paired_records": spk_stats,
-        "candidate_gate_decisions": gate_decision_records
+        "candidate_gate_decisions": gate_decision_records,
+        "arm2_adaptation_failures": arm2_failure_records
     }
 
     out_json = results_dir / f"stage6m_physical_{args.cohort}_report.json"
