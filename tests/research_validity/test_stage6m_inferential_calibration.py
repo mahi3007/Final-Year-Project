@@ -37,7 +37,7 @@ def test_calibration_global_null_family_wise_error_control():
         num_speakers_per_stratum=10,
         num_bootstrap_replicates=150,
         delta_static_pp=0.0,
-        delta_ungated_pp=40.0,
+        delta_ungated_pp=0.0,
         seed=101,
     )
 
@@ -69,7 +69,7 @@ def test_calibration_beneficial_adaptation_empirical_power():
             "Irish English": 27.0,
         },
         delta_static_pp=-4.00,
-        delta_ungated_pp=40.0,
+        delta_ungated_pp=-1.0,
         accent_delta_shifts={
             "Irish English": -4.0,       # High WER accent improves by -8.0 pp
             "South Asian English": -3.0, # High WER accent improves by -7.0 pp
@@ -100,7 +100,7 @@ def test_calibration_isolated_accent_regression_detection():
         num_speakers_per_stratum=10,
         num_bootstrap_replicates=150,
         delta_static_pp=-2.0,
-        delta_ungated_pp=40.0,
+        delta_ungated_pp=-1.0,
         accent_delta_shifts={"Irish English": 6.0},  # Net +4.0 pp regression
         seed=303,
     )
@@ -133,7 +133,7 @@ def test_calibration_disparity_expansion_detection():
             "Irish English": 25.0,
         },
         delta_static_pp=0.0,
-        delta_ungated_pp=40.0,
+        delta_ungated_pp=0.0,
         accent_delta_shifts={
             "US English": -4.0,   # Best gets better: 11%
             "Irish English": +1.0 # Worst gets worse: 26% -> disparity delta = +5.0 pp
@@ -160,7 +160,7 @@ def test_calibration_max_min_tie_disparity_ucb_coverage():
         num_bootstrap_replicates=150,
         base_wer_per_accent={acc: 20.0 for acc in CANONICAL_PROTOCOL_ACCENTS},
         delta_static_pp=-2.0,
-        delta_ungated_pp=40.0,
+        delta_ungated_pp=-1.0,
         seed=505,
     )
 
@@ -184,7 +184,7 @@ def test_calibration_heterogeneous_word_counts_numerical_robustness():
         num_bootstrap_replicates=150,
         base_wer_per_accent={acc: 8.0 for acc in CANONICAL_PROTOCOL_ACCENTS},
         delta_static_pp=-1.5,
-        delta_ungated_pp=30.0,
+        delta_ungated_pp=-0.5,
         word_count_mode="heterogeneous",
         word_count_mean=120,
         seed=606,
@@ -209,7 +209,7 @@ def test_calibration_near_null_differences():
         num_speakers_per_stratum=10,
         num_bootstrap_replicates=150,
         delta_static_pp=-0.20,
-        delta_ungated_pp=40.0,
+        delta_ungated_pp=-0.20,
         seed=707,
     )
 
@@ -230,7 +230,7 @@ def test_streaming_gate_trajectory_null_control():
         trajectory_type="null",
         num_trajectories=75,
         num_candidate_looks=10,
-        num_reference_speakers=30,
+        num_reference_speakers=120,
         seed=808,
     )
 

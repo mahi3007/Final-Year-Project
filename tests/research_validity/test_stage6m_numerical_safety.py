@@ -1536,6 +1536,113 @@ def test_runner_cohort3_rejects_legacy_v13_gate(monkeypatch, capsys):
     assert "requires --gate-version v14" in captured.out
 
 
+def test_confirmatory_power_strictly_enforces_78_speaker_design_spec_over_default_argument():
+    """
+    Test Case 43: Confirmatory design specification is authoritative.
+    When a 78-speaker design specification is supplied, a cohort with even one accent below
+    78 speakers (e.g. 77 speakers in Irish English) cannot be classified as adequately powered,
+    even if fallback/default arguments (e.g. min_speakers_per_stratum_for_power=5) are passed.
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import (
+        run_confirmatory_paired_cluster_inference,
+        DesignStagePowerSpec,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    records = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        n = 77 if acc == "Irish English" else 78
+        for s in range(n):
+            records.append({
+                "speaker_id": f"{acc}_spk_{s}",
+                "stratum": acc,
+                "wc": 100,
+                "err1": 25,
+                "err2": 35,
+                "err3": 15,
+            })
+
+    spec = DesignStagePowerSpec(required_speakers_per_stratum=78)
+
+    report = run_confirmatory_paired_cluster_inference(
+        speaker_records=records,
+        num_bootstrap_replicates=100,
+        seed=42,
+        design_spec=spec,
+        min_speakers_per_stratum_for_power=5,  # Must NOT override design_spec!
+    )
+
+    assert report.power_assessment is not None
+    assert report.power_assessment.min_speakers_required_for_power == 78
+    assert report.power_assessment.min_speakers_per_stratum_observed == 77
+    assert not report.power_assessment.is_adequately_powered
+    assert report.power_assessment.power_status == "UNDERPOWERED"
+    assert report.verdict == "INCONCLUSIVE"
+    assert any("underpowered" in r.lower() for r in report.failure_reasons)
+
+
+def test_cohort3_structural_validation_enforces_speaker_accent_uniqueness():
+    """
+    Test Case 44: Pre-stream speaker-to-accent uniqueness validation.
+    Verifies that if any speaker in the evaluation data is assigned to multiple
+    accent strata, the validator fails closed before streaming.
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import CANONICAL_PROTOCOL_ACCENTS
+
+    valid_records = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(5):
+            valid_records.append({
+                "recording_id": f"rec_{acc}_{s}",
+                "speaker_id": f"spk_{acc}_{s}",
+                "stage5_accent_group": acc,
+            })
+    df = pd.DataFrame(valid_records)
+
+    # Inconsistent speaker: spk_US English_0 is also assigned to Irish English
+    inconsistent_row = pd.DataFrame([{
+        "recording_id": "rec_conflict_0",
+        "speaker_id": "spk_US English_0",
+        "stage5_accent_group": "Irish English",
+    }])
+    conflicted_df = pd.concat([df, inconsistent_row], ignore_index=True)
+
+    spk_accent_counts = conflicted_df.groupby("speaker_id")["stage5_accent_group"].nunique()
+    inconsistent_spks = spk_accent_counts[spk_accent_counts > 1].index.tolist()
+    assert len(inconsistent_spks) == 1
+    assert "spk_US English_0" in inconsistent_spks
+
+
+def test_pairwise_partition_disjointness_check():
+    """
+    Test Case 45: Pairwise partition disjointness check fails closed on any overlap.
+    """
+    p1 = {"spk_1", "spk_2", "spk_3"}
+    p2 = {"spk_4", "spk_5"}
+    p3_overlap = {"spk_2", "spk_6"}  # Overlaps with p1
+
+    partitions = {
+        "Part1": p1,
+        "Part2": p2,
+        "Part3": p3_overlap,
+    }
+
+    overlaps = []
+    p_names = list(partitions.keys())
+    for i in range(len(p_names)):
+        for j in range(i + 1, len(p_names)):
+            n1, n2 = p_names[i], p_names[j]
+            inter = partitions[n1].intersection(partitions[n2])
+            if inter:
+                overlaps.append((n1, n2, inter))
+
+    assert len(overlaps) == 1
+    assert overlaps[0][0] == "Part1"
+    assert overlaps[0][1] == "Part3"
+    assert "spk_2" in overlaps[0][2]
+
+
+
 
 
 

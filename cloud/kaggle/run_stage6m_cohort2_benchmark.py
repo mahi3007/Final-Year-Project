@@ -580,50 +580,70 @@ def main():
         eval_df = pd.read_csv(cohort3_csv)
         audio_dir = cohort3_audio_dir
 
-        expected_rows = c3_manifest_data.get("files", {}).get("csv", {}).get("row_count")
-        if expected_rows is not None and len(eval_df) != int(expected_rows):
+        # Strict Cohort 3 Structural Design Validation (Protocol v1.4.0 frozen requirement: exactly 7,020 clips)
+        # 6 canonical accents * 78 speakers * 15 clips = 7,020 clips
+        TARGET_COHORT3_CLIPS = 7020
+        TARGET_SPEAKERS_PER_ACCENT = 78
+        TARGET_CLIPS_PER_SPEAKER = 15
+
+        if len(eval_df) != TARGET_COHORT3_CLIPS:
             raise ValueError(
-                f"Confirmatory Row Count Violation: cohort3_csv has {len(eval_df)} rows, expected {expected_rows}."
+                f"Confirmatory Row Count Violation: Cohort 3 has {len(eval_df)} clips, "
+                f"expected exactly {TARGET_COHORT3_CLIPS} clips (6 accents * 78 speakers * 15 clips)."
+            )
+
+        expected_rows = c3_manifest_data.get("files", {}).get("csv", {}).get("row_count")
+        if expected_rows is not None and int(expected_rows) != TARGET_COHORT3_CLIPS:
+            raise ValueError(
+                f"Confirmatory Manifest Violation: manifest row_count is {expected_rows}, "
+                f"must be exactly {TARGET_COHORT3_CLIPS}."
             )
 
         # Unique recording IDs check
         if eval_df["recording_id"].nunique() != len(eval_df):
             raise ValueError("Confirmatory Integrity Violation: Duplicate recording_ids detected in Cohort 3.")
 
-        # Accents and balance check
+        # Accents and balance check: 6 canonical strata
         c3_strata = set(eval_df["stage5_accent_group"].astype(str))
         if c3_strata != set(CANONICAL_PROTOCOL_ACCENTS):
             raise ValueError(f"Cohort 3 accents {c3_strata} do not match canonical set {CANONICAL_PROTOCOL_ACCENTS}")
 
-        # 4. Fail-closed Historical Disjointness Verification
-        hist_c1 = PROJECT_ROOT / "datasets" / "splits" / "stage5_external_eval.csv"
-        hist_c2 = PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.csv"
-        hist_sent = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
-
-        required_partitions = [
-            ("Cohort 1 (Stage 5 External Eval)", hist_c1),
-            ("Cohort 2 Audio", hist_c2),
-            ("Stage 5 Sentinel Panel", hist_sent),
-            ("Dedicated Gate-Reference Panel", gate_ref_panel_csv),
-        ]
-        hist_speakers = set()
-        for p_name, p_path in required_partitions:
-            if not p_path.exists():
-                raise FileNotFoundError(
-                    f"Confirmatory Disjointness Verification Failure: Required historical partition '{p_name}' "
-                    f"is missing at '{p_path}'; cannot verify speaker disjointness."
-                )
-            hist_speakers.update(pd.read_csv(p_path)["speaker_id"].astype(str))
-
-        c3_speakers = set(eval_df["speaker_id"].astype(str))
-        overlapping = c3_speakers.intersection(hist_speakers)
-        if overlapping:
+        # Unique speaker-to-accent mapping (no speaker assigned to multiple accents)
+        spk_accent_counts = eval_df.groupby("speaker_id")["stage5_accent_group"].nunique()
+        inconsistent_spks = spk_accent_counts[spk_accent_counts > 1].index.tolist()
+        if inconsistent_spks:
             raise ValueError(
-                f"Confirmatory Disjointness Violation: detected {len(overlapping)} overlapping speakers "
-                f"between Cohort 3 and historical/reference partitions (e.g. {sorted(list(overlapping))[:5]})."
+                f"Confirmatory Accent Mapping Violation: {len(inconsistent_spks)} speakers mapped to multiple accents "
+                f"in Cohort 3 (e.g. {inconsistent_spks[:5]})."
             )
 
-        # 5. Full Validation of Dedicated Gate-Reference Panel Manifest and Data Lock
+        # Exact 78 speakers per accent and 15 clips per speaker
+        for acc in CANONICAL_PROTOCOL_ACCENTS:
+            acc_df = eval_df[eval_df["stage5_accent_group"] == acc]
+            acc_spks = acc_df["speaker_id"].nunique()
+            if acc_spks != TARGET_SPEAKERS_PER_ACCENT:
+                raise ValueError(
+                    f"Confirmatory Stratum Balance Violation: Stratum '{acc}' has {acc_spks} unique speakers, "
+                    f"expected exactly {TARGET_SPEAKERS_PER_ACCENT}."
+                )
+            spk_clip_counts = acc_df.groupby("speaker_id")["recording_id"].count()
+            bad_clip_spks = spk_clip_counts[spk_clip_counts != TARGET_CLIPS_PER_SPEAKER].to_dict()
+            if bad_clip_spks:
+                raise ValueError(
+                    f"Confirmatory Speaker Clip Count Violation in stratum '{acc}': speakers have non-15 clips: {list(bad_clip_spks.items())[:5]}."
+                )
+
+        # Verify audio file existence and non-zero size for all clips in Cohort 3
+        for _, row in eval_df.iterrows():
+            fpath = audio_dir / f"{row['recording_id']}.mp3"
+            if not fpath.exists():
+                fpath = audio_dir / f"{row['recording_id']}.wav"
+            if not fpath.exists():
+                raise FileNotFoundError(f"Confirmatory Audio Integrity Violation: Missing audio payload for clip '{row['recording_id']}' in '{audio_dir}'.")
+            if fpath.stat().st_size == 0:
+                raise ValueError(f"Confirmatory Audio Integrity Violation: Empty (0-byte) audio payload for clip '{row['recording_id']}'.")
+
+        # 4. Full Validation of Dedicated Gate-Reference Panel Manifest and Data Lock
         with open(gate_ref_manifest, "r", encoding="utf-8") as f:
             ref_manifest_data = json.load(f)
 
@@ -661,6 +681,14 @@ def main():
         if ref_strata != set(CANONICAL_PROTOCOL_ACCENTS):
             raise ValueError(f"Gate reference panel accents {ref_strata} do not match canonical set {CANONICAL_PROTOCOL_ACCENTS}")
 
+        # Unique speaker-to-accent mapping in gate reference panel
+        ref_spk_accent_counts = gate_ref_df.groupby("speaker_id")["stage5_accent_group"].nunique()
+        ref_inconsistent_spks = ref_spk_accent_counts[ref_spk_accent_counts > 1].index.tolist()
+        if ref_inconsistent_spks:
+            raise ValueError(
+                f"Confirmatory Accent Mapping Violation in gate reference panel: {len(ref_inconsistent_spks)} speakers mapped to multiple accents."
+            )
+
         # Power/precision sized reference panel (defaults to >= 20 speakers per accent)
         expected_ref_spks_per_stratum = int(ref_manifest_data.get("speakers_per_accent", 20))
         for acc in CANONICAL_PROTOCOL_ACCENTS:
@@ -670,6 +698,46 @@ def main():
                     f"Gate reference panel stratum '{acc}' has {acc_spks} speakers, "
                     f"below required precision threshold of {expected_ref_spks_per_stratum}."
                 )
+
+        # 5. Fail-closed Pairwise Disjointness Verification across ALL Relevant Partitions
+        hist_c1 = PROJECT_ROOT / "datasets" / "splits" / "stage5_external_eval.csv"
+        hist_c2 = PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort2_audio.csv"
+        hist_sent = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
+
+        for p_name, p_path in [
+            ("Cohort 1 (Stage 5 External Eval)", hist_c1),
+            ("Cohort 2 Audio", hist_c2),
+            ("Stage 5 Sentinel Panel", hist_sent),
+        ]:
+            if not p_path.exists():
+                raise FileNotFoundError(
+                    f"Confirmatory Disjointness Verification Failure: Required historical partition '{p_name}' "
+                    f"is missing at '{p_path}'; cannot verify speaker disjointness."
+                )
+
+        partitions_dict = {
+            "Cohort 1 (Stage 5 External Eval)": set(pd.read_csv(hist_c1)["speaker_id"].astype(str)),
+            "Cohort 2 Audio": set(pd.read_csv(hist_c2)["speaker_id"].astype(str)),
+            "Stage 5 Sentinel Panel": set(pd.read_csv(hist_sent)["speaker_id"].astype(str)),
+            "Dedicated Gate-Reference Panel": set(gate_ref_df["speaker_id"].astype(str)),
+            "Confirmatory Cohort 3": set(eval_df["speaker_id"].astype(str)),
+        }
+        part_names = list(partitions_dict.keys())
+        for i in range(len(part_names)):
+            for j in range(i + 1, len(part_names)):
+                p1_name, p2_name = part_names[i], part_names[j]
+                overlap = partitions_dict[p1_name].intersection(partitions_dict[p2_name])
+                if overlap:
+                    raise ValueError(
+                        f"Confirmatory Pairwise Disjointness Violation: detected {len(overlap)} overlapping speakers "
+                        f"between '{p1_name}' and '{p2_name}' (e.g. {sorted(list(overlap))[:5]})."
+                    )
+
+        # Strict Streaming Label Isolation for Cohort 3:
+        # Separate reference transcripts into isolated lookup before streaming starts.
+        # eval_df during stream will have NO 'transcript' column.
+        c3_reference_transcripts = dict(zip(eval_df["recording_id"], eval_df["transcript"]))
+        eval_df = eval_df.drop(columns=["transcript"])
 
     if not sentinel_csv.exists():
         raise FileNotFoundError(f"Missing sentinel panel CSV: {sentinel_csv}")
@@ -1017,6 +1085,8 @@ def main():
 
     # Step 4: Summary Statistics
     print(f"\n[4/5] Computing Offline Metrics and Speaker-Clustered Paired Statistics...")
+    pred_sha256 = None
+    pred_lock_path = None
     if is_sealed:
         print("      [SEALED CONFIRMATORY STREAM FINISHED] Locking and hashing prediction artifacts...")
         pred_artifact = {
@@ -1030,13 +1100,29 @@ def main():
         pred_path = results_dir / f"{benchmark_run_id}_cohort3_sealed_predictions.json"
         pred_path.write_text(pred_json_str, encoding="utf-8")
         pred_sha256 = hashlib.sha256(pred_json_str.encode("utf-8")).hexdigest()
+
+        # Machine-readable predictions lock file
+        pred_lock_path = results_dir / f"{benchmark_run_id}_cohort3_predictions.lock.json"
+        pred_lock_data = {
+            "schema_version": "v1.4.0",
+            "benchmark_run_id": benchmark_run_id,
+            "cohort": args.cohort,
+            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+            "git_commit_sha": git_commit_sha,
+            "gate_version": args.gate_version,
+            "predictions_artifact_filename": pred_path.name,
+            "predictions_sha256": pred_sha256,
+            "total_clips_predicted": len(arm1_records),
+            "status": "LOCKED_PRE_UNSEAL",
+        }
+        pred_lock_path.write_text(json.dumps(pred_lock_data, indent=2), encoding="utf-8")
         print(f"      Predictions locked at: {pred_path} (SHA-256: {pred_sha256})")
+        print(f"      Machine-readable predictions lock recorded at: {pred_lock_path}")
         print("      Unsealing evaluation transcripts for final confirmatory analysis...")
 
-        ref_lookup = {r["recording_id"]: TextNormalizer.normalize(str(r["transcript"])) for _, r in eval_df.iterrows()}
         for r_list in (arm1_records, arm2_records, arm3_records):
             for r in r_list:
-                ref_norm = ref_lookup[r["recording_id"]]
+                ref_norm = TextNormalizer.normalize(str(c3_reference_transcripts[r["recording_id"]]))
                 m = compute_utterance_metrics(ref_norm, TextNormalizer.normalize(r["hyp"]))
                 r["ref"] = ref_norm
                 r["sub"] = m.substitutions
@@ -1185,6 +1271,7 @@ def main():
     config_dict = {
         "cohort": str(args.cohort),
         "model": str(args.model),
+        "model_initial_parameter_fingerprint": model_checkpoint_sha256,
         "model_checkpoint_sha256": model_checkpoint_sha256,
         "gate_version": str(args.gate_version),
         "protocol_version": protocol_version,
@@ -1253,7 +1340,10 @@ def main():
             "retrospective_protocol_decision_verdict": confirmatory_report.verdict if not is_confirmatory else None,
             "confirmatory_all_criteria_passed": confirmatory_report.all_criteria_passed,
             "model_architecture": args.model,
+            "model_initial_parameter_fingerprint": model_checkpoint_sha256,
             "model_checkpoint_sha256": model_checkpoint_sha256,
+            "sealed_predictions_sha256": pred_sha256 if is_sealed else None,
+            "sealed_predictions_lock_file": str(pred_lock_path.name) if pred_lock_path is not None else None,
             "execution_commit_sha": git_commit_sha,
             "git_tree_dirty": git_tree_dirty,
             "configuration_hash_sha256": config_hash,

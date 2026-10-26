@@ -56,6 +56,7 @@ class DesignStagePowerSpec:
     target_joint_power: float = 0.90
     required_speakers_per_stratum: int = 78
     required_clips_per_speaker: int = 15
+    provenance_source: str = "Stage 6M Development Pools (Cohort 1 & 2 Empirical Calibration: CV27 delta_wer std=3.18 pp, speaker_wer std=6.48 pp)"
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -280,23 +281,25 @@ def evaluate_confirmatory_power(
     """
     Evaluates confirmatory study power against the design-stage power specification.
     Does not use post-hoc treatment effect sizes to manufacture retrospective power.
+    The design_spec is authoritative: its required_speakers_per_stratum cannot be
+    silently overridden by fallback parameters.
     """
-    if design_spec is None:
-        design_spec = DesignStagePowerSpec()
-
-    req_spks = (
-        min_speakers_per_stratum_required
-        if min_speakers_per_stratum_required is not None
-        else design_spec.required_speakers_per_stratum
-    )
+    if design_spec is not None:
+        req_spks = design_spec.required_speakers_per_stratum
+    elif min_speakers_per_stratum_required is not None:
+        req_spks = min_speakers_per_stratum_required
+        design_spec = DesignStagePowerSpec(required_speakers_per_stratum=req_spks)
+    else:
+        req_spks = 78
+        design_spec = DesignStagePowerSpec(required_speakers_per_stratum=78)
 
     spks_per_stratum = spk_df.groupby("stratum")["speaker_id"].count()
     min_spks_obs = int(spks_per_stratum.min()) if len(spks_per_stratum) > 0 else 0
 
-    # Evaluate design-stage joint power at observed sample size
+    # Evaluate design-stage joint power at observed sample size (500 simulations)
     est_joint_power = simulate_design_stage_joint_power(
         spec=design_spec,
-        num_simulations=100,
+        num_simulations=500,
         num_speakers_per_stratum=max(min_spks_obs, 2),
         seed=123,
     )
@@ -334,7 +337,7 @@ def run_confirmatory_paired_cluster_inference(
     epsilon_g_margin_pp: float = 2.00,
     epsilon_d_margin_pp: float = 0.00,
     canonical_accents: FrozenSet[str] = CANONICAL_PROTOCOL_ACCENTS,
-    min_speakers_per_stratum_for_power: int = 5,
+    min_speakers_per_stratum_for_power: Optional[int] = None,
     design_spec: Optional[DesignStagePowerSpec] = None,
     target_effect_size_pp: Optional[float] = None,
     power_threshold: Optional[float] = None,
@@ -408,19 +411,23 @@ def run_confirmatory_paired_cluster_inference(
         if spk_cnt < 2:
             raise ValueError(f"Stratum '{acc}' has only {spk_cnt} speakers; minimum 2 required for cluster bootstrap.")
 
-    # 3. Power Assessment
+    # 3. Power Assessment: Design specification is authoritative
     if design_spec is None:
         target_effect = target_effect_size_pp if target_effect_size_pp is not None else 3.50
         target_power = power_threshold if power_threshold is not None else 0.90
+        req_spks = (
+            min_speakers_per_stratum_for_power
+            if min_speakers_per_stratum_for_power is not None
+            else 78  # Frozen protocol requirement
+        )
         design_spec = DesignStagePowerSpec(
-            required_speakers_per_stratum=min_speakers_per_stratum_for_power,
+            required_speakers_per_stratum=req_spks,
             target_primary_effect_pp=target_effect,
             target_joint_power=target_power,
         )
     power_assessment = evaluate_confirmatory_power(
         spk_df=spk_df,
         design_spec=design_spec,
-        min_speakers_per_stratum_required=min_speakers_per_stratum_for_power,
     )
 
     # 4. Point Estimates Computation

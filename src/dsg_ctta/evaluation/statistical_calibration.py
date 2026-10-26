@@ -574,7 +574,7 @@ def simulate_streaming_gate_trajectory_calibration(
     accepted_mean = total_accepted_candidates / float(num_trajectories)
 
     if trajectory_type == "null":
-        is_safe = bool(traj_rate <= 0.05 or traj_ci[1] <= 0.05)
+        is_safe = bool(traj_ci[1] <= 0.05)
     elif trajectory_type in ("harmful_accent", "disparity_expansion"):
         is_safe = (traj_rate == 0.0)
     else:
