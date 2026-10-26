@@ -247,24 +247,109 @@ def suta_adaptation_step_gpu(
     )
 
 
+GOVERNANCE_PINNED_PUBKEY_HEX = "dd00d57d54f9b2e6766d363a01da9c274e585ffba363ee538bede8b8bb90fe46"
+
+
+def verify_governance_signature(gov_record: Dict[str, Any], pubkey_hex: Optional[str] = None) -> bool:
+    """
+    Cryptographically verifies the independent governance approval record using Ed25519.
+    Returns True only if the signature strictly verifies against the pinned governance trust root.
+    """
+    try:
+        from cryptography.hazmat.primitives.asymmetric import ed25519
+        sig_hex = gov_record.get("signature_ed25519_hex")
+        if not sig_hex or sig_hex == "UNSIGNED_DRAFT_HOLD":
+            return False
+
+        pub_hex = pubkey_hex or gov_record.get("governance_public_key_hex") or GOVERNANCE_PINNED_PUBKEY_HEX
+        if not pub_hex:
+            return False
+
+        pub_bytes = bytes.fromhex(pub_hex)
+        sig_bytes = bytes.fromhex(sig_hex)
+        verify_key = ed25519.Ed25519PublicKey.from_public_bytes(pub_bytes)
+
+        canonical = json.dumps({
+            "approved_commits": gov_record.get("approved_commits", []),
+            "approved_protocol_sha256": gov_record.get("approved_protocol_sha256", ""),
+            "approved_manifest_sha256": gov_record.get("approved_manifest_sha256", ""),
+            "governance_status": gov_record.get("governance_status", ""),
+            "audit_authority": gov_record.get("audit_authority", ""),
+        }, sort_keys=True).encode("utf-8")
+
+        verify_key.verify(sig_bytes, canonical)
+        return True
+    except Exception:
+        return False
+
+
+def create_signed_governance_record(
+    governance_status: str,
+    approved_commits: List[str],
+    approved_protocol_sha256: str,
+    approved_manifest_sha256: str,
+    privkey_hex: str,
+    audit_authority: str = "Independent Scientific Audit Committee",
+) -> Dict[str, Any]:
+    """
+    Creates an independently signed governance approval record using Ed25519.
+    Used by governance authorities to seal approved execution contracts.
+    """
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+    from cryptography.hazmat.primitives import serialization
+
+    priv_bytes = bytes.fromhex(privkey_hex)
+    priv_key = ed25519.Ed25519PrivateKey.from_private_bytes(priv_bytes)
+    pub_bytes = priv_key.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw
+    )
+
+    canonical = json.dumps({
+        "approved_commits": approved_commits,
+        "approved_protocol_sha256": approved_protocol_sha256,
+        "approved_manifest_sha256": approved_manifest_sha256,
+        "governance_status": governance_status,
+        "audit_authority": audit_authority,
+    }, sort_keys=True).encode("utf-8")
+
+    sig = priv_key.sign(canonical)
+
+    return {
+        "governance_record_version": "v1.4.0",
+        "audit_authority": audit_authority,
+        "governance_status": governance_status,
+        "authorization_timestamp_utc": "2026-10-26T18:00:00Z",
+        "governance_public_key_hex": pub_bytes.hex(),
+        "approved_protocol_sha256": approved_protocol_sha256,
+        "approved_manifest_sha256": approved_manifest_sha256,
+        "approved_commits": approved_commits,
+        "signature_ed25519_hex": sig.hex(),
+    }
+
+
 def validate_frozen_execution_contract(
     manifest_data: Dict[str, Any],
     git_commit_sha: str,
     protocol_path: Path,
     governance_approval_path: Optional[Path] = None,
+    manifest_path: Optional[Path] = None,
+    pinned_pubkey_hex: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Validates the frozen execution contract under Protocol v1.4.0 with strict fail-closed semantics.
     Enforces independent cryptographic trust anchor verification.
     Fails closed if:
     1. Independent governance approval record is missing, corrupted, or not 'APPROVED'.
-    2. approved_commits list is missing, empty, or not a list in manifest or trust anchor.
-    3. Current git_commit_sha is not in approved_commits of manifest or trust anchor.
-    4. protocol_sha256 is missing, empty, or does not match trust anchor.
-    5. protocol_path does not exist or its SHA-256 does not match protocol_sha256.
-    6. The protocol document is in 'draft' or 'proposal' status.
-    7. Manifest governance_status is not 'APPROVED'.
-    8. Any contradictory status exists (e.g. manifest claims APPROVED while protocol says draft).
+    2. Cryptographic signature does not verify against pinned governance trust root.
+    3. approved_commits list is missing, empty, or not a list in manifest or trust anchor.
+    4. Current git_commit_sha is not in approved_commits of manifest or trust anchor.
+    5. approved_manifest_sha256 does not match physical manifest hash.
+    6. protocol_sha256 is missing, empty, or does not match trust anchor.
+    7. protocol_path does not exist or its SHA-256 does not match protocol_sha256.
+    8. The protocol document is in 'draft' or 'proposal' status.
+    9. Manifest governance_status is not 'APPROVED'.
+    10. Any contradictory status exists (e.g. manifest claims APPROVED while protocol says draft).
     """
     if not isinstance(manifest_data, dict):
         raise ValueError("Confirmatory Contract Violation: Manifest data must be a valid dictionary.")
@@ -295,7 +380,26 @@ def validate_frozen_execution_contract(
             "Confirmatory Cohort 3 execution remains strictly locked on HOLD."
         )
 
-    # 2. Approved Commit List (Mandatory non-empty list in both manifest and trust anchor)
+    # 2. Cryptographic Signature Verification against Pinned Trust Root
+    effective_pubkey = pinned_pubkey_hex or GOVERNANCE_PINNED_PUBKEY_HEX
+    if not verify_governance_signature(gov_record, effective_pubkey):
+        raise PermissionError(
+            "Independent Governance Lock: Cryptographic signature verification failed against pinned trust root. "
+            "Approval record cannot be verified or has been altered."
+        )
+
+    # 3. Manifest Hash Cross-Validation against Trust Anchor
+    trusted_manifest_sha = gov_record.get("approved_manifest_sha256")
+    if trusted_manifest_sha:
+        if manifest_path is not None and manifest_path.exists():
+            actual_manifest_sha = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+            if actual_manifest_sha != trusted_manifest_sha:
+                raise ValueError(
+                    f"Independent Governance Lock: Manifest physical SHA-256 '{actual_manifest_sha}' does not match "
+                    f"independent approval record '{trusted_manifest_sha}'."
+                )
+
+    # 4. Approved Commit List (Mandatory non-empty list in both manifest and trust anchor)
     approved_commits = frozen_contract.get("approved_commits")
     if approved_commits is None and "approved_commits" in manifest_data:
         approved_commits = manifest_data.get("approved_commits")
@@ -822,6 +926,7 @@ def main():
                 manifest_data=c3_manifest_data,
                 git_commit_sha=git_commit_sha,
                 protocol_path=protocol_file,
+                manifest_path=cohort3_manifest,
             )
         except (PermissionError, ValueError, FileNotFoundError) as exc:
             print("\n" + "!" * 80)

@@ -25,6 +25,59 @@ def compute_file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def validate_benchmark_records(df: pd.DataFrame) -> None:
+    """
+    Validates empirical integrity of speaker-level benchmark records:
+    1. Positive integer word counts (wc > 0)
+    2. Nonnegative integer error counts (0 <= err_base <= wc, 0 <= err_adapt <= wc)
+    3. Mathematical consistency of stored WERs with error/word counts
+    4. Mathematical consistency of diff_pp with adapted - baseline WER
+    5. Unique speaker identifiers (no duplicates, valid 64-char hex)
+    """
+    if len(df) == 0:
+        raise ValueError("Benchmark dataset is empty.")
+
+    # 1. Word counts
+    if (df["wc"] <= 0).any():
+        raise ValueError("Detected non-positive word count in benchmark dataset.")
+    if not np.issubdtype(df["wc"].dtype, np.integer):
+        raise ValueError("Word counts must be integers.")
+
+    # 2. Error counts
+    if (df["err_base"] < 0).any():
+        raise ValueError("Detected negative baseline error count in benchmark dataset.")
+    if (df["err_adapt"] < 0).any():
+        raise ValueError("Detected negative adapted error count in benchmark dataset.")
+    if (df["err_base"] > df["wc"]).any():
+        raise ValueError("Detected baseline error count exceeding word count.")
+    if (df["err_adapt"] > df["wc"]).any():
+        raise ValueError("Detected adapted error count exceeding word count.")
+
+    # 3. WER consistency with error counts
+    expected_wer_base = np.round((df["err_base"] / df["wc"]) * 100.0, 2)
+    base_mismatches = np.abs(df["wer_base"] - expected_wer_base)
+    if (base_mismatches > 0.01).any():
+        max_err = float(base_mismatches.max())
+        raise ValueError(f"Baseline WER inconsistent with err_base / wc * 100 (max discrepancy: {max_err:.4f} pp).")
+
+    expected_wer_adapt = np.round((df["err_adapt"] / df["wc"]) * 100.0, 2)
+    adapt_mismatches = np.abs(df["wer_adapt"] - expected_wer_adapt)
+    if (adapt_mismatches > 0.01).any():
+        max_err = float(adapt_mismatches.max())
+        raise ValueError(f"Adapted WER inconsistent with err_adapt / wc * 100 (max discrepancy: {max_err:.4f} pp).")
+
+    # 4. Difference consistency
+    expected_diff = np.round(df["wer_adapt"] - df["wer_base"], 2)
+    diff_mismatches = np.abs(df["diff_pp"] - expected_diff)
+    if (diff_mismatches > 0.01).any():
+        max_err = float(diff_mismatches.max())
+        raise ValueError(f"Difference column inconsistent with wer_adapt - wer_base (max discrepancy: {max_err:.4f} pp).")
+
+    # 5. Unique speaker IDs
+    if df["speaker_id"].nunique() != len(df):
+        raise ValueError("Duplicate speaker IDs detected in benchmark dataset.")
+
+
 def run_development_variance_calibration() -> Dict[str, Any]:
     """
     Computes development variance-covariance and treatment effect parameters
@@ -43,6 +96,9 @@ def run_development_variance_calibration() -> Dict[str, Any]:
 
     c1_df = pd.read_csv(cohort1_file)
     cv27_df = pd.read_csv(cv27_file)
+
+    # Validate raw empirical observations before any aggregation
+    validate_benchmark_records(cv27_df)
 
     # 1. Cohort 1 empirical statistics
     strata_counts = c1_df.groupby("stratum")["speaker_id"].count().to_dict()
@@ -156,11 +212,17 @@ def run_development_variance_calibration() -> Dict[str, Any]:
             "Protocol Amendment ADR-005 Section 11: The design-stage disparity target effect was revised "
             "from -1.00 pp to -2.00 pp based on reproducible empirical development benchmarks from the Common "
             "Voice 27 development pool (reports/stage6m/cv27_development_speaker_benchmarks.csv, N=96 speakers "
-            "across 6 canonical strata). High-WER Irish English demonstrated -4.50 pp empirical WER reduction, "
-            "while low-WER US English demonstrated -2.50 pp, yielding an empirical disparity contraction of "
-            "Delta_D = -2.00 pp with mean shift of -3.45 pp. At N=78 speakers per stratum, 15 clips/speaker "
-            "(7,020 clips total), and conservative within-speaker paired standard error sigma_paired = 3.20 pp, "
-            "the joint 9-criterion confirmatory design achieves the declared 90% statistical power target."
+            "across 6 canonical strata, validated for nonnegative error counts and mathematical consistency). "
+            "High-WER Irish English demonstrated -4.50 pp empirical WER reduction, while low-WER US English "
+            "demonstrated -2.50 pp, yielding an empirical disparity contraction of Delta_D = -2.00 pp with mean "
+            "shift of -3.45 pp. Note on Confirmatory Power: Under the word-weighted paired cluster inference model "
+            "with Bonferroni 99.444th percentile bootstrap tail estimation, the candidate design of N=78 speakers "
+            "per stratum achieves approximately 38-42% joint statistical power under the empirical Delta_D = -2.00 pp "
+            "effect size, and is therefore classified as UNDERPOWERED. Achieving >= 90% joint statistical power "
+            "under empirical Delta_D = -2.00 pp requires N >= 160 speakers per stratum (960 confirmatory speakers "
+            "total); or alternatively, at N=78, requires a prospective design target of Delta_D <= -3.50 pp. "
+            "Confirmatory Cohort 3 execution remains strictly blocked on HOLD until formal protocol amendment "
+            "and independent governance approval."
         ),
     }
 

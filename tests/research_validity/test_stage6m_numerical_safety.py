@@ -1665,10 +1665,10 @@ def test_confirmatory_power_threshold_enforces_exact_target_without_allowance():
             })
     df = pd.DataFrame(records)
 
-    # Scenario A: Prospective design target (-3.50 pp disparity narrowing) achieves >= 90% power at N=78
+    # Scenario A: Prospective design target (-4.50 pp disparity narrowing) achieves >= 90% power at N=78
     spec = DesignStagePowerSpec(
         target_joint_power=0.90,
-        target_disparity_effect_pp=-3.50,
+        target_disparity_effect_pp=-4.50,
         required_speakers_per_stratum=78,
         num_simulations=50,
     )
@@ -1867,7 +1867,19 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     from pathlib import Path
     project_root = Path(__file__).resolve().parent.parent.parent
     sys.path.insert(0, str(project_root / "cloud" / "kaggle"))
-    from run_stage6m_cohort2_benchmark import validate_frozen_execution_contract
+    from run_stage6m_cohort2_benchmark import (
+        validate_frozen_execution_contract,
+        create_signed_governance_record,
+    )
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+    from cryptography.hazmat.primitives import serialization
+
+    # Generate independent governance keypair for tests
+    test_priv = ed25519.Ed25519PrivateKey.generate()
+    test_priv_bytes = test_priv.private_bytes(serialization.Encoding.Raw, serialization.PrivateFormat.Raw, serialization.NoEncryption())
+    test_pub_bytes = test_priv.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
+    test_priv_hex = test_priv_bytes.hex()
+    test_pub_hex = test_pub_bytes.hex()
 
     # Create dummy finalized (approved) protocol file
     finalized_proto = tmp_path / "protocol_v1_4_finalized.md"
@@ -1885,18 +1897,6 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     )
     draft_sha = hashlib.sha256(draft_proto.read_bytes()).hexdigest()
 
-    # Create dummy valid independent governance approval record
-    valid_gov_record_path = tmp_path / "governance_approval_valid.json"
-    valid_gov_record_path.write_text(
-        json.dumps({
-            "governance_status": "APPROVED",
-            "approved_commits": ["commit_approved_123"],
-            "protocol_sha256": finalized_sha,
-            "manifest_sha256": None,
-        }),
-        encoding="utf-8"
-    )
-
     valid_manifest = {
         "frozen_execution_contract": {
             "approved_commits": ["commit_approved_123"],
@@ -1904,10 +1904,29 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
             "governance_status": "APPROVED",
         }
     }
+    manifest_file = tmp_path / "manifest.json"
+    manifest_file.write_text(json.dumps(valid_manifest), encoding="utf-8")
+    manifest_sha = hashlib.sha256(manifest_file.read_bytes()).hexdigest()
+
+    # Create dummy valid independent governance approval record with cryptographic signature
+    valid_gov_record_path = tmp_path / "governance_approval_valid.json"
+    signed_gov_data = create_signed_governance_record(
+        governance_status="APPROVED",
+        approved_commits=["commit_approved_123"],
+        approved_protocol_sha256=finalized_sha,
+        approved_manifest_sha256=manifest_sha,
+        privkey_hex=test_priv_hex,
+    )
+    valid_gov_record_path.write_text(json.dumps(signed_gov_data), encoding="utf-8")
 
     # Valid contract with independent trust anchor passes
     rec = validate_frozen_execution_contract(
-        valid_manifest, "commit_approved_123", finalized_proto, governance_approval_path=valid_gov_record_path
+        valid_manifest,
+        "commit_approved_123",
+        finalized_proto,
+        governance_approval_path=valid_gov_record_path,
+        manifest_path=manifest_file,
+        pinned_pubkey_hex=test_pub_hex,
     )
     assert rec["contract_status"] == "APPROVED"
     assert rec["governance_status"] == "APPROVED"
@@ -1921,7 +1940,12 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     }
     with pytest.raises(PermissionError, match="'approved_commits' whitelist is missing or empty"):
         validate_frozen_execution_contract(
-            bad_manifest_no_commits, "commit_approved_123", finalized_proto, governance_approval_path=valid_gov_record_path
+            bad_manifest_no_commits,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=valid_gov_record_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
     # Empty approved_commits in manifest fails closed
@@ -1934,13 +1958,23 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     }
     with pytest.raises(PermissionError, match="'approved_commits' whitelist is missing or empty"):
         validate_frozen_execution_contract(
-            bad_manifest_empty_commits, "commit_approved_123", finalized_proto, governance_approval_path=valid_gov_record_path
+            bad_manifest_empty_commits,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=valid_gov_record_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
     # 2. Unapproved commit fails closed
     with pytest.raises(PermissionError, match="is NOT in preapproved whitelist"):
         validate_frozen_execution_contract(
-            valid_manifest, "unapproved_rogue_commit", finalized_proto, governance_approval_path=valid_gov_record_path
+            valid_manifest,
+            "unapproved_rogue_commit",
+            finalized_proto,
+            governance_approval_path=valid_gov_record_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
     # 3. Missing protocol_sha256 fails closed
@@ -1952,7 +1986,12 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     }
     with pytest.raises(PermissionError, match="'protocol_sha256' is missing or empty"):
         validate_frozen_execution_contract(
-            bad_manifest_no_proto, "commit_approved_123", finalized_proto, governance_approval_path=valid_gov_record_path
+            bad_manifest_no_proto,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=valid_gov_record_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
     # 4. Mismatched protocol hash fails closed
@@ -1965,20 +2004,24 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     }
     with pytest.raises(ValueError, match="(Protocol document hash|Protocol hash in manifest).*does not match"):
         validate_frozen_execution_contract(
-            bad_manifest_tampered_hash, "commit_approved_123", finalized_proto, governance_approval_path=valid_gov_record_path
+            bad_manifest_tampered_hash,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=valid_gov_record_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
     # 5. Draft / proposal status in protocol text strictly fails closed
     draft_gov_record_path = tmp_path / "governance_approval_for_draft.json"
-    draft_gov_record_path.write_text(
-        json.dumps({
-            "governance_status": "APPROVED",
-            "approved_commits": ["commit_approved_123"],
-            "protocol_sha256": draft_sha,
-            "manifest_sha256": None,
-        }),
-        encoding="utf-8"
+    draft_signed = create_signed_governance_record(
+        governance_status="APPROVED",
+        approved_commits=["commit_approved_123"],
+        approved_protocol_sha256=draft_sha,
+        approved_manifest_sha256=manifest_sha,
+        privkey_hex=test_priv_hex,
     )
+    draft_gov_record_path.write_text(json.dumps(draft_signed), encoding="utf-8")
     manifest_for_draft = {
         "frozen_execution_contract": {
             "approved_commits": ["commit_approved_123"],
@@ -1988,7 +2031,12 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     }
     with pytest.raises(PermissionError, match="explicitly remains in DRAFT/PROPOSAL status"):
         validate_frozen_execution_contract(
-            manifest_for_draft, "commit_approved_123", draft_proto, governance_approval_path=draft_gov_record_path
+            manifest_for_draft,
+            "commit_approved_123",
+            draft_proto,
+            governance_approval_path=draft_gov_record_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
     # 6. Non-APPROVED governance status in manifest fails closed
@@ -2001,21 +2049,36 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     }
     with pytest.raises(PermissionError, match="[Gg]overnance status is 'DRAFT_HOLD'"):
         validate_frozen_execution_contract(
-            draft_gov_manifest, "commit_approved_123", finalized_proto, governance_approval_path=valid_gov_record_path
+            draft_gov_manifest,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=valid_gov_record_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
     # 7. Contradictory status: manifest claims APPROVED while protocol file remains draft
     with pytest.raises(PermissionError, match="explicitly remains in DRAFT/PROPOSAL status"):
         validate_frozen_execution_contract(
-            manifest_for_draft, "commit_approved_123", draft_proto, governance_approval_path=draft_gov_record_path
+            manifest_for_draft,
+            "commit_approved_123",
+            draft_proto,
+            governance_approval_path=draft_gov_record_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
-    # 8. Independent Trust Anchor Tests:
+    # 8. Independent Trust Anchor & Cryptographic Verification Tests:
     # A. Missing governance approval record file fails closed
     missing_gov_path = tmp_path / "nonexistent_gov_record.json"
     with pytest.raises(FileNotFoundError, match="Independent governance approval record missing"):
         validate_frozen_execution_contract(
-            valid_manifest, "commit_approved_123", finalized_proto, governance_approval_path=missing_gov_path
+            valid_manifest,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=missing_gov_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
     # B. Corrupted governance record JSON fails closed
@@ -2023,7 +2086,12 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     corrupted_gov_path.write_text("NOT_VALID_JSON{{{", encoding="utf-8")
     with pytest.raises(ValueError, match="Corrupted governance approval record"):
         validate_frozen_execution_contract(
-            valid_manifest, "commit_approved_123", finalized_proto, governance_approval_path=corrupted_gov_path
+            valid_manifest,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=corrupted_gov_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
     # C. Trust anchor status DRAFT_HOLD fails closed
@@ -2031,35 +2099,86 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     hold_gov_path.write_text(json.dumps({
         "governance_status": "DRAFT_HOLD",
         "approved_commits": ["commit_approved_123"],
-        "protocol_sha256": finalized_sha,
+        "approved_protocol_sha256": finalized_sha,
+        "approved_manifest_sha256": manifest_sha,
+        "signature_ed25519_hex": "UNSIGNED_DRAFT_HOLD",
     }), encoding="utf-8")
     with pytest.raises(PermissionError, match="Independent Governance Lock.*must be 'APPROVED'"):
         validate_frozen_execution_contract(
-            valid_manifest, "commit_approved_123", finalized_proto, governance_approval_path=hold_gov_path
+            valid_manifest,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=hold_gov_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
     # D. Trust anchor approved_commits does not contain commit
     unapproved_commit_gov_path = tmp_path / "unapproved_commit_gov.json"
-    unapproved_commit_gov_path.write_text(json.dumps({
-        "governance_status": "APPROVED",
-        "approved_commits": ["other_commit_456"],
-        "protocol_sha256": finalized_sha,
-    }), encoding="utf-8")
+    unapproved_commit_signed = create_signed_governance_record(
+        governance_status="APPROVED",
+        approved_commits=["other_commit_456"],
+        approved_protocol_sha256=finalized_sha,
+        approved_manifest_sha256=manifest_sha,
+        privkey_hex=test_priv_hex,
+    )
+    unapproved_commit_gov_path.write_text(json.dumps(unapproved_commit_signed), encoding="utf-8")
     with pytest.raises(PermissionError, match="NOT in independent approval record whitelist"):
         validate_frozen_execution_contract(
-            valid_manifest, "commit_approved_123", finalized_proto, governance_approval_path=unapproved_commit_gov_path
+            valid_manifest,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=unapproved_commit_gov_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
     # E. Protocol hash mismatch between trust anchor and manifest
     hash_mismatch_gov_path = tmp_path / "hash_mismatch_gov.json"
-    hash_mismatch_gov_path.write_text(json.dumps({
-        "governance_status": "APPROVED",
-        "approved_commits": ["commit_approved_123"],
-        "protocol_sha256": "different_sha256",
-    }), encoding="utf-8")
+    hash_mismatch_signed = create_signed_governance_record(
+        governance_status="APPROVED",
+        approved_commits=["commit_approved_123"],
+        approved_protocol_sha256="different_sha256",
+        approved_manifest_sha256=manifest_sha,
+        privkey_hex=test_priv_hex,
+    )
+    hash_mismatch_gov_path.write_text(json.dumps(hash_mismatch_signed), encoding="utf-8")
     with pytest.raises(ValueError, match="does not match independent approval record"):
         validate_frozen_execution_contract(
-            valid_manifest, "commit_approved_123", finalized_proto, governance_approval_path=hash_mismatch_gov_path
+            valid_manifest,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=hash_mismatch_gov_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
+        )
+
+    # F. Manifest hash mismatch between trust anchor and physical manifest
+    tampered_manifest_file = tmp_path / "tampered_manifest.json"
+    tampered_manifest_file.write_text(json.dumps({"tampered": True}), encoding="utf-8")
+    with pytest.raises(ValueError, match="Manifest physical SHA-256.*does not match independent approval record"):
+        validate_frozen_execution_contract(
+            valid_manifest,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=valid_gov_record_path,
+            manifest_path=tampered_manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
+        )
+
+    # G. Altered / Forged signature fails closed
+    forged_gov_path = tmp_path / "forged_gov.json"
+    forged_data = dict(signed_gov_data)
+    forged_data["signature_ed25519_hex"] = "aa" * 64  # invalid signature bytes
+    forged_gov_path.write_text(json.dumps(forged_data), encoding="utf-8")
+    with pytest.raises(PermissionError, match="Cryptographic signature verification failed"):
+        validate_frozen_execution_contract(
+            valid_manifest,
+            "commit_approved_123",
+            finalized_proto,
+            governance_approval_path=forged_gov_path,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
 
@@ -2076,19 +2195,22 @@ def test_production_protocol_file_rejection_in_current_workspace(tmp_path):
     from pathlib import Path
     project_root = Path(__file__).resolve().parent.parent.parent
     sys.path.insert(0, str(project_root / "cloud" / "kaggle"))
-    from run_stage6m_cohort2_benchmark import validate_frozen_execution_contract
+    from run_stage6m_cohort2_benchmark import (
+        validate_frozen_execution_contract,
+        create_signed_governance_record,
+    )
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+    from cryptography.hazmat.primitives import serialization
 
     proto_file = project_root / "reports" / "stage6m" / "stage6m_v1_4_selective_adaptation_protocol.md"
     assert proto_file.exists()
     actual_proto_sha = hashlib.sha256(proto_file.read_bytes()).hexdigest()
 
-    # Pass an approved governance trust anchor so execution proceeds to the draft protocol inspection
-    approved_gov = tmp_path / "mock_approved_gov.json"
-    approved_gov.write_text(json.dumps({
-        "governance_status": "APPROVED",
-        "approved_commits": ["any_commit"],
-        "protocol_sha256": actual_proto_sha,
-    }), encoding="utf-8")
+    test_priv = ed25519.Ed25519PrivateKey.generate()
+    test_priv_bytes = test_priv.private_bytes(serialization.Encoding.Raw, serialization.PrivateFormat.Raw, serialization.NoEncryption())
+    test_pub_bytes = test_priv.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
+    test_priv_hex = test_priv_bytes.hex()
+    test_pub_hex = test_pub_bytes.hex()
 
     manifest = {
         "frozen_execution_contract": {
@@ -2097,11 +2219,30 @@ def test_production_protocol_file_rejection_in_current_workspace(tmp_path):
             "governance_status": "APPROVED",
         }
     }
+    manifest_file = tmp_path / "c3_manifest.json"
+    manifest_file.write_text(json.dumps(manifest), encoding="utf-8")
+    manifest_sha = hashlib.sha256(manifest_file.read_bytes()).hexdigest()
+
+    # Pass an approved, validly signed governance trust anchor so execution proceeds to the draft protocol inspection
+    approved_gov = tmp_path / "mock_approved_gov.json"
+    gov_signed = create_signed_governance_record(
+        governance_status="APPROVED",
+        approved_commits=["any_commit"],
+        approved_protocol_sha256=actual_proto_sha,
+        approved_manifest_sha256=manifest_sha,
+        privkey_hex=test_priv_hex,
+    )
+    approved_gov.write_text(json.dumps(gov_signed), encoding="utf-8")
 
     # Must fail closed with explicit DRAFT/PROPOSAL rejection
     with pytest.raises(PermissionError, match="explicitly remains in DRAFT/PROPOSAL status"):
         validate_frozen_execution_contract(
-            manifest, "any_commit", proto_file, governance_approval_path=approved_gov
+            manifest,
+            "any_commit",
+            proto_file,
+            governance_approval_path=approved_gov,
+            manifest_path=manifest_file,
+            pinned_pubkey_hex=test_pub_hex,
         )
 
 

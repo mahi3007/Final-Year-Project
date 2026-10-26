@@ -106,6 +106,7 @@ class StreamingGateTrajectoryResult:
     trajectory_false_acceptance_ci_upper: float
     candidate_rejection_rate: float
     is_safely_controlled: bool
+    adaptation_uptake_demonstrated: bool
     summary: str
 
     def to_dict(self) -> Dict[str, Any]:
@@ -516,6 +517,8 @@ def simulate_streaming_gate_trajectory_calibration(
 
     total_false_accepted_trajectories = 0
     total_accepted_candidates = 0
+    total_harmful_proposals = 0
+    total_harmful_accepted = 0
     total_evaluated_candidates = num_trajectories * eval_looks
 
     for t_idx in range(num_trajectories):
@@ -549,15 +552,18 @@ def simulate_streaming_gate_trajectory_calibration(
 
         current_live_errors = list(ref_base_errors)
         accepted_in_trajectory = 0
+        harmful_accepted_in_trajectory = 0
 
         ref_lengths_arr = np.asarray(ref_lengths, dtype=np.int64)
         ref_strata_arr = np.asarray(ref_strata)
 
         for look_idx in look_indices:
+            is_harmful_proposal = False
             if trajectory_type == "null":
                 # Candidate has zero true effect (pure random fluctuation)
                 noise_arr = traj_rng.choice([-1, 0, 1], size=len(current_live_errors), p=[0.25, 0.50, 0.25])
                 cand_errors = np.clip(np.asarray(current_live_errors) + noise_arr, 0, ref_lengths_arr).tolist()
+                is_harmful_proposal = True
 
             elif trajectory_type == "harmful_accent":
                 # Candidate regresses on Irish English by +5% WER, neutral on others
@@ -565,6 +571,7 @@ def simulate_streaming_gate_trajectory_calibration(
                 irish_mask = (ref_strata_arr == "Irish English")
                 shift_arr[irish_mask] = np.maximum(1, (0.05 * ref_lengths_arr[irish_mask]).astype(np.int64))
                 cand_errors = np.clip(np.asarray(current_live_errors) + shift_arr, 0, ref_lengths_arr).tolist()
+                is_harmful_proposal = True
 
             elif trajectory_type == "disparity_expansion":
                 # Candidate improves US English (-3%) but degrades Irish English (+3%)
@@ -574,12 +581,26 @@ def simulate_streaming_gate_trajectory_calibration(
                 shift_arr[irish_mask] = np.maximum(1, (0.03 * ref_lengths_arr[irish_mask]).astype(np.int64))
                 shift_arr[us_mask] = -np.maximum(1, (0.03 * ref_lengths_arr[us_mask]).astype(np.int64))
                 cand_errors = np.clip(np.asarray(current_live_errors) + shift_arr, 0, ref_lengths_arr).tolist()
+                is_harmful_proposal = True
 
             elif trajectory_type == "beneficial":
-                # Selective adaptation: high-WER accents improve more (-5%), low-WER accents improve (-2%)
-                rates = np.where(ref_strata_arr == "Irish English", 0.05, np.where(ref_strata_arr == "US English", 0.02, 0.035))
-                red = np.maximum(1, (rates * ref_lengths_arr).astype(np.int64))
-                cand_errors = np.clip(np.asarray(current_live_errors) - red, 0, ref_lengths_arr).tolist()
+                # In realistic streaming adaptation, candidates alternate between genuine beneficial steps
+                # and occasional regression/drift perturbations. We interleave candidate perturbations
+                # (every 10th look evaluates a harmful candidate proposal) to verify that:
+                # 1. The gate safely REJECTS 100% of harmful perturbations even while actively adapting.
+                # 2. The gate ACCEPTS genuine beneficial updates (demonstrating adaptation uptake).
+                if look_idx % 10 == 0:
+                    shift_arr = np.zeros(len(current_live_errors), dtype=np.int64)
+                    irish_mask = (ref_strata_arr == "Irish English")
+                    shift_arr[irish_mask] = np.maximum(1, (0.04 * ref_lengths_arr[irish_mask]).astype(np.int64))
+                    cand_errors = np.clip(np.asarray(current_live_errors) + shift_arr, 0, ref_lengths_arr).tolist()
+                    is_harmful_proposal = True
+                else:
+                    # Selective adaptation: high-WER accents improve more (-5%), low-WER accents improve (-2%)
+                    rates = np.where(ref_strata_arr == "Irish English", 0.05, np.where(ref_strata_arr == "US English", 0.02, 0.035))
+                    red = np.maximum(1, (rates * ref_lengths_arr).astype(np.int64))
+                    cand_errors = np.clip(np.asarray(current_live_errors) - red, 0, ref_lengths_arr).tolist()
+                    is_harmful_proposal = False
 
             else:
                 cand_errors = list(current_live_errors)
@@ -593,14 +614,21 @@ def simulate_streaming_gate_trajectory_calibration(
                 ref_lengths=ref_lengths,
             )
 
-            if dec.passed_gate:
-                accepted_in_trajectory += 1
-                total_accepted_candidates += 1
-                current_live_errors = cand_errors
+            if is_harmful_proposal:
+                total_harmful_proposals += 1
+                if dec.passed_gate:
+                    harmful_accepted_in_trajectory += 1
+                    total_harmful_accepted += 1
+                    total_accepted_candidates += 1
+                    current_live_errors = cand_errors
+            else:
+                if dec.passed_gate:
+                    accepted_in_trajectory += 1
+                    total_accepted_candidates += 1
+                    current_live_errors = cand_errors
 
-        if trajectory_type in ("null", "harmful_accent", "disparity_expansion"):
-            if accepted_in_trajectory > 0:
-                total_false_accepted_trajectories += 1
+        if harmful_accepted_in_trajectory > 0:
+            total_false_accepted_trajectories += 1
 
     traj_rate = total_false_accepted_trajectories / float(num_trajectories)
     traj_ci = compute_clopper_pearson_interval(total_false_accepted_trajectories, num_trajectories, confidence=0.95)
@@ -612,14 +640,22 @@ def simulate_streaming_gate_trajectory_calibration(
             is_safe = bool(traj_ci[1] <= 0.05 and traj_rate == 0.0)
         else:
             is_safe = bool(traj_rate == 0.0)
+        uptake = False
+    elif trajectory_type == "beneficial":
+        # In beneficial stream, safety requires ZERO false acceptances of harmful perturbations (total_harmful_accepted == 0)
+        is_safe = bool(total_harmful_accepted == 0 and traj_rate == 0.0)
+        # Adaptation uptake requires positive acceptance of genuine multi-accent improvements
+        uptake = bool(accepted_mean > 0.0)
     else:
-        is_safe = (accepted_mean > 0.0)
+        is_safe = bool(traj_rate == 0.0)
+        uptake = bool(accepted_mean > 0.0)
 
     mode_label = f"Full Sequential ({eval_looks} consecutive looks)" if is_full_seq else f"Sampled ({eval_looks} looks of {planned_k} planned)"
     summary = (
         f"Trajectory Scenario '{trajectory_type}' [{mode_label}, Panel Resampling]: "
-        f"False Acceptance Rate={traj_rate:.1%} (95% CI [{traj_ci[0]:.1%}, {traj_ci[1]:.1%}]), "
-        f"Candidate Rejection Rate={rejection_rate:.1%}, Accepted Updates/Traj={accepted_mean:.2f}."
+        f"Harmful False Acceptance Rate={traj_rate:.1%} (95% CI [{traj_ci[0]:.1%}, {traj_ci[1]:.1%}]), "
+        f"Candidate Rejection Rate={rejection_rate:.1%}, Accepted Updates/Traj={accepted_mean:.2f}, "
+        f"Safety Controlled={is_safe}, Adaptation Uptake={uptake}."
     )
 
     return StreamingGateTrajectoryResult(
@@ -635,5 +671,6 @@ def simulate_streaming_gate_trajectory_calibration(
         trajectory_false_acceptance_ci_upper=traj_ci[1],
         candidate_rejection_rate=round(rejection_rate, 4),
         is_safely_controlled=is_safe,
+        adaptation_uptake_demonstrated=uptake,
         summary=summary,
     )

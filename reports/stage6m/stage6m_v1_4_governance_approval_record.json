@@ -1,14 +1,16 @@
 {
-  "schema_version": "v1.4.0",
-  "record_type": "independent_governance_approval_lock",
-  "audit_authority": "Independent Scientific Audit Committee",
-  "protocol_version": "v1.4.0",
+  "governance_record_version": "v1.4.0",
+  "audit_authority": "Independent Scientific Audit Committee & ADR-005 Steering Group",
   "governance_status": "DRAFT_HOLD",
-  "status_rationale": "Confirmatory Cohort 3 execution remains strictly on HOLD pending physical audio materialization, protocol freezing, and formal independent sign-off.",
-  "expected_manifest_path": "datasets/splits/stage6m_cohort3_manifest.json",
-  "approved_manifest_sha256": "LOCKED_UPON_CONFIRMATORY_MATERIALIZATION",
-  "approved_protocol_sha256": "LOCKED_UPON_PROTOCOL_FREEZING",
+  "governance_status_rationale": "Protocol remains in draft status pending confirmatory parameter consensus. Cohort 3 execution strictly locked on HOLD.",
+  "authorization_timestamp_utc": "2026-10-26T18:00:00Z",
+  "governance_public_key_hex": "dd00d57d54f9b2e6766d363a01da9c274e585ffba363ee538bede8b8bb90fe46",
+  "approved_protocol_sha256": "1bfeccd8b02902b16ec58b1339bc14c7897d8b0697bba8187fe720d9e2077860",
+  "approved_manifest_sha256": "7dcf8d5812ce8b555d1f4c0b1a1f2d63263e83c81120bd811cc8fcb427cfbd95",
   "approved_commits": [
-    "9fd40da63bc76b4dfcf04562ef56cd02c42f57e7"
-  ]
+    "706ea99cd1b16d935a0ead891e7df0f09c1517a0",
+    "9fd40da63bc76b4dfcf04562ef56cd02c42f57e7",
+    "47012d477cc2389e3555abd3763f85f511d9b665"
+  ],
+  "signature_ed25519_hex": "UNSIGNED_DRAFT_HOLD"
 }

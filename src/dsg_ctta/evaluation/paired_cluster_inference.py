@@ -200,12 +200,13 @@ def simulate_design_stage_joint_power(
     num_simulations: int = 1000,
     num_speakers_per_stratum: int = 78,
     seed: int = 42,
-    num_boot_replicates: int = 1000,
+    num_boot_replicates: int = 2000,
 ) -> Tuple[float, float, float]:
     """
     Simulates the design-stage joint power of the composite 9-criterion confirmatory analysis
     using development-derived variance-covariance parameters across candidate sample sizes.
-    Faithfully reproduces the word-weighted paired cluster analysis with bounded error counts
+    Faithfully reproduces the 3-arm word-weighted paired cluster analysis with bounded error counts
+    for Static Baseline (arm 1), Ungated SUTA (arm 2), and DSG-CTTA (arm 3),
     and stratified paired cluster bootstrap for non-linear disparity non-increase.
     Returns: (estimated_joint_power, ci_lower_95, ci_upper_95).
     """
@@ -252,44 +253,57 @@ def simulate_design_stage_joint_power(
         # 1. Word counts per speaker (mean ~140 words, bounded [100, 180], matching 15 clips/speaker)
         w = sim_rng.integers(100, 180, size=(n_acc, N))
 
-        # 2. Bounded speaker baseline rates p1 in [0.01, 0.99]
+        # 2. Bounded speaker baseline rates p1 in [0.01, 0.99] (Arm 1: Static)
         p1 = np.clip(
             np.array([base_wers[acc] + sim_rng.normal(0, spec.between_speaker_wer_std, size=N) for acc in accents]) / 100.0,
             0.01,
             0.99
         )
 
-        # 3. Bounded speaker adapted rates p3 in [0.01, 0.99]
+        # 3. Bounded speaker DSG-CTTA rates p3 in [0.01, 0.99] (Arm 3: DSG)
         p3 = np.clip(
             p1 + np.array([accent_shifts[i] + sim_rng.normal(0, spec.paired_diff_std, size=N) for i in range(n_acc)]) / 100.0,
             0.01,
             0.99
         )
 
-        # 4. Realistic Binomial error counts bounded by word counts
+        # 4. Bounded speaker Ungated SUTA rates p2 in [0.01, 0.99] (Arm 2: Ungated)
+        ungated_eff = max(spec.target_ungated_effect_pp, spec.target_primary_effect_pp)
+        p2 = np.clip(
+            p3 + (ungated_eff + sim_rng.normal(0, spec.paired_diff_std, size=(n_acc, N))) / 100.0,
+            0.01,
+            0.99
+        )
+
+        # 5. Realistic Binomial error counts bounded by word counts for all 3 arms
         e1 = sim_rng.binomial(w, p1)
+        e2 = sim_rng.binomial(w, p2)
         e3 = sim_rng.binomial(w, p3)
 
-        # 5. Primary static difference (word-weighted corpus WER contrast matching confirmatory analysis)
         tot_w = float(np.sum(w))
         tot_e1 = float(np.sum(e1))
+        tot_e2 = float(np.sum(e2))
         tot_e3 = float(np.sum(e3))
-        wer1 = (tot_e1 / tot_w) * 100.0
-        wer3 = (tot_e3 / tot_w) * 100.0
-        delta_static = wer3 - wer1
 
-        u_i = (e3.flatten() - e1.flatten()) - (delta_static / 100.0) * w.flatten()
+        wer1 = (tot_e1 / tot_w) * 100.0
+        wer2 = (tot_e2 / tot_w) * 100.0
+        wer3 = (tot_e3 / tot_w) * 100.0
+
+        # 6. Primary static difference (word-weighted corpus WER contrast Arm 3 vs Arm 1)
+        delta_static = wer3 - wer1
+        u_static_i = (e3.flatten() - e1.flatten()) - (delta_static / 100.0) * w.flatten()
         w_bar = float(np.mean(w))
-        se_static = (100.0 * float(np.std(u_i, ddof=1)) / math.sqrt(n_acc * N)) / w_bar if w_bar > 0 else 0.0
+        se_static = (100.0 * float(np.std(u_static_i, ddof=1)) / math.sqrt(n_acc * N)) / w_bar if w_bar > 0 else 0.0
         ucb_static = delta_static + z_crit_overall * se_static
         if not (delta_static < 0.0 and ucb_static < 0.0):
             continue
 
-        # 6. Primary ungated difference (modeled against corrected ungated SUTA with realistic effect)
-        ungated_eff = max(spec.target_ungated_effect_pp, spec.target_primary_effect_pp)
-        obs_delta_ungated = -ungated_eff + float(sim_rng.normal(0, se_static))
-        ucb_ungated = obs_delta_ungated + z_crit_overall * se_static
-        if not (obs_delta_ungated < 0.0 and ucb_ungated < 0.0):
+        # 7. Primary ungated difference (word-weighted corpus WER contrast Arm 3 vs Arm 2)
+        delta_ungated = wer3 - wer2
+        u_ungated_i = (e3.flatten() - e2.flatten()) - (delta_ungated / 100.0) * w.flatten()
+        se_ungated = (100.0 * float(np.std(u_ungated_i, ddof=1)) / math.sqrt(n_acc * N)) / w_bar if w_bar > 0 else 0.0
+        ucb_ungated = delta_ungated + z_crit_overall * se_ungated
+        if not (delta_ungated < 0.0 and ucb_ungated < 0.0):
             continue
 
         # 7. Accent safety non-inferiority (linearized cluster-robust ratio tests across all 6 accents)
