@@ -247,6 +247,201 @@ def suta_adaptation_step_gpu(
     )
 
 
+def validate_frozen_execution_contract(
+    manifest_data: Dict[str, Any],
+    git_commit_sha: str,
+    protocol_path: Path,
+) -> Dict[str, Any]:
+    """
+    Validates the frozen execution contract under Protocol v1.4.0 with strict fail-closed semantics.
+    Fails closed if:
+    1. approved_commits list is missing, empty, or not a list.
+    2. Current git_commit_sha is not in approved_commits.
+    3. protocol_sha256 is missing, empty, or not a string.
+    4. protocol_path does not exist or its SHA-256 does not match protocol_sha256.
+    5. The protocol document is in 'draft' or 'proposal' status.
+    6. governance_status is not 'APPROVED'.
+    7. Any contradictory status exists (e.g. manifest claims APPROVED while protocol says draft).
+    """
+    if not isinstance(manifest_data, dict):
+        raise ValueError("Confirmatory Contract Violation: Manifest data must be a valid dictionary.")
+
+    frozen_contract = manifest_data.get("frozen_execution_contract")
+    if not frozen_contract or not isinstance(frozen_contract, dict):
+        frozen_contract = manifest_data
+
+    # 1. Approved Commit List (Mandatory non-empty list)
+    approved_commits = frozen_contract.get("approved_commits")
+    if approved_commits is None and "approved_commits" in manifest_data:
+        approved_commits = manifest_data.get("approved_commits")
+
+    if not approved_commits or not isinstance(approved_commits, list) or len(approved_commits) == 0:
+        raise PermissionError(
+            "Confirmatory Contract Violation: 'approved_commits' whitelist is missing or empty. "
+            "Confirmatory execution requires a non-empty list of preapproved, audited commit hashes."
+        )
+
+    clean_sha = str(git_commit_sha).strip() if git_commit_sha else ""
+    if not clean_sha or clean_sha not in approved_commits:
+        raise PermissionError(
+            f"Confirmatory Execution Commit Authorization Violation: Current commit '{clean_sha}' "
+            f"is NOT in preapproved whitelist: {approved_commits}."
+        )
+
+    # 2. Frozen Protocol Hash (Mandatory non-empty string)
+    expected_proto_sha = frozen_contract.get("protocol_sha256")
+    if expected_proto_sha is None and "protocol_sha256" in manifest_data:
+        expected_proto_sha = manifest_data.get("protocol_sha256")
+
+    if not expected_proto_sha or not isinstance(expected_proto_sha, str) or not expected_proto_sha.strip():
+        raise PermissionError(
+            "Confirmatory Contract Violation: 'protocol_sha256' is missing or empty in frozen execution contract."
+        )
+    expected_proto_sha = expected_proto_sha.strip()
+
+    if not protocol_path.exists():
+        raise FileNotFoundError(f"Confirmatory Protocol Violation: Missing protocol file at '{protocol_path}'.")
+
+    actual_proto_sha = hashlib.sha256(protocol_path.read_bytes()).hexdigest()
+    if actual_proto_sha != expected_proto_sha:
+        raise ValueError(
+            f"Confirmatory Protocol Hash Violation: Protocol document hash '{actual_proto_sha}' does not match "
+            f"frozen contract hash '{expected_proto_sha}'."
+        )
+
+    # 3. Protocol Draft / Proposal Status Check (Rejects unapproved / draft documents)
+    protocol_text = protocol_path.read_text(encoding="utf-8")
+    lower_text = protocol_text.lower()
+    if (
+        "draft proposal" in lower_text
+        or "not yet frozen or authorized" in lower_text
+        or "draft status" in lower_text
+        or "proposed protocol id" in lower_text
+    ):
+        raise PermissionError(
+            f"Confirmatory Contract Violation: Protocol at '{protocol_path}' explicitly remains in DRAFT/PROPOSAL status. "
+            "Confirmatory execution requires a frozen, finalized protocol document."
+        )
+
+    # 4. Governance Status Check (Mandatory 'APPROVED')
+    gov_status = frozen_contract.get("governance_status")
+    if gov_status is None and "governance_status" in manifest_data:
+        gov_status = manifest_data.get("governance_status")
+
+    clean_gov = str(gov_status).strip().upper() if gov_status else "DRAFT_HOLD"
+    if clean_gov != "APPROVED":
+        raise PermissionError(
+            f"Confirmatory Governance Lock: Governance status is '{clean_gov}' (must be 'APPROVED'). "
+            "Confirmatory Cohort 3 execution remains strictly locked on HOLD."
+        )
+
+    return {
+        "approved_commits": approved_commits,
+        "protocol_sha256": actual_proto_sha,
+        "governance_status": clean_gov,
+        "contract_status": "APPROVED",
+    }
+
+
+def validate_and_resolve_audio_payloads(
+    eval_df: pd.DataFrame,
+    audio_dir: Path,
+    expected_audio_hashes: Dict[str, str],
+    cohort_name: str = "Cohort 3",
+) -> Dict[str, Path]:
+    """
+    Validates audio file existence, non-zero size, path resolution (.mp3 or .wav),
+    and exact content SHA-256 hashes for EVERY clip in eval_df.
+    Fails closed if:
+    1. expected_audio_hashes is empty or missing.
+    2. Any recording_id in eval_df lacks an entry in expected_audio_hashes.
+    3. expected_audio_hashes contains extraneous recording_ids not in eval_df.
+    4. Any audio file does not exist, has 0 bytes, or fails SHA-256 verification.
+    """
+    if not isinstance(expected_audio_hashes, dict) or len(expected_audio_hashes) == 0:
+        raise ValueError(
+            f"Confirmatory Audio Integrity Violation: Missing or empty audio hashes manifest for {cohort_name}."
+        )
+
+    df_rec_ids = set(eval_df["recording_id"].astype(str))
+    manifest_rec_ids = set(expected_audio_hashes.keys())
+
+    missing_hashes = df_rec_ids - manifest_rec_ids
+    if missing_hashes:
+        raise ValueError(
+            f"Confirmatory Audio Integrity Violation: {len(missing_hashes)} clips in {cohort_name} lack hash entries "
+            f"in manifest: {sorted(list(missing_hashes))[:5]}."
+        )
+
+    extra_hashes = manifest_rec_ids - df_rec_ids
+    if extra_hashes:
+        raise ValueError(
+            f"Confirmatory Audio Integrity Violation: Audio hash manifest contains {len(extra_hashes)} extra recording IDs "
+            f"not in {cohort_name}: {sorted(list(extra_hashes))[:5]}."
+        )
+
+    verified_paths: Dict[str, Path] = {}
+    for _, row in eval_df.iterrows():
+        rec_id = str(row["recording_id"])
+        fpath = audio_dir / f"{rec_id}.mp3"
+        if not fpath.exists():
+            fpath = audio_dir / f"{rec_id}.wav"
+        if not fpath.exists():
+            raise FileNotFoundError(
+                f"Confirmatory Audio Integrity Violation: Missing audio payload for clip '{rec_id}' in '{audio_dir}'."
+            )
+        if fpath.stat().st_size == 0:
+            raise ValueError(
+                f"Confirmatory Audio Integrity Violation: Empty (0-byte) audio payload for clip '{rec_id}'."
+            )
+
+        expected_h = str(expected_audio_hashes[rec_id]).strip()
+        if not expected_h:
+            raise ValueError(f"Confirmatory Audio Integrity Violation: Empty expected hash for clip '{rec_id}'.")
+
+        actual_h = hashlib.sha256(fpath.read_bytes()).hexdigest()
+        if actual_h != expected_h:
+            raise ValueError(
+                f"Confirmatory Audio Content Hash Violation for clip '{rec_id}': expected '{expected_h}', got '{actual_h}'."
+            )
+        verified_paths[rec_id] = fpath
+
+    return verified_paths
+
+
+def validate_cohort_reference_transcripts(
+    df: pd.DataFrame,
+    cohort_name: str = "Cohort 3",
+) -> None:
+    """
+    Validates reference transcripts for all recordings in df.
+    Fails closed if:
+    1. 'transcript' column is missing or any entry is None / NaN.
+    2. Any entry is blank, empty whitespace, or literal string 'nan', 'none', 'null'.
+    3. Any transcript normalizes to empty string via TextNormalizer.
+    """
+    if "transcript" not in df.columns:
+        raise ValueError(f"Confirmatory Reference Integrity Violation: Missing 'transcript' column in {cohort_name}.")
+
+    for _, row in df.iterrows():
+        rec_id = str(row.get("recording_id", "UNKNOWN"))
+        raw_t = row.get("transcript")
+        if raw_t is None or pd.isna(raw_t):
+            raise ValueError(
+                f"Confirmatory Reference Integrity Violation: clip '{rec_id}' in {cohort_name} has missing/NaN reference transcript."
+            )
+        str_t = str(raw_t).strip()
+        if not str_t or str_t.lower() in ("nan", "none", "null"):
+            raise ValueError(
+                f"Confirmatory Reference Integrity Violation: clip '{rec_id}' in {cohort_name} has blank/null reference transcript '{raw_t}'."
+            )
+        norm_t = TextNormalizer.normalize(str_t)
+        if not norm_t.strip():
+            raise ValueError(
+                f"Confirmatory Reference Integrity Violation: clip '{rec_id}' in {cohort_name} normalized transcript is empty (raw: '{raw_t}')."
+            )
+
+
 def preload_waveforms(file_list: List[Tuple[str, Path]], sample_rate: int = 16000) -> Dict[str, np.ndarray]:
     cache = {}
     n = len(file_list)
@@ -577,46 +772,30 @@ def main():
                 f"manifest lock hash '{expected_csv_sha256}'."
             )
 
-        # Frozen Execution Contract & Preapproved Commit Enforcement
-        frozen_contract = c3_manifest_data.get("frozen_execution_contract", {})
-        approved_commits = frozen_contract.get("approved_commits") or c3_manifest_data.get("approved_commits", [])
-        if approved_commits:
-            if git_commit_sha not in approved_commits:
-                print("\n" + "!" * 80)
-                print("[FAIL-CLOSED INTEGRITY CHECK]")
-                print(f"Confirmatory Execution Commit Authorization Violation:")
-                print(f"  Current Git commit SHA '{git_commit_sha}' is NOT in preapproved confirmatory whitelist: {approved_commits}")
-                print("  Only preapproved, peer-reviewed frozen commits may execute Confirmatory Cohort 3.")
-                print("!" * 80 + "\n")
-                sys.exit(1)
-
-        # Frozen Protocol Hash Verification
+        # Frozen Execution Contract & Preapproved Commit Enforcement (Production Validator)
         protocol_file = PROJECT_ROOT / "reports" / "stage6m" / "stage6m_v1_4_selective_adaptation_protocol.md"
-        expected_proto_sha = frozen_contract.get("protocol_sha256") or c3_manifest_data.get("protocol_sha256")
-        if expected_proto_sha:
-            if not protocol_file.exists():
-                raise FileNotFoundError(f"Confirmatory Protocol Violation: Missing protocol file at '{protocol_file}'.")
-            actual_proto_sha = hashlib.sha256(protocol_file.read_bytes()).hexdigest()
-            if actual_proto_sha != expected_proto_sha:
-                raise ValueError(
-                    f"Confirmatory Protocol Hash Violation: Protocol document hash '{actual_proto_sha}' does not match "
-                    f"frozen contract hash '{expected_proto_sha}'."
-                )
-
-        # Governance Sign-off Status Check (Fail-closed on draft/pending)
-        governance_status = frozen_contract.get("governance_status") or c3_manifest_data.get("governance_status", "DRAFT_HOLD")
-        if governance_status != "APPROVED":
+        try:
+            contract_record = validate_frozen_execution_contract(
+                manifest_data=c3_manifest_data,
+                git_commit_sha=git_commit_sha,
+                protocol_path=protocol_file,
+            )
+        except (PermissionError, ValueError, FileNotFoundError) as exc:
             print("\n" + "!" * 80)
-            print("[FAIL-CLOSED GOVERNANCE LOCK]")
-            print(f"Confirmatory Cohort 3 Governance Status: {governance_status}")
+            print("[FAIL-CLOSED CONTRACT VALIDATION LOCK]")
+            print(f"Confirmatory Cohort 3 Execution Authorization Denied:")
+            print(f"  {exc}")
             print("Status: CONFIRMATORY_COHORT3_HOLD_GOVERNANCE_SIGNOFF_PENDING")
-            print("Protocol v1.4.0 is currently in draft status pending physical data materialization and independent scientific review.")
+            print("Protocol v1.4.0 is not authorized for confirmatory execution.")
             print("Execution of Confirmatory Cohort 3 is strictly locked on HOLD.")
             print("!" * 80 + "\n")
             sys.exit(1)
 
         eval_df = pd.read_csv(cohort3_csv)
         audio_dir = cohort3_audio_dir
+
+        # Reference transcript pre-flight validation
+        validate_cohort_reference_transcripts(eval_df, cohort_name="Cohort 3")
 
         # Strict Cohort 3 Structural Design Validation (Protocol v1.4.0 frozen requirement: exactly 7,020 clips)
         # 6 canonical accents * 78 speakers * 15 clips = 7,020 clips
@@ -671,24 +850,14 @@ def main():
                     f"Confirmatory Speaker Clip Count Violation in stratum '{acc}': speakers have non-15 clips: {list(bad_clip_spks.items())[:5]}."
                 )
 
-        # Verify audio file existence, non-zero size, path consistency, and content hash
-        verified_audio_paths = {}
+        # Verify audio file existence, non-zero size, path consistency, and mandatory content hash lock
         audio_hashes_manifest = c3_manifest_data.get("audio_hashes") or c3_manifest_data.get("files", {}).get("audio_sha256", {})
-        for _, row in eval_df.iterrows():
-            rec_id = str(row["recording_id"])
-            fpath = audio_dir / f"{rec_id}.mp3"
-            if not fpath.exists():
-                fpath = audio_dir / f"{rec_id}.wav"
-            if not fpath.exists():
-                raise FileNotFoundError(f"Confirmatory Audio Integrity Violation: Missing audio payload for clip '{rec_id}' in '{audio_dir}'.")
-            if fpath.stat().st_size == 0:
-                raise ValueError(f"Confirmatory Audio Integrity Violation: Empty (0-byte) audio payload for clip '{rec_id}'.")
-            if audio_hashes_manifest and rec_id in audio_hashes_manifest:
-                expected_h = audio_hashes_manifest[rec_id]
-                actual_h = hashlib.sha256(fpath.read_bytes()).hexdigest()
-                if actual_h != expected_h:
-                    raise ValueError(f"Confirmatory Audio Content Hash Violation for clip '{rec_id}': expected '{expected_h}', got '{actual_h}'.")
-            verified_audio_paths[rec_id] = fpath
+        verified_audio_paths = validate_and_resolve_audio_payloads(
+            eval_df=eval_df,
+            audio_dir=audio_dir,
+            expected_audio_hashes=audio_hashes_manifest,
+            cohort_name="Cohort 3",
+        )
 
         # 4. Full Validation of Dedicated Gate-Reference Panel Manifest and Data Lock
         with open(gate_ref_manifest, "r", encoding="utf-8") as f:
@@ -715,6 +884,7 @@ def main():
             )
 
         gate_ref_df = pd.read_csv(gate_ref_panel_csv)
+        validate_cohort_reference_transcripts(gate_ref_df, cohort_name="Gate Reference Panel")
         expected_ref_rows = ref_manifest_data.get("files", {}).get("csv", {}).get("row_count")
         if expected_ref_rows is not None and len(gate_ref_df) != int(expected_ref_rows):
             raise ValueError(

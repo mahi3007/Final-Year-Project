@@ -247,33 +247,31 @@ class StreamingSentinelSafetyGateV14:
         # Resamples speakers within EACH accent stratum independently,
         # guaranteeing that all strata are preserved in every replicate.
         rng_boot = np.random.default_rng(seed=42 + window_id)
-        boot_diffs: List[float] = []
+        b_live_cols = []
+        b_cand_cols = []
 
-        stratum_speakers: Dict[str, List[str]] = {
-            grp: [s for s in spk_list if spk_data[s]["grp"] == grp]
-            for grp in unique_strata
-        }
+        for grp in unique_strata:
+            grp_s_list = [s for s in spk_list if spk_data[s]["grp"] == grp]
+            n_g = len(grp_s_list)
+            g_w = np.array([spk_data[s]["n_words"] for s in grp_s_list], dtype=np.float64)
+            g_l = np.array([spk_data[s]["e_live"] for s in grp_s_list], dtype=np.float64)
+            g_c = np.array([spk_data[s]["e_cand"] for s in grp_s_list], dtype=np.float64)
 
-        for _ in range(self.num_boot_replicates):
-            b_live_wers = []
-            b_cand_wers = []
+            # Draw bootstrap indices matrix of shape (B, n_g)
+            idx_matrix = rng_boot.integers(0, n_g, size=(self.num_boot_replicates, n_g))
+            b_w = np.sum(g_w[idx_matrix], axis=1)
+            b_l = np.sum(g_l[idx_matrix], axis=1)
+            b_c = np.sum(g_c[idx_matrix], axis=1)
 
-            for grp in unique_strata:
-                g_spks = stratum_speakers[grp]
-                n_g = len(g_spks)
-                b_g_indices = rng_boot.integers(0, n_g, size=n_g)
-                b_g_spks = [g_spks[i] for i in b_g_indices]
+            b_live_cols.append((b_l / np.maximum(b_w, 1.0)) * 100.0)
+            b_cand_cols.append((b_c / np.maximum(b_w, 1.0)) * 100.0)
 
-                g_w = sum(spk_data[s]["n_words"] for s in b_g_spks)
-                g_l_e = sum(spk_data[s]["e_live"] for s in b_g_spks)
-                g_c_e = sum(spk_data[s]["e_cand"] for s in b_g_spks)
+        all_live_arr = np.column_stack(b_live_cols)  # (B, len(unique_strata))
+        all_cand_arr = np.column_stack(b_cand_cols)  # (B, len(unique_strata))
 
-                b_live_wers.append((g_l_e / float(g_w)) * 100.0)
-                b_cand_wers.append((g_c_e / float(g_w)) * 100.0)
-
-            b_D_live = max(b_live_wers) - min(b_live_wers)
-            b_D_cand = max(b_cand_wers) - min(b_cand_wers)
-            boot_diffs.append(b_D_cand - b_D_live)
+        b_D_live = np.max(all_live_arr, axis=1) - np.min(all_live_arr, axis=1)
+        b_D_cand = np.max(all_cand_arr, axis=1) - np.min(all_cand_arr, axis=1)
+        boot_diffs = (b_D_cand - b_D_live).tolist()
 
         se_d = float(np.std(boot_diffs, ddof=1)) if len(boot_diffs) > 1 else 0.5000
         if math.isfinite(se_d) and se_d < 1e-6:

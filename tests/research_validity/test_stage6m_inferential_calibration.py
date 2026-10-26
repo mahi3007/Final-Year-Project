@@ -223,12 +223,35 @@ def test_calibration_near_null_differences():
     assert res.is_valid_error_control
 
 
+def test_streaming_gate_trajectory_full_sequential_null_control():
+    """
+    Test Case 8A: Full Consecutive 1,754-Look Sequential Gate Null Trajectory Control.
+    Evaluates all 1,754 consecutive update opportunities across full streaming adaptation trajectories
+    with independent reference panel resampling per trajectory replicate.
+    Verifies that zero false acceptances occur across all 1,754 consecutive evaluation windows.
+    """
+    res = simulate_streaming_gate_trajectory_calibration(
+        trajectory_type="null",
+        num_trajectories=3,
+        num_candidate_looks=1754,
+        num_reference_speakers=30,
+        seed=808,
+        num_planned_updates=1754,
+    )
+
+    assert res.is_full_sequential_evaluation
+    assert res.num_candidate_looks == 1754
+    assert res.trajectory_false_acceptance_rate == 0.0
+    assert res.candidate_rejection_rate == 1.0
+    assert res.is_safely_controlled
+
+
 def test_streaming_gate_trajectory_null_control():
     """
-    Test Case 8: Repeated-Candidate Streaming Gate Null Trajectory Control.
+    Test Case 8B: Repeated-Candidate Streaming Gate Null Trajectory Screening (75 Trajectories).
     Simulates sequential candidate evaluations across the production 1,754-look OBF schedule
-    against a reused reference panel. Verifies that the trajectory-level false acceptance rate
-    has an exact Clopper-Pearson 95% upper confidence limit <= 5.0%.
+    with independent reference panel resampling per trajectory replicate. Verifies that the
+    trajectory-level false acceptance rate has an exact Clopper-Pearson 95% upper confidence limit <= 5.0%.
     """
     res = simulate_streaming_gate_trajectory_calibration(
         trajectory_type="null",

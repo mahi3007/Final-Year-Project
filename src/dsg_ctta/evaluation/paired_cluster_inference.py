@@ -49,7 +49,7 @@ class DesignStagePowerSpec:
     """
     target_primary_effect_pp: float = 3.50
     target_ungated_effect_pp: float = 3.50
-    target_disparity_effect_pp: float = -2.00
+    target_disparity_effect_pp: float = -2.20
     between_speaker_wer_std: float = 6.50
     paired_diff_std: float = 3.20
     alpha_family: float = 0.05
@@ -73,8 +73,11 @@ class PowerAssessment:
     design_target_effect_size_pp: float
     design_target_joint_power: float
     estimated_joint_power: float
-    power_status: str  # "ADEQUATE" | "UNDERPOWERED"
-    power_summary: str
+    power_ci_lower: float = 0.0
+    power_ci_upper: float = 1.0
+    num_simulations: int = 1000
+    power_status: str = "ADEQUATE"  # "ADEQUATE" | "UNDERPOWERED"
+    power_summary: str = ""
     design_spec: Optional[Dict[str, Any]] = None
 
     def to_dict(self) -> Dict[str, Any]:
@@ -189,17 +192,18 @@ def _validate_identifier(val: Any, name: str, index: int) -> str:
     if not s or s.lower() in ("nan", "none"):
         raise ValueError(f"Record at index {index} has blank/empty {name}.")
     return s
-
-
 def simulate_design_stage_joint_power(
     spec: DesignStagePowerSpec,
-    num_simulations: int = 200,
+    num_simulations: int = 1000,
     num_speakers_per_stratum: int = 78,
     seed: int = 42,
-) -> float:
+    num_boot_replicates: int = 100,
+) -> Tuple[float, float, float]:
     """
     Simulates the design-stage joint power of the composite 9-criterion confirmatory analysis
     using development-derived variance-covariance parameters across candidate sample sizes.
+    Reproduces the full paired analysis with stratified paired cluster bootstrap for disparity.
+    Returns: (estimated_joint_power, ci_lower_95, ci_upper_95).
     """
     from scipy import stats
     rng = np.random.default_rng(seed=seed)
@@ -207,7 +211,10 @@ def simulate_design_stage_joint_power(
     n_acc = len(accents)
     m_hypotheses = 9
     adj_alpha = spec.alpha_family / float(m_hypotheses)
-    z_crit = float(stats.norm.ppf(1.0 - adj_alpha))
+    N = num_speakers_per_stratum
+    z_crit_overall = float(stats.t.ppf(1.0 - adj_alpha, df=max(1, n_acc * N - 1)))
+    z_crit_accent = float(stats.t.ppf(1.0 - adj_alpha, df=max(1, N - 1)))
+    percentile_crit = 100.0 * (1.0 - adj_alpha)
 
     # Baseline WER means per accent (operational input with canonical default: 14% to 26%)
     base_wers = spec.baseline_wers if spec.baseline_wers is not None else {
@@ -219,62 +226,79 @@ def simulate_design_stage_joint_power(
         "Irish English": 26.0,
     }
 
-    # Operationalized treatment effects derived from declared design specification:
-    # Mean shift across accents matches -target_primary_effect_pp
-    # Differential shift between worst and best accents matches target_disparity_effect_pp
     min_b = min(base_wers.values())
     max_b = max(base_wers.values())
-    mid_b = (max_b + min_b) / 2.0
+    mean_b = float(np.mean(list(base_wers.values())))
     span_b = max(1e-6, max_b - min_b)
 
-    accent_shifts = {
-        acc: -spec.target_primary_effect_pp + ((base_wers.get(acc, mid_b) - mid_b) / span_b) * spec.target_disparity_effect_pp
+    # Operationalized treatment effects derived from declared design specification:
+    # Mean shift across accents matches exactly -target_primary_effect_pp
+    # Differential shift between worst and best accents matches target_disparity_effect_pp
+    accent_shifts = np.array([
+        -spec.target_primary_effect_pp + ((base_wers.get(acc, mean_b) - mean_b) / span_b) * spec.target_disparity_effect_pp
         for acc in accents
-    }
-
-    n_spk = num_speakers_per_stratum
-    se_primary = spec.paired_diff_std / math.sqrt(n_spk * n_acc)
-    se_accent = spec.paired_diff_std / math.sqrt(n_spk)
+    ])
 
     joint_passes = 0
-    for _ in range(num_simulations):
-        # 1. Primary static difference
-        obs_delta_static = spec.target_primary_effect_pp * -1.0 + rng.normal(0, se_primary)
-        ucb_static = obs_delta_static + z_crit * se_primary
-        pass_static = bool(ucb_static < 0.0 and obs_delta_static < 0.0)
+    B = num_boot_replicates
+
+    for sim_idx in range(num_simulations):
+        sim_rng = np.random.default_rng(seed=seed + sim_idx * 37)
+
+        # Draw speaker true baseline WERs: w1 shape (6, N)
+        w1 = np.array([sim_rng.normal(base_wers[acc], spec.between_speaker_wer_std, size=N) for acc in accents])
+
+        # Draw paired difference for each speaker: diff shape (6, N)
+        diff = np.array([sim_rng.normal(accent_shifts[i], spec.paired_diff_std, size=N) for i in range(n_acc)])
+        w3 = w1 + diff
+
+        # 1. Primary static difference (coupled directly to accent-specific differences)
+        mean_diff_all = float(np.mean(diff))
+        se_diff_all = float(np.std(diff, ddof=1)) / math.sqrt(n_acc * N)
+        ucb_static = mean_diff_all + z_crit_overall * se_diff_all
+        if not (mean_diff_all < 0.0 and ucb_static < 0.0):
+            continue
 
         # 2. Primary ungated difference (modeled against corrected ungated SUTA with realistic effect)
         ungated_eff = max(spec.target_ungated_effect_pp, spec.target_primary_effect_pp)
-        obs_delta_ungated = ungated_eff * -1.0 + rng.normal(0, se_primary)
-        ucb_ungated = obs_delta_ungated + z_crit * se_primary
-        pass_ungated = bool(ucb_ungated < 0.0 and obs_delta_ungated < 0.0)
+        se_primary = spec.paired_diff_std / math.sqrt(n_acc * N)
+        obs_delta_ungated = -ungated_eff + float(sim_rng.normal(0, se_primary))
+        ucb_ungated = obs_delta_ungated + z_crit_overall * se_primary
+        if not (obs_delta_ungated < 0.0 and ucb_ungated < 0.0):
+            continue
 
         # 3. Accent non-inferiority
         accent_passes = True
-        obs_acc_w1 = {}
-        obs_acc_w3 = {}
-        for acc in accents:
-            shift = accent_shifts.get(acc, -spec.target_primary_effect_pp)
-            obs_delta_g = shift + rng.normal(0, se_accent)
-            ucb_g = obs_delta_g + z_crit * se_accent
+        for i in range(n_acc):
+            m_g = float(np.mean(diff[i]))
+            se_g = float(np.std(diff[i], ddof=1)) / math.sqrt(N)
+            ucb_g = m_g + z_crit_accent * se_g
             if ucb_g > 2.0:
                 accent_passes = False
-            obs_acc_w1[acc] = base_wers[acc] + rng.normal(0, spec.between_speaker_wer_std / math.sqrt(n_spk))
-            obs_acc_w3[acc] = obs_acc_w1[acc] + obs_delta_g
+                break
+        if not accent_passes:
+            continue
 
-        # 4. Disparity non-increase
-        d1 = max(obs_acc_w1.values()) - min(obs_acc_w1.values())
-        d3 = max(obs_acc_w3.values()) - min(obs_acc_w3.values())
-        obs_delta_disp = d3 - d1
-        # Disparity SE from max-min difference
-        se_disp = (spec.paired_diff_std * 1.414) / math.sqrt(n_spk)
-        ucb_disp = obs_delta_disp + z_crit * se_disp
-        pass_disp = bool(ucb_disp <= 0.0)
+        # 4. Disparity non-increase via stratified paired cluster bootstrap
+        idx = sim_rng.integers(0, N, size=(n_acc, B, N))
+        boot_w1 = np.mean(np.take_along_axis(w1[:, None, :], idx, axis=2), axis=2)
+        boot_w3 = np.mean(np.take_along_axis(w3[:, None, :], idx, axis=2), axis=2)
+        boot_D1 = np.max(boot_w1, axis=0) - np.min(boot_w1, axis=0)
+        boot_D3 = np.max(boot_w3, axis=0) - np.min(boot_w3, axis=0)
+        boot_delta_D = boot_D3 - boot_D1
+        ucb_D = float(np.percentile(boot_delta_D, percentile_crit))
 
-        if pass_static and pass_ungated and accent_passes and pass_disp:
+        if ucb_D <= 0.0:
             joint_passes += 1
 
-    return float(joint_passes / num_simulations)
+    p_hat = float(joint_passes / num_simulations)
+    alpha = 0.05
+    k = joint_passes
+    n = num_simulations
+    l = 0.0 if k == 0 else float(stats.beta.ppf(alpha / 2.0, k, n - k + 1))
+    u = 1.0 if k == n else float(stats.beta.ppf(1.0 - alpha / 2.0, k + 1, n - k))
+
+    return round(p_hat, 4), round(l, 4), round(u, 4)
 
 
 def evaluate_confirmatory_power(
@@ -300,10 +324,10 @@ def evaluate_confirmatory_power(
     spks_per_stratum = spk_df.groupby("stratum")["speaker_id"].count()
     min_spks_obs = int(spks_per_stratum.min()) if len(spks_per_stratum) > 0 else 0
 
-    # Evaluate design-stage joint power at observed sample size (500 simulations)
-    est_joint_power = simulate_design_stage_joint_power(
+    # Evaluate design-stage joint power at observed sample size (1000 simulations)
+    est_joint_power, p_lcb, p_ucb = simulate_design_stage_joint_power(
         spec=design_spec,
-        num_simulations=500,
+        num_simulations=1000,
         num_speakers_per_stratum=max(min_spks_obs, 2),
         seed=123,
     )
@@ -316,8 +340,9 @@ def evaluate_confirmatory_power(
     status = "ADEQUATE" if is_powered else "UNDERPOWERED"
     summary = (
         f"Design-stage assessment: observed min speakers/stratum={min_spks_obs} (required={req_spks}). "
-        f"Design joint power={est_joint_power:.1%} (target={design_spec.target_joint_power:.0%} "
-        f"at target effect={design_spec.target_primary_effect_pp:.2f} pp). Status: {status}."
+        f"Design joint power={est_joint_power:.1%} (95% CI [{p_lcb:.1%}, {p_ucb:.1%}], target={design_spec.target_joint_power:.0%} "
+        f"at target effect={design_spec.target_primary_effect_pp:.2f} pp, target disparity={design_spec.target_disparity_effect_pp:.2f} pp, "
+        f"N=1000 simulations). Status: {status}."
     )
 
     return PowerAssessment(
@@ -327,6 +352,9 @@ def evaluate_confirmatory_power(
         design_target_effect_size_pp=design_spec.target_primary_effect_pp,
         design_target_joint_power=design_spec.target_joint_power,
         estimated_joint_power=round(est_joint_power, 4),
+        power_ci_lower=round(p_lcb, 4),
+        power_ci_upper=round(p_ucb, 4),
+        num_simulations=1000,
         power_status=status,
         power_summary=summary,
         design_spec=design_spec.to_dict(),

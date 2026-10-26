@@ -98,6 +98,8 @@ class StreamingGateTrajectoryResult:
     num_trajectories: int
     num_candidate_looks: int
     num_reference_speakers: int
+    num_planned_updates: int
+    is_full_sequential_evaluation: bool
     accepted_updates_mean: float
     trajectory_false_acceptance_rate: float
     trajectory_false_acceptance_ci_lower: float
@@ -474,14 +476,15 @@ def run_full_statistical_calibration_suite(
 def simulate_streaming_gate_trajectory_calibration(
     trajectory_type: str = "null",  # "null" | "harmful_accent" | "disparity_expansion" | "beneficial"
     num_trajectories: int = 20,
-    num_candidate_looks: int = 20,
+    num_candidate_looks: Optional[int] = None,
     num_reference_speakers: int = 30,
     seed: int = 42,
     num_planned_updates: Optional[int] = None,
 ) -> StreamingGateTrajectoryResult:
     """
     Simulates sequential candidate evaluations across complete adaptation trajectories
-    using StreamingSentinelSafetyGateV14 against a reused reference panel.
+    using StreamingSentinelSafetyGateV14 with independent reference panel resampling
+    per trajectory replicate to incorporate panel uncertainty.
     Evaluates operating characteristics under the declared O'Brien-Fleming schedule (e.g. 1,754 planned looks).
     """
     from dsg_ctta.controller.streaming_gate_v14 import StreamingSentinelSafetyGateV14
@@ -491,17 +494,15 @@ def simulate_streaming_gate_trajectory_calibration(
     spks_per_accent = num_reference_speakers // n_acc
 
     # Production schedule configuration: gate evaluates across planned looks (e.g. 1,754)
-    planned_k = int(num_planned_updates) if num_planned_updates is not None else num_candidate_looks
-    if num_candidate_looks < planned_k:
-        look_indices = [int(i) for i in np.linspace(0, planned_k - 1, num_candidate_looks)]
+    planned_k = int(num_planned_updates) if num_planned_updates is not None else (int(num_candidate_looks) if num_candidate_looks is not None else 1754)
+    if num_candidate_looks is None or num_candidate_looks >= planned_k:
+        look_indices = list(range(planned_k))
+        eval_looks = planned_k
+        is_full_seq = True
     else:
-        look_indices = list(range(num_candidate_looks))
-
-    # Build reference panel metadata (5 speakers per canonical accent)
-    ref_spk_ids = []
-    ref_strata = []
-    ref_lengths = []
-    ref_base_errors = []
+        look_indices = [int(i) for i in np.linspace(0, planned_k - 1, num_candidate_looks)]
+        eval_looks = num_candidate_looks
+        is_full_seq = False
 
     base_wers = {
         "US English": 0.14,
@@ -512,20 +513,29 @@ def simulate_streaming_gate_trajectory_calibration(
         "Irish English": 0.26,
     }
 
-    for acc in accents:
-        base_wer = base_wers.get(acc, 0.20)
-        for s_idx in range(spks_per_accent):
-            ref_spk_ids.append(f"ref_{acc[:4].lower()}_{s_idx}")
-            ref_strata.append(acc)
-            length = int(rng.integers(80, 150))
-            ref_lengths.append(length)
-            ref_base_errors.append(int(rng.binomial(length, base_wer)))
-
     total_false_accepted_trajectories = 0
     total_accepted_candidates = 0
-    total_evaluated_candidates = num_trajectories * num_candidate_looks
+    total_evaluated_candidates = num_trajectories * eval_looks
 
     for t_idx in range(num_trajectories):
+        traj_seed = seed + t_idx * 137
+        traj_rng = np.random.default_rng(seed=traj_seed)
+
+        # Freshly resample reference panel for each trajectory replicate to measure panel variation
+        ref_spk_ids = []
+        ref_strata = []
+        ref_lengths = []
+        ref_base_errors = []
+
+        for acc in accents:
+            base_wer = base_wers.get(acc, 0.20)
+            for s_idx in range(spks_per_accent):
+                ref_spk_ids.append(f"ref_{acc[:4].lower()}_t{t_idx}_{s_idx}")
+                ref_strata.append(acc)
+                length = int(traj_rng.integers(80, 150))
+                ref_lengths.append(length)
+                ref_base_errors.append(int(traj_rng.binomial(length, base_wer)))
+
         gate = StreamingSentinelSafetyGateV14(
             epsilon_r_pp=0.0000,
             epsilon_g_pp=2.0000,
@@ -544,9 +554,9 @@ def simulate_streaming_gate_trajectory_calibration(
 
             if trajectory_type == "null":
                 # Candidate has zero true effect (pure random fluctuation)
+                noise_arr = traj_rng.choice([-1, 0, 1], size=len(cand_errors), p=[0.25, 0.50, 0.25])
                 for i in range(len(cand_errors)):
-                    noise = int(rng.choice([-1, 0, 1], p=[0.25, 0.50, 0.25]))
-                    cand_errors[i] = max(0, min(ref_lengths[i], current_live_errors[i] + noise))
+                    cand_errors[i] = max(0, min(ref_lengths[i], current_live_errors[i] + int(noise_arr[i])))
 
             elif trajectory_type == "harmful_accent":
                 # Candidate regresses on Irish English by +5% WER, neutral on others
@@ -594,12 +604,16 @@ def simulate_streaming_gate_trajectory_calibration(
     accepted_mean = total_accepted_candidates / float(num_trajectories)
 
     if trajectory_type in ("null", "harmful_accent", "disparity_expansion"):
-        is_safe = bool(traj_ci[1] <= 0.05 and traj_rate == 0.0)
+        if num_trajectories >= 72:
+            is_safe = bool(traj_ci[1] <= 0.05 and traj_rate == 0.0)
+        else:
+            is_safe = bool(traj_rate == 0.0)
     else:
         is_safe = (accepted_mean > 0.0)
 
+    mode_label = f"Full Sequential ({eval_looks} consecutive looks)" if is_full_seq else f"Sampled ({eval_looks} looks of {planned_k} planned)"
     summary = (
-        f"Trajectory Scenario '{trajectory_type}': "
+        f"Trajectory Scenario '{trajectory_type}' [{mode_label}, Panel Resampling]: "
         f"False Acceptance Rate={traj_rate:.1%} (95% CI [{traj_ci[0]:.1%}, {traj_ci[1]:.1%}]), "
         f"Candidate Rejection Rate={rejection_rate:.1%}, Accepted Updates/Traj={accepted_mean:.2f}."
     )
@@ -607,8 +621,10 @@ def simulate_streaming_gate_trajectory_calibration(
     return StreamingGateTrajectoryResult(
         trajectory_scenario=trajectory_type,
         num_trajectories=num_trajectories,
-        num_candidate_looks=num_candidate_looks,
+        num_candidate_looks=eval_looks,
         num_reference_speakers=num_reference_speakers,
+        num_planned_updates=planned_k,
+        is_full_sequential_evaluation=is_full_seq,
         accepted_updates_mean=round(accepted_mean, 2),
         trajectory_false_acceptance_rate=round(traj_rate, 4),
         trajectory_false_acceptance_ci_lower=traj_ci[0],
