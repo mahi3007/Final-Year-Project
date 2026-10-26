@@ -91,4 +91,5 @@ scratch/kaggle_run_output_full/
 scratch/kaggle_run_output_utf8/
 scratch/selective_download/
 scratch/*.log
+results/stage6m_kaggle/
 
