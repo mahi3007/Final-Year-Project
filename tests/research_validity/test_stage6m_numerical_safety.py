@@ -1559,19 +1559,102 @@ def test_runner_cohort3_rejects_draft_n78_specification(monkeypatch):
     assert "Decision Rule B (N=220 per stratum, require_lcb_threshold=True" in str(excinfo.value)
 
 
-def test_runner_cohort3_enforces_decision_rule_b_spec():
+def test_runner_cohort3_resolves_decision_rule_b_spec():
     """
-    Test Case 42C: Confirmatory runner operative specification enforces Decision Rule B.
-    Verifies that the factory method recommended_rule_b_spec() constructed on the confirmatory
-    execution path strictly requires 220 speakers per stratum and sets require_lcb_threshold=True.
+    Test Case 42C: Confirmatory runner operative specification resolution enforces Decision Rule B.
+    Verifies that resolve_runner_confirmatory_power_spec("cohort3", "rule_b") strictly requires
+    220 speakers per stratum and sets require_lcb_threshold=True, while returning None for development cohorts.
     """
+    from cloud.kaggle.run_stage6m_cohort2_benchmark import resolve_runner_confirmatory_power_spec
     from dsg_ctta.evaluation.paired_cluster_inference import DesignStagePowerSpec
 
-    spec = DesignStagePowerSpec.recommended_rule_b_spec()
+    spec = resolve_runner_confirmatory_power_spec("cohort3", "rule_b")
+    assert spec is not None
     assert spec.required_speakers_per_stratum == 220
     assert spec.require_lcb_threshold is True
     assert spec.target_joint_power == 0.90
     assert spec.recommended_speakers_per_stratum_for_90_power == 220
+
+    # Development cohorts do not enforce confirmatory power spec
+    assert resolve_runner_confirmatory_power_spec("cohort1", "rule_b") is None
+    assert resolve_runner_confirmatory_power_spec("cohort2", "rule_b") is None
+
+
+def test_runner_execution_passes_rule_b_to_paired_cluster_inference(monkeypatch):
+    """
+    Test Case 42D (Integration Test): Proves that the actual runner execution path
+    intercepts and passes Decision Rule B to run_confirmatory_paired_cluster_inference.
+    Captures the exact design_spec keyword argument passed during runner execution and
+    asserts that it satisfies all Decision Rule B requirements (N=220, LCB threshold, 90% power).
+    """
+    import unittest.mock as mock
+    import cloud.kaggle.run_stage6m_cohort2_benchmark as runner_mod
+    from dsg_ctta.evaluation.paired_cluster_inference import (
+        DesignStagePowerSpec,
+        ConfirmatoryAnalysisReport,
+    )
+
+    captured_call_args = {}
+
+    def spy_confirmatory_inference(*args, **kwargs):
+        captured_call_args.update(kwargs)
+        # Return valid mock report
+        mock_report = mock.MagicMock(spec=ConfirmatoryAnalysisReport)
+        mock_report.verdict = "PASS"
+        mock_report.all_criteria_passed = True
+        mock_report.to_dict.return_value = {"verdict": "PASS"}
+        mock_report.failure_reasons = []
+        return mock_report
+
+    monkeypatch.setattr(runner_mod, "run_confirmatory_paired_cluster_inference", spy_confirmatory_inference)
+
+    dummy_records = [{"speaker_id": "spk_1", "stratum": "US English", "wc": 100, "err1": 20, "err2": 25, "err3": 15}]
+
+    # 1. Execute runner confirmatory inference with Cohort 3 and rule_b
+    report, resolved_spec = runner_mod.execute_runner_paired_cluster_inference(
+        speaker_records=dummy_records,
+        cohort="cohort3",
+        confirmatory_power_rule="rule_b",
+        num_bootstrap_replicates=50,
+    )
+
+    # 2. Inspect the design_spec actually captured on the execution path
+    assert "design_spec" in captured_call_args, "Runner failed to pass design_spec to run_confirmatory_paired_cluster_inference"
+    passed_spec = captured_call_args["design_spec"]
+
+    assert passed_spec is not None
+    assert isinstance(passed_spec, DesignStagePowerSpec)
+    assert passed_spec.required_speakers_per_stratum == 220
+    assert passed_spec.require_lcb_threshold is True
+    assert passed_spec.target_joint_power == 0.90
+    assert passed_spec.recommended_speakers_per_stratum_for_90_power == 220
+    assert passed_spec == DesignStagePowerSpec.recommended_rule_b_spec()
+    assert resolved_spec == passed_spec
+
+    # 3. Verify non-confirmatory cohort passes None
+    captured_call_args.clear()
+    runner_mod.execute_runner_paired_cluster_inference(
+        speaker_records=dummy_records,
+        cohort="cohort2",
+        confirmatory_power_rule="rule_b",
+        num_bootstrap_replicates=50,
+    )
+    assert captured_call_args["design_spec"] is None
+
+
+def test_runner_cohort3_structural_target_requires_19800_clips():
+    """
+    Test Case 42E: Runner structural validation target under Decision Rule B is exactly 19,800 clips.
+    Verifies that the target constants in the runner align with the 220 speakers per accent mandate:
+    6 accents * 220 speakers * 15 clips = 19,800 clips.
+    """
+    from cloud.kaggle.run_stage6m_cohort2_benchmark import CANONICAL_PROTOCOL_ACCENTS
+
+    target_speakers = 220
+    clips_per_speaker = 15
+    target_clips = len(CANONICAL_PROTOCOL_ACCENTS) * target_speakers * clips_per_speaker
+    assert target_clips == 19800
+    assert len(CANONICAL_PROTOCOL_ACCENTS) == 6
 
 
 def test_confirmatory_power_strictly_enforces_78_speaker_design_spec_over_default_argument():

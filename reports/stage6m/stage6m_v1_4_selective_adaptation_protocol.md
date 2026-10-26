@@ -69,17 +69,19 @@ Create and validate three logically separate data partitions:
 
 The fresh confirmatory *stream* and gate reference panel serve different purposes. Do not calculate final confirmatory WER on the same labelled panel used repeatedly to decide whether updates are accepted.
 
-### 4.2 Cohort size and composition
+### 4.2 Cohort size and composition (Amended to Decision Rule B)
 
-Use the existing Cohort 2 design as the **target layout**, not as an assumption that enough new data exists:
+Following development variance calibration and dynamic power sizing (ADR-005, Section 11; `development_variance_calibration.json`), the preliminary draft target of 78 speakers per stratum was determined to yield only ~40.7% joint power [32.7%, 49.0%] and is strictly underpowered. The protocol is hereby amended to **Decision Rule B**:
 
 - Six accent strata: Australian, Canadian, England, Irish, South Asian, and US English.
-- Target 78 speakers per stratum (468 speakers total), 15 clips per speaker (7,020 clips total), if a new speaker-disjoint eligible population can be established.
+- **Operative Confirmatory Target (Decision Rule B):** Exactly 220 speakers per stratum (1,320 speakers total across all 6 strata), with 15 clips per speaker (**19,800 clips total**).
+- Under the declared scenario simulation assumptions (between-speaker WER std = 6.50 pp, within-speaker paired difference std = 3.20 pp, selective disparity reduction = -2.00 pp), $N=220$ achieves an estimated joint power of 95.00% with a 95% Clopper-Pearson lower confidence bound of 91.00% $\ge 90.0\%$ in the pre-specified independent non-overlapping simulation.
 - Preserve exact speaker-to-stratum mapping; each speaker must map to one and only one stratum.
 - Verify no speaker overlap with all historical evaluation sets, development sets, sentinel panels, and Cohort 3.
-- Verify no clip overlap, duplicate recording IDs, missing references, and duplicate audio hashes.
+- Verify no clip overlap, duplicate recording IDs, missing references, and duplicate audio hashes across all 19,800 clips.
+- Verify cross-cohort mutual disjointness against Cohort 1 (900 clips) and Cohort 2 (7,020 clips).
 
-**Feasibility HOLD:** Before curation is locked, measure the eligible speaker count in every accent after applying the locked curation predicate and all overlap exclusions. If the target is infeasible, do not silently reuse Cohort 2 speakers or weaken filters after inspecting WER. Either (a) identify a valid external reserve source, or (b) design a smaller balanced cohort based on a documented power analysis and freeze that design before the confirmatory run. Label an underpowered run exploratory, not confirmatory.
+**Feasibility & Materialization HOLD:** Before curation is locked, materialize and verify the eligible 1,320 speakers (220 per accent, 19,800 clips) and the dedicated gate-reference panel after applying the locked curation predicate and all overlap exclusions. If external reserve sourcing or audio materialization is incomplete, execution remains strictly blocked on HOLD. Confirmatory execution cannot proceed without a verified 19,800-clip manifest lock and an independent Ed25519 signature binding this amended protocol, the execution commit, and the audio manifest.
 
 ### 4.3 Dataset and manifest locking
 
@@ -451,7 +453,7 @@ A result can be scientifically valuable without meeting the composite objective.
 
 1. Commit this as a **draft** protocol on a branch from `300a676...`; do not modify old result reports to make them look like v1.4 output.
 2. Implement the atomic numerical update transaction and its unit tests before any further benchmark run.
-3. Establish exact development, gate-reference and Cohort 3 speaker-disjointness; do a feasibility/power audit before promising 468 speakers.
+3. Establish exact development, gate-reference and Cohort 3 speaker-disjointness; materialize and lock the 1,320 speakers (19,800 clips) required by Decision Rule B.
 4. Run the bounded development grid and select one stable candidate generator based on accuracy and fairness evidence, not acceptance rate.
 5. Calibrate the complete repeated gate process and freeze all rules before collecting/inspecting fresh confirmatory outcomes.
 

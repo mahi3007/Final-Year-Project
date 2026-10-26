@@ -654,6 +654,69 @@ def get_git_provenance(enforce_physical_checkout: bool = False) -> Tuple[str, bo
         )
 
 
+def resolve_runner_confirmatory_power_spec(
+    cohort: str, confirmatory_power_rule: str = "rule_b"
+) -> Optional[DesignStagePowerSpec]:
+    """
+    Resolves the operative DesignStagePowerSpec for runner execution under Protocol v1.4.0.
+    For Confirmatory Cohort 3:
+      - 'rule_b': Returns DesignStagePowerSpec.recommended_rule_b_spec() (N=220, require_lcb_threshold=True, target=0.90).
+      - 'draft_n78': Fails closed with ValueError.
+    For non-confirmatory cohorts:
+      - Returns None.
+    """
+    if cohort == "cohort3":
+        if confirmatory_power_rule == "draft_n78":
+            raise ValueError(
+                "Confirmatory Protocol Violation: Draft N=78 specification cannot be used for confirmatory execution. "
+                "Protocol amendment ADR-005 mandates Decision Rule B (N=220 per stratum, require_lcb_threshold=True, target_power=0.90)."
+            )
+        return DesignStagePowerSpec.recommended_rule_b_spec()
+    return None
+
+
+def execute_runner_paired_cluster_inference(
+    speaker_records: List[Dict[str, Any]],
+    cohort: str,
+    confirmatory_power_rule: str = "rule_b",
+    num_bootstrap_replicates: Optional[int] = None,
+    seed: int = 42,
+    alpha_family: float = 0.05,
+    epsilon_g_margin_pp: float = 2.00,
+    epsilon_d_margin_pp: float = 0.00,
+) -> Tuple[Any, Optional[DesignStagePowerSpec]]:
+    """
+    Executes paired cluster inference for benchmark reporting, resolving and passing the
+    operative DesignStagePowerSpec according to the cohort and confirmatory power rule.
+    Returns: (confirmatory_report, conf_design_spec).
+    """
+    is_confirmatory = bool(cohort == "cohort3")
+    n_boot_rep = (
+        num_bootstrap_replicates
+        if num_bootstrap_replicates is not None
+        else (20000 if is_confirmatory else 2000)
+    )
+    conf_design_spec = resolve_runner_confirmatory_power_spec(
+        cohort=cohort, confirmatory_power_rule=confirmatory_power_rule
+    )
+    if is_confirmatory and conf_design_spec is not None:
+        print(
+            f"      Enforcing Confirmatory Decision Rule B: N={conf_design_spec.required_speakers_per_stratum}/stratum, "
+            f"require_lcb_threshold={conf_design_spec.require_lcb_threshold}, target_power={conf_design_spec.target_joint_power:.0%}"
+        )
+
+    report = run_confirmatory_paired_cluster_inference(
+        speaker_records=speaker_records,
+        num_bootstrap_replicates=n_boot_rep,
+        seed=seed,
+        alpha_family=alpha_family,
+        epsilon_g_margin_pp=epsilon_g_margin_pp,
+        epsilon_d_margin_pp=epsilon_d_margin_pp,
+        design_spec=conf_design_spec,
+    )
+    return report, conf_design_spec
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Stage 6M Physical Virtual GPU Benchmark Runner")
     parser.add_argument(
@@ -970,16 +1033,16 @@ def main():
         # Reference transcript pre-flight validation
         validate_cohort_reference_transcripts(eval_df, cohort_name="Cohort 3")
 
-        # Strict Cohort 3 Structural Design Validation (Protocol v1.4.0 frozen requirement: exactly 7,020 clips)
-        # 6 canonical accents * 78 speakers * 15 clips = 7,020 clips
-        TARGET_COHORT3_CLIPS = 7020
-        TARGET_SPEAKERS_PER_ACCENT = 78
+        # Strict Cohort 3 Structural Design Validation (Protocol v1.4.0 frozen requirement under Decision Rule B: exactly 19,800 clips)
+        # 6 canonical accents * 220 speakers * 15 clips = 19,800 clips
+        TARGET_SPEAKERS_PER_ACCENT = 220
         TARGET_CLIPS_PER_SPEAKER = 15
+        TARGET_COHORT3_CLIPS = len(CANONICAL_PROTOCOL_ACCENTS) * TARGET_SPEAKERS_PER_ACCENT * TARGET_CLIPS_PER_SPEAKER
 
         if len(eval_df) != TARGET_COHORT3_CLIPS:
             raise ValueError(
                 f"Confirmatory Row Count Violation: Cohort 3 has {len(eval_df)} clips, "
-                f"expected exactly {TARGET_COHORT3_CLIPS} clips (6 accents * 78 speakers * 15 clips)."
+                f"expected exactly {TARGET_COHORT3_CLIPS} clips (6 accents * {TARGET_SPEAKERS_PER_ACCENT} speakers * {TARGET_CLIPS_PER_SPEAKER} clips)."
             )
 
         expected_rows = c3_manifest_data.get("files", {}).get("csv", {}).get("row_count")
@@ -1735,28 +1798,15 @@ def main():
     n_boot_rep = 20000 if is_confirmatory else 2000
     print(f"      Executing Paired Cluster Inference ({n_boot_rep} replicates) with Simultaneous Multiplicity Adjustment...")
 
-    if is_confirmatory:
-        if getattr(args, "confirmatory_power_rule", "rule_b") == "draft_n78":
-            raise ValueError(
-                "Confirmatory Protocol Violation: Draft N=78 specification cannot be used for confirmatory execution. "
-                "Protocol amendment ADR-005 mandates Decision Rule B (N=220 per stratum, require_lcb_threshold=True, target_power=0.90)."
-            )
-        conf_design_spec = DesignStagePowerSpec.recommended_rule_b_spec()
-        print(
-            f"      Enforcing Confirmatory Decision Rule B: N={conf_design_spec.required_speakers_per_stratum}/stratum, "
-            f"require_lcb_threshold={conf_design_spec.require_lcb_threshold}, target_power={conf_design_spec.target_joint_power:.0%}"
-        )
-    else:
-        conf_design_spec = None
-
-    confirmatory_report = run_confirmatory_paired_cluster_inference(
+    confirmatory_report, conf_design_spec = execute_runner_paired_cluster_inference(
         speaker_records=spk_stats,
+        cohort=args.cohort,
+        confirmatory_power_rule=getattr(args, "confirmatory_power_rule", "rule_b"),
         num_bootstrap_replicates=n_boot_rep,
         seed=42,
         alpha_family=0.05,
         epsilon_g_margin_pp=2.00,
         epsilon_d_margin_pp=0.00,
-        design_spec=conf_design_spec,
     )
 
     report_payload = {

@@ -92,6 +92,7 @@ def reconcile_predictions_to_speaker_aggregates(
 ) -> Dict[str, Any]:
     """
     Exhaustively reconciles raw clip-level prediction records against speaker-level summary aggregates:
+    0. Speaker summary row uniqueness: asserts spk_df contains no duplicate speaker_id rows.
     1. Complete speaker ID set equality between prediction CSV and speaker summary records.
     2. Absolute recording ID uniqueness across all clip predictions.
     3. Exactly 15 distinct clips per speaker for all speakers.
@@ -100,6 +101,13 @@ def reconcile_predictions_to_speaker_aggregates(
        from stored reference and hypothesis transcripts for all three arms.
     6. Exact arithmetic equality between clip-summed word counts/errors and speaker summary aggregates.
     """
+    # 0. Speaker Summary Table Row Uniqueness
+    if spk_df["speaker_id"].nunique() != len(spk_df):
+        dup_spks = spk_df[spk_df["speaker_id"].duplicated()]["speaker_id"].tolist()
+        raise ValueError(
+            f"Speaker summary uniqueness violation in {cohort_name}: {len(dup_spks)} duplicate speaker_ids detected in summary table: {dup_spks[:5]}"
+        )
+
     # 1. Complete Speaker ID Set Equality
     pred_spks = set(pred_df["speaker_id"].astype(str))
     spk_spks = set(spk_df["speaker_id"].astype(str))
@@ -194,6 +202,7 @@ def reconcile_predictions_to_speaker_aggregates(
         "cohort_name": cohort_name,
         "speakers_reconciled": len(merged),
         "total_clips_reconciled": int(agg["clip_count"].sum()),
+        "speaker_summary_rows_unique": True,
         "speaker_id_sets_equal": True,
         "recording_ids_unique": True,
         "all_speakers_have_15_clips": True,
@@ -204,6 +213,54 @@ def reconcile_predictions_to_speaker_aggregates(
         "err2_reconciled": err2_match,
         "err3_reconciled": err3_match,
         "reconciliation_verdict": "EXHAUSTIVE_VERIFIED_EXACT_MATCH",
+    }
+
+
+def validate_cross_cohort_provenance_and_disjointness(
+    c1_pred_df: pd.DataFrame,
+    c1_spk_df: pd.DataFrame,
+    c2_pred_df: pd.DataFrame,
+    c2_spk_df: pd.DataFrame,
+) -> Dict[str, Any]:
+    """
+    Exhaustively verifies cross-cohort invariants across the combined physical evaluation corpus:
+    1. Cross-cohort recording ID uniqueness: 0 overlap between Cohort 1 and Cohort 2 clip predictions.
+    2. Cross-cohort speaker ID disjointness: 0 overlap between Cohort 1 and Cohort 2 physical speakers.
+    3. Global clip count and recording ID uniqueness across the full 7,920 physical clips.
+    """
+    c1_rec_ids = set(c1_pred_df["recording_id"].astype(str))
+    c2_rec_ids = set(c2_pred_df["recording_id"].astype(str))
+    rec_overlap = c1_rec_ids.intersection(c2_rec_ids)
+    if rec_overlap:
+        raise ValueError(
+            f"Cross-cohort recording ID overlap violation: {len(rec_overlap)} recording IDs exist in both Cohort 1 and Cohort 2: {list(rec_overlap)[:5]}"
+        )
+
+    c1_spk_ids = set(c1_spk_df["speaker_id"].astype(str))
+    c2_spk_ids = set(c2_spk_df["speaker_id"].astype(str))
+    spk_overlap = c1_spk_ids.intersection(c2_spk_ids)
+    if spk_overlap:
+        raise ValueError(
+            f"Cross-cohort speaker ID overlap violation: {len(spk_overlap)} speakers exist in both Cohort 1 and Cohort 2: {list(spk_overlap)[:5]}"
+        )
+
+    combined_preds = pd.concat([c1_pred_df, c2_pred_df], ignore_index=True)
+    total_clips = len(combined_preds)
+    unique_clips = combined_preds["recording_id"].nunique()
+    if unique_clips != total_clips:
+        raise ValueError(
+            f"Combined physical recording ID uniqueness violation: total {total_clips} clips, but only {unique_clips} unique."
+        )
+
+    return {
+        "cross_cohort_recording_disjointness": True,
+        "cross_cohort_speaker_disjointness": True,
+        "total_combined_clips_evaluated": total_clips,
+        "total_unique_recording_ids": unique_clips,
+        "total_unique_physical_speakers": len(c1_spk_ids) + len(c2_spk_ids),
+        "recording_id_overlap_count": 0,
+        "speaker_id_overlap_count": 0,
+        "cross_cohort_verdict": "VERIFIED_MUTUALLY_DISJOINT_AND_UNIQUE",
     }
 
 
@@ -243,6 +300,9 @@ def run_development_variance_calibration() -> Dict[str, Any]:
     # Verify prediction-to-aggregate physical provenance chain
     c1_reconciliation = reconcile_predictions_to_speaker_aggregates(c1_pred_df, c1_df, "Cohort 1 (Revalidated)")
     c2_reconciliation = reconcile_predictions_to_speaker_aggregates(c2_pred_df, c2_df, "Cohort 2")
+    cross_cohort_reconciliation = validate_cross_cohort_provenance_and_disjointness(
+        c1_pred_df=c1_pred_df, c1_spk_df=c1_df, c2_pred_df=c2_pred_df, c2_spk_df=c2_df
+    )
 
     # A. Physical Cohort 1 Statistics (N=60 speakers)
     c1_strata_counts = c1_df.groupby("stratum")["speaker_id"].count().to_dict()
@@ -310,7 +370,7 @@ def run_development_variance_calibration() -> Dict[str, Any]:
             seed=42,
         )
         if p_lcb >= 0.90:
-            status = "ADEQUATELY_POWERED_LCB_GUARANTEED"
+            status = "ADEQUATELY_POWERED_LCB_THRESHOLD_MET"
         elif p_est >= 0.90:
             status = "ADEQUATELY_POWERED_POINT_ESTIMATE"
         elif p_est >= 0.85:
@@ -352,7 +412,20 @@ def run_development_variance_calibration() -> Dict[str, Any]:
             "speakers_per_stratum_220_ci95": [round(lcb220, 4), round(ucb220, 4)],
         })
 
-    # 4. Standalone Pre-Specified Decision Rule B Confirmatory Simulation (Pre-declared N=220)
+    # 4. Standalone Pre-Specified Decision Rule B Confirmatory Simulations (N=220)
+    # A. Fresh Independent Non-Overlapping Replication (Seed 20261028)
+    independent_fresh_seed = 20261028
+    indep_sims = 200
+    indep_n = 220
+    indep_p, indep_lcb, indep_ucb = simulate_design_stage_joint_power(
+        spec=power_spec,
+        num_simulations=indep_sims,
+        num_speakers_per_stratum=indep_n,
+        num_boot_replicates=1000,
+        seed=independent_fresh_seed,
+    )
+
+    # B. Preserved Historical Overlapping Run (Seed 42)
     prespec_n = 220
     prespec_sims = 200
     prespec_seed = 42
@@ -443,6 +516,7 @@ def run_development_variance_calibration() -> Dict[str, Any]:
             "cohort2_paired_difference_std_gated_pp": c2_paired_std_gated,
             "cohort2_paired_difference_std_ungated_pp": c2_paired_std_ungated,
             "cohort2_prediction_reconciliation": c2_reconciliation,
+            "cross_cohort_provenance_and_disjointness": cross_cohort_reconciliation,
             "full_prediction_to_aggregate_provenance_verified": True,
         },
         "simulation_fixture_assumptions": {
@@ -472,16 +546,17 @@ def run_development_variance_calibration() -> Dict[str, Any]:
                     "minimum_speakers_per_stratum_strictly_satisfying": 220,
                     "total_confirmatory_speakers_at_220": 1320,
                 },
-                "decision_rule_b_lcb_guarantee": {
+                "decision_rule_b_lcb_threshold": {
                     "criterion": "95% Clopper-Pearson LCB >= 0.90",
-                    "status_at_220": "ADEQUATELY_POWERED_LCB_GUARANTEED (96.67%, 95% CI [92.39%, 98.91%])",
+                    "status_at_220": "ADEQUATELY_POWERED_LCB_THRESHOLD_MET (95.00%, 95% CI [91.00%, 97.58%] in fresh independent replication; 96.67%, 95% CI [92.39%, 98.91%] in exploratory sizing grid)",
                     "minimum_speakers_per_stratum": 220,
                     "total_confirmatory_speakers": 1320,
                 },
                 "sizing_note": (
-                    "In the 150-simulation sweep with seed 42, N=210 achieves 89.33% (near target), "
-                    "while N=220 achieves 96.67% with LCB=92.39%, strictly satisfying both Decision Rule A "
-                    "(point estimate >= 90%) and Decision Rule B (LCB >= 90%). Both rules recommend N=220 per stratum."
+                    "In the exploratory sizing sweep (150 simulations, seed 42), N=210 achieves 89.33% (near target), "
+                    "while N=220 achieves 96.67% with LCB=92.39%. In the fresh independent replication with non-overlapping trajectories "
+                    "(200 simulations, seed 20261028), N=220 achieves 95.00% with LCB=91.00% >= 90.0%, strictly satisfying Decision Rule B. "
+                    "Both evaluations recommend N=220 speakers per stratum (1,320 total confirmatory speakers)."
                 ),
             },
             "sizing_curve": sizing_curve,
@@ -495,33 +570,57 @@ def run_development_variance_calibration() -> Dict[str, Any]:
         },
         "prespecified_rule_b_confirmatory_power_simulation": {
             "status": "COMPLETED",
-            "selection_type": "PRE_DECLARED_FIXED_SAMPLE_SIZE",
-            "prespecified_speakers_per_stratum": prespec_n,
-            "total_confirmatory_speakers": prespec_n * 6,
-            "total_confirmatory_clips": prespec_n * 6 * 15,
-            "predeclared_outer_simulations": prespec_sims,
-            "inner_bootstrap_replicates": 1000,
-            "seed": prespec_seed,
-            "estimated_joint_power": round(prespec_p, 4),
-            "joint_power_ci95": [round(prespec_lcb, 4), round(prespec_ucb, 4)],
-            "clopper_pearson_lcb_95": round(prespec_lcb, 4),
-            "decision_rule_b_threshold": 0.90,
-            "decision_rule_b_satisfied": bool(prespec_lcb >= 0.90),
-            "conditional_nature_caveat": (
-                "This lower confidence bound quantifies Monte Carlo uncertainty conditional on the "
-                "declared scenario simulation assumptions (between_speaker_wer_std = 6.50 pp, "
-                "paired_diff_std = 3.20 pp, scenario_disparity_effect_pp = -2.00 pp). "
-                "It is not an unconditional guarantee of real-world study power."
-            ),
+            "independent_fresh_seed_simulation": {
+                "selection_type": "PRE_DECLARED_INDEPENDENT_NON_OVERLAPPING_REPLICATION",
+                "prespecified_speakers_per_stratum": indep_n,
+                "total_confirmatory_speakers": indep_n * 6,
+                "total_confirmatory_clips": indep_n * 6 * 15,
+                "predeclared_outer_simulations": indep_sims,
+                "inner_bootstrap_replicates": 1000,
+                "seed": independent_fresh_seed,
+                "trajectory_seed_formula": "20261028 + sim_idx * 37 for sim_idx in 0..199",
+                "trajectory_overlap_with_sizing_grid": "ZERO_OVERLAP (seeds 20,261,028 to 20,268,391 vs grid seeds 42 to 5,555)",
+                "simulated_study_successes": int(round(indep_p * indep_sims)),
+                "estimated_joint_power": round(indep_p, 4),
+                "joint_power_ci95": [round(indep_lcb, 4), round(indep_ucb, 4)],
+                "clopper_pearson_lcb_95": round(indep_lcb, 4),
+                "decision_rule_b_threshold": 0.90,
+                "decision_rule_b_satisfied": bool(indep_lcb >= 0.90),
+                "conditional_nature_caveat": (
+                    "This lower confidence bound quantifies Monte Carlo uncertainty conditional on the "
+                    "declared scenario simulation assumptions (between_speaker_wer_std = 6.50 pp, "
+                    "paired_diff_std = 3.20 pp, scenario_disparity_effect_pp = -2.00 pp). "
+                    "It is not an unconditional guarantee of real-world study power."
+                ),
+            },
+            "supplementary_overlapping_replication": {
+                "selection_type": "OVERLAPPING_REPLICATION_HISTORICAL",
+                "status": "PRESERVED_HISTORICAL_RUN",
+                "prespecified_speakers_per_stratum": prespec_n,
+                "total_confirmatory_speakers": prespec_n * 6,
+                "total_confirmatory_clips": prespec_n * 6 * 15,
+                "outer_simulations": prespec_sims,
+                "inner_bootstrap_replicates": 1000,
+                "seed": prespec_seed,
+                "estimated_joint_power": round(prespec_p, 4),
+                "joint_power_ci95": [round(prespec_lcb, 4), round(prespec_ucb, 4)],
+                "clopper_pearson_lcb_95": round(prespec_lcb, 4),
+                "decision_rule_b_satisfied": bool(prespec_lcb >= 0.90),
+                "provenance_note": (
+                    "Evaluated with seed=42; trajectories 0..149 overlap with the exploratory sizing grid. "
+                    "Preserved for transparent provenance documentation."
+                ),
+            },
         },
         "protocol_amendment_recommendation": (
             "Protocol Amendment Recommendation ADR-005 Section 11: "
             "1. Separation of Evidence: Physical evaluation evidence is rooted in 528 physical speakers (Cohort 1 with 60 speakers and Cohort 2 with 468 speakers, evaluated on Tesla T4 GPU). The CV27 benchmark dataset is a calibrated simulation fixture (N=96 rows, namespace synth_cv27_*) modeling a hypothesized Delta_D = -2.00 pp selective adaptation effect. "
-            "2. Confirmatory Sample Size: Under the scenario Delta_D = -2.00 pp effect size, the candidate draft design of N=78 speakers per stratum provides only approximately 40.7% joint power [32.7%, 49.0%] and is strictly UNDERPOWERED. "
+            "2. Cross-Cohort Integrity: The 900 clips in Cohort 1 and 7,020 clips in Cohort 2 are mutually disjoint with zero recording ID overlap, zero speaker ID overlap, 100% unique summary rows, and 100% recomputed Levenshtein edit distance agreement. "
+            "3. Confirmatory Sample Size: Under the scenario Delta_D = -2.00 pp effect size, the preliminary draft design of N=78 speakers per stratum provides only approximately 40.7% joint power [32.7%, 49.0%] and is strictly UNDERPOWERED. "
             "At N=210, estimated power reaches 89.33% [83.3%, 93.8%] (near target). "
-            "At N=220, estimated power reaches 96.67% with a 95% Clopper-Pearson LCB of 92.39% >= 90.0%, strictly satisfying Decision Rule B (LCB >= 90%) and guaranteeing 90% power under the calibrated simulator. "
-            "Both rules recommend adopting N=220 speakers per stratum (1,320 total confirmatory speakers) in the formal protocol amendment. "
-            "Confirmatory Cohort 3 unsealing remains on HOLD pending formal protocol amendment and independent governance authorization."
+            "At N=220, estimated power reaches 95.00% with a 95% Clopper-Pearson LCB of 91.00% >= 90.0% in the fresh independent simulation with non-overlapping trajectories (seed=20261028), strictly satisfying Decision Rule B (LCB >= 90%) conditional on the calibrated scenario simulation assumptions. "
+            "Both exploratory and independent confirmatory evaluations recommend adopting N=220 speakers per stratum (1,320 total confirmatory speakers, 19,800 clips) in the formal protocol amendment. "
+            "Confirmatory Cohort 3 unsealing remains on HOLD pending formal protocol amendment, physical audio manifest locking, and independent governance authorization."
         ),
     }
 
