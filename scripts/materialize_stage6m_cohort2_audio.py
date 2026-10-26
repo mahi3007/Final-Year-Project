@@ -104,6 +104,7 @@ class ThreadedResilientGzipStream(io.RawIOBase):
         self._dataset_id = dataset_id
         self._plan_getter = plan_getter
         self.compressed_bytes_read = 0
+        self._producer_bytes_read = 0
         self._decompressor = zlib.decompressobj(16 + zlib.MAX_WBITS)
         self._url = None
         self._url_ts = 0.0
@@ -140,9 +141,9 @@ class ThreadedResilientGzipStream(io.RawIOBase):
             resp = None
             try:
                 headers = {"User-Agent": "datacollective-python/0.1.0"}
-                if self.compressed_bytes_read > 0:
-                    headers["Range"] = f"bytes={self.compressed_bytes_read}-"
-                    print(f"\n[RESUME] Reconnecting at compressed offset {self.compressed_bytes_read:,} B...", flush=True)
+                if self._producer_bytes_read > 0:
+                    headers["Range"] = f"bytes={self._producer_bytes_read}-"
+                    print(f"\n[RESUME] Reconnecting at compressed offset {self._producer_bytes_read:,} B...", flush=True)
                 else:
                     print("[RESUME] Opening initial stream from byte 0...", flush=True)
 
@@ -153,7 +154,7 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                 while not self._stop_event.is_set():
                     chunk = resp.read(2 * 1024 * 1024)
                     if not chunk:
-                        print(f"\n[RESUME] Socket closed by Cloudflare at byte {self.compressed_bytes_read:,}.", flush=True)
+                        print(f"\n[RESUME] Socket closed by Cloudflare at byte {self._producer_bytes_read:,}.", flush=True)
                         if bytes_this_conn == 0:
                             consecutive_zero_reads += 1
                             if consecutive_zero_reads >= 3:
@@ -165,6 +166,7 @@ class ThreadedResilientGzipStream(io.RawIOBase):
 
                     consecutive_zero_reads = 0
                     bytes_this_conn += len(chunk)
+                    self._producer_bytes_read += len(chunk)
                     while not self._stop_event.is_set():
                         try:
                             self._queue.put(chunk, timeout=1.0)
@@ -563,7 +565,20 @@ def main():
         materialize_from_local_source(args.source_dir, target_map, inventory, args.audio_dir)
 
     if args.stream or (not args.source_dir and len(inventory) < TOTAL_EXPECTED_CLIPS and os.getenv("MDC_API_KEY")):
-        materialize_from_stream(target_map, inventory, args.audio_dir)
+        for pass_no in range(1, 4):
+            rem = len(target_map) - len(inventory)
+            if rem == 0:
+                break
+            if pass_no > 1:
+                print(f"\n[STREAM] Starting pass {pass_no}/3 (materialized: {len(inventory)}/{len(target_map)} | remaining: {rem})...", flush=True)
+            try:
+                materialize_from_stream(target_map, inventory, args.audio_dir)
+            except Exception as e:
+                print(f"\n[STREAM] Pass {pass_no} stopped with exception: {e}", flush=True)
+                if pass_no == 3 or (len(target_map) - len(inventory) == 0):
+                    break
+                print("[STREAM] Refreshing and restarting stream for remaining targets in 5s...", flush=True)
+                time.sleep(5)
 
     finalize_materialization(
         canonical_rows,
