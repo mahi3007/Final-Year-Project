@@ -22,6 +22,7 @@ from dsg_ctta.evaluation.paired_cluster_inference import (
     DesignStagePowerSpec,
     simulate_design_stage_joint_power,
 )
+from dsg_ctta.offline.metrics import compute_utterance_metrics
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -90,10 +91,80 @@ def reconcile_predictions_to_speaker_aggregates(
     pred_df: pd.DataFrame, spk_df: pd.DataFrame, cohort_name: str
 ) -> Dict[str, Any]:
     """
-    Reconciles raw clip-level prediction records against speaker-level summary aggregates:
-    Verifies that summing clip word counts and errors for Arm 1 (static), Arm 2 (ungated),
-    and Arm 3 (gated) matches the speaker summary records for every single speaker.
+    Exhaustively reconciles raw clip-level prediction records against speaker-level summary aggregates:
+    1. Complete speaker ID set equality between prediction CSV and speaker summary records.
+    2. Absolute recording ID uniqueness across all clip predictions.
+    3. Exactly 15 distinct clips per speaker for all speakers.
+    4. Stratum label agreement between clip-level and speaker-level assignments.
+    5. Independent recomputation of Levenshtein edit distances (sub + del + ins) and reference word counts
+       from stored reference and hypothesis transcripts for all three arms.
+    6. Exact arithmetic equality between clip-summed word counts/errors and speaker summary aggregates.
     """
+    # 1. Complete Speaker ID Set Equality
+    pred_spks = set(pred_df["speaker_id"].astype(str))
+    spk_spks = set(spk_df["speaker_id"].astype(str))
+    if pred_spks != spk_spks:
+        missing_in_pred = spk_spks - pred_spks
+        missing_in_spk = pred_spks - spk_spks
+        raise ValueError(
+            f"Speaker ID set mismatch in {cohort_name}: {len(missing_in_pred)} missing from predictions, "
+            f"{len(missing_in_spk)} unexpected in predictions."
+        )
+
+    # 2. Recording ID Uniqueness
+    if pred_df["recording_id"].nunique() != len(pred_df):
+        dup_count = len(pred_df) - pred_df["recording_id"].nunique()
+        raise ValueError(f"Recording ID uniqueness violation in {cohort_name}: {dup_count} duplicate recording_ids detected.")
+
+    # 3. Exactly 15 Distinct Clips Per Speaker
+    spk_clip_counts = pred_df.groupby("speaker_id")["recording_id"].count()
+    if not (spk_clip_counts == 15).all():
+        bad_counts = spk_clip_counts[spk_clip_counts != 15].to_dict()
+        raise ValueError(f"Per-speaker clip count violation in {cohort_name}: speakers with non-15 clips: {bad_counts}")
+
+    # 4. Stratum Agreement
+    spk_strata_map = dict(zip(spk_df["speaker_id"].astype(str), spk_df["stratum"].astype(str)))
+    clip_expected_strata = pred_df["speaker_id"].astype(str).map(spk_strata_map)
+    if not (pred_df["stratum"].astype(str) == clip_expected_strata).all():
+        mismatch_count = int((pred_df["stratum"].astype(str) != clip_expected_strata).sum())
+        raise ValueError(f"Stratum label inconsistency in {cohort_name}: {mismatch_count} clips disagree with speaker stratum.")
+
+    # 5. Independent Transcript Edit Distance Recomputation
+    diff_wc = 0
+    diff_e1 = 0
+    diff_e2 = 0
+    diff_e3 = 0
+    for _, r in pred_df.iterrows():
+        ref_text = str(r.get("ref", ""))
+        hyp1 = str(r.get("hyp_arm1", ""))
+        hyp2 = str(r.get("hyp_arm2", ""))
+        hyp3 = str(r.get("hyp_arm3", ""))
+
+        m1 = compute_utterance_metrics(ref_text, hyp1, normalize=True)
+        m2 = compute_utterance_metrics(ref_text, hyp2, normalize=True)
+        m3 = compute_utterance_metrics(ref_text, hyp3, normalize=True)
+
+        w = m1.reference_length
+        e1 = m1.substitutions + m1.deletions + m1.insertions
+        e2 = m2.substitutions + m2.deletions + m2.insertions
+        e3 = m3.substitutions + m3.deletions + m3.insertions
+
+        if w != int(r["words"]):
+            diff_wc += 1
+        if e1 != int(r["err_arm1"]):
+            diff_e1 += 1
+        if e2 != int(r["err_arm2"]):
+            diff_e2 += 1
+        if e3 != int(r["err_arm3"]):
+            diff_e3 += 1
+
+    if diff_wc > 0 or diff_e1 > 0 or diff_e2 > 0 or diff_e3 > 0:
+        raise ValueError(
+            f"Transcript edit distance recomputation mismatch in {cohort_name}: "
+            f"diff_wc={diff_wc}, diff_e1={diff_e1}, diff_e2={diff_e2}, diff_e3={diff_e3}."
+        )
+
+    # 6. Summation to Speaker-Level Aggregates
     agg = pred_df.groupby("speaker_id").agg(
         pred_wc=("words", "sum"),
         pred_err1=("err_arm1", "sum"),
@@ -105,13 +176,13 @@ def reconcile_predictions_to_speaker_aggregates(
     merged = spk_df.merge(agg, on="speaker_id", how="inner")
     if len(merged) != len(spk_df):
         raise ValueError(
-            f"Provenance break in {cohort_name}: only {len(merged)} of {len(spk_df)} speakers found in predictions."
+            f"Provenance break in {cohort_name}: only {len(merged)} of {len(spk_df)} speakers found in merged aggregates."
         )
 
-    wc_match = bool((merged["wc"] == merged["pred_wc"]).all())
-    err1_match = bool((merged["err1"] == merged["pred_err1"]).all())
-    err2_match = bool((merged["err2"] == merged["pred_err2"]).all())
-    err3_match = bool((merged["err3"] == merged["pred_err3"]).all())
+    wc_match = bool((merged["wc"].astype(int) == merged["pred_wc"].astype(int)).all())
+    err1_match = bool((merged["err1"].astype(int) == merged["pred_err1"].astype(int)).all())
+    err2_match = bool((merged["err2"].astype(int) == merged["pred_err2"].astype(int)).all())
+    err3_match = bool((merged["err3"].astype(int) == merged["pred_err3"].astype(int)).all())
 
     if not (wc_match and err1_match and err2_match and err3_match):
         raise ValueError(
@@ -123,11 +194,16 @@ def reconcile_predictions_to_speaker_aggregates(
         "cohort_name": cohort_name,
         "speakers_reconciled": len(merged),
         "total_clips_reconciled": int(agg["clip_count"].sum()),
+        "speaker_id_sets_equal": True,
+        "recording_ids_unique": True,
+        "all_speakers_have_15_clips": True,
+        "strata_invariance_verified": True,
+        "transcript_edit_distances_recomputed_and_verified": True,
         "word_counts_reconciled": wc_match,
         "err1_reconciled": err1_match,
         "err2_reconciled": err2_match,
         "err3_reconciled": err3_match,
-        "reconciliation_verdict": "PERFECT_EXACT_MATCH",
+        "reconciliation_verdict": "EXHAUSTIVE_VERIFIED_EXACT_MATCH",
     }
 
 
@@ -156,11 +232,11 @@ def run_development_variance_calibration() -> Dict[str, Any]:
     cv27_sha = compute_file_sha256(cv27_fixture_file)
 
     # 1. Genuinely load physical evaluation data
-    c1_df = pd.read_csv(cohort1_spk_file)
-    c1_pred_df = pd.read_csv(cohort1_pred_file)
-    c2_df = pd.read_csv(cohort2_spk_file)
-    c2_pred_df = pd.read_csv(cohort2_pred_file)
-    cv27_df = pd.read_csv(cv27_fixture_file)
+    c1_df = pd.read_csv(cohort1_spk_file, keep_default_na=False)
+    c1_pred_df = pd.read_csv(cohort1_pred_file, keep_default_na=False)
+    c2_df = pd.read_csv(cohort2_spk_file, keep_default_na=False)
+    c2_pred_df = pd.read_csv(cohort2_pred_file, keep_default_na=False)
+    cv27_df = pd.read_csv(cv27_fixture_file, keep_default_na=False)
 
     validate_benchmark_records(cv27_df)
 
@@ -275,6 +351,18 @@ def run_development_variance_calibration() -> Dict[str, Any]:
             "speakers_per_stratum_220_power": round(p220, 4),
             "speakers_per_stratum_220_ci95": [round(lcb220, 4), round(ucb220, 4)],
         })
+
+    # 4. Standalone Pre-Specified Decision Rule B Confirmatory Simulation (Pre-declared N=220)
+    prespec_n = 220
+    prespec_sims = 200
+    prespec_seed = 42
+    prespec_p, prespec_lcb, prespec_ucb = simulate_design_stage_joint_power(
+        spec=power_spec,
+        num_simulations=prespec_sims,
+        num_speakers_per_stratum=prespec_n,
+        num_boot_replicates=1000,
+        seed=prespec_seed,
+    )
 
     script_path = PROJECT_ROOT / "scripts" / "calibrate_stage6m_development_variance.py"
     script_sha256 = compute_file_sha256(script_path) if script_path.exists() else "UNCOMMITTED_INITIAL_RUN"
@@ -404,6 +492,27 @@ def run_development_variance_calibration() -> Dict[str, Any]:
             "seed": 42,
             "replicates_sweep": tail_stability_sweep,
             "stability_conclusion": "The 99.444th percentile bootstrap tail estimate is numerically stable across B in [500, 1000, 2000]. B=1000 provides sufficient extreme-tail precision without numerical drift.",
+        },
+        "prespecified_rule_b_confirmatory_power_simulation": {
+            "status": "COMPLETED",
+            "selection_type": "PRE_DECLARED_FIXED_SAMPLE_SIZE",
+            "prespecified_speakers_per_stratum": prespec_n,
+            "total_confirmatory_speakers": prespec_n * 6,
+            "total_confirmatory_clips": prespec_n * 6 * 15,
+            "predeclared_outer_simulations": prespec_sims,
+            "inner_bootstrap_replicates": 1000,
+            "seed": prespec_seed,
+            "estimated_joint_power": round(prespec_p, 4),
+            "joint_power_ci95": [round(prespec_lcb, 4), round(prespec_ucb, 4)],
+            "clopper_pearson_lcb_95": round(prespec_lcb, 4),
+            "decision_rule_b_threshold": 0.90,
+            "decision_rule_b_satisfied": bool(prespec_lcb >= 0.90),
+            "conditional_nature_caveat": (
+                "This lower confidence bound quantifies Monte Carlo uncertainty conditional on the "
+                "declared scenario simulation assumptions (between_speaker_wer_std = 6.50 pp, "
+                "paired_diff_std = 3.20 pp, scenario_disparity_effect_pp = -2.00 pp). "
+                "It is not an unconditional guarantee of real-world study power."
+            ),
         },
         "protocol_amendment_recommendation": (
             "Protocol Amendment Recommendation ADR-005 Section 11: "

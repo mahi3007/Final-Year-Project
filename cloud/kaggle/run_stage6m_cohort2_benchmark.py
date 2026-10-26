@@ -68,7 +68,10 @@ from dsg_ctta.adaptation.safe_update import (
     AtomicCandidateManager,
     compute_optimizer_state_hash,
 )
-from dsg_ctta.evaluation.paired_cluster_inference import run_confirmatory_paired_cluster_inference
+from dsg_ctta.evaluation.paired_cluster_inference import (
+    run_confirmatory_paired_cluster_inference,
+    DesignStagePowerSpec,
+)
 
 
 def verify_gpu() -> str:
@@ -688,6 +691,16 @@ def parse_args():
         default="v13",
         help="Gate protocol version: 'v13' (legacy epsilon_d_pp=2.0) or 'v14' (Protocol v1.4.0 zero-disparity tolerance epsilon_d_pp=0.0 with strict point improvement)."
     )
+    parser.add_argument(
+        "--confirmatory-power-rule",
+        choices=["rule_b", "draft_n78"],
+        default="rule_b",
+        help=(
+            "Confirmatory design power rule: 'rule_b' (enforces Decision Rule B: N=220 per stratum, "
+            "require_lcb_threshold=True, target_power=0.90) or 'draft_n78' (draft proposal N=78, underpowered). "
+            "Note: for confirmatory execution, draft_n78 is strictly rejected by fail-closed protocol enforcement."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -703,6 +716,18 @@ def main():
         print("Legacy v1.3 gate with +2.0 pp disparity tolerance cannot be used for confirmatory execution.")
         print("!" * 80 + "\n")
         sys.exit(1)
+
+    # Confirmatory Protocol v1.4.0 Enforcement: Cohort 3 requires Decision Rule B
+    if args.cohort == "cohort3" and getattr(args, "confirmatory_power_rule", "rule_b") == "draft_n78":
+        print("\n" + "!" * 80)
+        print("[FAIL-CLOSED INTEGRITY CHECK]")
+        print("Confirmatory Protocol Violation: Draft N=78 specification cannot be used for confirmatory execution.")
+        print("Protocol amendment ADR-005 mandates Decision Rule B (N=220 per stratum, require_lcb_threshold=True, target_power=0.90).")
+        print("!" * 80 + "\n")
+        raise ValueError(
+            "Confirmatory Protocol Violation: Draft N=78 specification cannot be used for confirmatory execution. "
+            "Protocol amendment ADR-005 mandates Decision Rule B (N=220 per stratum, require_lcb_threshold=True, target_power=0.90)."
+        )
 
     manifest_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_locked_candidate_manifest.json"
     sentinel_csv = PROJECT_ROOT / "datasets" / "splits" / "stage5_sentinel_panel.csv"
@@ -1710,10 +1735,19 @@ def main():
     n_boot_rep = 20000 if is_confirmatory else 2000
     print(f"      Executing Paired Cluster Inference ({n_boot_rep} replicates) with Simultaneous Multiplicity Adjustment...")
 
-    conf_design_spec = DesignStagePowerSpec(
-        required_speakers_per_stratum=78,
-        target_joint_power=0.90,
-    ) if is_confirmatory else None
+    if is_confirmatory:
+        if getattr(args, "confirmatory_power_rule", "rule_b") == "draft_n78":
+            raise ValueError(
+                "Confirmatory Protocol Violation: Draft N=78 specification cannot be used for confirmatory execution. "
+                "Protocol amendment ADR-005 mandates Decision Rule B (N=220 per stratum, require_lcb_threshold=True, target_power=0.90)."
+            )
+        conf_design_spec = DesignStagePowerSpec.recommended_rule_b_spec()
+        print(
+            f"      Enforcing Confirmatory Decision Rule B: N={conf_design_spec.required_speakers_per_stratum}/stratum, "
+            f"require_lcb_threshold={conf_design_spec.require_lcb_threshold}, target_power={conf_design_spec.target_joint_power:.0%}"
+        )
+    else:
+        conf_design_spec = None
 
     confirmatory_report = run_confirmatory_paired_cluster_inference(
         speaker_records=spk_stats,

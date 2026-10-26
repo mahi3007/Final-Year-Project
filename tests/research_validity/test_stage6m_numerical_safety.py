@@ -1538,6 +1538,42 @@ def test_runner_cohort3_rejects_legacy_v13_gate(monkeypatch, capsys):
     assert "requires --gate-version v14" in captured.out
 
 
+def test_runner_cohort3_rejects_draft_n78_specification(monkeypatch):
+    """
+    Test Case 42B: Runner strictly rejects draft N=78 specification for Confirmatory Cohort 3.
+    ADR-005 and Protocol v1.4.0 mandate that confirmatory execution cannot proceed under
+    the underpowered N=78 draft design. Attempting to pass --confirmatory-power-rule draft_n78
+    must fail closed with a descriptive ValueError.
+    """
+    from cloud.kaggle.run_stage6m_cohort2_benchmark import main
+    import sys
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["run_benchmark.py", "--cohort", "cohort3", "--gate-version", "v14", "--confirmatory-power-rule", "draft_n78"],
+    )
+    with pytest.raises(ValueError) as excinfo:
+        main()
+    assert "Confirmatory Protocol Violation: Draft N=78 specification cannot be used" in str(excinfo.value)
+    assert "Decision Rule B (N=220 per stratum, require_lcb_threshold=True" in str(excinfo.value)
+
+
+def test_runner_cohort3_enforces_decision_rule_b_spec():
+    """
+    Test Case 42C: Confirmatory runner operative specification enforces Decision Rule B.
+    Verifies that the factory method recommended_rule_b_spec() constructed on the confirmatory
+    execution path strictly requires 220 speakers per stratum and sets require_lcb_threshold=True.
+    """
+    from dsg_ctta.evaluation.paired_cluster_inference import DesignStagePowerSpec
+
+    spec = DesignStagePowerSpec.recommended_rule_b_spec()
+    assert spec.required_speakers_per_stratum == 220
+    assert spec.require_lcb_threshold is True
+    assert spec.target_joint_power == 0.90
+    assert spec.recommended_speakers_per_stratum_for_90_power == 220
+
+
 def test_confirmatory_power_strictly_enforces_78_speaker_design_spec_over_default_argument():
     """
     Test Case 43: Confirmatory design specification is authoritative.

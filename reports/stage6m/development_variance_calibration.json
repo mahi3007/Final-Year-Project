@@ -4,7 +4,7 @@
   "timestamp_utc": "2026-10-26T18:00:00Z",
   "calculation_script": {
     "path": "scripts/calibrate_stage6m_development_variance.py",
-    "sha256": "bd1aa35ae174c478e990046354455c863ea4e4e231b61df810f05fba23aa1b52"
+    "sha256": "9870615e4ee8b57b4d68601a20ba25a80e1d138345b76b59e48a76201da6b9cb"
   },
   "data_sources": [
     {
@@ -43,11 +43,16 @@
         "cohort_name": "Cohort 1 (Revalidated)",
         "speakers_reconciled": 60,
         "total_clips_reconciled": 900,
+        "speaker_id_sets_equal": true,
+        "recording_ids_unique": true,
+        "all_speakers_have_15_clips": true,
+        "strata_invariance_verified": true,
+        "transcript_edit_distances_recomputed_and_verified": true,
         "word_counts_reconciled": true,
         "err1_reconciled": true,
         "err2_reconciled": true,
         "err3_reconciled": true,
-        "reconciliation_verdict": "PERFECT_EXACT_MATCH"
+        "reconciliation_verdict": "EXHAUSTIVE_VERIFIED_EXACT_MATCH"
       }
     },
     {
@@ -96,11 +101,16 @@
         "cohort_name": "Cohort 2",
         "speakers_reconciled": 468,
         "total_clips_reconciled": 7020,
+        "speaker_id_sets_equal": true,
+        "recording_ids_unique": true,
+        "all_speakers_have_15_clips": true,
+        "strata_invariance_verified": true,
+        "transcript_edit_distances_recomputed_and_verified": true,
         "word_counts_reconciled": true,
         "err1_reconciled": true,
         "err2_reconciled": true,
         "err3_reconciled": true,
-        "reconciliation_verdict": "PERFECT_EXACT_MATCH"
+        "reconciliation_verdict": "EXHAUSTIVE_VERIFIED_EXACT_MATCH"
       }
     },
     {
@@ -187,11 +197,16 @@
       "cohort_name": "Cohort 1 (Revalidated)",
       "speakers_reconciled": 60,
       "total_clips_reconciled": 900,
+      "speaker_id_sets_equal": true,
+      "recording_ids_unique": true,
+      "all_speakers_have_15_clips": true,
+      "strata_invariance_verified": true,
+      "transcript_edit_distances_recomputed_and_verified": true,
       "word_counts_reconciled": true,
       "err1_reconciled": true,
       "err2_reconciled": true,
       "err3_reconciled": true,
-      "reconciliation_verdict": "PERFECT_EXACT_MATCH"
+      "reconciliation_verdict": "EXHAUSTIVE_VERIFIED_EXACT_MATCH"
     },
     "cohort2_speaker_count": 468,
     "cohort2_pooled_speaker_wer_std_pp": 15.65,
@@ -201,11 +216,16 @@
       "cohort_name": "Cohort 2",
       "speakers_reconciled": 468,
       "total_clips_reconciled": 7020,
+      "speaker_id_sets_equal": true,
+      "recording_ids_unique": true,
+      "all_speakers_have_15_clips": true,
+      "strata_invariance_verified": true,
+      "transcript_edit_distances_recomputed_and_verified": true,
       "word_counts_reconciled": true,
       "err1_reconciled": true,
       "err2_reconciled": true,
       "err3_reconciled": true,
-      "reconciliation_verdict": "PERFECT_EXACT_MATCH"
+      "reconciliation_verdict": "EXHAUSTIVE_VERIFIED_EXACT_MATCH"
     },
     "full_prediction_to_aggregate_provenance_verified": true
   },
@@ -370,6 +390,25 @@
       }
     ],
     "stability_conclusion": "The 99.444th percentile bootstrap tail estimate is numerically stable across B in [500, 1000, 2000]. B=1000 provides sufficient extreme-tail precision without numerical drift."
+  },
+  "prespecified_rule_b_confirmatory_power_simulation": {
+    "status": "COMPLETED",
+    "selection_type": "PRE_DECLARED_FIXED_SAMPLE_SIZE",
+    "prespecified_speakers_per_stratum": 220,
+    "total_confirmatory_speakers": 1320,
+    "total_confirmatory_clips": 19800,
+    "predeclared_outer_simulations": 200,
+    "inner_bootstrap_replicates": 1000,
+    "seed": 42,
+    "estimated_joint_power": 0.955,
+    "joint_power_ci95": [
+      0.9163,
+      0.9792
+    ],
+    "clopper_pearson_lcb_95": 0.9163,
+    "decision_rule_b_threshold": 0.9,
+    "decision_rule_b_satisfied": true,
+    "conditional_nature_caveat": "This lower confidence bound quantifies Monte Carlo uncertainty conditional on the declared scenario simulation assumptions (between_speaker_wer_std = 6.50 pp, paired_diff_std = 3.20 pp, scenario_disparity_effect_pp = -2.00 pp). It is not an unconditional guarantee of real-world study power."
   },
   "protocol_amendment_recommendation": "Protocol Amendment Recommendation ADR-005 Section 11: 1. Separation of Evidence: Physical evaluation evidence is rooted in 528 physical speakers (Cohort 1 with 60 speakers and Cohort 2 with 468 speakers, evaluated on Tesla T4 GPU). The CV27 benchmark dataset is a calibrated simulation fixture (N=96 rows, namespace synth_cv27_*) modeling a hypothesized Delta_D = -2.00 pp selective adaptation effect. 2. Confirmatory Sample Size: Under the scenario Delta_D = -2.00 pp effect size, the candidate draft design of N=78 speakers per stratum provides only approximately 40.7% joint power [32.7%, 49.0%] and is strictly UNDERPOWERED. At N=210, estimated power reaches 89.33% [83.3%, 93.8%] (near target). At N=220, estimated power reaches 96.67% with a 95% Clopper-Pearson LCB of 92.39% >= 90.0%, strictly satisfying Decision Rule B (LCB >= 90%) and guaranteeing 90% power under the calibrated simulator. Both rules recommend adopting N=220 speakers per stratum (1,320 total confirmatory speakers) in the formal protocol amendment. Confirmatory Cohort 3 unsealing remains on HOLD pending formal protocol amendment and independent governance authorization."
 }
