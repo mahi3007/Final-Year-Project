@@ -46,11 +46,13 @@ class StreamingSentinelSafetyGateV14:
         self.epsilon_r = float(epsilon_r_pp)
         self.epsilon_g = float(epsilon_g_pp)
         self.epsilon_d = float(epsilon_d_pp)
+        if not isinstance(num_updates, (int, np.integer)) or int(num_updates) <= 0:
+            raise ValueError(f"Invalid num_updates '{num_updates}': must be a positive integer.")
         self.num_updates = int(num_updates)
         self.alpha_target = float(alpha_target)
         self.num_boot_replicates = int(num_boot_replicates)
         self.required_strata = set(required_strata) if required_strata is not None else None
-        self.z_schedule = compute_calibrated_obf_schedule(num_updates, alpha_target)
+        self.z_schedule = compute_calibrated_obf_schedule(self.num_updates, alpha_target)
 
     def evaluate_candidate(
         self,
@@ -67,16 +69,18 @@ class StreamingSentinelSafetyGateV14:
 
         Parameters:
         -----------
-        window_id: Current stream adaptation window index (0-indexed).
+        window_id: Current stream adaptation window index (0-indexed, 0 <= window_id < num_updates).
         speaker_ids: Speaker ID for each sentinel utterance.
         stratum_groups: Stratum label for each sentinel utterance.
         live_errors: Total edit distance errors (S+D+I) under live model.
         cand_errors: Total edit distance errors (S+D+I) under candidate model.
         ref_lengths: Reference word count for each utterance.
         """
-        # 1. Validation of Look Index
-        if not isinstance(window_id, int) or window_id < 0:
-            raise ValueError(f"Invalid window_id '{window_id}': must be a non-negative integer.")
+        # 1. Validation of Look Index (Strict fail-closed: reject window_id < 0 or window_id >= num_updates)
+        if not isinstance(window_id, (int, np.integer)) or window_id < 0 or window_id >= self.num_updates:
+            raise ValueError(
+                f"Out-of-range sequential look index '{window_id}': must satisfy 0 <= window_id < {self.num_updates}."
+            )
 
         # 2. Validation of Array Lengths
         n_items = len(speaker_ids)
@@ -170,9 +174,8 @@ class StreamingSentinelSafetyGateV14:
         R_cand = (total_cand_err / float(total_words)) * 100.0
         delta_r = R_cand - R_live
 
-        # Critical OBF multiplier for this sequential look
-        idx = min(window_id, self.num_updates - 1)
-        z_t = float(self.z_schedule[idx])
+        # Critical OBF multiplier for this sequential look (window_id < num_updates guaranteed)
+        z_t = float(self.z_schedule[window_id])
 
         # Cluster-robust Delta Method for Overall Delta_R
         u_i = np.array([spk_data[s]["e_cand"] - spk_data[s]["e_live"] for s in spk_list], dtype=np.float64)
@@ -187,7 +190,10 @@ class StreamingSentinelSafetyGateV14:
         # Sensitivity Floor Safeguard
         min_cluster_words = float(np.min(w_i)) if len(w_i) > 0 else 1.0
         se_r_floor = (1.0 / (math.sqrt(N_spk) * min_cluster_words)) * 100.0
-        se_r_adjusted = max(se_r_raw, se_r_floor)
+        if not math.isfinite(se_r_raw) or not math.isfinite(se_r_floor):
+            se_r_adjusted = float("nan")
+        else:
+            se_r_adjusted = max(se_r_raw, se_r_floor)
         ucb_r = delta_r + z_t * se_r_adjusted
 
         # Per-stratum regression bounds
@@ -218,7 +224,10 @@ class StreamingSentinelSafetyGateV14:
             se_g_raw = (math.sqrt(var_psi_g / n_grp_spk) * 100.0) if var_psi_g > 0 else 0.0
             min_grp_w = float(np.min(w_ig)) if len(w_ig) > 0 else 1.0
             se_g_floor = (1.0 / (math.sqrt(n_grp_spk) * min_grp_w)) * 100.0
-            se_g = max(se_g_raw, se_g_floor)
+            if not math.isfinite(se_g_raw) or not math.isfinite(se_g_floor):
+                se_g = float("nan")
+            else:
+                se_g = max(se_g_raw, se_g_floor)
             group_ses[grp] = se_g
             group_ucbs[grp] = d_g + z_t * se_g
 
@@ -277,8 +286,28 @@ class StreamingSentinelSafetyGateV14:
         # 0. Strict Numerical Finiteness Check
         if not math.isfinite(delta_r) or not math.isfinite(ucb_r):
             reasons.append(f"Non-finite overall metric: delta_r={delta_r}, ucb_r={ucb_r}")
+
+        # Check EVERY individual subgroup delta, SE, and UCB
+        for grp in unique_strata:
+            d_g = group_deltas.get(grp)
+            se_g = group_ses.get(grp)
+            ucb_g = group_ucbs.get(grp)
+            if d_g is None or not math.isfinite(d_g):
+                reasons.append(f"Non-finite subgroup delta in [{grp}]: delta_g={d_g}")
+            if se_g is None or not math.isfinite(se_g):
+                reasons.append(f"Non-finite subgroup standard error in [{grp}]: se_g={se_g}")
+            if ucb_g is None or not math.isfinite(ucb_g):
+                reasons.append(f"Non-finite subgroup UCB in [{grp}]: ucb_g={ucb_g}")
+
         if not math.isfinite(ucb_max_group):
-            reasons.append(f"Non-finite subgroup metric: ucb_max_group={ucb_max_group}")
+            reasons.append(f"Non-finite worst subgroup metric: ucb_max_group={ucb_max_group}")
+
+        # Check EVERY disparity bootstrap replicate
+        if any(not math.isfinite(b_d) for b_d in boot_diffs):
+            reasons.append(f"Non-finite disparity bootstrap replicate detected ({len(boot_diffs)} total replicates)")
+
+        if not math.isfinite(se_d):
+            reasons.append(f"Non-finite disparity standard error: se_d={se_d}")
         if not math.isfinite(delta_d) or not math.isfinite(ucb_d):
             reasons.append(f"Non-finite disparity metric: delta_d={delta_d}, ucb_d={ucb_d}")
 

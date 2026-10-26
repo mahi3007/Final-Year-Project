@@ -26,6 +26,14 @@ import torch.nn as nn
 from dsg_ctta.controller.shadow import compute_model_parameter_hash
 
 
+class FatalRollbackCorruptionError(RuntimeError):
+    """
+    Fatal exception raised when all-or-nothing rollback fails, leaving the live
+    model or optimizer state corrupted or in an undefined state.
+    """
+    pass
+
+
 @dataclass
 class SafeUpdateResult:
     """Result of a fail-closed candidate adaptation step."""
@@ -418,27 +426,42 @@ class AtomicCandidateManager:
         """
         model_backup = copy.deepcopy(self.live_model.state_dict())
         opt_backup = copy.deepcopy(self.live_optimizer.state_dict())
+
+        def _execute_rollback(trigger_reason: str):
+            try:
+                self.live_model.load_state_dict(model_backup)
+                self.live_optimizer.load_state_dict(opt_backup)
+            except Exception as rollback_exc:
+                raise FatalRollbackCorruptionError(
+                    f"FATAL: Rollback failed during recovery from '{trigger_reason}'. "
+                    f"Live model/optimizer state is corrupted: {rollback_exc}"
+                ) from rollback_exc
+
+            # Validate that rolled-back state is genuinely finite across parameters, buffers, and optimizer
+            params_finite = all(torch.isfinite(p).all().item() for p in self.live_model.parameters())
+            buffers_finite = all(torch.isfinite(b).all().item() for b in self.live_model.buffers())
+            opt_finite, opt_err = validate_optimizer_state(self.live_optimizer)
+            if not params_finite or not buffers_finite or not opt_finite:
+                raise FatalRollbackCorruptionError(
+                    f"FATAL: Rollback restored non-finite state "
+                    f"(params_finite={params_finite}, buffers_finite={buffers_finite}, opt_finite={opt_finite}: {opt_err})."
+                )
+
         try:
             self.live_model.load_state_dict(candidate_model.state_dict())
             self.live_optimizer.load_state_dict(candidate_optimizer.state_dict())
         except Exception as exc:
-            try:
-                self.live_model.load_state_dict(model_backup)
-                self.live_optimizer.load_state_dict(opt_backup)
-            except Exception:
-                pass
+            _execute_rollback(f"Candidate state loading error: {exc}")
             raise RuntimeError(f"Atomic promotion failed; live model and optimizer state rolled back: {exc}") from exc
 
-        # Verify post-promotion finiteness
+        # Verify post-promotion finiteness across parameters, buffers, and optimizer state
         all_params_finite = all(torch.isfinite(p).all().item() for p in self.live_model.parameters())
+        all_buffers_finite = all(torch.isfinite(b).all().item() for b in self.live_model.buffers())
         opt_finite, opt_err = validate_optimizer_state(self.live_optimizer)
-        if not all_params_finite or not opt_finite:
-            try:
-                self.live_model.load_state_dict(model_backup)
-                self.live_optimizer.load_state_dict(opt_backup)
-            except Exception:
-                pass
-            raise RuntimeError(f"Atomic promotion aborted: post-promotion state non-finite ({opt_err}); rolled back.")
+        if not all_params_finite or not all_buffers_finite or not opt_finite:
+            details = f"params_finite={all_params_finite}, buffers_finite={all_buffers_finite}, opt_finite={opt_finite}: {opt_err}"
+            _execute_rollback(f"Post-promotion non-finite state: {details}")
+            raise RuntimeError(f"Atomic promotion aborted: post-promotion state non-finite ({details}); rolled back.")
 
         return self.get_live_model_hash(), self.get_live_optimizer_hash()
 

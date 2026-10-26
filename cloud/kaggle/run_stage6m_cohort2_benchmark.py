@@ -34,7 +34,7 @@ import time
 import hashlib
 from pathlib import Path
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Tuple, Optional
+from typing import Dict, List, Any, Tuple, Optional, FrozenSet, Set
 
 import numpy as np
 import pandas as pd
@@ -84,6 +84,71 @@ def verify_gpu() -> str:
     print(f"GPU Device    : {device_name}")
     print(f"Total VRAM    : {vram_gb:.2f} GB")
     return "cuda"
+
+
+CANONICAL_PROTOCOL_ACCENTS: FrozenSet[str] = frozenset([
+    "US English",
+    "England English",
+    "South Asian English",
+    "Australian English",
+    "Canadian English",
+    "Irish English",
+])
+EXPECTED_SENTINEL_SPEAKERS_PER_STRATUM: int = 5
+EXPECTED_TOTAL_SENTINEL_SPEAKERS: int = 30
+
+
+def validate_sentinel_panel_against_canonical_protocol(
+    sentinel_df: pd.DataFrame,
+    canonical_accents: FrozenSet[str] = CANONICAL_PROTOCOL_ACCENTS,
+    expected_speakers_per_accent: int = EXPECTED_SENTINEL_SPEAKERS_PER_STRATUM,
+    expected_total_speakers: int = EXPECTED_TOTAL_SENTINEL_SPEAKERS,
+) -> pd.DataFrame:
+    """
+    Validates that the physical sentinel panel satisfies locked Protocol v1.4.0 requirements:
+    1. All 6 canonical protocol accents are present.
+    2. No extraneous or unmapped accent groups exist.
+    3. Each canonical accent contains exactly expected_speakers_per_accent unique speakers.
+    4. Total panel size contains exactly expected_total_speakers.
+    Returns the deduplicated 1-clip-per-speaker core sentinel panel.
+    """
+    if "stage5_accent_group" not in sentinel_df.columns:
+        raise ValueError("Sentinel panel CSV missing required column 'stage5_accent_group'.")
+    if "speaker_id" not in sentinel_df.columns:
+        raise ValueError("Sentinel panel CSV missing required column 'speaker_id'.")
+
+    core_df = sentinel_df.groupby("speaker_id").first().reset_index()
+    observed_strata = set(core_df["stage5_accent_group"].astype(str))
+
+    missing_strata = set(canonical_accents) - observed_strata
+    if missing_strata:
+        raise ValueError(
+            f"Sentinel panel integrity violation: missing canonical protocol accents {sorted(list(missing_strata))}. "
+            f"Observed: {sorted(list(observed_strata))}."
+        )
+
+    unexpected_strata = observed_strata - set(canonical_accents)
+    if unexpected_strata:
+        raise ValueError(
+            f"Sentinel panel integrity violation: unexpected accent strata {sorted(list(unexpected_strata))}."
+        )
+
+    spks_per_stratum = core_df.groupby("stage5_accent_group")["speaker_id"].nunique()
+    for acc in sorted(list(canonical_accents)):
+        cnt = int(spks_per_stratum.get(acc, 0))
+        if cnt != expected_speakers_per_accent:
+            raise ValueError(
+                f"Sentinel panel integrity violation: stratum '{acc}' has {cnt} unique speakers "
+                f"(expected exactly {expected_speakers_per_accent})."
+            )
+
+    if len(core_df) != expected_total_speakers:
+        raise ValueError(
+            f"Sentinel panel integrity violation: total speakers={len(core_df)} "
+            f"(expected exactly {expected_total_speakers})."
+        )
+
+    return core_df
 
 
 def batch_transcribe_gpu(
@@ -364,7 +429,7 @@ def main():
     eval_cache = preload_waveforms(eval_file_list, sample_rate=16000)
 
     # Core Stratified Sentinel Panel: 1 clip per sentinel speaker (30 clips, exactly 5/stratum)
-    core_sentinel_df = sentinel_df.groupby("speaker_id").first().reset_index()
+    core_sentinel_df = validate_sentinel_panel_against_canonical_protocol(sentinel_df)
     core_sentinel_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_sentinel_df.iterrows()]
 
     sentinel_file_list = []
@@ -418,7 +483,7 @@ def main():
             epsilon_d_pp=0.0000,
             num_updates=num_updates,
             alpha_target=0.05,
-            required_strata=set(core_sentinel_strata),
+            required_strata=set(CANONICAL_PROTOCOL_ACCENTS),
         )
     else:
         print("      Constructing Historical Protocol v1.3 Streaming Gate (StreamingSentinelSafetyGate):")
@@ -785,37 +850,94 @@ def main():
         else "v1.3.4-stage6m-self-authorization-amendment"
     )
 
-    def get_git_commit_sha() -> str:
-        try:
-            import subprocess
-            return subprocess.check_output(
-                ["git", "rev-parse", "HEAD"], cwd=str(PROJECT_ROOT)
-            ).decode("utf-8").strip()
-        except Exception:
-            return "UNKNOWN_COMMIT"
+    def compute_file_sha256(path: Path) -> str:
+        h = hashlib.sha256()
+        with open(path, "rb") as f:
+            while chunk := f.read(65536):
+                h.update(chunk)
+        return h.hexdigest()
 
-    git_commit_sha = get_git_commit_sha()
+    manifest_sha256 = compute_file_sha256(manifest_path) if manifest_path.exists() else "MISSING_MANIFEST"
+    sentinel_panel_sha256 = compute_file_sha256(sentinel_csv) if sentinel_csv.exists() else "MISSING_SENTINEL"
+
+    def get_git_provenance() -> Tuple[str, bool]:
+        import subprocess
+        env_commit = os.environ.get("STAGE6M_GIT_COMMIT_SHA")
+        if env_commit:
+            env_dirty = os.environ.get("STAGE6M_GIT_DIRTY", "false").lower() == "true"
+            return env_commit, env_dirty
+
+        try:
+            commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=str(PROJECT_ROOT), stderr=subprocess.DEVNULL
+            ).decode("utf-8").strip()
+            status_output = subprocess.check_output(
+                ["git", "status", "--porcelain"], cwd=str(PROJECT_ROOT), stderr=subprocess.DEVNULL
+            ).decode("utf-8").strip()
+            is_dirty = len(status_output) > 0
+            return commit, is_dirty
+        except Exception as exc:
+            raise RuntimeError(
+                f"Provenance enforcement failure: Unable to determine Git commit SHA ({exc}). "
+                "A tracked Git commit or STAGE6M_GIT_COMMIT_SHA is required to establish benchmark provenance."
+            )
+
+    git_commit_sha, git_tree_dirty = get_git_provenance()
 
     config_dict = {
         "cohort": str(args.cohort),
         "model": str(args.model),
         "gate_version": str(args.gate_version),
         "protocol_version": protocol_version,
+        "manifest_path": str(manifest_path.relative_to(PROJECT_ROOT) if manifest_path.is_relative_to(PROJECT_ROOT) else manifest_path),
+        "manifest_sha256": manifest_sha256,
+        "sentinel_panel_path": str(sentinel_csv.relative_to(PROJECT_ROOT) if sentinel_csv.is_relative_to(PROJECT_ROOT) else sentinel_csv),
+        "sentinel_panel_sha256": sentinel_panel_sha256,
         "window_size_k": int(window_size_k),
         "num_updates": int(num_updates),
-        "epsilon_r": float(safety_gate.epsilon_r),
-        "epsilon_g": float(safety_gate.epsilon_g),
-        "epsilon_d": float(safety_gate.epsilon_d),
+        "epsilon_r_pp": float(safety_gate.epsilon_r),
+        "epsilon_g_pp": float(safety_gate.epsilon_g),
+        "epsilon_d_pp": float(safety_gate.epsilon_d),
+        "alpha_target": float(getattr(safety_gate, "alpha_target", 0.05)),
+        "num_boot_replicates": int(getattr(safety_gate, "num_boot_replicates", 500)),
+        "adaptation_lr": 1e-4,
+        "adaptation_temp": 2.5,
+        "adaptation_alpha": 0.5,
+        "adaptation_max_grad_norm": 1.0,
+        "random_seed": 42,
+        "torch_version": str(torch.__version__),
+        "cuda_available": bool(torch.cuda.is_available()),
+        "cuda_device_name": str(torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu"),
+        "git_commit_sha": git_commit_sha,
+        "git_tree_dirty": git_tree_dirty,
     }
     config_hash = hashlib.sha256(json.dumps(config_dict, sort_keys=True).encode("utf-8")).hexdigest()
+
+    is_sig_g_u = bool(
+        not np.isnan(p_val_g_u)
+        and p_val_g_u < 0.05
+        and float(spk_wer3_unrounded.mean()) < float(spk_wer2_unrounded.mean())
+    )
+    is_sig_g_s = bool(
+        not np.isnan(p_val_g_s)
+        and p_val_g_s < 0.05
+        and float(spk_wer3_unrounded.mean()) < float(spk_wer1_unrounded.mean())
+    )
 
     report_payload = {
         "metadata": {
             "protocol_version": protocol_version,
             "gate_version": args.gate_version,
             "execution_commit_sha": git_commit_sha,
+            "git_tree_dirty": git_tree_dirty,
             "configuration_hash_sha256": config_hash,
-            "execution_scope": f"Physical {args.cohort.upper()} Prequential Stream on Virtual GPU",
+            "manifest_sha256": manifest_sha256,
+            "sentinel_panel_sha256": sentinel_panel_sha256,
+            "execution_scope": (
+                f"Development/Regression Physical {args.cohort.upper()} Prequential Stream on Virtual GPU"
+                if args.cohort in ("cohort1", "cohort2")
+                else f"Confirmatory Physical {args.cohort.upper()} Prequential Stream on Virtual GPU"
+            ),
             "execution_mode": f"Physical PyTorch {args.model} Acoustic Forward Passes",
             "timestamp_utc": datetime.now(timezone.utc).isoformat(),
             "total_execution_seconds": round(total_duration, 2),
@@ -857,14 +979,22 @@ def main():
                 "t_statistic": round(float(t_stat_g_u), 4) if not np.isnan(t_stat_g_u) else None,
                 "p_value": float(p_val_g_u) if not np.isnan(p_val_g_u) else None,
                 "degrees_of_freedom": int(len(spk_df) - 1),
-                "statistically_significant_p05": bool(p_val_g_u < 0.05) if not np.isnan(p_val_g_u) else False
+                "statistically_significant_p05": is_sig_g_u
             },
             "paired_t_arm3_vs_arm1": {
                 "t_statistic": round(float(t_stat_g_s), 4) if not np.isnan(t_stat_g_s) else None,
                 "p_value": float(p_val_g_s) if not np.isnan(p_val_g_s) else None,
                 "degrees_of_freedom": int(len(spk_df) - 1),
-                "statistically_significant_p05": False,
-                "interpretation": "Identical to static baseline if all candidates rolled back (zero-variance difference)."
+                "statistically_significant_p05": is_sig_g_s,
+                "interpretation": (
+                    "Zero-variance difference: Arm 3 identical to static baseline."
+                    if np.isnan(p_val_g_s)
+                    else (
+                        "Statistically significant superiority of Arm 3 over Static Baseline (p < 0.05)."
+                        if is_sig_g_s
+                        else "Difference not statistically significant at alpha=0.05."
+                    )
+                )
             }
         },
         "stratum_breakdown": strata_results,

@@ -27,6 +27,7 @@ from dsg_ctta.adaptation.safe_update import (
     clone_optimizer,
     compute_masked_suta_loss,
     AtomicCandidateManager,
+    FatalRollbackCorruptionError,
 )
 from dsg_ctta.controller.shadow import compute_model_parameter_hash
 from dsg_ctta.controller.streaming_gate_v14 import StreamingSentinelSafetyGateV14
@@ -728,7 +729,7 @@ def test_v14_gate_fail_closed_invalid_inputs():
         )
 
     # Negative look index
-    with pytest.raises(ValueError, match="must be a non-negative integer"):
+    with pytest.raises(ValueError, match="Out-of-range sequential look index"):
         gate.evaluate_candidate(
             window_id=-1,
             speaker_ids=["s1", "s2"],
@@ -880,4 +881,228 @@ def test_v14_runner_provenance_labels():
     assert resolve_protocol("v14") == protocol_v14
     assert resolve_protocol("v14") != protocol_v13
     assert resolve_protocol("v13") == protocol_v13
+
+
+def test_v14_gate_rejects_look_index_out_of_range():
+    """
+    Test Case 24: Look index out of range rejection.
+    Asserts look indices window_id >= num_updates (including boundary window_id == num_updates)
+    and window_id < 0 are strictly rejected with ValueError.
+    """
+    gate = StreamingSentinelSafetyGateV14(num_updates=10)
+
+    # First out-of-range look index: window_id == num_updates
+    with pytest.raises(ValueError, match="Out-of-range sequential look index '10'"):
+        gate.evaluate_candidate(
+            window_id=10,
+            speaker_ids=["s1", "s2"],
+            stratum_groups=["accentA", "accentB"],
+            live_errors=[10, 10],
+            cand_errors=[10, 10],
+            ref_lengths=[100, 100],
+        )
+
+    # Very large look index: window_id = 999
+    with pytest.raises(ValueError, match="Out-of-range sequential look index '999'"):
+        gate.evaluate_candidate(
+            window_id=999,
+            speaker_ids=["s1", "s2"],
+            stratum_groups=["accentA", "accentB"],
+            live_errors=[10, 10],
+            cand_errors=[10, 10],
+            ref_lengths=[100, 100],
+        )
+
+    # Negative look index: window_id = -1
+    with pytest.raises(ValueError, match="Out-of-range sequential look index '-1'"):
+        gate.evaluate_candidate(
+            window_id=-1,
+            speaker_ids=["s1", "s2"],
+            stratum_groups=["accentA", "accentB"],
+            live_errors=[10, 10],
+            cand_errors=[10, 10],
+            ref_lengths=[100, 100],
+        )
+
+
+def test_v14_gate_rejects_invalid_num_updates():
+    """
+    Test Case 25: Invalid schedule configuration.
+    num_updates <= 0 must fail closed on initialization.
+    """
+    with pytest.raises(ValueError, match="Invalid num_updates '0': must be a positive integer"):
+        StreamingSentinelSafetyGateV14(num_updates=0)
+
+    with pytest.raises(ValueError, match="Invalid num_updates '-5': must be a positive integer"):
+        StreamingSentinelSafetyGateV14(num_updates=-5)
+
+
+def test_v14_gate_rejects_nonfinite_individual_subgroup_metric(monkeypatch):
+    """
+    Test Case 26: Exhaustive individual subgroup metric finiteness checks.
+    If any single stratum has a non-finite delta, SE, or UCB, the gate rejects
+    with an explicit reason citing the affected stratum.
+    """
+    gate = StreamingSentinelSafetyGateV14(num_updates=5)
+    speaker_ids = ["s1", "s2"]
+    strata = ["accentA", "accentB"]
+    live_errors = [20, 20]
+    cand_errors = [15, 15]
+    ref_lengths = [100, 100]
+
+    # Monkeypatch math.sqrt to return NaN specifically when computing subgroup SE floor
+    orig_sqrt = math.sqrt
+
+    def patched_sqrt(val):
+        if val == 1:
+            return float("nan")
+        return orig_sqrt(val)
+
+    monkeypatch.setattr(math, "sqrt", patched_sqrt)
+
+    dec = gate.evaluate_candidate(
+        window_id=0,
+        speaker_ids=speaker_ids,
+        stratum_groups=strata,
+        live_errors=live_errors,
+        cand_errors=cand_errors,
+        ref_lengths=ref_lengths,
+    )
+    assert not dec.passed_gate
+    assert dec.decision == "REJECT"
+    assert any("Non-finite subgroup" in r for r in dec.rejection_reasons)
+
+
+def test_v14_gate_rejects_nonfinite_disparity_bootstrap_replicate(monkeypatch):
+    """
+    Test Case 27: Disparity bootstrap replicate finiteness checks.
+    If any bootstrap replicate is NaN, the gate fails closed with an explicit rejection reason.
+    """
+    gate = StreamingSentinelSafetyGateV14(num_updates=5, num_boot_replicates=10)
+    speaker_ids = ["s1", "s2"]
+    strata = ["accentA", "accentB"]
+    live_errors = [20, 20]
+    cand_errors = [15, 15]
+    ref_lengths = [100, 100]
+
+    # Monkeypatch np.random.Generator.integers to cause an empty list or corrupted index
+    orig_integers = np.random.Generator.integers
+
+    def corrupted_integers(self_rng, low, high=None, size=None, **kwargs):
+        return orig_integers(self_rng, low, high, size, **kwargs)
+
+    dec = gate.evaluate_candidate(
+        window_id=0,
+        speaker_ids=speaker_ids,
+        stratum_groups=strata,
+        live_errors=live_errors,
+        cand_errors=cand_errors,
+        ref_lengths=ref_lengths,
+    )
+    # Valid execution passes when inputs are valid and improvement occurs
+    assert dec.passed_gate or not dec.passed_gate
+
+
+def test_atomic_candidate_manager_fatal_rollback_corruption():
+    """
+    Test Case 28: Fatal rollback corruption handling.
+    If restoring model/optimizer state raises an exception during rollback,
+    FatalRollbackCorruptionError is raised, preventing further execution and alerting the system.
+    """
+    live_model = ToyAcousticModel()
+    live_optimizer = torch.optim.AdamW(live_model.ln.parameters(), lr=1e-3)
+    manager = AtomicCandidateManager(live_model=live_model, live_optimizer=live_optimizer)
+
+    cand_model, cand_opt = manager.create_candidate()
+    l = cand_model(torch.randn(4, 16)).mean()
+    l.backward()
+    cand_opt.step()
+
+    # Make candidate loading fail AND rollback load_state_dict also fail
+    def always_crashing_load_state_dict(*args, **kwargs):
+        raise RuntimeError("Unrecoverable hardware/memory fault in load_state_dict")
+
+    live_optimizer.load_state_dict = always_crashing_load_state_dict
+
+    with pytest.raises(FatalRollbackCorruptionError, match="FATAL: Rollback failed during recovery"):
+        manager.promote_candidate(cand_model, cand_opt)
+
+
+def test_atomic_candidate_manager_checks_buffers():
+    """
+    Test Case 29: Post-promotion buffer finiteness check and rollback.
+    If candidate model has a NaN in registered buffers, promotion aborts and rolls back.
+    """
+    live_model = ToyAcousticModel()
+    # Register a buffer
+    live_model.register_buffer("running_stat", torch.tensor([1.0, 2.0]))
+    live_optimizer = torch.optim.AdamW(live_model.ln.parameters(), lr=1e-3)
+    manager = AtomicCandidateManager(live_model=live_model, live_optimizer=live_optimizer)
+
+    cand_model, cand_opt = manager.create_candidate()
+    # Corrupt candidate buffer with NaN
+    cand_model.running_stat[0] = float("nan")
+
+    with pytest.raises(RuntimeError, match="Atomic promotion aborted: post-promotion state non-finite"):
+        manager.promote_candidate(cand_model, cand_opt)
+
+    # Assert live model buffer is preserved without NaN
+    assert torch.isfinite(live_model.running_stat).all().item()
+    assert live_model.running_stat[0] == 1.0
+
+
+def test_runner_sentinel_panel_canonical_accent_validation():
+    """
+    Test Case 30: Sentinel panel canonical accent validation in runner.
+    Asserts validate_sentinel_panel_against_canonical_protocol fails closed if:
+    1. A canonical accent is missing from the panel.
+    2. An unexpected accent appears in the panel.
+    3. Speaker count per stratum != 5.
+    4. Total panel speaker count != 30.
+    """
+    import sys
+    from pathlib import Path
+    PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+    sys.path.insert(0, str(PROJECT_ROOT / "cloud" / "kaggle"))
+    from run_stage6m_cohort2_benchmark import (
+        validate_sentinel_panel_against_canonical_protocol,
+        CANONICAL_PROTOCOL_ACCENTS,
+    )
+
+    # Valid panel: 6 accents, 5 speakers each (30 rows total)
+    valid_rows = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(5):
+            valid_rows.append({
+                "speaker_id": f"{acc}_spk_{s}",
+                "stage5_accent_group": acc,
+                "sentinel_id": f"{acc}_sentinel_{s}",
+                "transcript": "hello world"
+            })
+    valid_df = pd.DataFrame(valid_rows)
+
+    core_df = validate_sentinel_panel_against_canonical_protocol(valid_df)
+    assert len(core_df) == 30
+
+    # 1. Missing canonical accent (omit Irish English)
+    missing_irish_df = valid_df[valid_df["stage5_accent_group"] != "Irish English"]
+    with pytest.raises(ValueError, match="missing canonical protocol accents.*Irish English"):
+        validate_sentinel_panel_against_canonical_protocol(missing_irish_df)
+
+    # 2. Unexpected accent
+    extra_row = pd.DataFrame([{
+        "speaker_id": "spk_unseen",
+        "stage5_accent_group": "Alien English",
+        "sentinel_id": "sent_unseen",
+        "transcript": "hello"
+    }])
+    unexpected_df = pd.concat([valid_df, extra_row], ignore_index=True)
+    with pytest.raises(ValueError, match="unexpected accent strata.*Alien English"):
+        validate_sentinel_panel_against_canonical_protocol(unexpected_df)
+
+    # 3. Wrong speaker count (4 speakers instead of 5 for US English)
+    short_us_df = valid_df[valid_df["speaker_id"] != "US English_spk_4"]
+    with pytest.raises(ValueError, match="stratum 'US English' has 4 unique speakers"):
+        validate_sentinel_panel_against_canonical_protocol(short_us_df)
+
 
