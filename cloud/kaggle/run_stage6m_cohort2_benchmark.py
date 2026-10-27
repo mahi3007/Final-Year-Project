@@ -373,15 +373,44 @@ def verify_frozen_execution_code_identity(
             f"does not match frozen code digest '{clean_expected}'. Execution code has been modified."
         )
 
-    # 3. Git-based diff check when git repository is present and running on a later commit
+    # 3. Running HEAD correspondence verification
+    # When current_git_commit_sha is supplied and root is a Git repository, verify that
+    # the declared current commit matches the repository's actual running HEAD.
+    # This prevents helper misuse with a commit label that does not correspond to the running checkout.
     clean_current = str(current_git_commit_sha).strip() if current_git_commit_sha else ""
     clean_frozen = str(frozen_code_commit_sha).strip() if frozen_code_commit_sha else ""
 
+    if clean_current:
+        try:
+            rev_cmd = ["git", "rev-parse", "--verify", f"{clean_current}^{{commit}}"]
+            is_commit = subprocess.run(rev_cmd, cwd=str(root), capture_output=True).returncode == 0
+            if is_commit:
+                head_proc = subprocess.run(
+                    ["git", "rev-parse", "HEAD"], cwd=str(root), capture_output=True, text=True
+                )
+                if head_proc.returncode == 0:
+                    actual_head = head_proc.stdout.strip()
+                    rev_out = subprocess.run(
+                        ["git", "rev-parse", f"{clean_current}^{{commit}}"],
+                        cwd=str(root),
+                        capture_output=True,
+                        text=True,
+                    ).stdout.strip()
+                    if rev_out != actual_head:
+                        raise PermissionError(
+                            f"Confirmatory Execution Code Identity Violation: Declared current commit "
+                            f"'{clean_current}' ({rev_out}) does not match running repository HEAD '{actual_head}'."
+                        )
+        except PermissionError:
+            raise
+        except (subprocess.CalledProcessError, FileNotFoundError, OSError):
+            pass
+
+    # 4. Git-based diff check when git repository is present and running on a later commit
     if clean_frozen and clean_current and clean_current != clean_frozen:
         diff_out = None
         git_check_succeeded = False
         try:
-            # Check if clean_current is a valid git commit in this repo
             is_commit = False
             try:
                 rev_cmd = ["git", "rev-parse", "--verify", f"{clean_current}^{{commit}}"]
