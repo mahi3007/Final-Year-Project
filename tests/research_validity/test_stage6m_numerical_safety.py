@@ -2838,6 +2838,150 @@ def test_frozen_execution_contract_manifest_path_and_governance_edge_cases(tmp_p
     assert rec["contract_status"] == "APPROVED"
 
 
+def test_frozen_execution_code_identity_binding_and_mutation_rejection(tmp_path):
+    """
+    Test Case 55: Critical Finding E Verification — Verifiable Executable Code Identity Binding.
+    Verifies that:
+    1. compute_execution_code_digest returns a 64-char lowercase SHA-256 hex string.
+    2. An unchanged frozen codebase passes code identity verification cleanly.
+    3. An approved governance-only update on a later commit passes when execution code is unchanged.
+    4. A modified runner or runtime dependency strictly FAILS CLOSED even if the old frozen SHA
+       remains whitelisted in approved_commits.
+    5. Synthetic code directory modification causes immediate digest mismatch and PermissionError.
+    """
+    import hashlib
+    import json
+    import sys
+    from pathlib import Path
+    project_root = Path(__file__).resolve().parent.parent.parent
+    sys.path.insert(0, str(project_root / "cloud" / "kaggle"))
+    from run_stage6m_cohort2_benchmark import (
+        compute_execution_code_digest,
+        verify_frozen_execution_code_identity,
+        validate_frozen_execution_contract,
+        create_project_lead_governance_record,
+    )
+
+    # 1. Deterministic digest computation
+    current_digest = compute_execution_code_digest(project_root)
+    assert len(current_digest) == 64
+    assert all(c in "0123456789abcdef" for c in current_digest)
+
+    # 2. Unchanged codebase with matching digest passes
+    id_rec = verify_frozen_execution_code_identity(
+        frozen_code_commit_sha="0a1109e000edeed587f7b9d635f1014d9931ab10",
+        current_git_commit_sha="0a1109e000edeed587f7b9d635f1014d9931ab10",
+        expected_code_digest=current_digest,
+        project_root=project_root,
+    )
+    assert id_rec["code_identity_verified"] is True
+    assert id_rec["execution_code_digest"] == current_digest
+
+    # 3. Governance-only update on a later commit (e.g. "gov_lock_commit_999") passes
+    # because execution code is unchanged and matches the frozen digest
+    proto_file = tmp_path / "final_proto.md"
+    proto_file.write_text("# Confirmatory Protocol\n\nStatus: Frozen and authorized.\n", encoding="utf-8")
+    proto_sha = hashlib.sha256(proto_file.read_bytes()).hexdigest()
+
+    manifest_data = {
+        "frozen_execution_contract": {
+            "frozen_code_commit_sha": "0a1109e000edeed587f7b9d635f1014d9931ab10",
+            "frozen_code_digest": current_digest,
+            "protocol_sha256": proto_sha,
+            "governance_status": "APPROVED",
+        }
+    }
+    manifest_file = tmp_path / "manifest.json"
+    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+    manifest_sha = hashlib.sha256(manifest_file.read_bytes()).hexdigest()
+
+    gov_data = create_project_lead_governance_record(
+        governance_status="APPROVED",
+        approved_commits=["0a1109e000edeed587f7b9d635f1014d9931ab10"],
+        approved_protocol_sha256=proto_sha,
+        approved_manifest_sha256=manifest_sha,
+        frozen_code_commit_sha="0a1109e000edeed587f7b9d635f1014d9931ab10",
+        frozen_code_digest=current_digest,
+    )
+    gov_file = tmp_path / "gov_record.json"
+    gov_file.write_text(json.dumps(gov_data), encoding="utf-8")
+
+    rec = validate_frozen_execution_contract(
+        manifest_data,
+        "gov_lock_commit_999",  # Running on later manifest/governance lock commit
+        proto_file,
+        governance_approval_path=gov_file,
+        manifest_path=manifest_file,
+    )
+    assert rec["contract_status"] == "APPROVED"
+
+    # 4a. Mismatched code digest between manifest and governance record raises ValueError
+    tampered_digest = "deadbeef" * 8
+    gov_tampered = dict(gov_data, frozen_code_digest=tampered_digest)
+    gov_tampered_file = tmp_path / "gov_tampered.json"
+    gov_tampered_file.write_text(json.dumps(gov_tampered), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="Frozen code digest in manifest.*does not match independent approval record"):
+        validate_frozen_execution_contract(
+            manifest_data,
+            "gov_lock_commit_999",
+            proto_file,
+            governance_approval_path=gov_tampered_file,
+            manifest_path=manifest_file,
+        )
+
+    # 4b. Modified runner or dependency (executing code differs from locked digest) strictly FAILS CLOSED
+    manifest_tampered = {
+        "frozen_execution_contract": {
+            "frozen_code_commit_sha": "0a1109e000edeed587f7b9d635f1014d9931ab10",
+            "frozen_code_digest": tampered_digest,
+            "protocol_sha256": proto_sha,
+            "governance_status": "APPROVED",
+        }
+    }
+    manifest_tampered_file = tmp_path / "manifest_tampered.json"
+    manifest_tampered_file.write_text(json.dumps(manifest_tampered), encoding="utf-8")
+    gov_tampered_matching = dict(gov_tampered, approved_manifest_sha256=hashlib.sha256(manifest_tampered_file.read_bytes()).hexdigest())
+    gov_tampered_matching_file = tmp_path / "gov_tampered_matching.json"
+    gov_tampered_matching_file.write_text(json.dumps(gov_tampered_matching), encoding="utf-8")
+
+    with pytest.raises(PermissionError, match="Confirmatory Execution Code Identity Violation.*does not match frozen code digest"):
+        validate_frozen_execution_contract(
+            manifest_tampered,
+            "gov_lock_commit_999",
+            proto_file,
+            governance_approval_path=gov_tampered_matching_file,
+            manifest_path=manifest_tampered_file,
+        )
+
+    # 5. Synthetic code directory modification causes immediate rejection
+    synthetic_root = tmp_path / "synthetic_repo"
+    (synthetic_root / "cloud" / "kaggle").mkdir(parents=True)
+    (synthetic_root / "src" / "dsg_ctta").mkdir(parents=True)
+
+    syn_runner = synthetic_root / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py"
+    syn_runner.write_text("# Runner\n", encoding="utf-8")
+
+    syn_pkg = synthetic_root / "src" / "dsg_ctta" / "core.py"
+    syn_pkg.write_text("# Core\n", encoding="utf-8")
+
+    syn_digest = compute_execution_code_digest(synthetic_root)
+
+    # Now mutate a dependency file in synthetic_root
+    syn_pkg.write_text("# Mutated Core with unapproved backdoor\n", encoding="utf-8")
+    mutated_digest = compute_execution_code_digest(synthetic_root)
+    assert mutated_digest != syn_digest
+
+    with pytest.raises(PermissionError, match="Confirmatory Execution Code Identity Violation.*Execution code has been modified"):
+        verify_frozen_execution_code_identity(
+            frozen_code_commit_sha="synthetic_frozen_sha",
+            current_git_commit_sha="synthetic_runtime_sha",
+            expected_code_digest=syn_digest,  # Expects original, but code has mutated
+            project_root=synthetic_root,
+        )
+
+
+
 
 
 

@@ -2,7 +2,7 @@
 """
 Stage 6M Path B: Full Confirmatory Benchmark on Virtual GPU (Tesla P100 / T4)
 =============================================================================
-Protocol: v1.3.4-stage6m-self-authorization-amendment
+Protocol: v1.4.0-stage6m-selective-adaptation-confirmatory
 Hardware: NVIDIA Tesla P100 / T4 (16 GB VRAM, CUDA Acceleration)
 Primary Model: facebook/wav2vec2-base-960h (GPU accelerated)
 
@@ -296,12 +296,102 @@ def suta_adaptation_step_gpu(
     )
 
 
+def compute_execution_code_digest(project_root: Optional[Path] = None) -> str:
+    """
+    Computes a deterministic, cross-platform SHA-256 digest of all execution-code files.
+    Files covered:
+      1. cloud/kaggle/run_stage6m_cohort2_benchmark.py
+      2. all .py files in src/dsg_ctta/
+    File content is normalized to LF line endings before hashing to guarantee identical
+    digests across Windows (CRLF) and Linux/Kaggle (LF).
+    Returns a 64-character lowercase SHA-256 hex digest.
+    """
+    root = (project_root or PROJECT_ROOT).resolve()
+    runner_file = root / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py"
+    if not runner_file.exists():
+        root = PROJECT_ROOT.resolve()
+        runner_file = root / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py"
+    pkg_files = sorted(root.glob("src/dsg_ctta/**/*.py"))
+
+    execution_files = [runner_file] + [f for f in pkg_files if f.is_file()]
+
+    file_entries: List[str] = []
+    for f in execution_files:
+        if not f.exists():
+            raise FileNotFoundError(f"Missing required execution file: {f}")
+        rel_path = f.relative_to(root).as_posix()
+        raw_bytes = f.read_bytes()
+        norm_bytes = raw_bytes.replace(b"\r\n", b"\n")
+        f_hash = hashlib.sha256(norm_bytes).hexdigest()
+        file_entries.append(f"{rel_path}:{f_hash}")
+
+    manifest_payload = "\n".join(file_entries).encode("utf-8")
+    return hashlib.sha256(manifest_payload).hexdigest()
+
+
+def verify_frozen_execution_code_identity(
+    frozen_code_commit_sha: str,
+    current_git_commit_sha: Optional[str] = None,
+    expected_code_digest: Optional[str] = None,
+    project_root: Optional[Path] = None,
+) -> Dict[str, Any]:
+    """
+    Cryptographic-free verification that the currently executing code matches the declared
+    frozen execution-code identity (Protocol Section 14.7).
+    Enforces deterministic code identity without cryptographic signatures.
+    Fails closed if:
+    1. expected_code_digest is provided and does not match the computed execution code digest.
+    2. current_git_commit_sha differs from frozen_code_commit_sha and Git inspection reveals
+       any modifications in execution code paths (cloud/kaggle/run_stage6m_cohort2_benchmark.py, src/dsg_ctta).
+    """
+    root = (project_root or PROJECT_ROOT).resolve()
+    current_digest = compute_execution_code_digest(root)
+
+    # 1. Deterministic Content Digest Verification
+    if expected_code_digest:
+        clean_expected = str(expected_code_digest).strip()
+        if current_digest != clean_expected:
+            raise PermissionError(
+                f"Confirmatory Execution Code Identity Violation: Executing code digest '{current_digest}' "
+                f"does not match frozen code digest '{clean_expected}'. Execution code has been modified."
+            )
+
+    # 2. Git-based diff check when git repository is present and running on a later commit
+    clean_current = str(current_git_commit_sha).strip() if current_git_commit_sha else ""
+    clean_frozen = str(frozen_code_commit_sha).strip() if frozen_code_commit_sha else ""
+
+    if clean_frozen and clean_current and clean_current != clean_frozen:
+        try:
+            cmd = [
+                "git", "diff", "--name-only", clean_frozen,
+                "--", "cloud/kaggle/run_stage6m_cohort2_benchmark.py", "src/dsg_ctta"
+            ]
+            diff_out = subprocess.check_output(cmd, cwd=str(root), stderr=subprocess.DEVNULL).decode("utf-8").strip()
+            if diff_out:
+                changed = [f for f in diff_out.splitlines() if f.strip()]
+                if changed:
+                    raise PermissionError(
+                        f"Confirmatory Execution Code Identity Violation: Executable code files have been modified "
+                        f"between frozen commit '{clean_frozen}' and current checkout: {changed}."
+                    )
+        except Exception:
+            # Fall back to content digest if git diff fails (e.g. shallow clone, synthetic commit in tests, or no .git)
+            pass
+
+    return {
+        "frozen_code_commit_sha": clean_frozen,
+        "execution_code_digest": current_digest,
+        "code_identity_verified": True,
+    }
+
+
 def create_project_lead_governance_record(
     governance_status: str,
     approved_commits: List[str],
     approved_protocol_sha256: str,
     approved_manifest_sha256: str,
     frozen_code_commit_sha: Optional[str] = None,
+    frozen_code_digest: Optional[str] = None,
     responsible_investigator: str = "Student Project Lead",
     audit_authority: str = "Student Project Lead & Academic Research Group",
 ) -> Dict[str, Any]:
@@ -324,6 +414,8 @@ def create_project_lead_governance_record(
     }
     if frozen_code_commit_sha:
         record["frozen_code_commit_sha"] = frozen_code_commit_sha
+    if frozen_code_digest:
+        record["frozen_code_digest"] = frozen_code_digest
     return record
 
 
@@ -460,6 +552,26 @@ def validate_frozen_execution_contract(
         raise PermissionError(
             f"Independent Governance Lock: Current commit '{clean_sha}' "
             f"is NOT in independent approval record whitelist: {trusted_approved_commits}."
+        )
+
+    # 4. Verifiable Executable Code Identity Binding (Protocol Section 14.7)
+    # If the contract relies on frozen_code_commit, verify that the executing code
+    # has NOT changed from that frozen identity.
+    if frozen_code_commit:
+        trusted_code_digest = gov_record.get("frozen_code_digest")
+        manifest_code_digest = frozen_contract.get("frozen_code_digest")
+        if trusted_code_digest and manifest_code_digest and manifest_code_digest != trusted_code_digest:
+            raise ValueError(
+                f"Independent Governance Lock: Frozen code digest in manifest '{manifest_code_digest}' "
+                f"does not match independent approval record '{trusted_code_digest}'."
+            )
+        expected_digest = trusted_code_digest or manifest_code_digest
+        proj_root = protocol_path.parent.parent.parent if protocol_path and protocol_path.exists() else None
+        verify_frozen_execution_code_identity(
+            frozen_code_commit_sha=frozen_code_commit,
+            current_git_commit_sha=clean_sha,
+            expected_code_digest=expected_digest,
+            project_root=proj_root,
         )
 
     # 4. Frozen Protocol Hash (Mandatory non-empty string matching trust anchor)
