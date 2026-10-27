@@ -655,6 +655,86 @@ Four specific findings were reviewed to achieve full remediation:
 - **Operative Governance Status:** **`DRAFT_HOLD`** (Strictly Locked).
 - **Confirmatory Execution:** **FORBIDDEN**. Code integrity and authorization contracts are certified. Zero confirmatory benchmark execution is authorized until physical audio clips are materialized and manifest hashes locked.
 
+---
+
+## 19. Independent Remediation Audit of Commits `0a1109e` & `7795ced` — Resolution of Critical Finding E
+
+### 19.1 Executive Summary of Commits `0a1109e` & `7795ced` Audit
+On October 27, 2026, an independent Gravitas audit of commits [`0a1109e`](https://github.com/mahi3007/Final-Year-Project/commit/0a1109e000edeed587f7b9d635f1014d9931ab10) and [`7795ced`](https://github.com/mahi3007/Final-Year-Project/commit/7795ced154776946dcd51ce88ced4ca492795882) verified clean-tree test provenance (312 passed in 638.55s), authoritative sentinel-panel separation (20 speakers/stratum across 6 canonical strata, 120 total), and manifest-path validation.
+
+- **Audited Implementation Commit:** [`0a1109e000edeed587f7b9d635f1014d9931ab10`](https://github.com/mahi3007/Final-Year-Project/commit/0a1109e000edeed587f7b9d635f1014d9931ab10)
+- **Audited Provenance Commit:** [`7795ced154776946dcd51ce88ced4ca492795882`](https://github.com/mahi3007/Final-Year-Project/commit/7795ced154776946dcd51ce88ced4ca492795882) *(Note: canonical GitHub commit SHA corrected from earlier citation typo)*
+- **Audit Verdict:** **PARTIAL PASS — One Critical Authorization Defect Identified (Finding E)**
+- **Core Finding (Finding E):** The validator checked whitelist membership of `frozen_code_commit_sha`, but did not verify that the source code actually being executed matched the declared frozen code identity. Executable logic could mutate while the validator accepted the approved frozen commit.
+- **Required Action:** Bind authorization directly to verifiable executable code without digital signatures, utilizing Git identity and SHA-256 deterministic content verification, updating the runner docstring protocol version, and providing regression tests.
+
+---
+
+### 19.2 Systematic Resolution of Audit Findings A–E
+
+| Finding | Area | Auditor Assessment | Resolution & Implementation Details | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Finding A** | Test Provenance | PASS (Evidence of clean-tree run substantiated: 312 passed in 638.55s). | Citation typo corrected: canonical GitHub commit is [`7795ced154776946dcd51ce88ced4ca492795882`](https://github.com/mahi3007/Final-Year-Project/commit/7795ced154776946dcd51ce88ced4ca492795882). | **PASS** |
+| **Finding B** | Sentinel-Panel Specification | PASS for tested contract. Distinguishes 30-speaker historical panel from 120-speaker confirmatory reference panel. | Structural constants `HISTORICAL_STAGE5_...` (5/30) and `COHORT3_GATE_REF_...` (20/120) strictly separated and validated via `validate_cohort3_gate_reference_panel` and Test Case 53. | **PASS** |
+| **Finding C** | Draft Protocol Status | PASS for preserving HOLD; prerequisite remains open. | Protocol draft status intentionally retained as fail-closed safety gate. Test Case 50 verifies strict rejection of draft protocol prior to physical audio materialization. | **PASS** |
+| **Finding D** | Manifest-Path & Governance Edge Cases | PASS for covered cases. Missing manifest paths and hash mismatches checked. | Enforced in `validate_frozen_execution_contract`: physical manifest missing raises `FileNotFoundError`; manifest path missing when hash locked raises `ValueError`. Verified by Test Case 54. | **PASS** |
+| **Finding E** | Frozen Execution-Code Identity | **FAIL** — Whitelist membership was checked, but running code was not verified against declared frozen code identity. | **RESOLVED & VERIFIED**: Implemented deterministic executable code identity verification (`compute_execution_code_digest`, `verify_frozen_execution_code_identity`, Test Case 55) binding running code to frozen commit [`310cf4f`](https://github.com/mahi3007/Final-Year-Project/commit/310cf4ff6221d704fa7a8318af9d3d13362b0fa3) and digest `0ca1eaf33aab05ad4d63be51abbc7355db4583500cb9dce60528b9acc473e58c`. | **RESOLVED & VERIFIED** (Test 55 passing) |
+
+---
+
+### 19.3 Architecture of Verifiable Executable Code Identity (Protocol Section 14.7)
+
+To eliminate the authorization defect without reintroducing cryptographic signatures (such as Ed25519), the runner enforces deterministic content hashing and Git path-level immutability:
+
+1. **Executable Code Scope (57 Core Files):**
+   - The production runner: [`../../cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py)
+   - All runtime dependency modules in the active package: `src/dsg_ctta/**/*.py` (56 modules).
+   - Documentation, dataset manifests, governance approval records, and test logs are explicitly excluded from the code identity hash, allowing non-circular governance locking on later commits.
+
+2. **Cross-Platform Deterministic Normalization:**
+   - In `compute_execution_code_digest(project_root)`, raw file bytes are read and binary CRLF line endings (`\r\n`) are normalized to LF (`\n`).
+   - Ensures that the calculated SHA-256 digest is byte-for-byte identical across Windows checkouts (CRLF) and Linux/Kaggle environments (LF).
+   - Yields an authoritative 64-character lowercase hexadecimal digest: `0ca1eaf33aab05ad4d63be51abbc7355db4583500cb9dce60528b9acc473e58c`.
+
+3. **Runtime Verification & Tamper Detection:**
+   - In `verify_frozen_execution_code_identity(...)`:
+     - Compares the running codebase's computed digest against `expected_code_digest`. Mismatch immediately raises `PermissionError`.
+     - When running on a later Git commit (e.g., a governance-lock or manifest-lock commit), executes `git diff --name-only <frozen_code_commit_sha> -- cloud/kaggle/run_stage6m_cohort2_benchmark.py src/dsg_ctta`. Any detected change immediately raises `PermissionError`.
+   - In `validate_frozen_execution_contract(...)`:
+     - Cross-validates manifest `frozen_code_digest` against the governance record's authoritative digest. Any mismatch raises `ValueError`.
+     - Fails closed if the frozen code identity is unapproved, mutated, or missing.
+
+4. **Protocol Version Docstring Synchronization:**
+   - Updated the runner module docstring in [`../../cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py) to declare `Protocol: v1.4.0-stage6m-selective-adaptation-confirmatory`, removing the legacy v1.3.4 label.
+
+5. **Clarification on Unverified Manifest Hash Under `DRAFT_HOLD`:**
+   - Documented in the governance approval record rationale that `approved_manifest_sha256` (`7dcf8d5812ce8b555d1f4c0b1a1f2d63263e83c81120bd811cc8fcb427cfbd95`) is an unverified placeholder held under `DRAFT_HOLD`.
+   - The authoritative manifest hash will be calculated and locked only after the 19,800 physical Cohort 3 audio clips are materialized and verified.
+
+---
+
+### 19.4 Regression Test Evidence: Test Case 55
+
+[`../../tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/research_validity/test_stage6m_numerical_safety.py) incorporates **Test Case 55** (`test_frozen_execution_code_identity_binding_and_mutation_rejection`), which verifies:
+- **Subcase 1 (Deterministic Digest):** `compute_execution_code_digest()` produces a valid 64-char lowercase SHA-256 string.
+- **Subcase 2 (Unchanged Frozen Codebase):** Cleanly passes when running code matches frozen commit and digest.
+- **Subcase 3 (Approved Governance-Only Update on Later Commit):** Passes when running on a later commit (e.g., manifest/governance lock) provided execution code files remain unchanged from the frozen identity.
+- **Subcase 4a (Manifest-Governance Digest Mismatch):** Strictly raises `ValueError` if a manifest attempts to declare an unauthorized code digest.
+- **Subcase 4b (Tampered / Mutated Executing Code):** Strictly raises `PermissionError` when executing code differs from the frozen digest, even if the frozen commit remains whitelisted.
+- **Subcase 5 (Synthetic Dependency Mutation):** Mutating a dependency module in `src/dsg_ctta/` alters the digest and triggers an immediate fail-closed `PermissionError`.
+
+**Test Status:** All 60 tests in `test_stage6m_numerical_safety.py` PASSED (60/60).
+
+---
+
+### 19.5 Final Confirmatory Cohort 3 Governance Status
+
+- **Frozen Execution Code Commit:** [`310cf4ff6221d704fa7a8318af9d3d13362b0fa3`](https://github.com/mahi3007/Final-Year-Project/commit/310cf4ff6221d704fa7a8318af9d3d13362b0fa3)
+- **Frozen Execution Code Digest:** `0ca1eaf33aab05ad4d63be51abbc7355db4583500cb9dce60528b9acc473e58c`
+- **Operative Governance Status:** **`DRAFT_HOLD`** (Strictly Locked).
+- **Confirmatory Execution:** **FORBIDDEN**. Code identity verification, sentinel-panel separation, and manifest-path guards are certified. Zero confirmatory benchmark execution is permitted until physical audio clips are materialized and verified.
+
+
 
 
 

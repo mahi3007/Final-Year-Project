@@ -3,13 +3,14 @@
   "authorization_mode": "PROJECT_LEAD_ACADEMIC_AUTHORIZATION",
   "audit_authority": "Student Project Lead & Academic Research Group",
   "governance_status": "DRAFT_HOLD",
-  "governance_status_rationale": "Decision Rule B (N=220 per stratum, 19,800 clips) is formally incorporated into the protocol (Section 4.2) and runner structural guards. Per Protocol Section 14.7, cryptographic Ed25519 signature requirement is formally removed and replaced with Project-Lead Academic Authorization. Confirmatory Cohort 3 remains locked on HOLD pending physical dataset materialization (19,800 clips), manifest SHA-256 locking, gate-reference panel verification, and documented project-lead authorization.",
-  "authorization_timestamp_utc": "2026-10-27T11:00:00Z",
+  "governance_status_rationale": "Decision Rule B (N=220 per stratum, 19,800 clips) is formally incorporated into the protocol (Section 4.2) and runner structural guards. Per Protocol Section 14.7, cryptographic Ed25519 signature requirement is formally removed and replaced with Project-Lead Academic Authorization and deterministic code identity verification. Confirmatory Cohort 3 remains locked on HOLD pending physical dataset materialization (19,800 clips), actual manifest SHA-256 calculation and locking, gate-reference panel verification, and documented project-lead authorization. Note: approved_manifest_sha256 is an unverified placeholder held under DRAFT_HOLD until physical audio materialization.",
+  "authorization_timestamp_utc": "2026-10-27T13:20:00Z",
   "responsible_investigator": "Student Project Lead",
   "academic_institution_context": "Final Year Engineering Project — Selective Adaptation Under Accent Disparity",
   "approved_protocol_sha256": "feeda07e2b34caaee1338a0a546d4dcdb961767d560cb7bb21a44c7165600c9b",
   "approved_manifest_sha256": "7dcf8d5812ce8b555d1f4c0b1a1f2d63263e83c81120bd811cc8fcb427cfbd95",
-  "frozen_code_commit_sha": "4e83479b6930d532512fc6707486ca220b2dbf68",
+  "frozen_code_commit_sha": "310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
+  "frozen_code_digest": "0ca1eaf33aab05ad4d63be51abbc7355db4583500cb9dce60528b9acc473e58c",
   "approved_commits": [
     "706ea99cd1b16d935a0ead891e7df0f09c1517a0",
     "9fd40da63bc76b4dfcf04562ef56cd02c42f57e7",
@@ -29,6 +30,9 @@
     "e4bceb95994a18eda576083a1d4eb653a6629b91",
     "05c5c9b7296b6194742f8d04fafdb5dec28052ad",
     "f17328e913a1fe1045f6277dc0dbbcbc7469b184",
-    "4e83479b6930d532512fc6707486ca220b2dbf68"
+    "4e83479b6930d532512fc6707486ca220b2dbf68",
+    "0a1109e000edeed587f7b9d635f1014d9931ab10",
+    "7795ced154776946dcd51ce88ced4ca492795882",
+    "310cf4ff6221d704fa7a8318af9d3d13362b0fa3"
   ]
 }
