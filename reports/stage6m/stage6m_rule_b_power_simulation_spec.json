@@ -23,7 +23,7 @@
       "Canadian English",
       "Irish English"
     ],
-    "prespecified_speakers_per_stratum": 220,
+    "speakers_per_stratum": 220,
     "clips_per_speaker": 15,
     "total_simulated_speakers": 1320,
     "total_simulated_clips": 19800,
@@ -42,22 +42,58 @@
     }
   },
   "calibrated_scenario_assumptions": {
-    "baseline_wer_per_accent_pp": {
-      "US English": 14.2,
-      "Canadian English": 16.1,
-      "England English": 17.4,
-      "Australian English": 19.3,
-      "South Asian English": 23.5,
-      "Irish English": 26.1
+    "nature_of_parameters": "DECLARED_SCENARIO_SIMULATION_INPUTS",
+    "source_attribution_disclosure": "The simulation parameters below are fixed scenario inputs specified for study sizing and power evaluation. They are derived from the synthetic Common Voice 27 development benchmark fixture (reports/stage6m/cv27_development_speaker_benchmarks.csv), not empirically estimated from physical GPU evaluations.",
+    "declared_simulation_inputs": {
+      "baseline_wer_per_accent_pp": {
+        "US English": 14.2,
+        "Canadian English": 16.1,
+        "England English": 17.4,
+        "Australian English": 19.3,
+        "South Asian English": 23.5,
+        "Irish English": 26.1
+      },
+      "baseline_wer_mean_pp": 19.43,
+      "baseline_wer_mean_note": "Arithmetic mean of the six per-accent baseline WERs hardcoded in simulate_design_stage_joint_power() (paired_cluster_inference.py lines 251-258), matching the synthetic CV27 development fixture means.",
+      "between_speaker_wer_std_pp": 6.5,
+      "within_speaker_paired_difference_std_pp": 3.2,
+      "modeled_selective_adaptation_wer_effect_pp": -3.5,
+      "modeled_selective_adaptation_disparity_effect_pp": -2.0,
+      "parameter_rationale": "Represents an aspirational development scenario: an average 3.50 pp absolute WER improvement (target_primary_effect_pp = 3.50), a 2.00 pp narrowing of cross-accent disparity (target_disparity_effect_pp = -2.00), with between-speaker standard deviation of 6.50 pp and paired difference standard deviation of 3.20 pp. Under these declared assumptions, N=220 speakers per stratum achieves >=90% lower confidence bound joint power across all 9 hypotheses."
     },
-    "baseline_wer_mean_pp": 19.43,
-    "baseline_wer_mean_note": "Arithmetic mean of the six per-accent hardcoded baseline WERs in simulate_design_stage_joint_power() (paired_cluster_inference.py lines 251-258). The previously documented value of 27.5 was an error.",
-    "between_speaker_wer_std_pp": 6.5,
-    "within_speaker_paired_difference_std_pp": 3.2,
-    "modeled_selective_adaptation_disparity_effect_pp": -2.0,
-    "modeled_selective_adaptation_wer_effect_pp": -3.5,
-    "modeled_selective_adaptation_wer_effect_note": "Corresponds to target_primary_effect_pp=3.50 in DesignStagePowerSpec; the simulator applies -target_primary_effect_pp as the mean WER shift. The previously documented value of -1.5 was an error.",
-    "calibration_source": "Tesla T4 Physical Hardware Calibration across Cohort 1 (N=60) and Cohort 2 (N=468) physical evaluations. Baseline WERs are hardcoded per-accent values from scripts/calibrate_stage6m_development_variance.py via src/dsg_ctta/evaluation/paired_cluster_inference.py."
+    "separate_physical_cohort_evidence": {
+      "context_note": "Physical GPU evaluations on NVIDIA Tesla T4 hardware were conducted on Cohort 1 (N=60) and Cohort 2 (N=468) as distinct evidence streams. The power simulation inputs are NOT directly estimated from these physical data.",
+      "cohort1_physical_summary": {
+        "hardware": "NVIDIA Tesla T4 GPU",
+        "speaker_count": 60,
+        "clip_count": 900,
+        "observed_baseline_wer_means_pp": {
+          "Australian English": 25.07,
+          "Canadian English": 12.47,
+          "England English": 21.49,
+          "Irish English": 15.67,
+          "South Asian English": 41.74,
+          "US English": 20.42
+        },
+        "observed_paired_diff_std_pp": 3.07
+      },
+      "cohort2_physical_summary": {
+        "hardware": "NVIDIA Tesla T4 GPU",
+        "speaker_count": 468,
+        "clip_count": 7020,
+        "observed_baseline_wer_means_pp": {
+          "Australian English": 19.27,
+          "Canadian English": 14.77,
+          "England English": 19.7,
+          "Irish English": 19.94,
+          "South Asian English": 41.38,
+          "US English": 17.22
+        },
+        "observed_paired_diff_std_gated_pp": 0.0,
+        "observed_paired_diff_std_ungated_pp": 15.69
+      },
+      "divergence_disclosure": "Observed physical WERs (e.g. South Asian 41.38% vs simulated 23.5%, Irish 19.94% vs simulated 26.1%) reflect distinct data distributions. Power results hold strictly conditional on the declared simulation assumptions."
+    }
   },
   "inferential_procedure": {
     "hypotheses_evaluated_per_study": 9,
@@ -75,7 +111,7 @@
   },
   "methodological_caveats_and_scope": {
     "simulation_nature": "INDEPENDENT_POWER_SIZING_SIMULATION",
-    "scope_limitation": "This specification pre-registers an in silico power-sizing simulation designed to evaluate whether the proposed N=220 sample size has sufficient statistical power under the declared scenario assumptions. It is NOT a physical Cohort 3 experiment or confirmatory evaluation on real audio files.",
-    "prospective_claim_boundary": "Study power is conditional on the declared between-speaker variance, paired-difference standard deviation, and hypothesized -2.00 pp disparity reduction effect. It does not guarantee real-world power if real-world speech data violates these modeling assumptions."
+    "scope_limitation": "This specification documents retrospectively an in silico power-sizing simulation designed to evaluate whether the proposed N=220 sample size has sufficient statistical power under the declared scenario assumptions. It is NOT a physical Cohort 3 experiment or confirmatory evaluation on real audio files.",
+    "prospective_claim_boundary": "Study power is conditional on the declared scenario inputs (between-speaker variance of 6.50 pp, paired-difference standard deviation of 3.20 pp, and hypothesized -2.00 pp disparity reduction effect). It is an in silico sizing evaluation under declared assumptions, not an empirical guarantee for physical speech data that may exhibit different variance or effect profiles."
   }
 }

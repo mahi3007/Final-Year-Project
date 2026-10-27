@@ -1,28 +1,18 @@
-﻿"""
+"""
 Research Validity Test Runner with Provenance Capture
 =====================================================
 Standard: ADR-005 | Protocol: v1.4.0-stage6m-selective-adaptation-draft
 
-Wraps pytest for the tests/research_validity/ suite and prepends a provenance
-header (Git commit SHA, working-tree cleanliness, execution timestamp, Python
-version) to the saved log file so that every test run is reproducibly bound to
-an exact repository state.
+Wraps pytest for the tests/research_validity/ suite and writes a provenance
+header (Git commit SHA, pre-run working-tree cleanliness, execution timestamp,
+Python version, exact command) to the saved log file together with the test
+run output, AFTER pytest has executed against the untouched checkout.
 
 Usage:
     python scripts/run_research_validity_tests.py [extra pytest args ...]
 
-The log file is always written to:
+The log file is written to:
     reports/stage6m/research_validity_pytest_run.log
-
-The provenance header format is:
-    === PROVENANCE HEADER ===
-    git_commit_sha: <40-char SHA or UNKNOWN>
-    git_working_tree_clean: <true|false|UNKNOWN>
-    git_describe: <describe output>
-    execution_timestamp_utc: <ISO 8601>
-    python_version: <version>
-    command: <full command string>
-    === END PROVENANCE HEADER ===
 """
 
 from __future__ import annotations
@@ -36,7 +26,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 LOG_PATH = PROJECT_ROOT / "reports" / "stage6m" / "research_validity_pytest_run.log"
 
 
-def _git(*args, cwd=PROJECT_ROOT):
+def _git(*args, cwd=PROJECT_ROOT) -> str:
     try:
         result = subprocess.run(
             ["git", *args], cwd=str(cwd), capture_output=True, text=True, timeout=10
@@ -46,40 +36,72 @@ def _git(*args, cwd=PROJECT_ROOT):
         return "UNKNOWN"
 
 
-def build_provenance_header(extra_args):
+def main():
+    extra_args = sys.argv[1:]
+
+    # 1. Capture repository state BEFORE launching pytest
+    # Note: The tracked log file is NOT opened or written prior to execution,
+    # ensuring that git working tree cleanliness is preserved during the test run.
     sha = _git("rev-parse", "HEAD")
-    status_output = _git("status", "--porcelain")
-    clean_status = "UNKNOWN" if status_output == "UNKNOWN" else ("true" if status_output == "" else "false")
+    status_output_pre = _git("status", "--porcelain")
+    clean_status_pre = "UNKNOWN" if status_output_pre == "UNKNOWN" else ("true" if status_output_pre == "" else "false")
     describe = _git("describe", "--tags", "--always", "--dirty")
-    timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp_utc = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     python_ver = sys.version.replace("\n", " ")
-    cmd = " ".join(["python -m pytest tests/research_validity/", "-v"] + list(extra_args))
-    lines = [
+
+    pytest_cmd = [
+        sys.executable,
+        "-m",
+        "pytest",
+        "tests/research_validity/",
+        "-v",
+        "--tb=short",
+        *extra_args,
+    ]
+    cmd_display = "python -m pytest tests/research_validity/ -v --tb=short" + ((" " + " ".join(extra_args)) if extra_args else "")
+
+    print(f"[runner] Repository state pre-run:")
+    print(f"         git_commit_sha: {sha}")
+    print(f"         git_working_tree_clean_pre_run: {clean_status_pre}")
+    print(f"         git_describe: {describe}")
+    print(f"         timestamp_utc: {timestamp_utc}")
+    print(f"         command: {cmd_display}\n")
+    print("[runner] Executing pytest against untouched working tree...")
+
+    # 2. Execute pytest while working tree remains untouched
+    proc = subprocess.run(
+        pytest_cmd,
+        cwd=str(PROJECT_ROOT),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+
+    # 3. Capture post-execution working tree status before writing log
+    status_output_post = _git("status", "--porcelain")
+    clean_status_during = "UNKNOWN" if status_output_post == "UNKNOWN" else ("true" if status_output_post == "" else "false")
+
+    # 4. Construct complete provenance header
+    header_lines = [
         "=== PROVENANCE HEADER ===",
         f"git_commit_sha: {sha}",
-        f"git_working_tree_clean: {clean_status}",
+        f"git_working_tree_clean_pre_run: {clean_status_pre}",
+        f"git_working_tree_clean_during_execution: {clean_status_during}",
         f"git_describe: {describe}",
-        f"execution_timestamp_utc: {timestamp}",
+        f"execution_timestamp_utc: {timestamp_utc}",
         f"python_version: {python_ver}",
-        f"command: {cmd}",
+        f"command: {cmd_display}",
         "=== END PROVENANCE HEADER ===",
         "",
     ]
-    return "\n".join(lines)
+    header_text = "\n".join(header_lines)
 
-
-def main():
-    extra_args = sys.argv[1:]
-    provenance = build_provenance_header(extra_args)
-    print(provenance)
-    pytest_cmd = [sys.executable, "-m", "pytest", "tests/research_validity/", "-v", "--tb=short"] + list(extra_args)
+    # 5. Write provenance header and pytest results to log
     LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with LOG_PATH.open("w", encoding="utf-8") as log_fh:
-        log_fh.write(provenance + "\n")
-        log_fh.flush()
-        proc = subprocess.run(pytest_cmd, cwd=str(PROJECT_ROOT), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        log_fh.write(proc.stdout)
-        print(proc.stdout, end="")
+    LOG_PATH.write_text(header_text + proc.stdout, encoding="utf-8")
+
+    # 6. Stream captured output to stdout
+    print(proc.stdout, end="")
     print(f"\n[runner] Log written to: {LOG_PATH.relative_to(PROJECT_ROOT)}")
     sys.exit(proc.returncode)
 
