@@ -4,13 +4,13 @@
   "audit_authority": "Student Project Lead & Academic Research Group",
   "governance_status": "DRAFT_HOLD",
   "governance_status_rationale": "Decision Rule B (N=220 per stratum, 19,800 clips) is formally incorporated into the protocol (Section 4.2) and runner structural guards. Per Protocol Section 14.7, cryptographic Ed25519 signature requirement is formally removed and replaced with Project-Lead Academic Authorization and deterministic code identity verification. Confirmatory Cohort 3 remains locked on HOLD pending physical dataset materialization (19,800 clips), actual manifest SHA-256 calculation and locking, gate-reference panel verification, and documented project-lead authorization. Note: approved_manifest_sha256 is an unverified placeholder held under DRAFT_HOLD until physical audio materialization.",
-  "authorization_timestamp_utc": "2026-10-27T15:32:00Z",
+  "authorization_timestamp_utc": "2026-10-27T16:25:00Z",
   "responsible_investigator": "Student Project Lead",
   "academic_institution_context": "Final Year Engineering Project — Selective Adaptation Under Accent Disparity",
   "approved_protocol_sha256": "feeda07e2b34caaee1338a0a546d4dcdb961767d560cb7bb21a44c7165600c9b",
   "approved_manifest_sha256": "7dcf8d5812ce8b555d1f4c0b1a1f2d63263e83c81120bd811cc8fcb427cfbd95",
-  "frozen_code_commit_sha": "4622d81a382166d5195a665ae6ea06b3a999e39a",
-  "frozen_code_digest": "64224841a3a39221eff9541aacd5a00faef50bbbaae042e0fc73b9cb2e659f8b",
+  "frozen_code_commit_sha": "a7a3b79c1f06524128d035537de138e473c6455f",
+  "frozen_code_digest": "8bec4fe8634474a243110753da182eab578460c66681b4eec38bc4dd70fcbce6",
   "approved_commits": [
     "706ea99cd1b16d935a0ead891e7df0f09c1517a0",
     "9fd40da63bc76b4dfcf04562ef56cd02c42f57e7",
@@ -35,6 +35,7 @@
     "7795ced154776946dcd51ce88ced4ca492795882",
     "310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
     "37ba1ab6a524a82cc7c69ed2aeb2f8259df125e8",
-    "4622d81a382166d5195a665ae6ea06b3a999e39a"
+    "4622d81a382166d5195a665ae6ea06b3a999e39a",
+    "a7a3b79c1f06524128d035537de138e473c6455f"
   ]
 }
