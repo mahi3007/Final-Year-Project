@@ -798,12 +798,75 @@ command: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFounda
 
 ---
 
-### 20.5 Final Confirmatory Cohort 3 Governance Status
+### 20.5 Interim Governance Status at Commit `37ba1ab`
 
 - **Frozen Execution Code Commit:** [`37ba1ab6a524a82cc7c69ed2aeb2f8259df125e8`](https://github.com/mahi3007/Final-Year-Project/commit/37ba1ab6a524a82cc7c69ed2aeb2f8259df125e8)
 - **Frozen Execution Code Digest:** `1333b8b647e1df920336b8e937e7695826f30e3cd01cf00f22526d9443bcc758`
 - **Operative Governance Status:** **`DRAFT_HOLD`** (Strictly Locked).
-- **Confirmatory Execution:** **FORBIDDEN**. Code identity verification, sentinel-panel separation, and manifest-path guards are certified. Zero confirmatory benchmark execution is authorized until physical audio clips are materialized and verified.
+
+---
+
+## 21. Independent Audit of Latest Remediation — Authentic Historical Worktree Verification & Running HEAD Match Enforcement
+
+### 21.1 Executive Summary of Independent Audit
+On October 27, 2026, an independent Gravitas audit of commit [`37ba1ab`](https://github.com/mahi3007/Final-Year-Project/commit/37ba1ab6a524a82cc7c69ed2aeb2f8259df125e8), governance lock commit [`98aa4b7`](https://github.com/mahi3007/Final-Year-Project/commit/98aa4b7f16cae8037ca5092a1cf681d75b4c266b), and provenance commit [`ac3644f`](https://github.com/mahi3007/Final-Year-Project/commit/ac3644ff66d4f9d840afc69f96912b050bcc1260) evaluated the implementation:
+
+- **Auditor Verdict:** **PARTIAL PASS — Implementation Fixed; One Test-Evidence Issue Remaining**
+- **Verified Strengths:**
+  1. Git-diff rejection is no longer swallowed (`PermissionError` raised outside all exception handlers).
+  2. Mandatory valid SHA-256 code digest enforced.
+  3. Governance and execution code hashes agreed at `1333b8b647e1df920336b8e937e7695826f30e3cd01cf00f22526d9443bcc758`.
+  4. Repository log confirmed 313 passed tests on clean checkout `98aa4b7`.
+- **Remaining Issue Identified:**
+  In Test Case 55's positive governance-only-update scenario, the test computed a code digest from the current checkout (containing commit `37ba1ab`), but passed historical commit pair `310cf4f` and `61e2288` to the Git diff validator. The source being hashed and the commit being compared were not demonstrably the same revision.
+- **Recommended Correction:**
+  1. Use a real checkout or temporary Git worktree of `61e2288` for the positive scenario, verify that its on-disk code digest equals the frozen digest of `310cf4f`, and validate for that exact checkout.
+  2. Retain the changed-runner rejection test as a separate negative case.
+  3. Add an additional guard verifying that supplied `current_git_commit_sha` matches the repository's actual running `HEAD` during execution to prevent helper misuse with a commit label differing from the running checkout.
+  4. Re-run the full 313-test research-validity suite on the clean checkout, capturing fresh provenance after committing the code and test changes.
+
+---
+
+### 21.2 Exact Remediation Implemented
+
+| Area | Audit Requirement | Implementation Details | Verified Status |
+| :--- | :--- | :--- | :--- |
+| **A. Running HEAD Correspondence Guard** | Verify that declared `current_git_commit_sha` matches repository's actual `HEAD` during execution to prevent helper misuse with historical commit labels differing from checkout. | In `verify_frozen_execution_code_identity(...)` ([`../../cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py)), when `current_git_commit_sha` is supplied and resolves to a commit in the repository, it verifies `git rev-parse clean_current == git rev-parse HEAD`. Any discrepancy immediately raises `PermissionError` with diagnostic message `Confirmatory Execution Code Identity Violation: Declared current commit '<commit>' does not match running repository HEAD '<actual_head>'`. Tested in Test Case 55 Subcase 2b. | **RESOLVED & VERIFIED** |
+| **B. Authentic Historical Worktree in Test 55** | Ensure positive scenario in Test Case 55 hashes and validates the actual on-disk files corresponding to the historical commit pair (`310cf4f` -> `61e2288`). | In Test Case 55 Subcase 3 ([`../../tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/research_validity/test_stage6m_numerical_safety.py)), creates an authentic temporary detached Git worktree at `61e228803835697ed6ca939a158993e5f3cf7545`, computes `compute_execution_code_digest` directly from the worktree files, asserts `wt_digest == "0ca1eaf33aab05ad4d63be51abbc7355db4583500cb9dce60528b9acc473e58c"`, and runs `validate_frozen_execution_contract` against that exact checkout. Passes with `contract_status == "APPROVED"`. | **RESOLVED & VERIFIED** |
+| **C. Separate Negative Changed-Runner Test** | Keep changed-runner rejection as a distinct negative test case. | In Test Case 55 Subcase 4, tests `0a1109e000edeed587f7b9d635f1014d9931ab10` against `61e228803835697ed6ca939a158993e5f3cf7545` inside the authentic worktree. Strictly detects modified runner and raises `PermissionError`. | **RESOLVED & VERIFIED** |
+| **D. Updated Governance Lock** | Lock new implementation commit and execution code digest in governance record. | Implementation and test changes committed at [`4622d81`](https://github.com/mahi3007/Final-Year-Project/commit/4622d81a382166d5195a665ae6ea06b3a999e39a); new code digest `64224841a3a39221eff9541aacd5a00faef50bbbaae042e0fc73b9cb2e659f8b` locked at commit [`a019621`](https://github.com/mahi3007/Final-Year-Project/commit/a0196218151978d380e2fceae5653554e7d1fc06). | **RESOLVED & VERIFIED** |
+| **E. Clean Provenance Run** | Execute 313-test suite on clean checkout of locked governance commit. | Executed [`../../scripts/run_research_validity_tests.py`](../../scripts/run_research_validity_tests.py) on clean commit [`a019621`](https://github.com/mahi3007/Final-Year-Project/commit/a0196218151978d380e2fceae5653554e7d1fc06). **313 passed, 6 warnings in 662.55s**. Clean-tree verified before and after execution. | **RESOLVED & VERIFIED** |
+
+---
+
+### 21.3 Fresh Clean-Tree Provenance Evidence
+
+```
+=== PROVENANCE HEADER ===
+git_commit_sha: a019621c0631df6d957c60b476368ce9a167ff09
+git_working_tree_clean_pre_run: true
+git_working_tree_clean_post_run: true
+cleanliness_verification_scope: checked immediately before and immediately after subprocess execution; does not monitor in-flight transient filesystem modifications during execution
+git_describe: a019621
+execution_timestamp_utc: 2026-10-27T10:03:32Z
+python_version: 3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]
+executable_path: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe
+command: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe -m pytest tests/research_validity/ -v --tb=short
+=== END PROVENANCE HEADER ===
+
+...
+================= 313 passed, 6 warnings in 662.55s (0:11:02) =================
+```
+
+---
+
+### 21.4 Final Confirmatory Cohort 3 Governance Status
+
+- **Frozen Execution Code Commit:** [`4622d81a382166d5195a665ae6ea06b3a999e39a`](https://github.com/mahi3007/Final-Year-Project/commit/4622d81a382166d5195a665ae6ea06b3a999e39a)
+- **Frozen Execution Code Digest:** `64224841a3a39221eff9541aacd5a00faef50bbbaae042e0fc73b9cb2e659f8b`
+- **Operative Governance Status:** **`DRAFT_HOLD`** (Strictly Locked).
+- **Confirmatory Execution:** **FORBIDDEN**. Code identity verification, authentic worktree regression, sentinel-panel separation, and manifest-path guards are certified. Zero confirmatory benchmark execution is authorized until physical audio clips are materialized and manifest hashes locked.
+
 
 
 
