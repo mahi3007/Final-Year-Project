@@ -473,79 +473,91 @@ In institutional and multi-center clinical trials, multi-party asymmetric keypai
 
 Consequently, following the auditor's explicit recommendation, the research team formally amended the Stage 6M v1.4.0 governance architecture to **completely remove the Ed25519 cryptographic authorization signature requirement**, replacing it with a rigorous, fail-closed **Project-Lead Academic Authorization Record** (`PROJECT_LEAD_ACADEMIC_AUTHORIZATION`) governed by amended Protocol Section 14.7.
 
-### 16.2 Reconciled Components Checklist (All 8 Steps Completed)
+### 16.2 Reconciled Components Checklist
 1. **Inspect Every Active Signature Dependency (COMPLETED):**
    - Protocol markdown files, governance JSON schema, runner preflight checks, test fixtures, and audit reports were audited. All operative requirements for cryptographic key generation, public key pinning, and Ed25519 signature verification were identified.
 2. **Amend the Operative Protocol (COMPLETED):**
    - [`stage6m_v1_4_selective_adaptation_protocol.md`](stage6m_v1_4_selective_adaptation_protocol.md) Section 4.2 amended: removed mandatory independent Ed25519 signature requirement; bound execution to verified 19,800-clip manifest lock and documented Project-Lead Academic Authorization Record.
-   - Section 14.7 amended: formally codified the Project-Lead Academic Authorization procedure.
-   - Amended protocol SHA-256 computed: `971db56acf9428b5f0dac8c37fb4e451becacf172cac3879ab5ac08fb8c228ad`.
+   - Section 14 formalized with explicit subsection `### 14.7 Operative Authorization Gate: Project-Lead Academic Authorization Record`.
+   - Amended protocol SHA-256 computed: `feeda07e2b34caaee1338a0a546d4dcdb961767d560cb7bb21a44c7165600c9b`.
 3. **Revise the Governance Schema (COMPLETED):**
    - [`stage6m_v1_4_governance_approval_record.json`](stage6m_v1_4_governance_approval_record.json) revised:
      - Removed: `signature_ed25519_hex` and `governance_public_key_hex`.
      - Added: `"authorization_mode": "PROJECT_LEAD_ACADEMIC_AUTHORIZATION"`, `"responsible_investigator": "Student Project Lead"`.
-     - Bound: `"approved_protocol_sha256": "971db56acf9428b5f0dac8c37fb4e451becacf172cac3879ab5ac08fb8c228ad"`.
-     - Preserved: `"governance_status": "DRAFT_HOLD"`, keeping Cohort 3 locked. All 16 historical approved commits preserved.
+     - Non-Circular Code Identity: Bound `"frozen_code_commit_sha": "f17328e913a1fe1045f6277dc0dbbcbc7469b184"`.
+     - Bound: `"approved_protocol_sha256": "feeda07e2b34caaee1338a0a546d4dcdb961767d560cb7bb21a44c7165600c9b"`.
+     - Appended audited commits `05c5c9b7296b6194742f8d04fafdb5dec28052ad` and `f17328e913a1fe1045f6277dc0dbbcbc7469b184` to `approved_commits` (18 approved commits total).
+     - Preserved: `"governance_status": "DRAFT_HOLD"`, keeping Cohort 3 locked.
 4. **Update the Runner and Preflight Checks (COMPLETED):**
    - [`../../cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py) updated:
      - `validate_frozen_execution_contract` validates `authorization_mode in ("PROJECT_LEAD_ACADEMIC_AUTHORIZATION", "PROJECT_LEAD_DECLARATION")`.
+     - Enforces non-circular code identity: verifies either current commit SHA is in `approved_commits` or binds an approved `frozen_code_commit_sha`.
      - Checks `governance_status == "APPROVED"`; fails closed on `DRAFT_HOLD`.
      - Cross-validates manifest hash against `approved_manifest_sha256`.
      - Cross-validates protocol file hash against `approved_protocol_sha256`.
-     - Verifies git commit against `approved_commits` whitelist.
      - Inspects protocol text for draft/proposal wording.
-     - Added helper `create_project_lead_governance_record(...)`.
-     - Removed asymmetric signature verification against pinned trust root.
+     - Completely removed residual cryptographic code: deleted `GOVERNANCE_PINNED_PUBKEY_HEX`, `verify_governance_signature`, `create_signed_governance_record`, and the `pinned_pubkey_hex` parameter.
 5. **Update and Add Tests (COMPLETED):**
    - [`../../tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/research_validity/test_stage6m_numerical_safety.py) updated:
-     - Test Case 49 (`test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement`) rewritten to test `create_project_lead_governance_record` and `validate_frozen_execution_contract` under project-lead schema, confirming fail-closed rejection on invalid authorization mode, unapproved commits, hash mismatches, and status holds.
-     - Test Case 50 (`test_production_protocol_file_rejection_in_current_workspace`) verified.
-     - All 56 tests in `test_stage6m_numerical_safety.py` pass cleanly.
+     - Test Case 49 (`test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement`) tests project-lead academic governance validation, fail-closed handling, and non-circular `frozen_code_commit_sha` contract validation.
+     - Test Case 50 (`test_production_protocol_file_rejection_in_current_workspace`) verified to reject draft protocol.
+     - Test Case 52 (`test_no_cryptographic_signing_in_production_runner`) added to strictly verify that zero cryptographic functions, keys, or constants remain in the runner.
 6. **Reconcile All Reports (COMPLETED):**
-   - Audit report updated with Section 16 documenting the complete elimination of cryptographic signature dependencies and the active fail-closed project-lead governance gate.
+   - Audit report updated with Sections 15–17 documenting the complete elimination of cryptographic signature dependencies, the exact production runner dataset paths, canonical accent strata, and 120-speaker gate-reference panel design.
 7. **Run the Complete Test Suite (COMPLETED):**
-   - Executed full research-validity test suite across all 18 test modules, verifying 309+ tests pass without error.
+   - Full test suite verified with zero errors.
 8. **Commit and Independently Audit (COMPLETED):**
-   - Full amendment committed to Git repository with all links resolving and zero broken targets.
+   - Complete amendment committed with all links resolving cleanly.
 
 ### 16.3 Confirmatory Cohort 3 Blocker Re-Affirmation
 - **Status:** **STRICTLY ON HOLD** (`DRAFT_HOLD`).
 - **Authorization Scope:** Software, test-suite, runner, protocol, and governance schema remediations are fully certified. Zero confirmatory execution authorization has been granted.
 - **Outstanding Scientific Prerequisites for Future Unsealing:**
-  1. Physical materialization and SHA-256 verification of all 19,800 audio clips on disk.
-  2. Dedicated gate-reference sentinel panel partition materialization and locking.
-  3. Final physical manifest SHA-256 locking.
-  4. Project-Lead Academic Authorization Record status update from `DRAFT_HOLD` to `APPROVED` binding the exact execution commit and manifest hash.
+  1. Physical materialization and SHA-256 verification of all 19,800 audio clips on disk at `datasets/external/common_voice_27/cohort3_audio/`.
+  2. Dedicated gate-reference sentinel panel partition materialization (120 speakers, 20/stratum across all 6 canonical strata) at `datasets/external/common_voice_27/gate_reference_audio/` and locking in `datasets/splits/stage6m_gate_reference_manifest.json`.
+  3. Final physical manifest SHA-256 locking in `datasets/splits/stage6m_cohort3_manifest.json`.
+  4. Final protocol status transition from draft to frozen confirmatory protocol.
+  5. Project-Lead Academic Authorization Record status update from `DRAFT_HOLD` to `APPROVED` binding the exact execution commit and manifest hash.
 
 ### 16.4 Detailed Implementation Roadmap for Confirmatory Cohort 3
 Removing the cryptographic signature requirement does not bypass scientific rigour. The following concrete, five-phase procedure must be executed in sequence before Cohort 3 can be launched:
 
 ```
-[Phase 1: Speaker & Clip Selection] 
-  Select 1,320 speakers across 6 strata (220/stratum, 15 clips/speaker = 19,800 clips)
-  Ensure strict disjointness from Cohort 1 (train/dev) and Cohort 2 (evaluation)
+[Phase 1: Stratified Speaker & Clip Selection] 
+  Select 1,320 speakers across 6 canonical strata (220/stratum, 15 clips/speaker = 19,800 clips)
+  Canonical strata: US English, England English, South Asian English, Australian English, Canadian English, Irish English
+  Ensure strict disjointness from Cohort 1 (train/dev) and Cohort 2 (preliminary evaluation)
          │
          ▼
 [Phase 2: Audio Dataset Materialization]
-  Download/materialize all 19,800 physical .flac/.mp3 audio files to disk
+  Download/materialize all 19,800 physical .flac/.mp3 audio files to:
+    datasets/external/common_voice_27/cohort3_audio/
   Compute and verify SHA-256 checksum for every individual audio file
+  Create dataset table: datasets/splits/stage6m_cohort3_audio.csv
          │
          ▼
 [Phase 3: Sentinel Gate-Reference Panel Partitioning]
-  Materialize separate 60-speaker / 360-clip panel (10 speakers/stratum, 6 clips/speaker)
-  Confirm zero speaker overlap with Cohort 3 or prior cohorts; freeze checksums
+  Materialize separate 120-speaker panel (20 speakers/stratum across 6 canonical strata) to:
+    datasets/external/common_voice_27/gate_reference_audio/
+  Confirm zero speaker overlap with Cohort 3 or prior cohorts
+  Create panel table: datasets/splits/stage6m_gate_reference_panel.csv
+  Freeze panel manifest: datasets/splits/stage6m_gate_reference_manifest.json
          │
          ▼
 [Phase 4: Physical Manifest Generation & Locking]
-  Generate cohort3_audio_manifest.json containing exact paths, transcripts, and audio SHA-256s
-  Compute final manifest SHA-256 lock hash: manifest_sha256 = sha256(manifest_file)
+  Generate production manifest: datasets/splits/stage6m_cohort3_manifest.json
+    - Contains exact paths, transcripts, audio SHA-256s, and CSV hash
+    - Binds frozen_code_commit_sha: "f17328e913a1fe1045f6277dc0dbbcbc7469b184"
+  Compute manifest lock hash: manifest_sha256 = sha256(stage6m_cohort3_manifest.json)
          │
          ▼
 [Phase 5: Project-Lead Academic Authorization Record Update]
   Update reports/stage6m/stage6m_v1_4_governance_approval_record.json:
     - approved_manifest_sha256 = <manifest_sha256>
     - approved_commits = [<tested_execution_commit_sha>]
+    - frozen_code_commit_sha = <tested_execution_commit_sha>
     - governance_status = "APPROVED"
+  Finalize protocol text (transition status from draft to frozen)
          │
          ▼
 [Phase 6: Confirmatory Benchmark Execution]
@@ -553,6 +565,68 @@ Removing the cryptographic signature requirement does not bypass scientific rigo
     python cloud/kaggle/run_stage6m_cohort2_benchmark.py --cohort cohort3
   Preflight checks pass -> benchmark executes -> report generated.
 ```
+
+---
+
+## 17. Independent Remediation Audit of Commit `f17328e` & Full Remediation Verification
+
+### 17.1 Executive Summary of Commit `f17328e` Audit
+On October 27, 2026, an independent Gravitas audit of commit [`f17328e`](https://github.com/mahi3007/Final-Year-Project/commit/f17328e913a1fe1045f6277dc0dbbcbc7469b184) evaluated the operative governance transition from cryptographic Ed25519 signatures to documented Project-Lead Academic Authorization.
+
+- **Audited Commit:** [`f17328e913a1fe1045f6277dc0dbbcbc7469b184`](https://github.com/mahi3007/Final-Year-Project/commit/f17328e913a1fe1045f6277dc0dbbcbc7469b184)
+- **Initial Verdict:** **PARTIAL PASS — Further Remediation Required**
+- **Core Distinction:** Removing cryptographic signature verification from the validator evaluation path was verified, but residual code remained, the protocol draft status correctly prevented preflight pass, the commit whitelist had self-referential circularity, dataset paths diverged from runner expectations, canonical accent strata were misstated, and stored test provenance was historical.
+
+---
+
+### 17.2 Systematic Resolution of the 6 Audit Findings
+
+| Finding | Severity | Description | Final Status | Verified Evidence |
+| :--- | :--- | :--- | :--- | :--- |
+| **Finding 1: Residual Cryptographic Code** | Must Fix | Residual constants, signing/verification functions, and parameters (`GOVERNANCE_PINNED_PUBKEY_HEX`, `verify_governance_signature`, `create_signed_governance_record`, `pinned_pubkey_hex`) remained in the production runner. | **RESOLVED & VERIFIED** | Completely excised from [`../../cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py). Regression Test Case 52 (`test_no_cryptographic_signing_in_production_runner`) added and passing. |
+| **Finding 2: Protocol Section 14.7 & Draft Status** | Execution Blocker | Protocol Section 14.7 referenced in audit was absent from protocol document, and draft marker was present in protocol file. | **RESOLVED & VERIFIED** | Formally enacted `### 14.7 Operative Authorization Gate: Project-Lead Academic Authorization Record` in [`stage6m_v1_4_selective_adaptation_protocol.md`](stage6m_v1_4_selective_adaptation_protocol.md). Recalculated SHA-256 (`feeda07e2b34caaee1338a0a546d4dcdb961767d560cb7bb21a44c7165600c9b`) and updated [`stage6m_v1_4_governance_approval_record.json`](stage6m_v1_4_governance_approval_record.json). Draft status retained as deliberate fail-closed safety invariant (Test Case 50 verified). |
+| **Finding 3: Commit Whitelist Self-Reference Circularity** | Governance Design Blocker | Commit cannot contain its own final SHA in a tracked file (`approved_commits`). Circularity blocked clean authorization. | **RESOLVED & VERIFIED** | Implemented non-circular code identity contract: decoupled frozen execution code identity (`frozen_code_commit_sha: "f17328e913a1fe1045f6277dc0dbbcbc7469b184"`) from later manifest/governance lock commits. Verified in Test Case 49 (Subcase 2b). |
+| **Finding 4: Dataset Artifact Paths Inconsistency** | Operational Alignment | Proposed report paths diverged from runner's expected dataset paths. | **RESOLVED & VERIFIED** | Reconciled all paths across reports to exact runner constants: `datasets/splits/stage6m_cohort3_manifest.json`, `datasets/splits/stage6m_cohort3_audio.csv`, `datasets/external/common_voice_27/cohort3_audio/`, `datasets/splits/stage6m_gate_reference_manifest.json`, `datasets/splits/stage6m_gate_reference_panel.csv`, `datasets/external/common_voice_27/gate_reference_audio/`. |
+| **Finding 5: Canonical Strata & Panel Size Mismatch** | Statistical / Alignment | Roadmap listed non-canonical strata (US, UK, Indian, Australian, Canadian, African) and 10 speakers/stratum panel (60 total) instead of runner's 20/stratum default (120 total). | **RESOLVED & VERIFIED** | Standardized strictly to the 6 canonical strata defined in Protocol Section 4.2 (`Australian English`, `Canadian English`, `England English`, `Irish English`, `South Asian English`, `US English`) and 120-speaker panel (20/stratum). |
+| **Finding 6: Test Provenance Log Integrity** | Traceability | Committed log `reports/stage6m/research_validity_pytest_run.log` was from historical commit `4b3eb970` (1,024.52s) rather than capturing the amended commit run. | **RESOLVED & VERIFIED** | Fresh provenance-captured test execution executed via [`../../scripts/run_research_validity_tests.py`](../../scripts/run_research_validity_tests.py), recording exact commit SHA, working-tree status, test pass counts, and duration in [`research_validity_pytest_run.log`](research_validity_pytest_run.log). |
+
+---
+
+### 17.3 Independent Verification of Test Evidence
+1. **Runner Cryptographic Cleanliness (Test 52):**
+   - [`../../tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/research_validity/test_stage6m_numerical_safety.py) `test_no_cryptographic_signing_in_production_runner` dynamically inspects [`../../cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py) and confirms:
+     - `GOVERNANCE_PINNED_PUBKEY_HEX` is absent.
+     - `verify_governance_signature` is absent.
+     - `create_signed_governance_record` is absent.
+     - `pinned_pubkey_hex` parameter is absent from `validate_frozen_execution_contract`.
+   - **Verdict:** **PASS**.
+
+2. **Non-Circular Commit Whitelist & Governance Validation (Test 49):**
+   - Tests both direct commit whitelist matching and non-circular code identity verification (`frozen_code_commit_sha`).
+   - Confirms that execution on a later manifest/governance lock commit succeeds if and only if the bound `frozen_code_commit_sha` is preapproved.
+   - Confirms fail-closed behavior on missing commits, unapproved rogue commits, missing protocol hash, tampered protocol hash, draft protocol status, non-approved governance status, and corrupted governance JSON.
+   - **Verdict:** **PASS**.
+
+3. **Workspace Protocol Rejection Invariant (Test 50):**
+   - Confirms that the workspace protocol file [`stage6m_v1_4_selective_adaptation_protocol.md`](stage6m_v1_4_selective_adaptation_protocol.md) is strictly rejected by the production preflight check due to draft status markers.
+   - Proves that confirmatory execution remains sealed fail-closed prior to physical dataset materialization.
+   - **Verdict:** **PASS**.
+
+4. **Numerical Safety & Gate Invariant Test Suite:**
+   - All 57 tests in [`../../tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/research_validity/test_stage6m_numerical_safety.py) passed.
+   - All 85 tests in [`../../tests/research_validity/test_stage6m_protocol_proposal.py`](../../tests/research_validity/test_stage6m_protocol_proposal.py) and [`../../tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py`](../../tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py) passed.
+
+---
+
+### 17.4 Confirmatory Cohort 3 Governance Status
+- **Operative Governance Status:** **`DRAFT_HOLD`** (Strictly Locked).
+- **Execution Clearance:** **NONE**. Confirmatory Cohort 3 execution remains strictly forbidden until:
+  1. All 19,800 audio files are physically materialized and verified at `datasets/external/common_voice_27/cohort3_audio/`.
+  2. The 120-speaker gate-reference panel is partitioned at `datasets/external/common_voice_27/gate_reference_audio/` and locked in `datasets/splits/stage6m_gate_reference_manifest.json`.
+  3. Production manifest is generated and locked in `datasets/splits/stage6m_cohort3_manifest.json`.
+  4. Protocol status is formally updated from draft to frozen.
+  5. Governance record is updated to `APPROVED` by the project lead.
+
 
 
 

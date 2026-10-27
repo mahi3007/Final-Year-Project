@@ -2203,6 +2203,38 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
             manifest_path=manifest_file,
         )
 
+    # 2b. Non-circular contract passes: current commit is a new lock commit (e.g. "commit_lock_789")
+    # that binds an approved frozen_code_commit ("commit_approved_123")
+    manifest_noncircular = {
+        "frozen_execution_contract": {
+            "frozen_code_commit_sha": "commit_approved_123",
+            "protocol_sha256": finalized_sha,
+            "governance_status": "APPROVED",
+        }
+    }
+    manifest_noncircular_file = tmp_path / "manifest_noncircular.json"
+    manifest_noncircular_file.write_text(json.dumps(manifest_noncircular), encoding="utf-8")
+    manifest_noncircular_sha = hashlib.sha256(manifest_noncircular_file.read_bytes()).hexdigest()
+
+    gov_noncircular_path = tmp_path / "gov_noncircular.json"
+    gov_noncircular_data = create_project_lead_governance_record(
+        governance_status="APPROVED",
+        approved_commits=["commit_approved_123"],
+        approved_protocol_sha256=finalized_sha,
+        approved_manifest_sha256=manifest_noncircular_sha,
+        frozen_code_commit_sha="commit_approved_123",
+    )
+    gov_noncircular_path.write_text(json.dumps(gov_noncircular_data), encoding="utf-8")
+
+    rec_noncircular = validate_frozen_execution_contract(
+        manifest_noncircular,
+        "commit_lock_789",  # Running on later manifest/governance lock commit
+        finalized_proto,
+        governance_approval_path=gov_noncircular_path,
+        manifest_path=manifest_noncircular_file,
+    )
+    assert rec_noncircular["contract_status"] == "APPROVED"
+
     # 3. Missing protocol_sha256 fails closed
     bad_manifest_no_proto = {
         "frozen_execution_contract": {
@@ -2567,6 +2599,29 @@ def test_gate_reference_panel_mandatory_audio_hash_validation(tmp_path):
             expected_audio_hashes=corrupt_hashes,
             cohort_name="Gate Reference Panel",
         )
+
+
+def test_no_cryptographic_signing_in_production_runner():
+    """
+    Regression Test Case 52: Strict verification that production runner contains ZERO
+    cryptographic signing functions, verification keys, or public-key constants.
+    Guarantees compliance with student project lead academic authorization requirement.
+    """
+    import inspect
+    import sys
+    from pathlib import Path
+    project_root = Path(__file__).resolve().parent.parent.parent
+    sys.path.insert(0, str(project_root / "cloud" / "kaggle"))
+    import run_stage6m_cohort2_benchmark as runner
+
+    assert not hasattr(runner, "GOVERNANCE_PINNED_PUBKEY_HEX"), "Residual GOVERNANCE_PINNED_PUBKEY_HEX found in runner"
+    assert not hasattr(runner, "verify_governance_signature"), "Residual verify_governance_signature found in runner"
+    assert not hasattr(runner, "create_signed_governance_record"), "Residual create_signed_governance_record found in runner"
+
+    # Verify validate_frozen_execution_contract does not accept or expect cryptographic key parameters
+    sig = inspect.signature(runner.validate_frozen_execution_contract)
+    assert "pinned_pubkey_hex" not in sig.parameters, "Residual pinned_pubkey_hex parameter in validator"
+
 
 
 

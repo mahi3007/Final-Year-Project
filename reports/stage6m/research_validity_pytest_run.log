@@ -1,13 +1,10 @@
 === PROVENANCE HEADER ===
-tested_commit_sha: 4b3eb9707c3f6310541d7dbce671a6c31dc55fa3
-tested_commit_state: clean working tree (pre-run clean=true, post-run clean=true)
-provenance_header_status: AMENDED_RETROSPECTIVELY
-provenance_amendment_disclosure: Header fields for post-run cleanliness semantics, scope verification disclaimer, executable path, and list2cmdline command formatting were updated retrospectively in commit d61ba84 to accurately reflect the execution parameters of the test suite run conducted on commit 4b3eb97.
-git_working_tree_clean_pre_run: true
-git_working_tree_clean_post_run: true
+git_commit_sha: f17328e913a1fe1045f6277dc0dbbcbc7469b184
+git_working_tree_clean_pre_run: false
+git_working_tree_clean_post_run: false
 cleanliness_verification_scope: checked immediately before and immediately after subprocess execution; does not monitor in-flight transient filesystem modifications during execution
-git_describe: 4b3eb97
-execution_timestamp_utc: 2026-10-27T02:36:35Z
+git_describe: f17328e-dirty
+execution_timestamp_utc: 2026-10-27T06:40:31Z
 python_version: 3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]
 executable_path: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe
 command: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe -m pytest tests/research_validity/ -v --tb=short
@@ -21,7 +18,7 @@ rootdir: C:\Users\venka\Downloads\final year project main
 configfile: pyproject.toml
 plugins: anyio-4.9.0, langsmith-0.4.53, asyncio-1.3.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
-collecting ... collected 309 items
+collecting ... collected 310 items
 
 tests/research_validity/test_historical_immutability.py::test_historical_artifact_manifest_hash_stability PASSED [  0%]
 tests/research_validity/test_historical_immutability.py::test_historical_stage2_numerical_immutability PASSED [  0%]
@@ -56,7 +53,7 @@ tests/research_validity/test_speaker_leakage.py::test_intentional_leakage_detect
 tests/research_validity/test_stage3m_stream_audit.py::test_manifest_structure_and_cell_count PASSED [ 10%]
 tests/research_validity/test_stage3m_stream_audit.py::test_model_catalog_integrity PASSED [ 10%]
 tests/research_validity/test_stage3m_stream_audit.py::test_no_adapt_stream_order_invariance PASSED [ 10%]
-tests/research_validity/test_stage3m_stream_audit.py::test_ctc_seq2seq_architectural_boundary PASSED [ 11%]
+tests/research_validity/test_stage3m_stream_audit.py::test_ctc_seq2seq_architectural_boundary PASSED [ 10%]
 tests/research_validity/test_stage3m_stream_audit.py::test_bootstrap_uncertainty_limitations_acknowledged PASSED [ 11%]
 tests/research_validity/test_stage3m_stream_audit.py::test_stage3m_reproducibility_bridge PASSED [ 11%]
 tests/research_validity/test_stage3m_stream_audit.py::test_stage3m_collapse_diagnostics PASSED [ 11%]
@@ -87,10 +84,10 @@ tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_canonical_opt
 tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_glmm_scope_and_laplace_approximation_terminology PASSED [ 20%]
 tests/research_validity/test_stage3m_stream_audit.py::test_stage4m_execution_authorization_and_gate_status PASSED [ 20%]
 tests/research_validity/test_stage4_invariants.py::test_stage4_split_scale_and_balance PASSED [ 20%]
-tests/research_validity/test_stage4_invariants.py::test_stage4_zero_speaker_leakage PASSED [ 21%]
+tests/research_validity/test_stage4_invariants.py::test_stage4_zero_speaker_leakage PASSED [ 20%]
 tests/research_validity/test_stage4_invariants.py::test_stage4_frozen_thresholds_provenance PASSED [ 21%]
 tests/research_validity/test_stage4_invariants.py::test_stage4_window_sweep_provenance PASSED [ 21%]
-tests/research_validity/test_stage4_invariants.py::test_acoustic_stress_partitions_integrity PASSED [ 22%]
+tests/research_validity/test_stage4_invariants.py::test_acoustic_stress_partitions_integrity PASSED [ 21%]
 tests/research_validity/test_stage4_invariants.py::test_stage4_decision_and_boundary_integrity PASSED [ 22%]
 tests/research_validity/test_stage5_external_eval.py::test_eval_has_exactly_six_groups PASSED [ 22%]
 tests/research_validity/test_stage5_external_eval.py::test_eval_has_exactly_ten_speakers_per_group PASSED [ 22%]
@@ -118,13 +115,13 @@ tests/research_validity/test_stage5m_online_control.py::test_stage5m_counterfact
 tests/research_validity/test_stage5m_online_control.py::test_stage5m_report_wording_and_decision_matrix_labels PASSED [ 30%]
 tests/research_validity/test_stage6m_cohort2_audio_validation.py::test_audio_validator_fails_closed_when_directory_missing PASSED [ 30%]
 tests/research_validity/test_stage6m_cohort2_audio_validation.py::test_audio_validator_fails_on_missing_files PASSED [ 30%]
-tests/research_validity/test_stage6m_cohort2_audio_validation.py::test_audio_validator_fails_on_zero_byte_file PASSED [ 31%]
+tests/research_validity/test_stage6m_cohort2_audio_validation.py::test_audio_validator_fails_on_zero_byte_file PASSED [ 30%]
 tests/research_validity/test_stage6m_cohort2_audio_validation.py::test_audio_validator_fails_on_corrupt_file_header PASSED [ 31%]
 tests/research_validity/test_stage6m_cohort2_audio_validation.py::test_audio_validator_detects_extraneous_files PASSED [ 31%]
-tests/research_validity/test_stage6m_cohort2_audio_validation.py::test_audio_validator_passes_on_valid_waveforms PASSED [ 32%]
+tests/research_validity/test_stage6m_cohort2_audio_validation.py::test_audio_validator_passes_on_valid_waveforms PASSED [ 31%]
 tests/research_validity/test_stage6m_cohort2_audio_validation.py::test_audio_validator_cli_exit_code PASSED [ 32%]
 tests/research_validity/test_stage6m_cohort2_curation.py::test_curation_tsv_row_shuffle_invariance PASSED [ 32%]
-tests/research_validity/test_stage6m_cohort2_curation.py::test_curation_seed_determinism PASSED [ 33%]
+tests/research_validity/test_stage6m_cohort2_curation.py::test_curation_seed_determinism PASSED [ 32%]
 tests/research_validity/test_stage6m_cohort2_curation.py::test_curation_strict_filter_rejections PASSED [ 33%]
 tests/research_validity/test_stage6m_cohort2_curation.py::test_curation_recording_id_stem_uniqueness PASSED [ 33%]
 tests/research_validity/test_stage6m_cohort2_curation.py::test_curation_rejects_speaker_level_accent_heterogeneity PASSED [ 33%]
@@ -149,16 +146,16 @@ tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_audio_fa
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_audio_fails_closed_when_clip_count_insufficient PASSED [ 40%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_sentinel_panel_and_isolation_on_committed_repo PASSED [ 40%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_sentinel_fails_on_speaker_overlap_leakage PASSED [ 40%]
-tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_full_preflight_on_committed_repo_produces_hold_and_reports PASSED [ 41%]
+tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_full_preflight_on_committed_repo_produces_hold_and_reports PASSED [ 40%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_full_preflight_reaches_ready_state_on_mock_materialized_dataset PASSED [ 41%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_benchmark_runner_preflight_only_cli PASSED [ 41%]
-tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort1_benchmark_runner_preflight_only_cli_exits_before_model_initialization PASSED [ 42%]
+tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort1_benchmark_runner_preflight_only_cli_exits_before_model_initialization PASSED [ 41%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_manifest_fails_on_unauthorized_token_in_lock PASSED [ 42%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_manifest_fails_on_non_allowlisted_digest_in_lock PASSED [ 42%]
-tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_manifest_fails_on_contradictory_governance_metadata PASSED [ 43%]
+tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_manifest_fails_on_contradictory_governance_metadata PASSED [ 42%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_eval_csv_fails_on_stratum_swapping PASSED [ 43%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_eval_csv_clip_lock_comprehensive_validation PASSED [ 43%]
-tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_audio_fails_on_zero_byte_file PASSED [ 44%]
+tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_audio_fails_on_zero_byte_file PASSED [ 43%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_audio_fails_on_extraneous_files PASSED [ 44%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_markdown_report_avoids_contradictory_claims_under_hold PASSED [ 44%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_manifest_fails_on_mixed_digests_in_lock PASSED [ 44%]
@@ -180,19 +177,19 @@ tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort1_prefligh
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_deterministic_sentinel_sampling_is_reproducible_and_stratified PASSED [ 50%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_cohort2_and_cohort1_preflight_record_stratified_sampling_metadata PASSED [ 50%]
 tests/research_validity/test_stage6m_cohort2_readiness.py::test_deterministic_sentinel_sampling_edge_cases PASSED [ 50%]
-tests/research_validity/test_stage6m_inferential_calibration.py::test_calibration_global_null_family_wise_error_control PASSED [ 51%]
+tests/research_validity/test_stage6m_inferential_calibration.py::test_calibration_global_null_family_wise_error_control PASSED [ 50%]
 tests/research_validity/test_stage6m_inferential_calibration.py::test_calibration_beneficial_adaptation_empirical_power PASSED [ 51%]
 tests/research_validity/test_stage6m_inferential_calibration.py::test_calibration_isolated_accent_regression_detection PASSED [ 51%]
-tests/research_validity/test_stage6m_inferential_calibration.py::test_calibration_disparity_expansion_detection PASSED [ 52%]
+tests/research_validity/test_stage6m_inferential_calibration.py::test_calibration_disparity_expansion_detection PASSED [ 51%]
 tests/research_validity/test_stage6m_inferential_calibration.py::test_calibration_max_min_tie_disparity_ucb_coverage PASSED [ 52%]
 tests/research_validity/test_stage6m_inferential_calibration.py::test_calibration_heterogeneous_word_counts_numerical_robustness PASSED [ 52%]
-tests/research_validity/test_stage6m_inferential_calibration.py::test_calibration_near_null_differences PASSED [ 53%]
+tests/research_validity/test_stage6m_inferential_calibration.py::test_calibration_near_null_differences PASSED [ 52%]
 tests/research_validity/test_stage6m_inferential_calibration.py::test_streaming_gate_trajectory_full_sequential_null_control PASSED [ 53%]
 tests/research_validity/test_stage6m_inferential_calibration.py::test_streaming_gate_trajectory_null_control PASSED [ 53%]
-tests/research_validity/test_stage6m_inferential_calibration.py::test_streaming_gate_trajectory_harm_rejection PASSED [ 54%]
+tests/research_validity/test_stage6m_inferential_calibration.py::test_streaming_gate_trajectory_harm_rejection PASSED [ 53%]
 tests/research_validity/test_stage6m_inferential_calibration.py::test_streaming_gate_trajectory_production_length_beneficial_control PASSED [ 54%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_zero_valued_class_sum_mcc_stability PASSED [ 54%]
-tests/research_validity/test_stage6m_numerical_safety.py::test_finite_loss_with_nonfinite_gradients_fails_closed PASSED [ 55%]
+tests/research_validity/test_stage6m_numerical_safety.py::test_finite_loss_with_nonfinite_gradients_fails_closed PASSED [ 54%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_nonfinite_parameters_after_step_rejects_candidate PASSED [ 55%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_nonfinite_loss_aborts_before_backward PASSED [ 55%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_multi_stratum_clips_in_single_window_preserve_strata PASSED [ 55%]
@@ -211,22 +208,22 @@ tests/research_validity/test_stage6m_numerical_safety.py::test_v14_gate_fail_clo
 tests/research_validity/test_stage6m_numerical_safety.py::test_v14_gate_fail_closed_invalid_inputs PASSED [ 60%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_v14_gate_rejects_nan_in_metrics PASSED [ 60%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_empty_frame_mask_rejects_with_specific_status PASSED [ 60%]
-tests/research_validity/test_stage6m_numerical_safety.py::test_atomic_candidate_manager_promote_all_or_nothing_rollback PASSED [ 61%]
+tests/research_validity/test_stage6m_numerical_safety.py::test_atomic_candidate_manager_promote_all_or_nothing_rollback PASSED [ 60%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_atomic_candidate_manager_discard_asserts_hashes PASSED [ 61%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_v14_runner_provenance_labels PASSED [ 61%]
-tests/research_validity/test_stage6m_numerical_safety.py::test_v14_gate_rejects_look_index_out_of_range PASSED [ 62%]
+tests/research_validity/test_stage6m_numerical_safety.py::test_v14_gate_rejects_look_index_out_of_range PASSED [ 61%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_v14_gate_rejects_invalid_num_updates PASSED [ 62%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_v14_gate_rejects_nonfinite_individual_subgroup_metric PASSED [ 62%]
-tests/research_validity/test_stage6m_numerical_safety.py::test_v14_gate_rejects_nonfinite_disparity_bootstrap_replicate PASSED [ 63%]
+tests/research_validity/test_stage6m_numerical_safety.py::test_v14_gate_rejects_nonfinite_disparity_bootstrap_replicate PASSED [ 62%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_atomic_candidate_manager_fatal_rollback_corruption PASSED [ 63%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_atomic_candidate_manager_checks_buffers PASSED [ 63%]
-tests/research_validity/test_stage6m_numerical_safety.py::test_runner_sentinel_panel_canonical_accent_validation PASSED [ 64%]
+tests/research_validity/test_stage6m_numerical_safety.py::test_runner_sentinel_panel_canonical_accent_validation PASSED [ 63%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_runner_sentinel_panel_rejects_conflicting_speaker_accent_labels PASSED [ 64%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_paired_cluster_inference_passes_on_superiority PASSED [ 64%]
-tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_paired_cluster_inference_fails_when_identical_to_static PASSED [ 65%]
+tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_paired_cluster_inference_fails_when_identical_to_static PASSED [ 64%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_paired_cluster_inference_fails_on_accent_regression PASSED [ 65%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_paired_cluster_inference_rejects_fractional_counts PASSED [ 65%]
-tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_paired_cluster_inference_rejects_nan_inf_negative_and_zero_counts PASSED [ 66%]
+tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_paired_cluster_inference_rejects_nan_inf_negative_and_zero_counts PASSED [ 65%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_paired_cluster_inference_validates_configuration_ranges PASSED [ 66%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_paired_cluster_inference_distinguishes_fail_and_inconclusive PASSED [ 66%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_paired_cluster_inference_power_assessment_underpowered PASSED [ 66%]
@@ -242,11 +239,12 @@ tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_powe
 tests/research_validity/test_stage6m_numerical_safety.py::test_cohort3_structural_validation_enforces_speaker_accent_uniqueness PASSED [ 70%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_pairwise_partition_disjointness_check PASSED [ 70%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_confirmatory_power_threshold_enforces_exact_target_without_allowance PASSED [ 70%]
-tests/research_validity/test_stage6m_numerical_safety.py::test_cohort3_reference_transcript_preflight_validation_rejects_invalid_text PASSED [ 71%]
+tests/research_validity/test_stage6m_numerical_safety.py::test_cohort3_reference_transcript_preflight_validation_rejects_invalid_text PASSED [ 70%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_cohort3_audio_path_consistency_and_content_hash_lock PASSED [ 71%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement PASSED [ 71%]
-tests/research_validity/test_stage6m_numerical_safety.py::test_production_protocol_file_rejection_in_current_workspace PASSED [ 72%]
+tests/research_validity/test_stage6m_numerical_safety.py::test_production_protocol_file_rejection_in_current_workspace PASSED [ 71%]
 tests/research_validity/test_stage6m_numerical_safety.py::test_gate_reference_panel_mandatory_audio_hash_validation PASSED [ 72%]
+tests/research_validity/test_stage6m_numerical_safety.py::test_no_cryptographic_signing_in_production_runner PASSED [ 72%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_governance_lock_and_config PASSED [ 72%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_proposal_documentation_completeness PASSED [ 73%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_dataset_disjointness_invariant PASSED [ 73%]
@@ -263,13 +261,13 @@ tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_clean_uc
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_simulation_grid_matches_intersection_n_abc PASSED [ 77%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_venn_cells_nonnegative_and_sum_to_s PASSED [ 77%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_common_voice_provenance_metadata PASSED [ 77%]
-tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_irish_speaker_set_theoretic_accounting PASSED [ 77%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_irish_speaker_set_theoretic_accounting PASSED [ 78%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_six_group_prior_exposure_reconciliation PASSED [ 78%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_reserve_policy_allocations PASSED [ 78%]
-tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_scenario2_canonical_parameters PASSED [ 78%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_scenario2_canonical_parameters PASSED [ 79%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_trajectory_alpha_spending_budget PASSED [ 79%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_candidate_decision_and_rollback_invariants PASSED [ 79%]
-tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_speaker_level_clustering_invariant PASSED [ 79%]
+tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_speaker_level_clustering_invariant PASSED [ 80%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_irish_15_clip_invariant_and_reserve_shortfall PASSED [ 80%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_compute_workload_analytical_invariants PASSED [ 80%]
 tests/research_validity/test_stage6m_protocol_proposal.py::test_stage6m_option1b_variable_clip_reserve_invariants PASSED [ 80%]
@@ -297,10 +295,10 @@ tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::test_
 tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::test_production_report_json_agrees_with_unrounded_inferential_statistics PASSED [ 88%]
 tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::test_kaggle_runner_fail_closed_and_notebook_invariants PASSED [ 88%]
 tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::test_revalidated_cohort1_gate_floor_provenance_and_word_counts PASSED [ 88%]
-tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::test_revalidated_cohort1_markdown_report_narrative_consistency PASSED [ 88%]
+tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::test_revalidated_cohort1_markdown_report_narrative_consistency PASSED [ 89%]
 tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::test_revalidated_cohort1_zero_variance_tost_representation PASSED [ 89%]
 tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::TestPairedTArm3VsArm2Interpretation::test_nan_returns_not_estimable PASSED [ 89%]
-tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::TestPairedTArm3VsArm2Interpretation::test_significant_improvement PASSED [ 89%]
+tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::TestPairedTArm3VsArm2Interpretation::test_significant_improvement PASSED [ 90%]
 tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::TestPairedTArm3VsArm2Interpretation::test_significant_regression PASSED [ 90%]
 tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::TestPairedTArm3VsArm2Interpretation::test_significant_zero_direction PASSED [ 90%]
 tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::TestPairedTArm3VsArm2Interpretation::test_not_significant PASSED [ 90%]
@@ -357,5 +355,5 @@ tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::test_
   <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-================ 309 passed, 6 warnings in 1024.52s (0:17:04) =================
+================= 310 passed, 6 warnings in 909.24s (0:15:09) =================
 sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

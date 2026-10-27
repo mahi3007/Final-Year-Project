@@ -418,7 +418,20 @@ Use new versioned modules/configs so the v1.3.4/historical implementation remain
 4. Commit the protocol draft before code changes; then commit implementation in logical stages. The final freeze commit/tag must contain the final protocol, config, tests and manifest references.
 5. Run development only against development IDs. The confirmatory runner should require the frozen version tag/commit, clean working tree and manifest hashes.
 6. Treat raw output as append-only. A correction creates a new run ID and a reconciliation report. Never overwrite a completed raw run or make repaired post hoc metrics appear to have come from the original execution source.
-7. Governance text should be internally consistent. For academic final-year project governance, the independent cryptographic Ed25519 signature requirement has been formally removed and replaced with a documented Project-Lead Academic Authorization Record binding the frozen protocol, commit SHA, and physical manifest hash. Do not leave contradictory “HOLD” and “authorized” statements in different artifacts.
+
+### 14.7 Operative Authorization Gate: Project-Lead Academic Authorization Record
+
+For university honours and final-year engineering thesis governance, mandatory independent asymmetric cryptographic signing (e.g. Ed25519) has been formally superseded and completely removed. Multi-party cryptographic key-custody workflows introduce artificial operational failure points without providing additional scientific integrity beyond Git commit tracking and SHA-256 artifact hashing.
+
+Under the amended operative procedure, confirmatory authorization requires a documented **Project-Lead Academic Authorization Record** (`PROJECT_LEAD_ACADEMIC_AUTHORIZATION`) recorded in `reports/stage6m/stage6m_v1_4_governance_approval_record.json`.
+
+Confirmatory Cohort 3 execution strictly enforces the following fail-closed preconditions:
+1. **Clean Working Tree:** Verified clean Git checkout with zero uncommitted modifications.
+2. **Approved Code Identity:** The running code must match an audited Git commit whitelisted in `approved_commits` or bind a frozen code commit (`frozen_code_commit_sha`) in `approved_commits` that has passed all 309 research-validity tests.
+3. **Physical Dataset Lock:** All 19,800 physical audio clips must exist on disk with valid SHA-256 checksums matching `datasets/splits/stage6m_cohort3_manifest.json`, and its hash must match `approved_manifest_sha256`.
+4. **Sentinel Gate-Reference Panel Isolation:** The 120-speaker reference panel must be physically materialized, disjoint from Cohort 3, and locked with verified checksums.
+5. **Frozen Protocol Document:** The protocol SHA-256 must match `approved_protocol_sha256`, and the document must be formally frozen (no draft or proposal status markers).
+6. **Explicit Academic Approval:** `governance_status` must be explicitly transitioned from `DRAFT_HOLD` to `APPROVED` by the responsible investigator once and only once all prerequisites 1–5 are verified.
 
 ## 15. Ordered execution plan and exit criteria
 
