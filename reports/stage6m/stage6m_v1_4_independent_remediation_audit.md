@@ -931,7 +931,7 @@ command: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFounda
 
 - **Finding F Final Disposition:** **PASS**. The reported commit-resolution, explicit-root, and historical-worktree test defects are formally certified as addressed in reviewed source code, with clean-tree provenance recorded.
 - **Overall Stage 6M Confirmatory Readiness:** **NOT APPROVED — DRAFT_HOLD**.
-- **Enforced Architectural Invariant:** Passing the code-identity remediation and recording 313 passing tests does not establish that the physical dataset, partition separation, manifest hash lock, and protocol prerequisites are complete. Confirmatory Cohort 3 execution must remain strictly locked on `DRAFT_HOLD` until all physical prerequisites are materialized, verified, and authorized by the Project Lead.
+- **Enforced Fail-Closed Governance Invariant:** Cohort 3 remains on `DRAFT_HOLD` and confirmatory execution is forbidden until all physical dataset, partition-disjointness, manifest-locking, protocol-freezing, and academic authorization prerequisites have been verified. A transition to `APPROVED` is permitted only after those conditions are satisfied.
 
 
 
