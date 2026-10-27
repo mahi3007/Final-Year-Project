@@ -867,6 +867,64 @@ command: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFounda
 - **Operative Governance Status:** **`DRAFT_HOLD`** (Strictly Locked).
 - **Confirmatory Execution:** **FORBIDDEN**. Code identity verification, authentic worktree regression, sentinel-panel separation, and manifest-path guards are certified. Zero confirmatory benchmark execution is authorized until physical audio clips are materialized and manifest hashes locked.
 
+---
+
+## 22. Independent Audit of Latest Remediation — Fail-Closed Commit Resolution & Historical-Worktree Subprocess Execution (Finding F Resolution)
+
+### 22.1 Executive Summary of Independent Audit
+On October 27, 2026, an independent Gravitas audit of implementation commit [`4622d81`](https://github.com/mahi3007/Final-Year-Project/commit/4622d81a382166d5195a665ae6ea06b3a999e39a), governance lock commit [`a019621`](https://github.com/mahi3007/Final-Year-Project/commit/a019621c0631df6d957c60b476368ce9a167ff09), and provenance commit [`89c07f3`](https://github.com/mahi3007/Final-Year-Project/commit/89c07f3ba8cd8b4dd49f75a00d1d7dbca38e26c9) evaluated the code-identity verification contract and historical worktree test:
+
+- **Auditor Verdict:** **PARTIAL PASS — One Authorization Edge Case Remaining (Finding F)**
+- **Audit Findings:**
+  1. **Finding F (Unresolvable Commit Identifiers Skipped Instead of Rejected):**
+     In `verify_frozen_execution_code_identity(...)`, the helper asked Git whether `current_git_commit_sha` resolved to a commit. The HEAD correspondence check and mismatch rejection only executed inside the branch where that check succeeded. If `is_commit` was false (e.g. `current_git_commit_sha="not-a-real-commit"`), the comparison was skipped. The helper could return successful identity verification without establishing the claimed current commit identity.
+  2. **Silent Project Root Fallback:**
+     When an explicitly supplied `project_root` did not contain the runner file, the helper silently swapped roots to `PROJECT_ROOT.resolve()` rather than failing closed.
+  3. **Historical-Worktree Test Qualification:**
+     In Test Case 55, the positive historical-worktree scenario imported `run_stage6m_cohort2_benchmark` from the main test checkout before creating the detached worktree at `61e2288`. The test verified the historical files' digest and ran the current validator against that path, but did not execute the validator from within the historical worktree itself.
+
+---
+
+### 22.2 Systematic Resolution of Finding F & Authorization Hardening
+
+| Area | Audit Requirement | Implementation Details | Verified Status |
+| :--- | :--- | :--- | :--- |
+| **A. Strict Fail-Closed Commit Resolution** | Require Git to resolve `current_git_commit_sha` to a valid commit object; require resolved commit to equal actual repository `HEAD`; reject unresolvable SHA, mismatch, or failed Git check with `PermissionError`. | In `verify_frozen_execution_code_identity(...)` ([`../../cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py)):<br>1. Executes `git rev-parse HEAD` in `root`; if failed, strictly raises `PermissionError`.<br>2. Executes `git rev-parse --verify clean_current^{commit}`; if unresolvable, strictly raises `PermissionError: Declared current commit '<commit>' cannot be resolved to a valid Git commit object`.<br>3. Verifies `resolved_current == actual_head`; if mismatch, strictly raises `PermissionError: Declared current commit '<commit>' does not match running repository HEAD '<actual_head>'`.<br>4. Any Git process error during diff comparison strictly raises `PermissionError`. | **RESOLVED & VERIFIED** (Subcases 2b, 2c, 2d passing) |
+| **B. No Silent Root Substitution** | Avoid silently substituting a different project root when an explicitly supplied `project_root` does not contain the required runner file. | In `verify_frozen_execution_code_identity(...)`, if `project_root` is passed and `project_root / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py"` does not exist, strictly raises `FileNotFoundError: Runner file not found in specified project root`. In `validate_frozen_execution_contract`, only sets `proj_root = candidate` if the runner file physically exists inside `candidate`. | **RESOLVED & VERIFIED** (Subcase 2e passing) |
+| **C. Historical-Worktree Subprocess Execution** | Run the positive historical scenario in a subprocess whose working directory and Python import path point to the detached worktree, asserting that the module's resolved file path is inside that worktree. | In Test Case 55 Subcase 3 ([`../../tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/research_validity/test_stage6m_numerical_safety.py)), creates an isolated script inside `worktree_dir` (`61e2288`), executes via `subprocess.run([sys.executable, ...], cwd=str(worktree_dir), check=True)`, asserts `runner.__file__` resolves to `worktree_dir / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py"`, asserts code digest equals `0ca1eaf33aab05ad4d63be51abbc7355db4583500cb9dce60528b9acc473e58c`, and validates the frozen contract to `APPROVED`. | **RESOLVED & VERIFIED** |
+| **D. Real Commit Fixtures** | Replace synthetic labels such as `runtime_commit_bbb`, `audit_commit_aaa`, and `commit_lock_789` with real commits in existing test fixtures. | Updated Test Case 49 (Subcase 2b) and Test Case 54 to query and use actual repository `HEAD` commit SHA and real historical commits (`0a1109e...`), eliminating all synthetic commit strings. | **RESOLVED & VERIFIED** |
+| **E. Clean Provenance Run** | Execute 313-test research-validity suite on clean checkout of locked governance commit. | Executed [`../../scripts/run_research_validity_tests.py`](../../scripts/run_research_validity_tests.py) on clean commit [`457b631`](https://github.com/mahi3007/Final-Year-Project/commit/457b6312873a5393d0df042a4992d8c9f4916e1c). **313 passed, 6 warnings in 774.69s (12m 54s)**. Clean working-tree verified before and after execution (`git_working_tree_clean_pre_run: true`, `git_working_tree_clean_post_run: true`). | **RESOLVED & VERIFIED** |
+
+---
+
+### 22.3 Fresh Clean-Tree Provenance Evidence
+
+```
+=== PROVENANCE HEADER ===
+git_commit_sha: 457b6312873a5393d0df042a4992d8c9f4916e1c
+git_working_tree_clean_pre_run: true
+git_working_tree_clean_post_run: true
+cleanliness_verification_scope: checked immediately before and immediately after subprocess execution; does not monitor in-flight transient filesystem modifications during execution
+git_describe: 457b631
+execution_timestamp_utc: 2026-10-27T10:55:22Z
+python_version: 3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]
+executable_path: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe
+command: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe -m pytest tests/research_validity/ -v --tb=short
+=== END PROVENANCE HEADER ===
+
+...
+================= 313 passed, 6 warnings in 774.69s (0:12:54) =================
+```
+
+---
+
+### 22.4 Final Confirmatory Cohort 3 Governance Status
+
+- **Frozen Execution Code Commit:** [`a7a3b79c1f06524128d035537de138e473c6455f`](https://github.com/mahi3007/Final-Year-Project/commit/a7a3b79c1f06524128d035537de138e473c6455f)
+- **Frozen Execution Code Digest:** `8bec4fe8634474a243110753da182eab578460c66681b4eec38bc4dd70fcbce6`
+- **Operative Governance Status:** **`DRAFT_HOLD`** (Strictly Locked).
+- **Confirmatory Execution:** **FORBIDDEN**. All code-identity authorization edge cases, unresolvable commit rejection, subprocess historical-worktree execution, sentinel-panel separation, and manifest-path guards are certified. Zero confirmatory benchmark execution is authorized until physical audio clips are materialized and manifest hashes locked.
+
 
 
 
