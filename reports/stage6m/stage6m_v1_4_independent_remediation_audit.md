@@ -727,12 +727,84 @@ To eliminate the authorization defect without reintroducing cryptographic signat
 
 ---
 
-### 19.5 Final Confirmatory Cohort 3 Governance Status
+### 19.5 Interim Governance Status at Commit `310cf4f`
 
 - **Frozen Execution Code Commit:** [`310cf4ff6221d704fa7a8318af9d3d13362b0fa3`](https://github.com/mahi3007/Final-Year-Project/commit/310cf4ff6221d704fa7a8318af9d3d13362b0fa3)
-- **Frozen Execution Code Digest:** `0ca1eaf33aab05ad4d63be51abbc7355db4583500cb9dce60528b9acc473e58c`
 - **Operative Governance Status:** **`DRAFT_HOLD`** (Strictly Locked).
-- **Confirmatory Execution:** **FORBIDDEN**. Code identity verification, sentinel-panel separation, and manifest-path guards are certified. Zero confirmatory benchmark execution is permitted until physical audio clips are materialized and verified.
+
+---
+
+## 20. Independent Audit of Critical Finding E Remediation & Full Fail-Closed Certification
+
+### 20.1 Executive Summary of Finding E Audit
+On October 27, 2026, an independent Gravitas audit of commit [`310cf4f`](https://github.com/mahi3007/Final-Year-Project/commit/310cf4ff6221d704fa7a8318af9d3d13362b0fa3), governance commit [`61e2288`](https://github.com/mahi3007/Final-Year-Project/commit/61e228803835697ed6ca939a158993e5f3cf7545), and test provenance commit [`0fdcba7`](https://github.com/mahi3007/Final-Year-Project/commit/0fdcba7257cbb9ac04ce9b38602fd0a5832aba36) evaluated the deterministic code-identity binding mechanism.
+
+- **Auditor Verdict:** **PARTIAL PASS — One Critical Fail-Closed Defect Identified**
+- **Defect Identified:** In `verify_frozen_execution_code_identity(...)`, the Git-diff check raised `PermissionError` inside a broad `try/except Exception:` block, which caught and suppressed its own `PermissionError`. Consequently, the Git-diff layer could fail open on modified execution files if an updated digest was supplied.
+- **Test Artifact Flaw:** Test Case 55's governance-only update test scenario had inadvertently used `0a1109e` (where the runner had actually changed) and only passed because the swallowed exception allowed it through.
+
+---
+
+### 20.2 Exact Remediation Implemented
+
+| Area | Audit Requirement | Implementation Details | Verified Status |
+| :--- | :--- | :--- | :--- |
+| **A. Exception Handling** | Do not catch or suppress `PermissionError`. Catch only specific Git execution failures (`CalledProcessError`, `FileNotFoundError`, `OSError`). | Refactored [`../../cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py): `PermissionError` is raised strictly outside the `try/except` block. Added support for commit-to-commit comparison when running on subsequent Git revisions. | **RESOLVED & VERIFIED** |
+| **B. Mandatory Frozen Digest** | Require valid 64-char lowercase SHA-256 digest from governance record whenever frozen code commit is declared. Reject execution if missing. | In `verify_frozen_execution_code_identity`, `expected_code_digest` is strictly mandatory, non-empty, and validated for 64 hex characters. In `validate_frozen_execution_contract`, missing `frozen_code_digest` in governance approval record strictly raises `PermissionError`. | **RESOLVED & VERIFIED** |
+| **C. Test Case 55 Repair** | Use authentic commit pair where execution code is unchanged. Add explicit tests for changed runner, missing/malformed digest, and Git failure without usable digest. | Refactored Test Case 55 in [`../../tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/research_validity/test_stage6m_numerical_safety.py) with 10 comprehensive subcases. Explicitly tested rejection of `0a1109e` (`PermissionError`). Verified that reintroducing broad exception handler fails test. | **RESOLVED & VERIFIED** (60/60 passed) |
+| **D. Clean Provenance Run** | Commit code first, execute 313-test suite on clean checkout, verify 0 failures, commit log, and update audit trail. | Code committed at [`37ba1ab`](https://github.com/mahi3007/Final-Year-Project/commit/37ba1ab6a524a82cc7c69ed2aeb2f8259df125e8); governance locked at [`98aa4b7`](https://github.com/mahi3007/Final-Year-Project/commit/98aa4b7f16cae8037ca5092a1cf681d75b4c266b); clean-tree test run completed with **313 passed in 648.17s** (`git_working_tree_clean_pre_run: true`). | **RESOLVED & VERIFIED** |
+
+---
+
+### 20.3 Cryptographic-Free Code Identity Binding Verification
+
+1. **Executable Code Scope (57 Core Files):**
+   - Runner: [`../../cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py)
+   - Active package modules: `src/dsg_ctta/**/*.py` (56 modules).
+
+2. **Authoritative Frozen Code Commit & Digest:**
+   - **Frozen Code Commit:** [`37ba1ab6a524a82cc7c69ed2aeb2f8259df125e8`](https://github.com/mahi3007/Final-Year-Project/commit/37ba1ab6a524a82cc7c69ed2aeb2f8259df125e8)
+   - **Deterministic Code Digest:** `1333b8b647e1df920336b8e937e7695826f30e3cd01cf00f22526d9443bcc758`
+   - Normalized binary line endings (CRLF→LF) guarantee bitwise consistency across platforms.
+
+3. **Multi-Layer Fail-Closed Protection:**
+   - **Layer 1 (Mandatory Digest Check):** Missing, empty, or non-64-hex digest immediately raises `PermissionError`.
+   - **Layer 2 (Deterministic Content Check):** Any file modification in the 57 execution files immediately alters the computed SHA-256 and raises `PermissionError`.
+   - **Layer 3 (Unsuppressed Git-Diff Check):** When running on subsequent revisions, Git diff compares execution files against the frozen commit. Any detected changes raise `PermissionError` outside all exception handlers.
+   - **Layer 4 (Independent Governance Lock):** Manifest declarations must match the governance approval record's locked digest; discrepancies raise `ValueError`.
+
+---
+
+### 20.4 Final Test Suite Provenance Evidence
+
+The complete research-validity test suite was executed against clean commit [`98aa4b7`](https://github.com/mahi3007/Final-Year-Project/commit/98aa4b7f16cae8037ca5092a1cf681d75b4c266b) via [`../../scripts/run_research_validity_tests.py`](../../scripts/run_research_validity_tests.py):
+
+```
+=== PROVENANCE HEADER ===
+git_commit_sha: 98aa4b7f16cae8037ca5092a1cf681d75b4c266b
+git_working_tree_clean_pre_run: true
+git_working_tree_clean_post_run: true
+cleanliness_verification_scope: checked immediately before and immediately after subprocess execution; does not monitor in-flight transient filesystem modifications during execution
+git_describe: 98aa4b7
+execution_timestamp_utc: 2026-10-27T09:00:22Z
+python_version: 3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]
+executable_path: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe
+command: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe -m pytest tests/research_validity/ -v --tb=short
+=== END PROVENANCE HEADER ===
+
+...
+================= 313 passed, 6 warnings in 648.17s (0:10:48) =================
+```
+
+---
+
+### 20.5 Final Confirmatory Cohort 3 Governance Status
+
+- **Frozen Execution Code Commit:** [`37ba1ab6a524a82cc7c69ed2aeb2f8259df125e8`](https://github.com/mahi3007/Final-Year-Project/commit/37ba1ab6a524a82cc7c69ed2aeb2f8259df125e8)
+- **Frozen Execution Code Digest:** `1333b8b647e1df920336b8e937e7695826f30e3cd01cf00f22526d9443bcc758`
+- **Operative Governance Status:** **`DRAFT_HOLD`** (Strictly Locked).
+- **Confirmatory Execution:** **FORBIDDEN**. Code identity verification, sentinel-panel separation, and manifest-path guards are certified. Zero confirmatory benchmark execution is authorized until physical audio clips are materialized and verified.
+
 
 
 

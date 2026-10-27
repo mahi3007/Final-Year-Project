@@ -1,10 +1,10 @@
 === PROVENANCE HEADER ===
-git_commit_sha: 61e228803835697ed6ca939a158993e5f3cf7545
+git_commit_sha: 98aa4b7f16cae8037ca5092a1cf681d75b4c266b
 git_working_tree_clean_pre_run: true
 git_working_tree_clean_post_run: true
 cleanliness_verification_scope: checked immediately before and immediately after subprocess execution; does not monitor in-flight transient filesystem modifications during execution
-git_describe: 61e2288
-execution_timestamp_utc: 2026-10-27T07:52:42Z
+git_describe: 98aa4b7
+execution_timestamp_utc: 2026-10-27T09:00:22Z
 python_version: 3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]
 executable_path: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe
 command: C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe -m pytest tests/research_validity/ -v --tb=short
@@ -358,5 +358,5 @@ tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::test_
   <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-================= 313 passed, 6 warnings in 628.01s (0:10:28) =================
+================= 313 passed, 6 warnings in 648.17s (0:10:48) =================
 sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
