@@ -286,6 +286,33 @@ def verify_governance_signature(gov_record: Dict[str, Any], pubkey_hex: Optional
         return False
 
 
+def create_project_lead_governance_record(
+    governance_status: str,
+    approved_commits: List[str],
+    approved_protocol_sha256: str,
+    approved_manifest_sha256: str,
+    responsible_investigator: str = "Student Project Lead",
+    audit_authority: str = "Student Project Lead & Academic Research Group",
+) -> Dict[str, Any]:
+    """
+    Creates an academic Project-Lead Authorization Record per Protocol Section 14.7.
+    Replaces cryptographic Ed25519 signing with documented project-lead governance.
+    """
+    return {
+        "governance_record_version": "v1.4.0",
+        "authorization_mode": "PROJECT_LEAD_ACADEMIC_AUTHORIZATION",
+        "audit_authority": audit_authority,
+        "governance_status": governance_status,
+        "governance_status_rationale": "Project-Lead Academic Authorization under Protocol Section 14.7.",
+        "authorization_timestamp_utc": "2026-10-27T11:00:00Z",
+        "responsible_investigator": responsible_investigator,
+        "academic_institution_context": "Final Year Engineering Project — Selective Adaptation Under Accent Disparity",
+        "approved_protocol_sha256": approved_protocol_sha256,
+        "approved_manifest_sha256": approved_manifest_sha256,
+        "approved_commits": approved_commits,
+    }
+
+
 def create_signed_governance_record(
     governance_status: str,
     approved_commits: List[str],
@@ -361,14 +388,14 @@ def validate_frozen_execution_contract(
     if not frozen_contract or not isinstance(frozen_contract, dict):
         frozen_contract = manifest_data
 
-    # 1. Independent Governance Approval Record (Cryptographic Trust Anchor)
+    # 1. Project-Lead Academic Governance Record Verification (Protocol Section 14.7)
     if governance_approval_path is None:
         governance_approval_path = PROJECT_ROOT / "reports" / "stage6m" / "stage6m_v1_4_governance_approval_record.json"
 
     if not governance_approval_path.exists():
         raise FileNotFoundError(
-            f"Confirmatory Contract Violation: Independent governance approval record missing at '{governance_approval_path}'. "
-            "Execution requires an independent, signed approval trust anchor."
+            f"Confirmatory Contract Violation: Governance approval record missing at '{governance_approval_path}'. "
+            "Execution requires a documented project-lead governance approval record."
         )
 
     try:
@@ -376,19 +403,17 @@ def validate_frozen_execution_contract(
     except Exception as e:
         raise ValueError(f"Confirmatory Contract Violation: Corrupted governance approval record at '{governance_approval_path}': {e}")
 
+    auth_mode = gov_record.get("authorization_mode")
+    if auth_mode not in ("PROJECT_LEAD_ACADEMIC_AUTHORIZATION", "PROJECT_LEAD_DECLARATION"):
+        raise PermissionError(
+            f"Governance Authorization Mode Violation: Expected 'PROJECT_LEAD_ACADEMIC_AUTHORIZATION' or 'PROJECT_LEAD_DECLARATION', got '{auth_mode}'."
+        )
+
     trusted_gov_status = str(gov_record.get("governance_status", "DRAFT_HOLD")).strip().upper()
     if trusted_gov_status != "APPROVED":
         raise PermissionError(
-            f"Independent Governance Lock: Approval record status is '{trusted_gov_status}' (must be 'APPROVED'). "
+            f"Governance Lock: Approval record status is '{trusted_gov_status}' (must be 'APPROVED'). "
             "Confirmatory Cohort 3 execution remains strictly locked on HOLD."
-        )
-
-    # 2. Cryptographic Signature Verification against Pinned Trust Root
-    effective_pubkey = pinned_pubkey_hex or GOVERNANCE_PINNED_PUBKEY_HEX
-    if not verify_governance_signature(gov_record, effective_pubkey):
-        raise PermissionError(
-            "Independent Governance Lock: Cryptographic signature verification failed against pinned trust root. "
-            "Approval record cannot be verified or has been altered."
         )
 
     # 3. Manifest Hash Cross-Validation against Trust Anchor

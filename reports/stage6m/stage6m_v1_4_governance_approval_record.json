@@ -1,11 +1,13 @@
 {
   "governance_record_version": "v1.4.0",
-  "audit_authority": "Independent Scientific Audit Committee & ADR-005 Steering Group",
+  "authorization_mode": "PROJECT_LEAD_ACADEMIC_AUTHORIZATION",
+  "audit_authority": "Student Project Lead & Academic Research Group",
   "governance_status": "DRAFT_HOLD",
-  "governance_status_rationale": "Decision Rule B (N=220 per stratum, 19,800 clips) is formally incorporated into the draft protocol (Section 4.2) and runner structural guards. Confirmatory Cohort 3 remains locked on HOLD pending physical dataset materialization, manifest SHA-256 locking, gate-reference panel verification, and independent cryptographic authorization signature.",
-  "authorization_timestamp_utc": "2026-10-26T21:00:00Z",
-  "governance_public_key_hex": "dd00d57d54f9b2e6766d363a01da9c274e585ffba363ee538bede8b8bb90fe46",
-  "approved_protocol_sha256": "e8019afe1c0f0ada3ac05fde3ebdf9d2bf38e6b6398c31cc74c2baf0c8625345",
+  "governance_status_rationale": "Decision Rule B (N=220 per stratum, 19,800 clips) is formally incorporated into the protocol (Section 4.2) and runner structural guards. Per Protocol Section 14.7, cryptographic Ed25519 signature requirement is formally removed and replaced with Project-Lead Academic Authorization. Confirmatory Cohort 3 remains locked on HOLD pending physical dataset materialization (19,800 clips), manifest SHA-256 locking, gate-reference panel verification, and documented project-lead authorization.",
+  "authorization_timestamp_utc": "2026-10-27T11:00:00Z",
+  "responsible_investigator": "Student Project Lead",
+  "academic_institution_context": "Final Year Engineering Project — Selective Adaptation Under Accent Disparity",
+  "approved_protocol_sha256": "971db56acf9428b5f0dac8c37fb4e451becacf172cac3879ab5ac08fb8c228ad",
   "approved_manifest_sha256": "7dcf8d5812ce8b555d1f4c0b1a1f2d63263e83c81120bd811cc8fcb427cfbd95",
   "approved_commits": [
     "706ea99cd1b16d935a0ead891e7df0f09c1517a0",
@@ -24,6 +26,5 @@
     "a62906eb7e06c56c9db0c2d249aecfd8eff9c838",
     "3299ef711420cce01fa9cd154ff536d99a718a61",
     "e4bceb95994a18eda576083a1d4eb653a6629b91"
-  ],
-  "signature_ed25519_hex": "UNSIGNED_DRAFT_HOLD"
+  ]
 }

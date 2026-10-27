@@ -81,7 +81,7 @@ Following development variance calibration and dynamic power sizing (ADR-005, Se
 - Verify no clip overlap, duplicate recording IDs, missing references, and duplicate audio hashes across all 19,800 clips.
 - Verify cross-cohort mutual disjointness against Cohort 1 (900 clips) and Cohort 2 (7,020 clips).
 
-**Feasibility & Materialization HOLD:** Before curation is locked, materialize and verify the eligible 1,320 speakers (220 per accent, 19,800 clips) and the dedicated gate-reference panel after applying the locked curation predicate and all overlap exclusions. If external reserve sourcing or audio materialization is incomplete, execution remains strictly blocked on HOLD. Confirmatory execution cannot proceed without a verified 19,800-clip manifest lock and an independent Ed25519 signature binding this amended protocol, the execution commit, and the audio manifest.
+**Feasibility & Materialization HOLD:** Before curation is locked, materialize and verify the eligible 1,320 speakers (220 per accent, 19,800 clips) and the dedicated gate-reference panel after applying the locked curation predicate and all overlap exclusions. If external reserve sourcing or audio materialization is incomplete, execution remains strictly blocked on HOLD. Confirmatory execution cannot proceed without a verified 19,800-clip manifest lock and a documented Project-Lead Academic Authorization Record binding this amended protocol, the execution commit, and the audio manifest (cryptographic Ed25519 signature requirement formally removed per Section 14.7).
 
 ### 4.3 Dataset and manifest locking
 
@@ -418,7 +418,7 @@ Use new versioned modules/configs so the v1.3.4/historical implementation remain
 4. Commit the protocol draft before code changes; then commit implementation in logical stages. The final freeze commit/tag must contain the final protocol, config, tests and manifest references.
 5. Run development only against development IDs. The confirmatory runner should require the frozen version tag/commit, clean working tree and manifest hashes.
 6. Treat raw output as append-only. A correction creates a new run ID and a reconciliation report. Never overwrite a completed raw run or make repaired post hoc metrics appear to have come from the original execution source.
-7. Governance text should be internally consistent. If university rules do not require supervisor sign-off, reconcile outdated report wording and record the actual authorized project-lead/compute decision. Do not leave contradictory “HOLD” and “authorized” statements in different artifacts.
+7. Governance text should be internally consistent. For academic final-year project governance, the independent cryptographic Ed25519 signature requirement has been formally removed and replaced with a documented Project-Lead Academic Authorization Record binding the frozen protocol, commit SHA, and physical manifest hash. Do not leave contradictory “HOLD” and “authorized” statements in different artifacts.
 
 ## 15. Ordered execution plan and exit criteria
 
