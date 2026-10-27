@@ -2104,6 +2104,7 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     """
     import json
     import sys
+    import subprocess
     from pathlib import Path
     project_root = Path(__file__).resolve().parent.parent.parent
     sys.path.insert(0, str(project_root / "cloud" / "kaggle"))
@@ -2203,14 +2204,17 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
             manifest_path=manifest_file,
         )
 
-    # 2b. Non-circular contract passes: current commit is a new lock commit (e.g. "commit_lock_789")
-    # that binds an approved frozen_code_commit ("commit_approved_123") with valid code digest
+    # 2b. Non-circular contract passes: current commit is a new lock commit (e.g. actual_head)
+    # that binds an approved frozen_code_commit with valid code digest
     from run_stage6m_cohort2_benchmark import compute_execution_code_digest
     current_code_digest = compute_execution_code_digest(project_root)
+    actual_head = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=str(project_root)
+    ).decode("utf-8").strip()
 
     manifest_noncircular = {
         "frozen_execution_contract": {
-            "frozen_code_commit_sha": "commit_approved_123",
+            "frozen_code_commit_sha": actual_head,
             "frozen_code_digest": current_code_digest,
             "protocol_sha256": finalized_sha,
             "governance_status": "APPROVED",
@@ -2223,17 +2227,17 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
     gov_noncircular_path = tmp_path / "gov_noncircular.json"
     gov_noncircular_data = create_project_lead_governance_record(
         governance_status="APPROVED",
-        approved_commits=["commit_approved_123"],
+        approved_commits=[actual_head],
         approved_protocol_sha256=finalized_sha,
         approved_manifest_sha256=manifest_noncircular_sha,
-        frozen_code_commit_sha="commit_approved_123",
+        frozen_code_commit_sha=actual_head,
         frozen_code_digest=current_code_digest,
     )
     gov_noncircular_path.write_text(json.dumps(gov_noncircular_data), encoding="utf-8")
 
     rec_noncircular = validate_frozen_execution_contract(
         manifest_noncircular,
-        "commit_lock_789",  # Running on later manifest/governance lock commit
+        actual_head,  # Running on actual repository HEAD commit
         finalized_proto,
         governance_approval_path=gov_noncircular_path,
         manifest_path=manifest_noncircular_file,
@@ -2767,9 +2771,14 @@ def test_frozen_execution_contract_manifest_path_and_governance_edge_cases(tmp_p
 
     current_code_digest = compute_execution_code_digest(project_root)
 
+    import subprocess
+    actual_head = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=str(project_root)
+    ).decode("utf-8").strip()
+
     manifest_data = {
         "frozen_execution_contract": {
-            "frozen_code_commit_sha": "audit_commit_aaa",
+            "frozen_code_commit_sha": actual_head,
             "frozen_code_digest": current_code_digest,
             "protocol_sha256": proto_sha,
             "governance_status": "APPROVED",
@@ -2781,10 +2790,10 @@ def test_frozen_execution_contract_manifest_path_and_governance_edge_cases(tmp_p
 
     valid_gov = create_project_lead_governance_record(
         governance_status="APPROVED",
-        approved_commits=["audit_commit_aaa"],
+        approved_commits=[actual_head],
         approved_protocol_sha256=proto_sha,
         approved_manifest_sha256=manifest_sha,
-        frozen_code_commit_sha="audit_commit_aaa",
+        frozen_code_commit_sha=actual_head,
         frozen_code_digest=current_code_digest,
     )
     gov_file = tmp_path / "gov_record.json"
@@ -2795,7 +2804,7 @@ def test_frozen_execution_contract_manifest_path_and_governance_edge_cases(tmp_p
     with pytest.raises(FileNotFoundError, match="Physical manifest missing at"):
         validate_frozen_execution_contract(
             manifest_data,
-            "runtime_commit_bbb",
+            actual_head,
             proto_file,
             governance_approval_path=gov_file,
             manifest_path=nonexistent_manifest_path,
@@ -2805,7 +2814,7 @@ def test_frozen_execution_contract_manifest_path_and_governance_edge_cases(tmp_p
     with pytest.raises(ValueError, match="Governance approval record locks manifest hash, but manifest_path was not provided"):
         validate_frozen_execution_contract(
             manifest_data,
-            "runtime_commit_bbb",
+            actual_head,
             proto_file,
             governance_approval_path=gov_file,
             manifest_path=None,
@@ -2818,20 +2827,21 @@ def test_frozen_execution_contract_manifest_path_and_governance_edge_cases(tmp_p
     with pytest.raises(PermissionError, match="empty or missing approved_commits list"):
         validate_frozen_execution_contract(
             manifest_data,
-            "runtime_commit_bbb",
+            actual_head,
             proto_file,
             governance_approval_path=empty_gov_file,
             manifest_path=manifest_file,
         )
 
     # 4. Frozen code identity supplied, but is NOT in governance record approved_commits strictly raises PermissionError
-    unapproved_gov_data = dict(valid_gov, approved_commits=["other_commit_zzz"])
+    # Using real historical commit 0a1109e that is not in approved_commits
+    unapproved_gov_data = dict(valid_gov, approved_commits=["0a1109e000edeed587f7b9d635f1014d9931ab10"])
     unapproved_gov_file = tmp_path / "unapproved_gov.json"
     unapproved_gov_file.write_text(json.dumps(unapproved_gov_data), encoding="utf-8")
     with pytest.raises(PermissionError, match="NOT in independent approval record whitelist"):
         validate_frozen_execution_contract(
             manifest_data,
-            "runtime_commit_bbb",
+            actual_head,
             proto_file,
             governance_approval_path=unapproved_gov_file,
             manifest_path=manifest_file,
@@ -2840,7 +2850,7 @@ def test_frozen_execution_contract_manifest_path_and_governance_edge_cases(tmp_p
     # 5. Non-circular contract passes cleanly
     rec = validate_frozen_execution_contract(
         manifest_data,
-        "runtime_commit_bbb",
+        actual_head,
         proto_file,
         governance_approval_path=gov_file,
         manifest_path=manifest_file,
@@ -2907,6 +2917,39 @@ def test_frozen_execution_code_identity_binding_and_mutation_rejection(tmp_path)
             project_root=project_root,
         )
 
+    # 2c. Unresolvable current commit identifier strictly rejected (Finding F remediation)
+    with pytest.raises(PermissionError, match="cannot be resolved to a valid Git commit object"):
+        verify_frozen_execution_code_identity(
+            frozen_code_commit_sha=actual_head,
+            current_git_commit_sha="not-a-real-commit",
+            expected_code_digest=current_digest,
+            project_root=project_root,
+        )
+
+    # 2d. Failed required HEAD lookup in non-git directory strictly rejected (Finding F remediation)
+    empty_non_git = tmp_path / "empty_non_git"
+    (empty_non_git / "cloud" / "kaggle").mkdir(parents=True)
+    (empty_non_git / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py").write_text("# Runner\n", encoding="utf-8")
+    non_git_digest = compute_execution_code_digest(empty_non_git)
+    with pytest.raises(PermissionError, match="Failed required Git HEAD inspection"):
+        verify_frozen_execution_code_identity(
+            frozen_code_commit_sha=actual_head,
+            current_git_commit_sha=actual_head,
+            expected_code_digest=non_git_digest,
+            project_root=empty_non_git,
+        )
+
+    # 2e. Explicit project root without required runner file strictly raises FileNotFoundError (Finding F remediation)
+    empty_without_runner = tmp_path / "empty_without_runner"
+    empty_without_runner.mkdir(parents=True)
+    with pytest.raises(FileNotFoundError, match="Runner file not found in specified project root"):
+        verify_frozen_execution_code_identity(
+            frozen_code_commit_sha=actual_head,
+            current_git_commit_sha=actual_head,
+            expected_code_digest=current_digest,
+            project_root=empty_without_runner,
+        )
+
     # 3. Governance-only update on authentic historical commit (61e2288) worktree
     # Verifies that an authentic checkout of 61e2288 has an execution code digest matching
     # frozen commit 310cf4f, and validate_frozen_execution_contract approves the contract
@@ -2950,6 +2993,42 @@ def test_frozen_execution_code_identity_binding_and_mutation_rejection(tmp_path)
         )
         gov_file = worktree_dir / "gov_record.json"
         gov_file.write_text(json.dumps(gov_data), encoding="utf-8")
+
+        # Independent subprocess runner execution to establish module loading strictly from worktree
+        subproc_script = worktree_dir / "verify_subproc.py"
+        subproc_script.write_text(
+            "import sys, json, hashlib\n"
+            "from pathlib import Path\n"
+            "root = Path.cwd().resolve()\n"
+            "sys.path.insert(0, str(root / 'cloud' / 'kaggle'))\n"
+            "import run_stage6m_cohort2_benchmark as runner\n"
+            "mod_path = Path(runner.__file__).resolve()\n"
+            "expected_runner = (root / 'cloud' / 'kaggle' / 'run_stage6m_cohort2_benchmark.py').resolve()\n"
+            "assert mod_path == expected_runner, f'Module path {mod_path} != {expected_runner}'\n"
+            "wt_digest = runner.compute_execution_code_digest(root)\n"
+            "assert wt_digest == '0ca1eaf33aab05ad4d63be51abbc7355db4583500cb9dce60528b9acc473e58c'\n"
+            "proto = root / 'reports' / 'stage6m' / 'final_proto.md'\n"
+            "manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))\n"
+            "gov = root / 'gov_record.json'\n"
+            "rec = runner.validate_frozen_execution_contract(\n"
+            "    manifest,\n"
+            "    '61e228803835697ed6ca939a158993e5f3cf7545',\n"
+            "    proto,\n"
+            "    governance_approval_path=gov,\n"
+            "    manifest_path=root / 'manifest.json',\n"
+            ")\n"
+            "assert rec['contract_status'] == 'APPROVED'\n"
+            "print('SUCCESS_SUBPROCESS_WORKTREE_VERIFIED')\n",
+            encoding="utf-8",
+        )
+        subproc_res = subprocess.run(
+            [sys.executable, str(subproc_script)],
+            cwd=str(worktree_dir),
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        assert "SUCCESS_SUBPROCESS_WORKTREE_VERIFIED" in subproc_res.stdout
 
         rec = validate_frozen_execution_contract(
             manifest_data,
@@ -3073,7 +3152,8 @@ def test_frozen_execution_code_identity_binding_and_mutation_rejection(tmp_path)
 
     # 6. Git diff execution failure without a usable digest strictly fails closed
     non_git_root = tmp_path / "non_git_dir"
-    non_git_root.mkdir()
+    (non_git_root / "cloud" / "kaggle").mkdir(parents=True)
+    (non_git_root / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py").write_text("# Runner\n", encoding="utf-8")
     with pytest.raises(PermissionError, match="Missing 'expected_code_digest'"):
         verify_frozen_execution_code_identity(
             frozen_code_commit_sha="some_commit",
@@ -3103,7 +3183,7 @@ def test_frozen_execution_code_identity_binding_and_mutation_rejection(tmp_path)
     with pytest.raises(PermissionError, match="Confirmatory Execution Code Identity Violation.*Execution code has been modified"):
         verify_frozen_execution_code_identity(
             frozen_code_commit_sha="synthetic_frozen_sha",
-            current_git_commit_sha="synthetic_runtime_sha",
+            current_git_commit_sha=None,
             expected_code_digest=syn_digest,  # Expects original, but code has mutated
             project_root=synthetic_root,
         )

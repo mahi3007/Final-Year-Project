@@ -347,10 +347,20 @@ def verify_frozen_execution_code_identity(
        any modifications in execution code paths (cloud/kaggle/run_stage6m_cohort2_benchmark.py, src/dsg_ctta).
     3. Git diff command execution fails and no usable digest is available.
     """
-    root = (project_root or PROJECT_ROOT).resolve()
-    runner_file = root / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py"
-    if not runner_file.exists():
+    if project_root is not None:
+        root = Path(project_root).resolve()
+        runner_file = root / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py"
+        if not runner_file.exists():
+            raise FileNotFoundError(
+                f"Confirmatory Execution Code Identity Violation: Runner file not found in specified project root: {runner_file}"
+            )
+    else:
         root = PROJECT_ROOT.resolve()
+        runner_file = root / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py"
+        if not runner_file.exists():
+            raise FileNotFoundError(
+                f"Confirmatory Execution Code Identity Violation: Runner file not found in project root: {runner_file}"
+            )
 
     # 1. Mandatory Valid Digest Validation
     if not expected_code_digest or not isinstance(expected_code_digest, str):
@@ -373,69 +383,76 @@ def verify_frozen_execution_code_identity(
             f"does not match frozen code digest '{clean_expected}'. Execution code has been modified."
         )
 
-    # 3. Running HEAD correspondence verification
-    # When current_git_commit_sha is supplied and root is a Git repository, verify that
-    # the declared current commit matches the repository's actual running HEAD.
-    # This prevents helper misuse with a commit label that does not correspond to the running checkout.
+    # 3. Running HEAD correspondence and commit object verification
+    # When current_git_commit_sha is supplied, require Git to resolve it to a valid commit object,
+    # require the resolved commit SHA to equal the repository's actual HEAD, and reject an
+    # unresolvable SHA, mismatch, or failed Git check with PermissionError.
     clean_current = str(current_git_commit_sha).strip() if current_git_commit_sha else ""
     clean_frozen = str(frozen_code_commit_sha).strip() if frozen_code_commit_sha else ""
 
     if clean_current:
+        # 3a. Require root to be a valid Git repository where HEAD is resolvable
         try:
-            rev_cmd = ["git", "rev-parse", "--verify", f"{clean_current}^{{commit}}"]
-            is_commit = subprocess.run(rev_cmd, cwd=str(root), capture_output=True).returncode == 0
-            if is_commit:
-                head_proc = subprocess.run(
-                    ["git", "rev-parse", "HEAD"], cwd=str(root), capture_output=True, text=True
-                )
-                if head_proc.returncode == 0:
-                    actual_head = head_proc.stdout.strip()
-                    rev_out = subprocess.run(
-                        ["git", "rev-parse", f"{clean_current}^{{commit}}"],
-                        cwd=str(root),
-                        capture_output=True,
-                        text=True,
-                    ).stdout.strip()
-                    if rev_out != actual_head:
-                        raise PermissionError(
-                            f"Confirmatory Execution Code Identity Violation: Declared current commit "
-                            f"'{clean_current}' ({rev_out}) does not match running repository HEAD '{actual_head}'."
-                        )
-        except PermissionError:
-            raise
-        except (subprocess.CalledProcessError, FileNotFoundError, OSError):
-            pass
+            head_proc = subprocess.run(
+                ["git", "rev-parse", "HEAD"], cwd=str(root), capture_output=True, text=True
+            )
+        except (FileNotFoundError, OSError) as exc:
+            raise PermissionError(
+                f"Confirmatory Execution Code Identity Violation: Git execution failed in '{root}': {exc}. "
+                "A verified Git repository is strictly required when declaring current commit SHA."
+            )
+        if head_proc.returncode != 0:
+            raise PermissionError(
+                f"Confirmatory Execution Code Identity Violation: Failed required Git HEAD inspection "
+                f"in '{root}' ({head_proc.stderr.strip()}). A verified Git repository is strictly required."
+            )
+        actual_head = head_proc.stdout.strip()
+
+        # 3b. Require current_git_commit_sha to resolve to a valid commit object
+        try:
+            rev_proc = subprocess.run(
+                ["git", "rev-parse", "--verify", f"{clean_current}^{{commit}}"],
+                cwd=str(root),
+                capture_output=True,
+                text=True,
+            )
+        except (FileNotFoundError, OSError) as exc:
+            raise PermissionError(
+                f"Confirmatory Execution Code Identity Violation: Git execution failed in '{root}': {exc}."
+            )
+        if rev_proc.returncode != 0:
+            raise PermissionError(
+                f"Confirmatory Execution Code Identity Violation: Declared current commit "
+                f"'{clean_current}' cannot be resolved to a valid Git commit object ({rev_proc.stderr.strip()})."
+            )
+        resolved_current = rev_proc.stdout.strip()
+
+        # 3c. Require resolved commit SHA to equal repository's actual HEAD
+        if resolved_current != actual_head:
+            raise PermissionError(
+                f"Confirmatory Execution Code Identity Violation: Declared current commit "
+                f"'{clean_current}' ({resolved_current}) does not match running repository HEAD '{actual_head}'."
+            )
 
     # 4. Git-based diff check when git repository is present and running on a later commit
     if clean_frozen and clean_current and clean_current != clean_frozen:
         diff_out = None
         git_check_succeeded = False
         try:
-            is_commit = False
-            try:
-                rev_cmd = ["git", "rev-parse", "--verify", f"{clean_current}^{{commit}}"]
-                is_commit = subprocess.run(rev_cmd, cwd=str(root), capture_output=True).returncode == 0
-            except Exception:
-                is_commit = False
-
-            if is_commit:
-                diff_cmd = [
-                    "git", "diff", "--name-only", clean_frozen, clean_current,
-                    "--", "cloud/kaggle/run_stage6m_cohort2_benchmark.py", "src/dsg_ctta"
-                ]
-            else:
-                diff_cmd = [
-                    "git", "diff", "--name-only", clean_frozen,
-                    "--", "cloud/kaggle/run_stage6m_cohort2_benchmark.py", "src/dsg_ctta"
-                ]
-
+            diff_cmd = [
+                "git", "diff", "--name-only", clean_frozen, clean_current,
+                "--", "cloud/kaggle/run_stage6m_cohort2_benchmark.py", "src/dsg_ctta"
+            ]
             proc = subprocess.run(
                 diff_cmd, cwd=str(root), capture_output=True, text=True, check=True
             )
             diff_out = proc.stdout.strip()
             git_check_succeeded = True
-        except (subprocess.CalledProcessError, FileNotFoundError, OSError):
-            git_check_succeeded = False
+        except (subprocess.CalledProcessError, FileNotFoundError, OSError) as exc:
+            raise PermissionError(
+                f"Confirmatory Execution Code Identity Violation: Failed Git diff check between "
+                f"frozen commit '{clean_frozen}' and current commit '{clean_current}': {exc}."
+            )
 
         # Fail closed on modified execution files — MUST NOT be caught by try/except
         if git_check_succeeded and diff_out:
@@ -445,10 +462,6 @@ def verify_frozen_execution_code_identity(
                     f"Confirmatory Execution Code Identity Violation: Executable code files have been modified "
                     f"between frozen commit '{clean_frozen}' and current checkout: {changed}."
                 )
-
-        if not git_check_succeeded:
-            # Fallback occurs only when expected_code_digest was already validated and matched above
-            pass
 
     return {
         "frozen_code_commit_sha": clean_frozen,
@@ -648,7 +661,11 @@ def validate_frozen_execution_contract(
                     f"does not match independent approval record '{trusted_code_digest}'."
                 )
 
-        proj_root = protocol_path.parent.parent.parent if protocol_path and protocol_path.exists() else None
+        proj_root = None
+        if protocol_path and protocol_path.exists():
+            candidate = protocol_path.parent.parent.parent
+            if (candidate / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py").exists():
+                proj_root = candidate
         verify_frozen_execution_code_identity(
             frozen_code_commit_sha=frozen_code_commit,
             current_git_commit_sha=clean_sha,
