@@ -436,11 +436,31 @@ From [`tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/re
 ### Confirmatory Cohort 3 Blocker Re-Affirmation
 - **Status:** **STRICTLY ON HOLD** (`DRAFT_HOLD` / `UNSIGNED_DRAFT_HOLD`).
 - **Authorization Scope:** Software and documentation remediation is fully certified. Confirmatory execution authorization has not been granted.
-- **Outstanding Requirements for Future Unsealing:**
+- **Outstanding Requirements for Future Unsealing (Operative Protocol Section 4.2):**
   1. Physical materialization and SHA-256 verification of all 19,800 audio clips on disk.
   2. Dedicated gate-reference panel partition materialization and locking.
   3. Final physical manifest SHA-256 locking.
-  4. Independent cryptographic Ed25519 authorization signature (or formal institutional project-lead amendment per Protocol Section 14.7).
+  4. Independent cryptographic Ed25519 authorization signature binding the final protocol, execution commit, and physical audio manifest.
+
+---
+
+## 15. Independent Audit Findings on Commit `e4bceb9` & Operative Governance Clarification
+
+### Independent Audit Findings (Commit `e4bceb95994a18eda576083a1d4eb653a6629b91`)
+- **Verdict:** **PARTIAL PASS — Governance tracking passes; operative authorization gate clarified**.
+- **Audit Findings:**
+  1. **Governance Record Verified (PASS):** Verified that [`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](stage6m_v1_4_governance_approval_record.json) is valid JSON containing 15 approved commit entries, recording commit `3299ef7` exactly once.
+  2. **Section 14 Committed (PASS):** Verified that Section 14 accurately documents the prior audit verdict and re-affirms fail-closed restrictions.
+  3. **Repository Links Resolve (PASS):** All 44 Markdown links and 11 unique relative repository-file targets resolve cleanly.
+  4. **Fail-Closed Governance Preserved (PASS):** Preserves `governance_status: "DRAFT_HOLD"` and `signature_ed25519_hex: "UNSIGNED_DRAFT_HOLD"`.
+  5. **Operative Authorization Route Clarification (RESOLVED):** The auditor noted that while Protocol Section 14.7 provides guidance on reconciling governance with university requirements, the operative protocol at Section 4.2 strictly mandates an independent Ed25519 signature binding the protocol, execution commit, and 19,800-clip manifest. The parenthetical mention of an alternative institutional project-lead amendment was clarified: Path B is an unadopted exploratory proposal that has not been enacted in the protocol or runner. The operative requirement remains strictly the independent Ed25519 signature.
+- **Approved Revision Recording:** Appended commit `e4bceb95994a18eda576083a1d4eb653a6629b91` to `approved_commits` in [`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](stage6m_v1_4_governance_approval_record.json).
+
+### Protocol and Governance Alignment
+- **Operative Requirement:** Confirmatory execution cannot proceed without a verified 19,800-clip manifest lock and an independent Ed25519 signature binding the amended protocol, the execution commit, and the audio manifest (Protocol Section 4.2).
+- **Amendment Boundary:** If university rules do not require supervisor sign-off and no other rule requires cryptographic authorization, that governance decision must first be confirmed in writing. Any replacement mechanism must be formally enacted via a versioned protocol amendment that updates the protocol text, governance schema, runner preflight checks (`scripts/run_stage6m_cohort2_benchmark.py`), and test assertions together.
+- **Current State:** No protocol amendment has been adopted. Confirmatory Cohort 3 remains strictly locked on **HOLD** under `DRAFT_HOLD` / `UNSIGNED_DRAFT_HOLD`.
+
 
 
 
