@@ -52,7 +52,7 @@ In response to the independent audit of commit `c481fb3` (**Verdict: PARTIAL PAS
 4. **Initial Repository-Wide Test Evidence on Commit `259b78f` (Historical Execution):**
    - Executed the full research validity test suite (`tests/research_validity/`) on commit `259b78f`:
      - **Result:** **309 passed, 0 failed, 6 warnings in 640.30s (10m40s)** *(Historical Note: This initial run established the 309-test count before provenance runner tooling was introduced; the subsequent full run on clean commit 4b3eb97 with automated provenance capture took 1,024.52s; see Section 8).*
-     - Initial execution log preserved at [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log).
+     - Initial execution log preserved as a dedicated historical artifact at [`reports/stage6m/historical_runs/research_validity_pytest_run_259b78f_historical.log`](historical_runs/research_validity_pytest_run_259b78f_historical.log) (the active [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log) preserves the clean-checkout 1,024.52s run on commit `4b3eb97`; see Section 8).
 
 ---
 
@@ -68,7 +68,7 @@ In response to the independent audit of commit `c481fb3` (**Verdict: PARTIAL PAS
 | **Independent Power Simulation** | Trajectory overlap | PASS (seed 20261028) | **PASS (Retrospective Spec in 4b3eb97)** | Seed 20261028: $\hat{P} = 95.00\%$, $\text{LCB} = 91.00\% \ge 90.0\%$. Formally documented retrospectively (see Section 8). |
 | **Simulation Terminology** | "Guarantees" | "Independent confirmatory" | **CORRECTED** | Labeled "independent power-sizing simulation under declared scenario assumptions". |
 | **Governance Record Reconciliation** | Unreconciled | Unreconciled | **RECONCILED (`DRAFT_HOLD`)** | Reconciled protocol SHA-256, approved commits, and rationale; status remains `DRAFT_HOLD`. |
-| **Full Suite Test Evidence** | Prior 306/306 run | Partial (66 tests) | **FULL PASS (309/309 on 4b3eb97)** | Initial run: 309 passed in 640.30s on 259b78f; verified full run: 309 passed in 1024.52s on clean 4b3eb97 (see Section 8). |
+| **Full Suite Test Evidence** | Prior 306/306 run | Partial (66 tests) | **FULL PASS (309/309 on 4b3eb97)** | Initial run: 309 passed in 640.30s on 259b78f (preserved at [`historical_runs/research_validity_pytest_run_259b78f_historical.log`](historical_runs/research_validity_pytest_run_259b78f_historical.log)); verified full run: 309 passed in 1024.52s on clean 4b3eb97 (preserved at [`research_validity_pytest_run.log`](research_validity_pytest_run.log); see Section 8). |
 | **Confirmatory Cohort 3 Status** | HOLD | HOLD | **HOLD** | Formally blocked under `DRAFT_HOLD` / `UNSIGNED_DRAFT_HOLD`. |
 
 ---
@@ -182,13 +182,13 @@ From [`tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/re
 
 ## 5. Live Full Test Suite Evidence (Initial Historical Execution on Commit `259b78f`)
 
-- **Tested Commit:** `259b78f8557ac3650ac696d83b65c20ca30308bd` (historical execution preceding automated provenance runner)
+- **Tested Commit:** `259b78f8557ac3650ac696d83b65c20ca30308bd` (historical baseline execution preceding automated provenance runner)
 - **Command Executed:** `python -m pytest tests/research_validity/ -v`
-- **Output Artifact:** [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log)
+- **Output Artifact:** [`reports/stage6m/historical_runs/research_validity_pytest_run_259b78f_historical.log`](historical_runs/research_validity_pytest_run_259b78f_historical.log) *(Note: Preserved as a segregated historical artifact; active [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log) preserves the clean-checkout 1,024.52s execution on commit `4b3eb97`)*
 - **Summary:**
   ```text
   ================= 309 passed, 6 warnings in 640.30s (0:10:40) =================
-  # Historical baseline execution on commit 259b78f (superseded by clean 4b3eb97 execution taking 1,024.52s)
+  # Historical baseline execution on commit 259b78f (superseded by clean 4b3eb97 execution taking 1,024.52s; see Section 8)
   ```
 - **Breakdown of Key Suites:**
   - `tests/research_validity/test_stage6m_numerical_safety.py`: 56 passed (includes 42C, 42D, 42E acceptance and fail-closed)
@@ -239,7 +239,7 @@ From [`tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/re
    - Preserved `DRAFT_HOLD` / `UNSIGNED_DRAFT_HOLD` status.
 4. **Automated Test Provenance Tooling:**
    - Implemented [`scripts/run_research_validity_tests.py`](../../scripts/run_research_validity_tests.py), which queries Git for `git_commit_sha`, `git_working_tree_clean`, and `git_describe`, captures UTC execution timestamps and Python version, and prepends a structured `=== PROVENANCE HEADER ===` to test execution logs.
-   - Converted [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log) to clean UTF-8 with provenance header bound to commit `259b78f`.
+   - Converted initial test output to clean UTF-8 with provenance metadata (subsequently segregated to [`historical_runs/research_validity_pytest_run_259b78f_historical.log`](historical_runs/research_validity_pytest_run_259b78f_historical.log) when [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log) was bound to the verified clean-checkout run on commit `4b3eb97`).
 
 ---
 
@@ -346,6 +346,36 @@ From [`tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/re
    - Preserved `governance_status: "DRAFT_HOLD"` and `signature_ed25519_hex: "UNSIGNED_DRAFT_HOLD"`.
 4. **Cohort 3 Blocker Status Re-Affirmed:**
    - Cohort 3 remains strictly locked on `DRAFT_HOLD` / `UNSIGNED_DRAFT_HOLD` pending physical audio dataset materialization, final manifest locking, gate panel locking, and independent cryptographic signature.
+
+---
+
+## 11. Audit Findings on Commit `cba4049` and Test-Evidence Traceability Remediation
+
+### Findings from Independent Audit of `cba4049`
+1. **Link Portability (PASS):** All local Windows filesystem links (`file:///c:/...`) were eliminated and replaced with portable repository-relative links (`stage6m_v1_4_governance_approval_record.json`, `../../cloud/...`). All 10 unique referenced repository targets resolve cleanly.
+2. **Historical Simulation Claims Qualified (PASS):** Power simulation sections are explicitly qualified as historical and superseded. The specification formally documents retrospectively the power-sizing simulation (`nature_of_parameters: "DECLARED_SCENARIO_SIMULATION_INPUTS"` in commit `4b3eb97`), avoiding prospective preregistration overstatement.
+3. **Test Executions Distinguished (PASS):** The report distinguishes the initial 640.30s execution associated with `259b78f` from the subsequent 1,024.52s clean-checkout run associated with `4b3eb97`.
+4. **Governance Fail-Closed Preservation (PASS):** Preserves `DRAFT_HOLD` and `UNSIGNED_DRAFT_HOLD` with zero confirmatory execution authorization.
+5. **Remaining Finding (Traceability):** Section 1 and Section 5 stated that the initial 640.30s execution log was preserved at `reports/stage6m/research_validity_pytest_run.log`. However, that file contains the 1,024.52s run from commit `4b3eb97`. The original 640.30s execution on `259b78f` was not segregated in a dedicated artifact.
+
+### Implemented Traceability Remediations
+1. **Dedicated Historical Test Log Artifact:**
+   - Extracted the authentic 640.30s test run output from commit `259b78f` and committed it as a segregated artifact at [`reports/stage6m/historical_runs/research_validity_pytest_run_259b78f_historical.log`](historical_runs/research_validity_pytest_run_259b78f_historical.log) in clean UTF-8.
+   - Formally documented with a structured `=== HISTORICAL TEST EXECUTION RECORD ===` header identifying tested commit `259b78f8557ac3650ac696d83b65c20ca30308bd` (309 passed, 6 warnings in 640.30s) and superseded status.
+2. **Disambiguated Audit Report Narrative & Links:**
+   - In Section 1, Section 2, Section 5, and Section 7, updated all references to point to `historical_runs/research_validity_pytest_run_259b78f_historical.log` for the `259b78f` baseline run.
+   - Clarified that [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log) exclusively preserves the clean-checkout 1,024.52s execution conducted on commit `4b3eb97`.
+3. **Governance Record Update:**
+   - Appended commit `cba4049ed763a967ec7237d622023bf1aecca78b` to `approved_commits` in [`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](stage6m_v1_4_governance_approval_record.json).
+   - Preserved `governance_status: "DRAFT_HOLD"` and `signature_ed25519_hex: "UNSIGNED_DRAFT_HOLD"`.
+4. **Cohort 3 Blocker Status Re-Affirmed:**
+   - Confirmatory Cohort 3 remains strictly locked on **HOLD** (`DRAFT_HOLD` / `UNSIGNED_DRAFT_HOLD`).
+   - Unsealing remains completely blocked pending:
+     1. Physical materialization and SHA-256 verification of 19,800 audio clips.
+     2. Dedicated gate-reference panel partition materialization and locking.
+     3. Final physical manifest SHA-256 locking.
+     4. Independent cryptographic Ed25519 authorization signature.
+
 
 
 
