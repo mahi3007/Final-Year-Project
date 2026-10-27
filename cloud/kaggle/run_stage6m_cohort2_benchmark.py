@@ -32,6 +32,7 @@ import os
 import sys
 import time
 import hashlib
+import subprocess
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Dict, List, Any, Tuple, Optional, FrozenSet, Set
@@ -340,42 +341,84 @@ def verify_frozen_execution_code_identity(
     frozen execution-code identity (Protocol Section 14.7).
     Enforces deterministic code identity without cryptographic signatures.
     Fails closed if:
-    1. expected_code_digest is provided and does not match the computed execution code digest.
+    1. expected_code_digest is missing, not a valid 64-character lowercase hex string,
+       or does not match the computed execution code digest.
     2. current_git_commit_sha differs from frozen_code_commit_sha and Git inspection reveals
        any modifications in execution code paths (cloud/kaggle/run_stage6m_cohort2_benchmark.py, src/dsg_ctta).
+    3. Git diff command execution fails and no usable digest is available.
     """
     root = (project_root or PROJECT_ROOT).resolve()
+    runner_file = root / "cloud" / "kaggle" / "run_stage6m_cohort2_benchmark.py"
+    if not runner_file.exists():
+        root = PROJECT_ROOT.resolve()
+
+    # 1. Mandatory Valid Digest Validation
+    if not expected_code_digest or not isinstance(expected_code_digest, str):
+        raise PermissionError(
+            "Confirmatory Execution Code Identity Violation: Missing 'expected_code_digest'. "
+            "A valid 64-character lowercase SHA-256 hex digest is strictly required."
+        )
+    clean_expected = expected_code_digest.strip().lower()
+    if len(clean_expected) != 64 or not all(c in "0123456789abcdef" for c in clean_expected):
+        raise PermissionError(
+            f"Confirmatory Execution Code Identity Violation: Malformed 'expected_code_digest' '{expected_code_digest}'. "
+            f"Must be a 64-character lowercase SHA-256 hex string."
+        )
+
+    # 2. Deterministic Content Digest Verification
     current_digest = compute_execution_code_digest(root)
+    if current_digest != clean_expected:
+        raise PermissionError(
+            f"Confirmatory Execution Code Identity Violation: Executing code digest '{current_digest}' "
+            f"does not match frozen code digest '{clean_expected}'. Execution code has been modified."
+        )
 
-    # 1. Deterministic Content Digest Verification
-    if expected_code_digest:
-        clean_expected = str(expected_code_digest).strip()
-        if current_digest != clean_expected:
-            raise PermissionError(
-                f"Confirmatory Execution Code Identity Violation: Executing code digest '{current_digest}' "
-                f"does not match frozen code digest '{clean_expected}'. Execution code has been modified."
-            )
-
-    # 2. Git-based diff check when git repository is present and running on a later commit
+    # 3. Git-based diff check when git repository is present and running on a later commit
     clean_current = str(current_git_commit_sha).strip() if current_git_commit_sha else ""
     clean_frozen = str(frozen_code_commit_sha).strip() if frozen_code_commit_sha else ""
 
     if clean_frozen and clean_current and clean_current != clean_frozen:
+        diff_out = None
+        git_check_succeeded = False
         try:
-            cmd = [
-                "git", "diff", "--name-only", clean_frozen,
-                "--", "cloud/kaggle/run_stage6m_cohort2_benchmark.py", "src/dsg_ctta"
-            ]
-            diff_out = subprocess.check_output(cmd, cwd=str(root), stderr=subprocess.DEVNULL).decode("utf-8").strip()
-            if diff_out:
-                changed = [f for f in diff_out.splitlines() if f.strip()]
-                if changed:
-                    raise PermissionError(
-                        f"Confirmatory Execution Code Identity Violation: Executable code files have been modified "
-                        f"between frozen commit '{clean_frozen}' and current checkout: {changed}."
-                    )
-        except Exception:
-            # Fall back to content digest if git diff fails (e.g. shallow clone, synthetic commit in tests, or no .git)
+            # Check if clean_current is a valid git commit in this repo
+            is_commit = False
+            try:
+                rev_cmd = ["git", "rev-parse", "--verify", f"{clean_current}^{{commit}}"]
+                is_commit = subprocess.run(rev_cmd, cwd=str(root), capture_output=True).returncode == 0
+            except Exception:
+                is_commit = False
+
+            if is_commit:
+                diff_cmd = [
+                    "git", "diff", "--name-only", clean_frozen, clean_current,
+                    "--", "cloud/kaggle/run_stage6m_cohort2_benchmark.py", "src/dsg_ctta"
+                ]
+            else:
+                diff_cmd = [
+                    "git", "diff", "--name-only", clean_frozen,
+                    "--", "cloud/kaggle/run_stage6m_cohort2_benchmark.py", "src/dsg_ctta"
+                ]
+
+            proc = subprocess.run(
+                diff_cmd, cwd=str(root), capture_output=True, text=True, check=True
+            )
+            diff_out = proc.stdout.strip()
+            git_check_succeeded = True
+        except (subprocess.CalledProcessError, FileNotFoundError, OSError):
+            git_check_succeeded = False
+
+        # Fail closed on modified execution files — MUST NOT be caught by try/except
+        if git_check_succeeded and diff_out:
+            changed = [f for f in diff_out.splitlines() if f.strip()]
+            if changed:
+                raise PermissionError(
+                    f"Confirmatory Execution Code Identity Violation: Executable code files have been modified "
+                    f"between frozen commit '{clean_frozen}' and current checkout: {changed}."
+                )
+
+        if not git_check_succeeded:
+            # Fallback occurs only when expected_code_digest was already validated and matched above
             pass
 
     return {
@@ -559,18 +602,28 @@ def validate_frozen_execution_contract(
     # has NOT changed from that frozen identity.
     if frozen_code_commit:
         trusted_code_digest = gov_record.get("frozen_code_digest")
-        manifest_code_digest = frozen_contract.get("frozen_code_digest")
-        if trusted_code_digest and manifest_code_digest and manifest_code_digest != trusted_code_digest:
-            raise ValueError(
-                f"Independent Governance Lock: Frozen code digest in manifest '{manifest_code_digest}' "
-                f"does not match independent approval record '{trusted_code_digest}'."
+        if not trusted_code_digest or not isinstance(trusted_code_digest, str) or len(trusted_code_digest.strip()) != 64 or not all(c in "0123456789abcdef" for c in trusted_code_digest.strip().lower()):
+            raise PermissionError(
+                f"Independent Governance Lock: Frozen code commit '{frozen_code_commit}' is declared, "
+                f"but 'frozen_code_digest' in governance approval record is missing or invalid: {trusted_code_digest}. "
+                f"A valid 64-character lowercase SHA-256 hex digest is strictly required."
             )
-        expected_digest = trusted_code_digest or manifest_code_digest
+        trusted_code_digest = trusted_code_digest.strip().lower()
+
+        manifest_code_digest = frozen_contract.get("frozen_code_digest")
+        if manifest_code_digest:
+            clean_manifest_digest = str(manifest_code_digest).strip().lower()
+            if clean_manifest_digest != trusted_code_digest:
+                raise ValueError(
+                    f"Independent Governance Lock: Frozen code digest in manifest '{clean_manifest_digest}' "
+                    f"does not match independent approval record '{trusted_code_digest}'."
+                )
+
         proj_root = protocol_path.parent.parent.parent if protocol_path and protocol_path.exists() else None
         verify_frozen_execution_code_identity(
             frozen_code_commit_sha=frozen_code_commit,
             current_git_commit_sha=clean_sha,
-            expected_code_digest=expected_digest,
+            expected_code_digest=trusted_code_digest,
             project_root=proj_root,
         )
 

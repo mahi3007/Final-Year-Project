@@ -2204,10 +2204,14 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
         )
 
     # 2b. Non-circular contract passes: current commit is a new lock commit (e.g. "commit_lock_789")
-    # that binds an approved frozen_code_commit ("commit_approved_123")
+    # that binds an approved frozen_code_commit ("commit_approved_123") with valid code digest
+    from run_stage6m_cohort2_benchmark import compute_execution_code_digest
+    current_code_digest = compute_execution_code_digest(project_root)
+
     manifest_noncircular = {
         "frozen_execution_contract": {
             "frozen_code_commit_sha": "commit_approved_123",
+            "frozen_code_digest": current_code_digest,
             "protocol_sha256": finalized_sha,
             "governance_status": "APPROVED",
         }
@@ -2223,6 +2227,7 @@ def test_cohort3_frozen_execution_contract_and_commit_whitelist_enforcement(tmp_
         approved_protocol_sha256=finalized_sha,
         approved_manifest_sha256=manifest_noncircular_sha,
         frozen_code_commit_sha="commit_approved_123",
+        frozen_code_digest=current_code_digest,
     )
     gov_noncircular_path.write_text(json.dumps(gov_noncircular_data), encoding="utf-8")
 
@@ -2753,15 +2758,19 @@ def test_frozen_execution_contract_manifest_path_and_governance_edge_cases(tmp_p
     from run_stage6m_cohort2_benchmark import (
         validate_frozen_execution_contract,
         create_project_lead_governance_record,
+        compute_execution_code_digest,
     )
 
     proto_file = tmp_path / "final_proto.md"
     proto_file.write_text("# Confirmatory Protocol\n\nStatus: Frozen and authorized.\n", encoding="utf-8")
     proto_sha = hashlib.sha256(proto_file.read_bytes()).hexdigest()
 
+    current_code_digest = compute_execution_code_digest(project_root)
+
     manifest_data = {
         "frozen_execution_contract": {
             "frozen_code_commit_sha": "audit_commit_aaa",
+            "frozen_code_digest": current_code_digest,
             "protocol_sha256": proto_sha,
             "governance_status": "APPROVED",
         }
@@ -2776,6 +2785,7 @@ def test_frozen_execution_contract_manifest_path_and_governance_edge_cases(tmp_p
         approved_protocol_sha256=proto_sha,
         approved_manifest_sha256=manifest_sha,
         frozen_code_commit_sha="audit_commit_aaa",
+        frozen_code_digest=current_code_digest,
     )
     gov_file = tmp_path / "gov_record.json"
     gov_file.write_text(json.dumps(valid_gov), encoding="utf-8")
@@ -2843,11 +2853,16 @@ def test_frozen_execution_code_identity_binding_and_mutation_rejection(tmp_path)
     Test Case 55: Critical Finding E Verification — Verifiable Executable Code Identity Binding.
     Verifies that:
     1. compute_execution_code_digest returns a 64-char lowercase SHA-256 hex string.
-    2. An unchanged frozen codebase passes code identity verification cleanly.
+    2. An unchanged frozen codebase passes code identity verification cleanly when expected digest matches.
     3. An approved governance-only update on a later commit passes when execution code is unchanged.
-    4. A modified runner or runtime dependency strictly FAILS CLOSED even if the old frozen SHA
-       remains whitelisted in approved_commits.
-    5. Synthetic code directory modification causes immediate digest mismatch and PermissionError.
+    4. Explicit rejection of a changed runner relative to the frozen commit (detects git diff in runner
+       even if caller supplies matching current digest, and strictly raises PermissionError).
+    5. Missing or malformed expected_code_digest strictly fails closed with PermissionError.
+    6. Git execution failure without a usable digest strictly fails closed.
+    7. Governance record missing mandatory frozen_code_digest strictly raises PermissionError.
+    8. Mismatched code digest between manifest and governance record strictly raises ValueError.
+    9. Mutated executing code relative to locked digest strictly raises PermissionError.
+    10. Synthetic dependency mutation causes immediate digest mismatch and PermissionError.
     """
     import hashlib
     import json
@@ -2869,23 +2884,23 @@ def test_frozen_execution_code_identity_binding_and_mutation_rejection(tmp_path)
 
     # 2. Unchanged codebase with matching digest passes
     id_rec = verify_frozen_execution_code_identity(
-        frozen_code_commit_sha="0a1109e000edeed587f7b9d635f1014d9931ab10",
-        current_git_commit_sha="0a1109e000edeed587f7b9d635f1014d9931ab10",
+        frozen_code_commit_sha="310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
+        current_git_commit_sha="310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
         expected_code_digest=current_digest,
         project_root=project_root,
     )
     assert id_rec["code_identity_verified"] is True
     assert id_rec["execution_code_digest"] == current_digest
 
-    # 3. Governance-only update on a later commit (e.g. "gov_lock_commit_999") passes
-    # because execution code is unchanged and matches the frozen digest
+    # 3. Governance-only update on a later commit (61e2288) passes
+    # because execution code is unchanged from frozen commit 310cf4f and matches the digest
     proto_file = tmp_path / "final_proto.md"
     proto_file.write_text("# Confirmatory Protocol\n\nStatus: Frozen and authorized.\n", encoding="utf-8")
     proto_sha = hashlib.sha256(proto_file.read_bytes()).hexdigest()
 
     manifest_data = {
         "frozen_execution_contract": {
-            "frozen_code_commit_sha": "0a1109e000edeed587f7b9d635f1014d9931ab10",
+            "frozen_code_commit_sha": "310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
             "frozen_code_digest": current_digest,
             "protocol_sha256": proto_sha,
             "governance_status": "APPROVED",
@@ -2897,10 +2912,10 @@ def test_frozen_execution_code_identity_binding_and_mutation_rejection(tmp_path)
 
     gov_data = create_project_lead_governance_record(
         governance_status="APPROVED",
-        approved_commits=["0a1109e000edeed587f7b9d635f1014d9931ab10"],
+        approved_commits=["310cf4ff6221d704fa7a8318af9d3d13362b0fa3", "61e228803835697ed6ca939a158993e5f3cf7545"],
         approved_protocol_sha256=proto_sha,
         approved_manifest_sha256=manifest_sha,
-        frozen_code_commit_sha="0a1109e000edeed587f7b9d635f1014d9931ab10",
+        frozen_code_commit_sha="310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
         frozen_code_digest=current_digest,
     )
     gov_file = tmp_path / "gov_record.json"
@@ -2908,14 +2923,89 @@ def test_frozen_execution_code_identity_binding_and_mutation_rejection(tmp_path)
 
     rec = validate_frozen_execution_contract(
         manifest_data,
-        "gov_lock_commit_999",  # Running on later manifest/governance lock commit
+        "61e228803835697ed6ca939a158993e5f3cf7545",  # Running on later manifest/governance lock commit
         proto_file,
         governance_approval_path=gov_file,
         manifest_path=manifest_file,
     )
     assert rec["contract_status"] == "APPROVED"
 
-    # 4a. Mismatched code digest between manifest and governance record raises ValueError
+    # 4. Explicit rejection of changed runner relative to frozen commit
+    # 0a1109e has a different runner than 61e2288.
+    # Even if expected_code_digest is supplied matching current checkout,
+    # Git diff MUST detect the modified runner and strictly raise PermissionError.
+    with pytest.raises(PermissionError, match="Executable code files have been modified between frozen commit.*0a1109e.*and current checkout"):
+        verify_frozen_execution_code_identity(
+            frozen_code_commit_sha="0a1109e000edeed587f7b9d635f1014d9931ab10",
+            current_git_commit_sha="61e228803835697ed6ca939a158993e5f3cf7545",
+            expected_code_digest=current_digest,
+            project_root=project_root,
+        )
+
+    # 5. Missing or malformed expected_code_digest strictly fails closed
+    # 5a. None
+    with pytest.raises(PermissionError, match="Missing 'expected_code_digest'"):
+        verify_frozen_execution_code_identity(
+            frozen_code_commit_sha="310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
+            current_git_commit_sha="310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
+            expected_code_digest=None,
+            project_root=project_root,
+        )
+
+    # 5b. Empty string
+    with pytest.raises(PermissionError, match="Missing 'expected_code_digest'"):
+        verify_frozen_execution_code_identity(
+            frozen_code_commit_sha="310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
+            current_git_commit_sha="310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
+            expected_code_digest="",
+            project_root=project_root,
+        )
+
+    # 5c. Wrong length
+    with pytest.raises(PermissionError, match="Malformed 'expected_code_digest'"):
+        verify_frozen_execution_code_identity(
+            frozen_code_commit_sha="310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
+            current_git_commit_sha="310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
+            expected_code_digest="abc123",
+            project_root=project_root,
+        )
+
+    # 5d. Non-hex characters
+    with pytest.raises(PermissionError, match="Malformed 'expected_code_digest'"):
+        verify_frozen_execution_code_identity(
+            frozen_code_commit_sha="310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
+            current_git_commit_sha="310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
+            expected_code_digest="z" * 64,
+            project_root=project_root,
+        )
+
+    # 6. Git diff execution failure without a usable digest strictly fails closed
+    non_git_root = tmp_path / "non_git_dir"
+    non_git_root.mkdir()
+    with pytest.raises(PermissionError, match="Missing 'expected_code_digest'"):
+        verify_frozen_execution_code_identity(
+            frozen_code_commit_sha="some_commit",
+            current_git_commit_sha="different_commit",
+            expected_code_digest=None,
+            project_root=non_git_root,
+        )
+
+    # 7. Governance approval record missing frozen_code_digest when frozen_code_commit declared
+    gov_missing_digest = dict(gov_data)
+    del gov_missing_digest["frozen_code_digest"]
+    gov_missing_digest_file = tmp_path / "gov_missing_digest.json"
+    gov_missing_digest_file.write_text(json.dumps(gov_missing_digest), encoding="utf-8")
+
+    with pytest.raises(PermissionError, match="'frozen_code_digest' in governance approval record is missing or invalid"):
+        validate_frozen_execution_contract(
+            manifest_data,
+            "61e228803835697ed6ca939a158993e5f3cf7545",
+            proto_file,
+            governance_approval_path=gov_missing_digest_file,
+            manifest_path=manifest_file,
+        )
+
+    # 8. Mismatched code digest between manifest and governance record raises ValueError
     tampered_digest = "deadbeef" * 8
     gov_tampered = dict(gov_data, frozen_code_digest=tampered_digest)
     gov_tampered_file = tmp_path / "gov_tampered.json"
@@ -2924,16 +3014,16 @@ def test_frozen_execution_code_identity_binding_and_mutation_rejection(tmp_path)
     with pytest.raises(ValueError, match="Frozen code digest in manifest.*does not match independent approval record"):
         validate_frozen_execution_contract(
             manifest_data,
-            "gov_lock_commit_999",
+            "61e228803835697ed6ca939a158993e5f3cf7545",
             proto_file,
             governance_approval_path=gov_tampered_file,
             manifest_path=manifest_file,
         )
 
-    # 4b. Modified runner or dependency (executing code differs from locked digest) strictly FAILS CLOSED
+    # 9. Modified runner or dependency (executing code differs from locked digest) strictly FAILS CLOSED
     manifest_tampered = {
         "frozen_execution_contract": {
-            "frozen_code_commit_sha": "0a1109e000edeed587f7b9d635f1014d9931ab10",
+            "frozen_code_commit_sha": "310cf4ff6221d704fa7a8318af9d3d13362b0fa3",
             "frozen_code_digest": tampered_digest,
             "protocol_sha256": proto_sha,
             "governance_status": "APPROVED",
@@ -2948,13 +3038,13 @@ def test_frozen_execution_code_identity_binding_and_mutation_rejection(tmp_path)
     with pytest.raises(PermissionError, match="Confirmatory Execution Code Identity Violation.*does not match frozen code digest"):
         validate_frozen_execution_contract(
             manifest_tampered,
-            "gov_lock_commit_999",
+            "61e228803835697ed6ca939a158993e5f3cf7545",
             proto_file,
             governance_approval_path=gov_tampered_matching_file,
             manifest_path=manifest_tampered_file,
         )
 
-    # 5. Synthetic code directory modification causes immediate rejection
+    # 10. Synthetic code directory modification causes immediate rejection
     synthetic_root = tmp_path / "synthetic_repo"
     (synthetic_root / "cloud" / "kaggle").mkdir(parents=True)
     (synthetic_root / "src" / "dsg_ctta").mkdir(parents=True)
