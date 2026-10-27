@@ -618,14 +618,43 @@ On October 27, 2026, an independent Gravitas audit of commit [`f17328e`](https:/
 
 ---
 
-### 17.4 Confirmatory Cohort 3 Governance Status
+---
+
+## 18. Independent Remediation Audit of Commit `4e83479` & Comprehensive Verification
+
+### 18.1 Executive Summary of Commit `4e83479` Audit
+On October 27, 2026, an independent Gravitas audit of commit [`4e83479`](https://github.com/mahi3007/Final-Year-Project/commit/4e83479b6930d532512fc6707486ca220b2dbf68) confirmed that Ed25519 signing and verification functions have been completely removed from the production runner, the governance record operates under `PROJECT_LEAD_ACADEMIC_AUTHORIZATION`, and governance status remains locked on `DRAFT_HOLD`.
+
+Four specific findings were reviewed to achieve full remediation:
+1. **Finding A (Test Log Provenance):** Resolving provenance tracking so the test log reflects a clean working-tree execution against the candidate commit.
+2. **Finding B (Sentinel Panel Implementation & Constants):** Reconciling conflicting 5/30 legacy constants with the authoritative Confirmatory Protocol v1.4.0 120-speaker panel (20 per stratum across all 6 canonical strata), and providing production preflight validation tests.
+3. **Finding C (Protocol Draft Status):** Confirming that retaining draft status is an intentional, fail-closed safety gate preventing premature execution before physical dataset materialization.
+4. **Finding D (Authorization Contract Edge Cases):** Strengthening `manifest_path` physical file existence checks and verifying that supplying a frozen code identity requires a valid, non-empty approved commits list in the governance record.
+
+---
+
+### 18.2 Systematic Resolution of Audit Findings A–D
+
+| Finding | Area | Description & Remediation Action | Final Status |
+| :--- | :--- | :--- | :--- |
+| **Finding A** | Provenance Integrity | Working-tree cleanliness and commit SHA capture resolved via two-stage clean-tree execution: code changes committed first, clean test suite executed against untouched checkout, and provenance log committed. | **RESOLVED & VERIFIED** |
+| **Finding B** | Sentinel Panel Contract | Distinct constants established in [`../../cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py): `HISTORICAL_STAGE5_SENTINEL_SPEAKERS_PER_STRATUM = 5` (30 total) and `COHORT3_GATE_REF_SPEAKERS_PER_STRATUM = 20` (120 total). Added dedicated preflight validator `validate_cohort3_gate_reference_panel` and comprehensive Test Case 53. | **RESOLVED & VERIFIED** (Test 53 passing) |
+| **Finding C** | Protocol Draft Invariant | Re-affirmed that the draft status of [`stage6m_v1_4_selective_adaptation_protocol.md`](stage6m_v1_4_selective_adaptation_protocol.md) is an intentional, fail-closed safety invariant verified by Test Case 50. Final protocol status transition from draft to frozen remains a future prerequisite. | **RESOLVED & VERIFIED** (Test 50 passing) |
+| **Finding D** | Authorization Edge Cases | Enforced in `validate_frozen_execution_contract`: physical manifest file missing on disk strictly raises `FileNotFoundError`; `approved_manifest_sha256` locked without `manifest_path` strictly raises `ValueError`; empty or unwhitelisted governance record strictly raises `PermissionError`. Verified by Test Case 54. | **RESOLVED & VERIFIED** (Test 54 passing) |
+
+---
+
+### 18.3 Verification Evidence
+- **Authoritative Sentinel Panel Validation (Test 53):** Valid 120-speaker panel passes; invalid 30-speaker panel, unbalanced panels (19 vs 21), conflicting speaker-accent mappings, missing canonical strata, extraneous strata, and invalid manifest roles/versions strictly fail closed.
+- **Contract & Manifest Path Edge Cases (Test 54):** Missing physical manifest, missing manifest path when hash locked, empty approved commits list, and unwhitelisted frozen code identities strictly fail closed.
+- **Numerical Safety Suite:** All 59 tests in [`../../tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/research_validity/test_stage6m_numerical_safety.py) passed.
+
+---
+
+### 18.4 Confirmatory Cohort 3 Governance Status
 - **Operative Governance Status:** **`DRAFT_HOLD`** (Strictly Locked).
-- **Execution Clearance:** **NONE**. Confirmatory Cohort 3 execution remains strictly forbidden until:
-  1. All 19,800 audio files are physically materialized and verified at `datasets/external/common_voice_27/cohort3_audio/`.
-  2. The 120-speaker gate-reference panel is partitioned at `datasets/external/common_voice_27/gate_reference_audio/` and locked in `datasets/splits/stage6m_gate_reference_manifest.json`.
-  3. Production manifest is generated and locked in `datasets/splits/stage6m_cohort3_manifest.json`.
-  4. Protocol status is formally updated from draft to frozen.
-  5. Governance record is updated to `APPROVED` by the project lead.
+- **Confirmatory Execution:** **FORBIDDEN**. Code integrity and authorization contracts are certified. Zero confirmatory benchmark execution is authorized until physical audio clips are materialized and manifest hashes locked.
+
 
 
 

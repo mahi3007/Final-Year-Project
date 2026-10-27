@@ -2623,6 +2623,222 @@ def test_no_cryptographic_signing_in_production_runner():
     assert "pinned_pubkey_hex" not in sig.parameters, "Residual pinned_pubkey_hex parameter in validator"
 
 
+def test_cohort3_gate_reference_panel_authoritative_size_and_strata_contract():
+    """
+    Test Case 53: Authoritative Cohort 3 gate-reference panel validation under Protocol v1.4.0.
+    Verifies that:
+    1. Valid 120-speaker panel (20 per stratum across all 6 canonical strata) passes cleanly.
+    2. Invalid 30-speaker panel (legacy/historical 5 per stratum) strictly fails closed.
+    3. Unbalanced panel (e.g. 19 for one stratum, 21 for another) strictly fails closed.
+    4. Conflicting speaker-to-accent assignment strictly fails closed.
+    5. Missing canonical stratum strictly fails closed.
+    6. Extraneous stratum strictly fails closed.
+    7. Invalid manifest role or version strictly fails closed.
+    """
+    import sys
+    from pathlib import Path
+    project_root = Path(__file__).resolve().parent.parent.parent
+    sys.path.insert(0, str(project_root / "cloud" / "kaggle"))
+    from run_stage6m_cohort2_benchmark import (
+        validate_cohort3_gate_reference_panel,
+        CANONICAL_PROTOCOL_ACCENTS,
+        COHORT3_GATE_REF_SPEAKERS_PER_STRATUM,
+        COHORT3_TOTAL_GATE_REF_SPEAKERS,
+    )
+
+    valid_manifest_data = {
+        "role": "gate_reference_panel",
+        "manifest_version": "v1.4.0",
+        "speakers_per_accent": 20,
+    }
+
+    # Construct valid 120-speaker panel
+    valid_rows = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(20):
+            valid_rows.append({
+                "speaker_id": f"ref_{acc.replace(' ', '_')}_{s:03d}",
+                "stage5_accent_group": acc,
+                "recording_id": f"rec_{acc.replace(' ', '_')}_{s:03d}",
+                "transcript": "sentence transcript for gate testing",
+            })
+    valid_120_df = pd.DataFrame(valid_rows)
+
+    # 1. Valid 120-speaker panel passes
+    core_df = validate_cohort3_gate_reference_panel(valid_120_df, valid_manifest_data)
+    assert len(core_df) == 120
+    assert core_df["speaker_id"].nunique() == 120
+
+    # 2. Legacy 30-speaker panel (5 per stratum) strictly fails closed
+    legacy_rows = []
+    for acc in sorted(list(CANONICAL_PROTOCOL_ACCENTS)):
+        for s in range(5):
+            legacy_rows.append({
+                "speaker_id": f"legacy_{acc.replace(' ', '_')}_{s:03d}",
+                "stage5_accent_group": acc,
+                "recording_id": f"rec_legacy_{acc.replace(' ', '_')}_{s:03d}",
+                "transcript": "sentence transcript",
+            })
+    legacy_30_df = pd.DataFrame(legacy_rows)
+    with pytest.raises(ValueError, match="Sentinel panel integrity violation: stratum '.*' has 5 unique speakers \\(expected exactly 20\\)"):
+        validate_cohort3_gate_reference_panel(legacy_30_df, valid_manifest_data)
+
+    # 3. Unbalanced panel (19 in Irish English, 21 in US English) strictly fails closed
+    unbalanced_rows = [r for r in valid_rows if r["speaker_id"] != "ref_Irish_English_019"]
+    unbalanced_rows.append({
+        "speaker_id": "ref_US_English_extra_020",
+        "stage5_accent_group": "US English",
+        "recording_id": "rec_extra_us",
+        "transcript": "sentence transcript",
+    })
+    unbalanced_df = pd.DataFrame(unbalanced_rows)
+    with pytest.raises(ValueError, match="stratum 'Irish English' has 19 unique speakers"):
+        validate_cohort3_gate_reference_panel(unbalanced_df, valid_manifest_data)
+
+    # 4. Conflicting speaker mapping strictly fails closed
+    conflicting_rows = list(valid_rows)
+    conflicting_rows.append({
+        "speaker_id": "ref_US_English_000",  # Same speaker ID
+        "stage5_accent_group": "Irish English",  # Different accent
+        "recording_id": "rec_conflict",
+        "transcript": "sentence transcript",
+    })
+    conflicting_df = pd.DataFrame(conflicting_rows)
+    with pytest.raises(ValueError, match="Inconsistent speaker-to-accent mapping"):
+        validate_cohort3_gate_reference_panel(conflicting_df, valid_manifest_data)
+
+    # 5. Missing canonical stratum strictly fails closed
+    missing_stratum_df = valid_120_df[valid_120_df["stage5_accent_group"] != "South Asian English"]
+    with pytest.raises(ValueError, match="missing canonical protocol accents.*South Asian English"):
+        validate_cohort3_gate_reference_panel(missing_stratum_df, valid_manifest_data)
+
+    # 6. Extraneous non-canonical stratum strictly fails closed
+    extraneous_rows = list(valid_rows[:119])
+    extraneous_rows.append({
+        "speaker_id": "ref_Scottish_001",
+        "stage5_accent_group": "Scottish English",
+        "recording_id": "rec_scottish",
+        "transcript": "sentence transcript",
+    })
+    extraneous_df = pd.DataFrame(extraneous_rows)
+    with pytest.raises(ValueError, match="contains non-canonical accent 'Scottish English'"):
+        validate_cohort3_gate_reference_panel(extraneous_df, valid_manifest_data)
+
+    # 7. Invalid manifest role or version strictly fails closed
+    bad_role_manifest = dict(valid_manifest_data, role="evaluation_manifest")
+    with pytest.raises(ValueError, match="role='evaluation_manifest' must be 'gate_reference_panel'"):
+        validate_cohort3_gate_reference_panel(valid_120_df, bad_role_manifest)
+
+    bad_ver_manifest = dict(valid_manifest_data, manifest_version="v1.3.0")
+    with pytest.raises(ValueError, match="version='v1.3.0' must be 'v1.4.0'"):
+        validate_cohort3_gate_reference_panel(valid_120_df, bad_ver_manifest)
+
+
+def test_frozen_execution_contract_manifest_path_and_governance_edge_cases(tmp_path):
+    """
+    Test Case 54: Non-circular authorization edge cases and physical manifest path checks.
+    Verifies that:
+    1. If manifest_path is supplied but the physical file does not exist, validator strictly raises FileNotFoundError.
+    2. If approved_manifest_sha256 is locked in governance record, but manifest_path is None, validator strictly raises ValueError.
+    3. If manifest supplies frozen_code_commit_sha but governance record approved_commits is empty, validator strictly raises PermissionError.
+    4. If manifest supplies frozen_code_commit_sha but that SHA is unapproved in governance record, validator strictly raises PermissionError.
+    5. Non-circular contract passes cleanly when frozen_code_commit_sha is whitelisted in governance record.
+    """
+    import json
+    import hashlib
+    import sys
+    from pathlib import Path
+    project_root = Path(__file__).resolve().parent.parent.parent
+    sys.path.insert(0, str(project_root / "cloud" / "kaggle"))
+    from run_stage6m_cohort2_benchmark import (
+        validate_frozen_execution_contract,
+        create_project_lead_governance_record,
+    )
+
+    proto_file = tmp_path / "final_proto.md"
+    proto_file.write_text("# Confirmatory Protocol\n\nStatus: Frozen and authorized.\n", encoding="utf-8")
+    proto_sha = hashlib.sha256(proto_file.read_bytes()).hexdigest()
+
+    manifest_data = {
+        "frozen_execution_contract": {
+            "frozen_code_commit_sha": "audit_commit_aaa",
+            "protocol_sha256": proto_sha,
+            "governance_status": "APPROVED",
+        }
+    }
+    manifest_file = tmp_path / "manifest.json"
+    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+    manifest_sha = hashlib.sha256(manifest_file.read_bytes()).hexdigest()
+
+    valid_gov = create_project_lead_governance_record(
+        governance_status="APPROVED",
+        approved_commits=["audit_commit_aaa"],
+        approved_protocol_sha256=proto_sha,
+        approved_manifest_sha256=manifest_sha,
+        frozen_code_commit_sha="audit_commit_aaa",
+    )
+    gov_file = tmp_path / "gov_record.json"
+    gov_file.write_text(json.dumps(valid_gov), encoding="utf-8")
+
+    # 1. Missing manifest file on disk strictly raises FileNotFoundError
+    nonexistent_manifest_path = tmp_path / "nonexistent_manifest.json"
+    with pytest.raises(FileNotFoundError, match="Physical manifest missing at"):
+        validate_frozen_execution_contract(
+            manifest_data,
+            "runtime_commit_bbb",
+            proto_file,
+            governance_approval_path=gov_file,
+            manifest_path=nonexistent_manifest_path,
+        )
+
+    # 2. approved_manifest_sha256 locked in gov record, but manifest_path is None strictly raises ValueError
+    with pytest.raises(ValueError, match="Governance approval record locks manifest hash, but manifest_path was not provided"):
+        validate_frozen_execution_contract(
+            manifest_data,
+            "runtime_commit_bbb",
+            proto_file,
+            governance_approval_path=gov_file,
+            manifest_path=None,
+        )
+
+    # 3. Frozen code identity supplied, but governance record has empty approved_commits strictly raises PermissionError
+    empty_gov_data = dict(valid_gov, approved_commits=[])
+    empty_gov_file = tmp_path / "empty_gov.json"
+    empty_gov_file.write_text(json.dumps(empty_gov_data), encoding="utf-8")
+    with pytest.raises(PermissionError, match="empty or missing approved_commits list"):
+        validate_frozen_execution_contract(
+            manifest_data,
+            "runtime_commit_bbb",
+            proto_file,
+            governance_approval_path=empty_gov_file,
+            manifest_path=manifest_file,
+        )
+
+    # 4. Frozen code identity supplied, but is NOT in governance record approved_commits strictly raises PermissionError
+    unapproved_gov_data = dict(valid_gov, approved_commits=["other_commit_zzz"])
+    unapproved_gov_file = tmp_path / "unapproved_gov.json"
+    unapproved_gov_file.write_text(json.dumps(unapproved_gov_data), encoding="utf-8")
+    with pytest.raises(PermissionError, match="NOT in independent approval record whitelist"):
+        validate_frozen_execution_contract(
+            manifest_data,
+            "runtime_commit_bbb",
+            proto_file,
+            governance_approval_path=unapproved_gov_file,
+            manifest_path=manifest_file,
+        )
+
+    # 5. Non-circular contract passes cleanly
+    rec = validate_frozen_execution_contract(
+        manifest_data,
+        "runtime_commit_bbb",
+        proto_file,
+        governance_approval_path=gov_file,
+        manifest_path=manifest_file,
+    )
+    assert rec["contract_status"] == "APPROVED"
+
+
+
 
 
 

@@ -9,7 +9,7 @@
   "academic_institution_context": "Final Year Engineering Project — Selective Adaptation Under Accent Disparity",
   "approved_protocol_sha256": "feeda07e2b34caaee1338a0a546d4dcdb961767d560cb7bb21a44c7165600c9b",
   "approved_manifest_sha256": "7dcf8d5812ce8b555d1f4c0b1a1f2d63263e83c81120bd811cc8fcb427cfbd95",
-  "frozen_code_commit_sha": "f17328e913a1fe1045f6277dc0dbbcbc7469b184",
+  "frozen_code_commit_sha": "4e83479b6930d532512fc6707486ca220b2dbf68",
   "approved_commits": [
     "706ea99cd1b16d935a0ead891e7df0f09c1517a0",
     "9fd40da63bc76b4dfcf04562ef56cd02c42f57e7",
@@ -28,6 +28,7 @@
     "3299ef711420cce01fa9cd154ff536d99a718a61",
     "e4bceb95994a18eda576083a1d4eb653a6629b91",
     "05c5c9b7296b6194742f8d04fafdb5dec28052ad",
-    "f17328e913a1fe1045f6277dc0dbbcbc7469b184"
+    "f17328e913a1fe1045f6277dc0dbbcbc7469b184",
+    "4e83479b6930d532512fc6707486ca220b2dbf68"
   ]
 }

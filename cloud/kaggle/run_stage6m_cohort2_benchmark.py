@@ -98,8 +98,17 @@ CANONICAL_PROTOCOL_ACCENTS: FrozenSet[str] = frozenset([
     "Canadian English",
     "Irish English",
 ])
-EXPECTED_SENTINEL_SPEAKERS_PER_STRATUM: int = 5
-EXPECTED_TOTAL_SENTINEL_SPEAKERS: int = 30
+# Historical Stage 5 / Cohort 2 Sentinel Panel Specifications (Exploratory Benchmark)
+HISTORICAL_STAGE5_SENTINEL_SPEAKERS_PER_STRATUM: int = 5
+HISTORICAL_STAGE5_TOTAL_SENTINEL_SPEAKERS: int = 30
+
+# Confirmatory Protocol v1.4.0 Cohort 3 Gate-Reference Sentinel Panel Specifications
+COHORT3_GATE_REF_SPEAKERS_PER_STRATUM: int = 20
+COHORT3_TOTAL_GATE_REF_SPEAKERS: int = 120
+
+# Canonical Aliases (defaulting to historical 5/30 for backwards compatibility)
+EXPECTED_SENTINEL_SPEAKERS_PER_STRATUM: int = HISTORICAL_STAGE5_SENTINEL_SPEAKERS_PER_STRATUM
+EXPECTED_TOTAL_SENTINEL_SPEAKERS: int = HISTORICAL_STAGE5_TOTAL_SENTINEL_SPEAKERS
 
 
 def validate_sentinel_panel_against_canonical_protocol(
@@ -185,6 +194,43 @@ def validate_sentinel_panel_against_canonical_protocol(
         )
 
     return core_df
+
+
+def validate_cohort3_gate_reference_panel(
+    gate_ref_df: pd.DataFrame,
+    ref_manifest_data: Optional[Dict[str, Any]] = None,
+) -> pd.DataFrame:
+    """
+    Validates that the Cohort 3 gate-reference panel satisfies authoritative Protocol v1.4.0 specifications:
+    1. Role must be 'gate_reference_panel' and manifest_version 'v1.4.0' if manifest data provided.
+    2. Exactly 20 speakers per canonical stratum across all 6 canonical strata (120 speakers total).
+    3. No missing, blank, or inconsistent speaker IDs / accent mappings.
+    Returns the validated core reference panel (1 clip per speaker).
+    """
+    if ref_manifest_data is not None:
+        if ref_manifest_data.get("role") != "gate_reference_panel":
+            raise ValueError(
+                f"Confirmatory Integrity Violation: gate_ref_manifest role='{ref_manifest_data.get('role')}' "
+                "must be 'gate_reference_panel'."
+            )
+        if ref_manifest_data.get("manifest_version") != "v1.4.0":
+            raise ValueError(
+                f"Confirmatory Integrity Violation: gate_ref_manifest version='{ref_manifest_data.get('manifest_version')}' "
+                "must be 'v1.4.0'."
+            )
+        spks_per_acc = int(ref_manifest_data.get("speakers_per_accent", COHORT3_GATE_REF_SPEAKERS_PER_STRATUM))
+        if spks_per_acc != COHORT3_GATE_REF_SPEAKERS_PER_STRATUM:
+            raise ValueError(
+                f"Confirmatory Protocol Violation: Gate reference panel 'speakers_per_accent' is {spks_per_acc}, "
+                f"must be exactly {COHORT3_GATE_REF_SPEAKERS_PER_STRATUM} (total {COHORT3_TOTAL_GATE_REF_SPEAKERS}) under Protocol v1.4.0."
+            )
+
+    return validate_sentinel_panel_against_canonical_protocol(
+        gate_ref_df,
+        canonical_accents=CANONICAL_PROTOCOL_ACCENTS,
+        expected_speakers_per_accent=COHORT3_GATE_REF_SPEAKERS_PER_STRATUM,
+        expected_total_speakers=COHORT3_TOTAL_GATE_REF_SPEAKERS,
+    )
 
 
 def batch_transcribe_gpu(
@@ -341,13 +387,25 @@ def validate_frozen_execution_contract(
     # 2. Manifest Hash Cross-Validation against Trust Anchor
     trusted_manifest_sha = gov_record.get("approved_manifest_sha256")
     if trusted_manifest_sha:
-        if manifest_path is not None and manifest_path.exists():
-            actual_manifest_sha = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
-            if actual_manifest_sha != trusted_manifest_sha:
-                raise ValueError(
-                    f"Independent Governance Lock: Manifest physical SHA-256 '{actual_manifest_sha}' does not match "
-                    f"independent approval record '{trusted_manifest_sha}'."
-                )
+        if manifest_path is None:
+            raise ValueError(
+                "Independent Governance Lock: Governance approval record locks manifest hash, "
+                "but manifest_path was not provided for verification."
+            )
+        if not manifest_path.exists():
+            raise FileNotFoundError(
+                f"Confirmatory Manifest Violation: Physical manifest missing at '{manifest_path}'."
+            )
+        actual_manifest_sha = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+        if actual_manifest_sha != trusted_manifest_sha:
+            raise ValueError(
+                f"Independent Governance Lock: Manifest physical SHA-256 '{actual_manifest_sha}' does not match "
+                f"independent approval record '{trusted_manifest_sha}'."
+            )
+    elif manifest_path is not None and not manifest_path.exists():
+        raise FileNotFoundError(
+            f"Confirmatory Manifest Violation: Physical manifest missing at '{manifest_path}'."
+        )
 
     # 3. Approved Commit List and Non-Circular Code Identity Validation
     trusted_approved_commits = gov_record.get("approved_code_commits") or gov_record.get("approved_commits", [])
@@ -1144,23 +1202,8 @@ def main():
         if ref_strata != set(CANONICAL_PROTOCOL_ACCENTS):
             raise ValueError(f"Gate reference panel accents {ref_strata} do not match canonical set {CANONICAL_PROTOCOL_ACCENTS}")
 
-        # Unique speaker-to-accent mapping in gate reference panel
-        ref_spk_accent_counts = gate_ref_df.groupby("speaker_id")["stage5_accent_group"].nunique()
-        ref_inconsistent_spks = ref_spk_accent_counts[ref_spk_accent_counts > 1].index.tolist()
-        if ref_inconsistent_spks:
-            raise ValueError(
-                f"Confirmatory Accent Mapping Violation in gate reference panel: {len(ref_inconsistent_spks)} speakers mapped to multiple accents."
-            )
-
-        # Power/precision sized reference panel (defaults to >= 20 speakers per accent)
-        expected_ref_spks_per_stratum = int(ref_manifest_data.get("speakers_per_accent", 20))
-        for acc in CANONICAL_PROTOCOL_ACCENTS:
-            acc_spks = gate_ref_df[gate_ref_df["stage5_accent_group"] == acc]["speaker_id"].nunique()
-            if acc_spks < expected_ref_spks_per_stratum:
-                raise ValueError(
-                    f"Gate reference panel stratum '{acc}' has {acc_spks} speakers, "
-                    f"below required precision threshold of {expected_ref_spks_per_stratum}."
-                )
+        # Power/precision sized reference panel (strictly 20 speakers per accent = 120 total under Protocol v1.4.0)
+        validate_cohort3_gate_reference_panel(gate_ref_df, ref_manifest_data)
 
         # Verify gate reference audio payloads existence, non-zero size, path consistency, and mandatory content hash lock
         gate_ref_audio_hashes = ref_manifest_data.get("audio_hashes") or ref_manifest_data.get("files", {}).get("audio_sha256", {})
@@ -1245,13 +1288,13 @@ def main():
 
     # Core Stratified Sentinel Panel: 1 clip per sentinel speaker
     if args.cohort == "cohort3":
+        core_sentinel_df = validate_cohort3_gate_reference_panel(sentinel_df, ref_manifest_data)
+    else:
         core_sentinel_df = validate_sentinel_panel_against_canonical_protocol(
             sentinel_df,
-            expected_speakers_per_accent=expected_ref_spks_per_stratum,
-            expected_total_speakers=expected_ref_spks_per_stratum * len(CANONICAL_PROTOCOL_ACCENTS),
+            expected_speakers_per_accent=HISTORICAL_STAGE5_SENTINEL_SPEAKERS_PER_STRATUM,
+            expected_total_speakers=HISTORICAL_STAGE5_TOTAL_SENTINEL_SPEAKERS,
         )
-    else:
-        core_sentinel_df = validate_sentinel_panel_against_canonical_protocol(sentinel_df)
     core_sentinel_ids = [str(r.get("sentinel_id") or r.get("recording_id")) for _, r in core_sentinel_df.iterrows()]
 
     sentinel_file_list = []
