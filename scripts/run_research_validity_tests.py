@@ -79,18 +79,22 @@ def main():
 
     # 3. Capture post-execution working tree status before writing log
     status_output_post = _git("status", "--porcelain")
-    clean_status_during = "UNKNOWN" if status_output_post == "UNKNOWN" else ("true" if status_output_post == "" else "false")
+    clean_status_post = "UNKNOWN" if status_output_post == "UNKNOWN" else ("true" if status_output_post == "" else "false")
+
+    cmd_exact = subprocess.list2cmdline(pytest_cmd)
 
     # 4. Construct complete provenance header
     header_lines = [
         "=== PROVENANCE HEADER ===",
         f"git_commit_sha: {sha}",
         f"git_working_tree_clean_pre_run: {clean_status_pre}",
-        f"git_working_tree_clean_during_execution: {clean_status_during}",
+        f"git_working_tree_clean_post_run: {clean_status_post}",
+        "cleanliness_verification_scope: checked immediately before and immediately after subprocess execution; does not monitor in-flight transient filesystem modifications during execution",
         f"git_describe: {describe}",
         f"execution_timestamp_utc: {timestamp_utc}",
         f"python_version: {python_ver}",
-        f"command: {cmd_display}",
+        f"executable_path: {sys.executable}",
+        f"command: {cmd_exact}",
         "=== END PROVENANCE HEADER ===",
         "",
     ]
