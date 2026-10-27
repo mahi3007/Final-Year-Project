@@ -1,5 +1,8 @@
 === PROVENANCE HEADER ===
-git_commit_sha: 4b3eb9707c3f6310541d7dbce671a6c31dc55fa3
+tested_commit_sha: 4b3eb9707c3f6310541d7dbce671a6c31dc55fa3
+tested_commit_state: clean working tree (pre-run clean=true, post-run clean=true)
+provenance_header_status: AMENDED_RETROSPECTIVELY
+provenance_amendment_disclosure: Header fields for post-run cleanliness semantics, scope verification disclaimer, executable path, and list2cmdline command formatting were updated retrospectively in commit d61ba84 to accurately reflect the execution parameters of the test suite run conducted on commit 4b3eb97.
 git_working_tree_clean_pre_run: true
 git_working_tree_clean_post_run: true
 cleanliness_verification_scope: checked immediately before and immediately after subprocess execution; does not monitor in-flight transient filesystem modifications during execution
