@@ -14,7 +14,7 @@
 In response to the independent audit of commit `c481fb3` (**Verdict: PARTIAL PASS — Cohort 3 remains on HOLD**), this engineering remediation addresses every remaining finding and provides live repository-wide test evidence:
 
 1. **Test 42E Structural Validation Testing & Modularization (RESOLVED):**
-   - **Modular Validator Extraction:** Extracted the structural validation block from `main()` into a standalone, tested helper function in [`cloud/kaggle/run_stage6m_cohort2_benchmark.py`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/cloud/kaggle/run_stage6m_cohort2_benchmark.py#L595-L675):
+   - **Modular Validator Extraction:** Extracted the structural validation block from `main()` into a standalone, tested helper function in [`cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py#L595-L675):
      ```python
      def validate_cohort3_structural_design(
          eval_df: pd.DataFrame,
@@ -25,7 +25,7 @@ In response to the independent audit of commit `c481fb3` (**Verdict: PARTIAL PAS
      ) -> None
      ```
    - **Elimination of Stale Comment:** Removed the obsolete comment `# Exact 78 speakers per accent and 15 clips per speaker` at line 1073 and wired `validate_cohort3_structural_design` directly into `main()`.
-   - **Comprehensive Test 42E Replacement:** Replaced the local arithmetic check with two exhaustive test cases in [`tests/research_validity/test_stage6m_numerical_safety.py`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/tests/research_validity/test_stage6m_numerical_safety.py#L1645-L1775):
+   - **Comprehensive Test 42E Replacement:** Replaced the local arithmetic check with two exhaustive test cases in [`tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/research_validity/test_stage6m_numerical_safety.py#L1645-L1775):
      - `test_runner_cohort3_structural_validator_accepts_valid_design`: Proves acceptance on a complete 19,800-clip structure ($6 \times 220 \times 15$) both with and without manifest metadata.
      - `test_runner_cohort3_structural_validator_fails_closed_on_structural_violations`: Proves fail-closed rejection for:
        1. Missing required structural columns (`recording_id`, `speaker_id`, `stage5_accent_group`).
@@ -37,22 +37,22 @@ In response to the independent audit of commit `c481fb3` (**Verdict: PARTIAL PAS
        7. Unbalanced stratum speaker counts (e.g. 219 vs 221 speakers).
        8. Non-15 clip counts per speaker (e.g. 14 vs 16 clips).
 
-2. **Simulation Terminology & Pre-Registered Specification Artifact (RESOLVED):**
-   - **Pre-Registered Power Simulation Specification:** Created a dated, immutable specification artifact at [`reports/stage6m/stage6m_rule_b_power_simulation_spec.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_rule_b_power_simulation_spec.json) (`SPEC-STAGE6M-RULE-B-POWER-SIM-001`, timestamp `2026-10-26T21:00:00Z`).
+2. **Simulation Terminology & Specification Artifact (Historical Draft — Superseded by Retrospective Specification in Commit 4b3eb97):**
+   - **Power Simulation Specification:** Created an initial specification artifact at [`reports/stage6m/stage6m_rule_b_power_simulation_spec.json`](stage6m_rule_b_power_simulation_spec.json) (`SPEC-STAGE6M-RULE-B-POWER-SIM-001`, historical timestamp `2026-10-26T21:00:00Z`). *(Historical Context: Initially drafted as "pre-registered", audit finding post-259b78f noted that commit c481fb3 already contained the simulation result. As remediated in commit 4b3eb97, this artifact was formally reclassified as RETROSPECTIVE_SPECIFICATION with an explicit chronological disclosure; see Section 7 & 8).*
    - Documented the design ($N=220$, 1,320 speakers, 19,800 clips, $N_{\text{sim}} = 200$, $B=1,000$), master seed `20261028`, trajectory formula `20261028 + sim_idx * 37`, Holm-Bonferroni 9-hypothesis gate, and Clopper-Pearson $\text{LCB}_{95\%} \ge 90.0\%$ decision rule.
-   - **Terminology Alignment:** Updated the recommendation text in [`scripts/calibrate_stage6m_development_variance.py`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/scripts/calibrate_stage6m_development_variance.py#L622) and [`reports/stage6m/development_variance_calibration.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/development_variance_calibration.json#L450) to refer to this as an *"independent power-sizing simulation under declared scenario assumptions"*, explicitly clarifying that it evaluates a study design under modeling assumptions rather than physical audio data.
+   - **Terminology Alignment:** Updated the recommendation text in [`scripts/calibrate_stage6m_development_variance.py`](../../scripts/calibrate_stage6m_development_variance.py#L622) and [`reports/stage6m/development_variance_calibration.json`](development_variance_calibration.json#L450) to refer to this as an *"independent power-sizing simulation under declared scenario assumptions"*, explicitly clarifying that it evaluates a study design under modeling assumptions rather than physical audio data.
 
 3. **Reconciled Governance Record (RESOLVED):**
-   - Reconciled [`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_v1_4_governance_approval_record.json):
-     - `approved_protocol_sha256`: Updated to `e8019afe1c0f0ada3ac05fde3ebdf9d2bf38e6b6398c31cc74c2baf0c8625345` (matching the amended [`reports/stage6m/stage6m_v1_4_selective_adaptation_protocol.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_v1_4_selective_adaptation_protocol.md)).
+   - Reconciled [`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](stage6m_v1_4_governance_approval_record.json):
+     - `approved_protocol_sha256`: Updated to `e8019afe1c0f0ada3ac05fde3ebdf9d2bf38e6b6398c31cc74c2baf0c8625345` (matching the amended [`reports/stage6m/stage6m_v1_4_selective_adaptation_protocol.md`](stage6m_v1_4_selective_adaptation_protocol.md)).
      - `approved_commits`: Added audited commits `be23b679adb61f88cd418903ccb6814af2f614aa` and `c481fb31f115f3de8eab304dad8a3264f5cbde20`.
      - `governance_status_rationale`: Updated to reflect that Decision Rule B ($N=220$, 19,800 clips) is incorporated into the draft protocol (Section 4.2) and runner guards, while keeping Cohort 3 locked on HOLD pending physical dataset materialization, manifest SHA-256 locking, and cryptographic sign-off.
      - Preserved `governance_status: "DRAFT_HOLD"` and `signature_ed25519_hex: "UNSIGNED_DRAFT_HOLD"`.
 
-4. **Complete Live Repository-Wide Test Evidence (RESOLVED):**
-   - Executed the full research validity test suite (`tests/research_validity/`):
-     - **Result:** **309 passed, 0 failed, 6 warnings in 640.30s (10m40s)**
-     - Full execution log preserved at [`reports/stage6m/research_validity_pytest_run.log`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/research_validity_pytest_run.log).
+4. **Initial Repository-Wide Test Evidence on Commit `259b78f` (Historical Execution):**
+   - Executed the full research validity test suite (`tests/research_validity/`) on commit `259b78f`:
+     - **Result:** **309 passed, 0 failed, 6 warnings in 640.30s (10m40s)** *(Historical Note: This initial run established the 309-test count before provenance runner tooling was introduced; the subsequent full run on clean commit 4b3eb97 with automated provenance capture took 1,024.52s; see Section 8).*
+     - Initial execution log preserved at [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log).
 
 ---
 
@@ -65,10 +65,10 @@ In response to the independent audit of commit `c481fb3` (**Verdict: PARTIAL PAS
 | **Runner Stale Comment** | Stale "78 spk" comment | Stale "78 spk" comment | **REMOVED** | Stale comment removed; validator modularized. |
 | **Speaker Summary Row Uniqueness** | Not asserted | PASS (source-level) | **FULL PASS** | `spk_df["speaker_id"].nunique() == len(spk_df)` strictly verified. |
 | **Cross-Cohort Disjointness** | Intra-cohort only | PASS (7,920 clips checked) | **FULL PASS** | 0 recording ID overlap and 0 speaker ID overlap across Cohorts 1 and 2. |
-| **Independent Power Simulation** | Trajectory overlap | PASS (seed 20261028) | **FULL PASS (Pre-Registered Spec)** | Seed 20261028: $\hat{P} = 95.00\%$, $\text{LCB} = 91.00\% \ge 90.0\%$. Pre-run spec preserved in JSON. |
+| **Independent Power Simulation** | Trajectory overlap | PASS (seed 20261028) | **PASS (Retrospective Spec in 4b3eb97)** | Seed 20261028: $\hat{P} = 95.00\%$, $\text{LCB} = 91.00\% \ge 90.0\%$. Formally documented retrospectively (see Section 8). |
 | **Simulation Terminology** | "Guarantees" | "Independent confirmatory" | **CORRECTED** | Labeled "independent power-sizing simulation under declared scenario assumptions". |
 | **Governance Record Reconciliation** | Unreconciled | Unreconciled | **RECONCILED (`DRAFT_HOLD`)** | Reconciled protocol SHA-256, approved commits, and rationale; status remains `DRAFT_HOLD`. |
-| **Full Suite Test Evidence** | Prior 306/306 run | Partial (66 tests) | **FULL PASS (309/309)** | Live test run: 309 passed in 640.30s (10m40s); log preserved. |
+| **Full Suite Test Evidence** | Prior 306/306 run | Partial (66 tests) | **FULL PASS (309/309 on 4b3eb97)** | Initial run: 309 passed in 640.30s on 259b78f; verified full run: 309 passed in 1024.52s on clean 4b3eb97 (see Section 8). |
 | **Confirmatory Cohort 3 Status** | HOLD | HOLD | **HOLD** | Formally blocked under `DRAFT_HOLD` / `UNSIGNED_DRAFT_HOLD`. |
 
 ---
@@ -76,7 +76,7 @@ In response to the independent audit of commit `c481fb3` (**Verdict: PARTIAL PAS
 ## 3. Structural Validation Implementation & Test Verification
 
 ### Runner Implementation
-[`cloud/kaggle/run_stage6m_cohort2_benchmark.py`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/cloud/kaggle/run_stage6m_cohort2_benchmark.py#L595-L675):
+[`cloud/kaggle/run_stage6m_cohort2_benchmark.py`](../../cloud/kaggle/run_stage6m_cohort2_benchmark.py#L595-L675):
 ```python
 def validate_cohort3_structural_design(
     eval_df: pd.DataFrame,
@@ -138,25 +138,25 @@ def validate_cohort3_structural_design(
 ```
 
 ### Test 42E Execution Evidence
-From [`tests/research_validity/test_stage6m_numerical_safety.py`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/tests/research_validity/test_stage6m_numerical_safety.py#L1645-L1775):
+From [`tests/research_validity/test_stage6m_numerical_safety.py`](../../tests/research_validity/test_stage6m_numerical_safety.py#L1645-L1775):
 - `test_runner_cohort3_structural_validator_accepts_valid_design`: **PASSED**
 - `test_runner_cohort3_structural_validator_fails_closed_on_structural_violations`: **PASSED**
 
 ---
 
-## 4. Pre-Registered Power Simulation Specification & Governance
+## 4. Power Simulation Specification & Governance (Historical Record — Superseded)
 
-### Pre-Registered Spec Document
-[`reports/stage6m/stage6m_rule_b_power_simulation_spec.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_rule_b_power_simulation_spec.json):
+### Specification Document (Historical Draft Record — Reclassified as Retrospective in Commit 4b3eb97)
+[`reports/stage6m/stage6m_rule_b_power_simulation_spec.json`](stage6m_rule_b_power_simulation_spec.json):
 - Document ID: `SPEC-STAGE6M-RULE-B-POWER-SIM-001`
-- Pre-Registration Timestamp: `2026-10-26T21:00:00Z`
+- Historical Draft Timestamp: `2026-10-26T21:00:00Z` (Superseded by retrospective_timestamp_utc in commit 4b3eb97; see Section 7 & 8)
 - Design Target: 220 speakers/accent $\times$ 6 accents $\times$ 15 clips = 19,800 clips
 - Master Seed: `20261028` (disjoint from grid range `42..5555`)
 - Target: Clopper-Pearson 95% $\text{LCB} \ge 90.0\%$ under Holm-Bonferroni 9-hypothesis gate.
 - Result: 190 / 200 successes ($\hat{P} = 95.00\%$, $95\%\text{ CI} = [91.00\%, 97.58\%]$, $\text{LCB} = 91.00\%$).
 
 ### Governance Approval Record
-[`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_v1_4_governance_approval_record.json):
+[`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](stage6m_v1_4_governance_approval_record.json):
 ```json
 {
   "governance_record_version": "v1.4.0",
@@ -180,13 +180,15 @@ From [`tests/research_validity/test_stage6m_numerical_safety.py`](file:///c:/Use
 
 ---
 
-## 5. Live Full Test Suite Evidence
+## 5. Live Full Test Suite Evidence (Initial Historical Execution on Commit `259b78f`)
 
+- **Tested Commit:** `259b78f8557ac3650ac696d83b65c20ca30308bd` (historical execution preceding automated provenance runner)
 - **Command Executed:** `python -m pytest tests/research_validity/ -v`
-- **Output Artifact:** [`reports/stage6m/research_validity_pytest_run.log`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/research_validity_pytest_run.log)
+- **Output Artifact:** [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log)
 - **Summary:**
   ```text
   ================= 309 passed, 6 warnings in 640.30s (0:10:40) =================
+  # Historical baseline execution on commit 259b78f (superseded by clean 4b3eb97 execution taking 1,024.52s)
   ```
 - **Breakdown of Key Suites:**
   - `tests/research_validity/test_stage6m_numerical_safety.py`: 56 passed (includes 42C, 42D, 42E acceptance and fail-closed)
@@ -222,22 +224,22 @@ From [`tests/research_validity/test_stage6m_numerical_safety.py`](file:///c:/Use
 
 ### Implemented Remediations (Post-`259b78f`)
 1. **Retrospective Status & Chronology Disclosure:**
-   - Modified [`reports/stage6m/stage6m_rule_b_power_simulation_spec.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_rule_b_power_simulation_spec.json):
+   - Modified [`reports/stage6m/stage6m_rule_b_power_simulation_spec.json`](stage6m_rule_b_power_simulation_spec.json):
      - Changed `status` from `PRE_REGISTERED_FROZEN` to `RETROSPECTIVE_SPECIFICATION`.
      - Renamed `preregistration_timestamp_utc` to `retrospective_timestamp_utc`.
      - Added `chronological_note` explicitly documenting that this specification was committed retrospectively after the simulation result was published in commit `c481fb3`, disclaiming prospective pre-registration guarantees.
 2. **Parameter Reconciliation:**
-   - Updated `calibrated_scenario_assumptions` in [`reports/stage6m/stage6m_rule_b_power_simulation_spec.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_rule_b_power_simulation_spec.json):
+   - Updated `calibrated_scenario_assumptions` in [`reports/stage6m/stage6m_rule_b_power_simulation_spec.json`](stage6m_rule_b_power_simulation_spec.json):
      - Added exact `baseline_wer_per_accent_pp` mapping matching `simulate_design_stage_joint_power()`:
        `US: 14.2`, `Canadian: 16.1`, `England: 17.4`, `Australian: 19.3`, `South Asian: 23.5`, `Irish: 26.1`.
      - Reconciled `baseline_wer_mean_pp` from erroneous `27.5` to exact derived mean `19.43`.
      - Reconciled `modeled_selective_adaptation_wer_effect_pp` from erroneous `-1.5` to `-3.50`, matching `target_primary_effect_pp = 3.50` in `DesignStagePowerSpec`.
 3. **Governance Record Update:**
-   - Appended commit `259b78f8557ac3650ac696d83b65c20ca30308bd` to `approved_commits` in [`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_v1_4_governance_approval_record.json).
+   - Appended commit `259b78f8557ac3650ac696d83b65c20ca30308bd` to `approved_commits` in [`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](stage6m_v1_4_governance_approval_record.json).
    - Preserved `DRAFT_HOLD` / `UNSIGNED_DRAFT_HOLD` status.
 4. **Automated Test Provenance Tooling:**
-   - Implemented [`scripts/run_research_validity_tests.py`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/scripts/run_research_validity_tests.py), which queries Git for `git_commit_sha`, `git_working_tree_clean`, and `git_describe`, captures UTC execution timestamps and Python version, and prepends a structured `=== PROVENANCE HEADER ===` to test execution logs.
-   - Converted [`reports/stage6m/research_validity_pytest_run.log`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/research_validity_pytest_run.log) to clean UTF-8 with provenance header bound to commit `259b78f`.
+   - Implemented [`scripts/run_research_validity_tests.py`](../../scripts/run_research_validity_tests.py), which queries Git for `git_commit_sha`, `git_working_tree_clean`, and `git_describe`, captures UTC execution timestamps and Python version, and prepends a structured `=== PROVENANCE HEADER ===` to test execution logs.
+   - Converted [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log) to clean UTF-8 with provenance header bound to commit `259b78f`.
 
 ---
 
@@ -254,7 +256,7 @@ From [`tests/research_validity/test_stage6m_numerical_safety.py`](file:///c:/Use
 
 ### Implemented Remediations (Post-`44fb335`)
 1. **Elimination of Contradictory Pre-Registration Phrasing:**
-   - Updated [`reports/stage6m/stage6m_rule_b_power_simulation_spec.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_rule_b_power_simulation_spec.json):
+   - Updated [`reports/stage6m/stage6m_rule_b_power_simulation_spec.json`](stage6m_rule_b_power_simulation_spec.json):
      - In `scope_limitation`: Replaced "pre-registers" with "documents retrospectively".
      - In `simulation_design_specification`: Renamed `prespecified_speakers_per_stratum` to `speakers_per_stratum`.
      - In `prospective_claim_boundary`: Clarified that sizing power is conditional on declared in silico scenario inputs, distinct from physical speech distributions.
@@ -270,7 +272,7 @@ From [`tests/research_validity/test_stage6m_numerical_safety.py`](file:///c:/Use
    - Command fidelity: Includes `--tb=short` and all command arguments in the logged command string.
    - Log writing is deferred until after pytest exits cleanly.
 4. **Governance Record Update:**
-   - Appended commits `44fb335ea558b4e4568fd57988e75e27cc6d7c22` and `4b3eb9707c3f6310541d7dbce671a6c31dc55fa3` to `approved_commits` in [`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_v1_4_governance_approval_record.json).
+   - Appended commits `44fb335ea558b4e4568fd57988e75e27cc6d7c22` and `4b3eb9707c3f6310541d7dbce671a6c31dc55fa3` to `approved_commits` in [`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](stage6m_v1_4_governance_approval_record.json).
    - Preserved `governance_status: "DRAFT_HOLD"` and `signature_ed25519_hex: "UNSIGNED_DRAFT_HOLD"`.
 
 ### Live Full-Suite Test Execution on Clean Revision `4b3eb97`
@@ -291,7 +293,7 @@ From [`tests/research_validity/test_stage6m_numerical_safety.py`](file:///c:/Use
   ```text
   ================ 309 passed, 6 warnings in 1024.52s (0:17:04) =================
   ```
-- **Log Artifact:** [`reports/stage6m/research_validity_pytest_run.log`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/research_validity_pytest_run.log) (Clean UTF-8, bound directly to clean commit `4b3eb97`).
+- **Log Artifact:** [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log) (Clean UTF-8, bound directly to clean commit `4b3eb97`).
 - **Confirmatory Cohort 3 Status:** Strictly on **HOLD** (`DRAFT_HOLD` / `UNSIGNED_DRAFT_HOLD`).
 
 ---
@@ -305,7 +307,7 @@ From [`tests/research_validity/test_stage6m_numerical_safety.py`](file:///c:/Use
 
 ### Resolved Remaining Issues
 1. **Runner Cleanliness Field Precision:**
-   - Renamed `git_working_tree_clean_during_execution` to `git_working_tree_clean_post_run` in [`scripts/run_research_validity_tests.py`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/scripts/run_research_validity_tests.py) and [`reports/stage6m/research_validity_pytest_run.log`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/research_validity_pytest_run.log).
+   - Renamed `git_working_tree_clean_during_execution` to `git_working_tree_clean_post_run` in [`scripts/run_research_validity_tests.py`](../../scripts/run_research_validity_tests.py) and [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log).
    - Added explicit scope note: `cleanliness_verification_scope: checked immediately before and immediately after subprocess execution; does not monitor in-flight transient filesystem modifications during execution`.
    - Logged exact executable command using `subprocess.list2cmdline` along with `executable_path: sys.executable`.
 2. **Commit Chain Binding vs Independent Verification:**
@@ -332,15 +334,15 @@ From [`tests/research_validity/test_stage6m_numerical_safety.py`](file:///c:/Use
 
 ### Implemented Traceability Remediations
 1. **Direct Repository Commitment of Audit Document:**
-   - Committed the full audit tracking document directly into the Git repository at [`reports/stage6m/stage6m_v1_4_independent_remediation_audit.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_v1_4_independent_remediation_audit.md) so that the entire audit trail and sections 1-10 are fully inspectable in GitHub repository diffs.
+   - Committed the full audit tracking document directly into the Git repository at [`reports/stage6m/stage6m_v1_4_independent_remediation_audit.md`](stage6m_v1_4_independent_remediation_audit.md) so that the entire audit trail and sections 1-10 are fully inspectable in GitHub repository diffs.
 2. **Explicit Retrospective Provenance Amendment Disclosure:**
-   - Updated the provenance header in [`reports/stage6m/research_validity_pytest_run.log`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/research_validity_pytest_run.log):
+   - Updated the provenance header in [`reports/stage6m/research_validity_pytest_run.log`](research_validity_pytest_run.log):
      - `tested_commit_sha: 4b3eb9707c3f6310541d7dbce671a6c31dc55fa3`
      - `tested_commit_state: clean working tree (pre-run clean=true, post-run clean=true)`
      - `provenance_header_status: AMENDED_RETROSPECTIVELY`
      - `provenance_amendment_disclosure: Header fields for post-run cleanliness semantics, scope verification disclaimer, executable path, and list2cmdline command formatting were updated retrospectively in commit d61ba84 to accurately reflect the execution parameters of the test suite run conducted on commit 4b3eb97.`
 3. **Governance Record Update:**
-   - Appended commit `d61ba843d14cc65c7c3e4c9cbf18dd692cdc0fe6` to `approved_commits` in [`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_v1_4_governance_approval_record.json).
+   - Appended commit `d61ba843d14cc65c7c3e4c9cbf18dd692cdc0fe6` to `approved_commits` in [`reports/stage6m/stage6m_v1_4_governance_approval_record.json`](stage6m_v1_4_governance_approval_record.json).
    - Preserved `governance_status: "DRAFT_HOLD"` and `signature_ed25519_hex: "UNSIGNED_DRAFT_HOLD"`.
 4. **Cohort 3 Blocker Status Re-Affirmed:**
    - Cohort 3 remains strictly locked on `DRAFT_HOLD` / `UNSIGNED_DRAFT_HOLD` pending physical audio dataset materialization, final manifest locking, gate panel locking, and independent cryptographic signature.
