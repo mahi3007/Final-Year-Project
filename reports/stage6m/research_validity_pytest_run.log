@@ -1,12 +1,14 @@
 === PROVENANCE HEADER ===
-git_commit_sha: 259b78f8557ac3650ac696d83b65c20ca30308bd
-git_working_tree_clean: true
-git_describe: 259b78f
-execution_timestamp_utc: 2026-10-26T21:15:00Z
+git_commit_sha: 4b3eb9707c3f6310541d7dbce671a6c31dc55fa3
+git_working_tree_clean_pre_run: true
+git_working_tree_clean_during_execution: true
+git_describe: 4b3eb97
+execution_timestamp_utc: 2026-10-27T02:36:35Z
 python_version: 3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]
-command: python -m pytest tests/research_validity/ -v
+command: python -m pytest tests/research_validity/ -v --tb=short
 === END PROVENANCE HEADER ===
-
+C:\Users\venka\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\__init__.py:113: RequestsDependencyWarning: urllib3 (1.26.12) or chardet (7.4.3)/charset_normalizer (2.1.1) doesn't match a supported version!
+  warnings.warn(
 ============================= test session starts =============================
 platform win32 -- Python 3.11.9, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\venka\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe
 cachedir: .pytest_cache
@@ -350,4 +352,5 @@ tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py::test_
   <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-================= 309 passed, 6 warnings in 640.30s (0:10:40) =================
+================ 309 passed, 6 warnings in 1024.52s (0:17:04) =================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
