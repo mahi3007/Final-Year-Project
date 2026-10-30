@@ -1,17 +1,33 @@
 {
-  "timestamp_utc": "2026-10-30T11:54:09.017373+00:00",
+  "timestamp_utc": "2026-10-30T12:20:37.144711+00:00",
   "governing_standard": "ADR-005",
   "protocol_version": "v1.4.0",
-  "curation_script_commit": "6a9190a8d6bd81883a83bf0a971228118c4b790c",
+  "audit_script_provenance": {
+    "script_path": "scripts/stage6m_multi_corpus_feasibility_audit.py",
+    "script_sha256": "81659464d4db3baffadb58969a0d2baeecb1b41b6bae74a89cd12752c7b11328",
+    "git_commit_sha": "0e1913c9ad3a7cd2313062be9d2b194534bf72e3",
+    "git_working_tree_clean": false,
+    "git_uncommitted_changes_count": 6
+  },
   "governance_status": "DRAFT_HOLD",
+  "authorization_standard": "Protocol Section 14.7 (PROJECT_LEAD_ACADEMIC_AUTHORIZATION)",
   "confirmatory_execution_authorized": false,
   "overall_disposition": "INFEASIBLE",
-  "disposition_summary": "Decision Rule B (240 speakers/stratum = 1,440 total across 6 strata) is INFEASIBLE across all candidate open corpora combined. Mozilla Common Voice 27 has 0 unexposed strictly eligible Irish speakers remaining. Edinburgh Accent Corpus (EdAcc) contains only 104 speakers worldwide across 40 accents (at most 3-4 Irish speakers). VoxCeleb lacks verbatim ground-truth transcripts and validated accent labels, rendering it methodologically inadmissible for confirmatory ASR evaluation under Protocol v1.4.0. Across all candidates, the maximum identifiable unexposed Irish pool is only 15 speakers (shortfall: 225 speakers). Furthermore, any uncrossed patchwork creates mathematically collinear corpus-by-accent confounding (Rank(X) < p), and downsampling to N_g <= 40 causes joint statistical power to drop below the mandatory 90% threshold.",
+  "disposition_summary": "Under the currently recorded capacity assumptions and strict eligibility requirements, the candidate-corpus registry cannot supply the six-stratum Decision Rule B target (240 speakers/stratum = 1,440 total across 6 strata). Mozilla Common Voice 27 has 0 unexposed strictly eligible Irish speakers remaining. Edinburgh Accent Corpus (EdAcc) contains only 104 speakers worldwide across 40 accents (at most 3-4 Irish speakers). VoxCeleb lacks verbatim ground-truth transcripts and validated accent labels, rendering it methodologically inadmissible for confirmatory ASR evaluation under Protocol v1.4.0. Across all candidates, the maximum identifiable unexposed Irish pool is only 15 speakers (shortfall: 225 speakers). Furthermore, any uncrossed patchwork creates mathematically collinear corpus-by-accent confounding (Rank(X) < p), and downsampling to N_g <= 40 causes joint statistical power to drop below the mandatory 90% threshold.",
   "candidate_corpora_profiles": {
     "Mozilla Common Voice 27.0": {
       "corpus_id": "CV27",
+      "provenance_status": "EMPIRICALLY_VERIFIED_WORKSPACE_SCAN",
       "institution": "Mozilla Data Collective",
-      "license": "CC0-1.0",
+      "license": "CC0-1.0 (Public Domain Dedication)",
+      "source_reference": "Common Voice Corpus 27.0 (en, cv-corpus-27.0-2026-09-11)",
+      "empirical_scan_metadata": {
+        "scanned_source_file": "validated.tsv",
+        "scanned_source_sha256": "cf2ba256d091e7ee429d2f2eafece507a2c74d812328df8ad72584d41c9c0ad4",
+        "scanned_source_bytes": 147752357,
+        "total_rows_scanned": 1234324,
+        "strict_predicate_version": "V1.4.0-Strict (up>=2, down<2, words>=2, distinct clips>=15)"
+      },
       "speech_task": "Scripted read speech (mobile and web crowdsourcing)",
       "audio_specs": "48 kHz / 32 kHz MP3, varying consumer microphones",
       "transcript_reliability": "HIGH (Human verified via peer voting up>=2, down<2)",
@@ -103,12 +119,21 @@
           "exclusion_rationale": "Meets capacity requirements (3791 unexposed available vs 240 required)."
         }
       },
-      "feasibility_assessment": "Empirically validated in workspace. Robust for 5 of 6 strata. Exhausted for Irish English (0 unexposed eligible speakers remaining)."
+      "feasibility_assessment": "Empirically validated via full workspace TSV scan. Robust surplus for 5 of 6 strata. Completely exhausted for Irish English (0 unexposed eligible speakers remaining)."
     },
     "Edinburgh Accent Corpus (EdAcc)": {
       "corpus_id": "EdAcc",
-      "institution": "University of Edinburgh (Sanabria et al., 2022)",
+      "provenance_status": "DOCUMENTED_ASSUMPTION_UNVERIFIED",
+      "institution": "University of Edinburgh (Sanabria et al., LREC 2022)",
       "license": "CC BY-SA 4.0",
+      "source_reference": "Edinburgh Research Explorer (https://doi.org/10.7488/ds/3468)",
+      "empirical_scan_metadata": {
+        "status": "UNINGESTED_ASSUMPTION",
+        "published_total_speakers": 104,
+        "published_total_hours": 40,
+        "published_accent_categories": 40,
+        "note": "Capacity counts are derived from official published corpus specifications; raw audio is not present in workspace."
+      },
       "speech_task": "Spontaneous conversational dyads over video calls",
       "audio_specs": "16 kHz WAV, headset and built-in laptop microphones",
       "transcript_reliability": "HIGH (Expert verbatim human transcription with linguistic annotation)",
@@ -127,7 +152,7 @@
           "historical_exposure": 0,
           "available_independent_speakers": 2,
           "status": "CRITICAL_DEFICIT",
-          "exclusion_rationale": "Only 2 eligible speakers available (deficit: 238 speakers short of 240)."
+          "exclusion_rationale": "Only 2 eligible speakers documented (deficit: 238 speakers short of 240)."
         },
         "Canadian English": {
           "raw_speakers": 3,
@@ -141,7 +166,7 @@
           "historical_exposure": 0,
           "available_independent_speakers": 2,
           "status": "CRITICAL_DEFICIT",
-          "exclusion_rationale": "Only 2 eligible speakers available (deficit: 238 speakers short of 240)."
+          "exclusion_rationale": "Only 2 eligible speakers documented (deficit: 238 speakers short of 240)."
         },
         "England English": {
           "raw_speakers": 14,
@@ -155,7 +180,7 @@
           "historical_exposure": 0,
           "available_independent_speakers": 8,
           "status": "CRITICAL_DEFICIT",
-          "exclusion_rationale": "Only 8 eligible speakers available (deficit: 232 speakers short of 240)."
+          "exclusion_rationale": "Only 8 eligible speakers documented (deficit: 232 speakers short of 240)."
         },
         "Irish English": {
           "raw_speakers": 4,
@@ -169,7 +194,7 @@
           "historical_exposure": 0,
           "available_independent_speakers": 3,
           "status": "CRITICAL_DEFICIT",
-          "exclusion_rationale": "EdAcc contains only 4 total Irish speakers worldwide (3 eligible with C>=15 clips). Deficit: 237 speakers short of the 240 required by Decision Rule B."
+          "exclusion_rationale": "EdAcc contains only 4 total Irish speakers worldwide (at most 3 eligible with C>=15 clips). Deficit: 237 speakers short of the 240 required by Decision Rule B."
         },
         "South Asian English": {
           "raw_speakers": 16,
@@ -183,7 +208,7 @@
           "historical_exposure": 0,
           "available_independent_speakers": 10,
           "status": "CRITICAL_DEFICIT",
-          "exclusion_rationale": "Only 10 eligible speakers available (deficit: 230 speakers short of 240)."
+          "exclusion_rationale": "Only 10 eligible speakers documented (deficit: 230 speakers short of 240)."
         },
         "US English": {
           "raw_speakers": 8,
@@ -197,15 +222,22 @@
           "historical_exposure": 0,
           "available_independent_speakers": 5,
           "status": "CRITICAL_DEFICIT",
-          "exclusion_rationale": "Only 5 eligible speakers available (deficit: 235 speakers short of 240)."
+          "exclusion_rationale": "Only 5 eligible speakers documented (deficit: 235 speakers short of 240)."
         }
       },
-      "feasibility_assessment": "FATAL SAMPLE SIZE DEFECT: The entire EdAcc corpus contains only 104 speakers across 40 accents. Irish English has at most 3-4 eligible speakers. EdAcc cannot supply 220 or 20 speakers for any stratum."
+      "feasibility_assessment": "STRUCTURAL SAMPLE SIZE DEFICIT: The entire EdAcc corpus contains only 104 speakers across 40 accents. Irish English has at most 3-4 eligible speakers. EdAcc cannot supply 220 or 20 speakers for any stratum."
     },
     "VoxCeleb (VoxCeleb 1 & 2)": {
       "corpus_id": "VoxCeleb",
+      "provenance_status": "DOCUMENTED_ASSUMPTION_UNVERIFIED",
       "institution": "University of Oxford (Nagrani et al., 2017; Chung et al., 2018)",
       "license": "CC BY-NC 4.0 (Non-Commercial Academic Research)",
+      "source_reference": "VGG Oxford (https://www.robots.ox.ac.uk/~vgg/data/voxceleb/)",
+      "empirical_scan_metadata": {
+        "status": "UNINGESTED_ASSUMPTION",
+        "published_total_speakers": 7363,
+        "note": "Evaluated on documented architecture: designed for speaker recognition; lacks verbatim text transcripts and dialect tags."
+      },
       "speech_task": "In-the-wild celebrity interviews extracted from YouTube videos",
       "audio_specs": "16 kHz mono WAV/AAC, variable broadcast/studio/outdoor noise",
       "transcript_reliability": "FATAL DEFECT: Lacks authoritative verbatim evaluation transcripts (speaker recognition dataset)",
@@ -301,8 +333,15 @@
     },
     "OpenSLR 83 (Crowdsourced UK & Ireland)": {
       "corpus_id": "OpenSLR83",
+      "provenance_status": "DOCUMENTED_ASSUMPTION_UNVERIFIED",
       "institution": "Google LLC / OpenSLR (Guevara-Rukoz et al., 2020)",
       "license": "CC BY-SA 4.0",
+      "source_reference": "OpenSLR 83 (https://openslr.org/83/)",
+      "empirical_scan_metadata": {
+        "status": "UNINGESTED_ASSUMPTION",
+        "published_en_ie_lines": 450,
+        "note": "Public catalog records ~450 Irish English male utterances. Distinct eligible speaker count is unverified pending full index ingest."
+      },
       "speech_task": "Crowdsourced mobile read speech",
       "audio_specs": "48 kHz / 16 kHz mono WAV/FLAC, mobile device microphones",
       "transcript_reliability": "HIGH (Prompted read sentences)",
@@ -349,7 +388,7 @@
           "historical_exposure": 0,
           "available_independent_speakers": 45,
           "status": "INSUFFICIENT",
-          "exclusion_rationale": "Only 45 eligible speakers available (deficit: 195 short of 240)."
+          "exclusion_rationale": "Only 45 eligible speakers estimated from catalog (deficit: 195 short of 240)."
         },
         "Irish English": {
           "raw_speakers": 35,
@@ -363,7 +402,7 @@
           "historical_exposure": 0,
           "available_independent_speakers": 12,
           "status": "CRITICAL_DEFICIT",
-          "exclusion_rationale": "OpenSLR 83 en_ie contains only ~450 total audio lines. At C >= 15 clips/speaker, yields at most 12-25 unique speakers (deficit: > 220 short of 240)."
+          "exclusion_rationale": "OpenSLR 83 en_ie contains only ~450 total audio lines. At C >= 15 clips/speaker, yields at most 12-25 unique speakers (deficit: > 215 short of 240)."
         },
         "South Asian English": {
           "raw_speakers": 0,
@@ -394,12 +433,20 @@
           "exclusion_rationale": "Regional UK/Ireland corpus; does not contain US speech."
         }
       },
-      "feasibility_assessment": "INSUFFICIENT FOR IRISH CAPACITY: OpenSLR 83 en_ie contains only ~450 total audio lines. At C >= 15 clips/speaker, yields at most 12-25 unique speakers. Leaves a massive deficit (> 210 speakers short) against the 240-speaker requirement."
+      "feasibility_assessment": "INSUFFICIENT FOR IRISH CAPACITY: OpenSLR 83 en_ie contains only ~450 total audio lines. At C >= 15 clips/speaker, yields at most 12-25 unique speakers. Leaves a massive deficit (> 215 speakers short) against the 240-speaker requirement."
     },
     "AusTalk (Australian National Corpus)": {
       "corpus_id": "AusTalk",
-      "institution": "Big Australian Speech Corpus Consortium / HCSNet",
-      "license": "Academic Research Use / ELRA License",
+      "provenance_status": "DOCUMENTED_ASSUMPTION_UNVERIFIED",
+      "institution": "Big Australian Speech Corpus Consortium / HCSNet / University of Melbourne",
+      "license": "Academic Research Use / ELRA License Agreement Required",
+      "source_reference": "AusTalk Consortium (https://austalk.edu.au)",
+      "empirical_scan_metadata": {
+        "status": "UNINGESTED_ASSUMPTION",
+        "published_adult_speakers": 861,
+        "published_recording_locations": 15,
+        "note": "Published documentation verifies 861 adult speakers. Exact eligible speaker count meeting C>=15 clips requires formal institutional licensing and local indexing."
+      },
       "speech_task": "Standardized multi-task phonetic elicitation",
       "audio_specs": "44.1 kHz 24-bit stereo WAV, studio and quiet acoustic room setups",
       "transcript_reliability": "HIGH (Standardized prompt elicitation)",
@@ -495,8 +542,17 @@
     },
     "IndicTIMIT": {
       "corpus_id": "IndicTIMIT",
-      "institution": "Indian Institute of Science (IISc), Bangalore",
-      "license": "Academic Research Use",
+      "provenance_status": "DOCUMENTED_ASSUMPTION_UNVERIFIED",
+      "institution": "Indian Institute of Science (IISc), Bangalore (SPIRE Lab)",
+      "license": "Academic Research Use / IISc Agreement Required",
+      "source_reference": "SPIRE Datasets (https://spiredatasets.ee.iisc.ac.in)",
+      "empirical_scan_metadata": {
+        "status": "UNINGESTED_ASSUMPTION",
+        "published_voice_artists": 80,
+        "published_nativities": 18,
+        "published_sentences_per_artist": 2342,
+        "note": "Official catalog records 80 artists across 18 regional nativities. Exact eligibility requires institutional dataset download."
+      },
       "speech_task": "Phonetically balanced read speech (TIMIT style)",
       "audio_specs": "16 kHz 16-bit WAV, studio quiet environment",
       "transcript_reliability": "HIGH (Standardized TIMIT-adapted sentence prompts)",
@@ -571,7 +627,7 @@
           "historical_exposure": 0,
           "available_independent_speakers": 50,
           "status": "INSUFFICIENT",
-          "exclusion_rationale": "Only 50 eligible speakers available (deficit: 190 short of 240)."
+          "exclusion_rationale": "Only 50 eligible speakers documented (deficit: 190 short of 240)."
         },
         "US English": {
           "raw_speakers": 0,
@@ -619,7 +675,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 2,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "Only 2 eligible speakers available (deficit: 238 speakers short of 240)."
+        "exclusion_rationale": "Only 2 eligible speakers documented (deficit: 238 speakers short of 240)."
       },
       "VoxCeleb": {
         "raw_speakers": 120,
@@ -705,7 +761,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 2,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "Only 2 eligible speakers available (deficit: 238 speakers short of 240)."
+        "exclusion_rationale": "Only 2 eligible speakers documented (deficit: 238 speakers short of 240)."
       },
       "VoxCeleb": {
         "raw_speakers": 140,
@@ -791,7 +847,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 8,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "Only 8 eligible speakers available (deficit: 232 speakers short of 240)."
+        "exclusion_rationale": "Only 8 eligible speakers documented (deficit: 232 speakers short of 240)."
       },
       "VoxCeleb": {
         "raw_speakers": 450,
@@ -819,7 +875,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 45,
         "status": "INSUFFICIENT",
-        "exclusion_rationale": "Only 45 eligible speakers available (deficit: 195 short of 240)."
+        "exclusion_rationale": "Only 45 eligible speakers estimated from catalog (deficit: 195 short of 240)."
       },
       "AusTalk": {
         "raw_speakers": 0,
@@ -877,7 +933,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 3,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "EdAcc contains only 4 total Irish speakers worldwide (3 eligible with C>=15 clips). Deficit: 237 speakers short of the 240 required by Decision Rule B."
+        "exclusion_rationale": "EdAcc contains only 4 total Irish speakers worldwide (at most 3 eligible with C>=15 clips). Deficit: 237 speakers short of the 240 required by Decision Rule B."
       },
       "VoxCeleb": {
         "raw_speakers": 65,
@@ -905,7 +961,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 12,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "OpenSLR 83 en_ie contains only ~450 total audio lines. At C >= 15 clips/speaker, yields at most 12-25 unique speakers (deficit: > 220 short of 240)."
+        "exclusion_rationale": "OpenSLR 83 en_ie contains only ~450 total audio lines. At C >= 15 clips/speaker, yields at most 12-25 unique speakers (deficit: > 215 short of 240)."
       },
       "AusTalk": {
         "raw_speakers": 0,
@@ -963,7 +1019,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 10,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "Only 10 eligible speakers available (deficit: 230 speakers short of 240)."
+        "exclusion_rationale": "Only 10 eligible speakers documented (deficit: 230 speakers short of 240)."
       },
       "VoxCeleb": {
         "raw_speakers": 210,
@@ -1019,7 +1075,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 50,
         "status": "INSUFFICIENT",
-        "exclusion_rationale": "Only 50 eligible speakers available (deficit: 190 short of 240)."
+        "exclusion_rationale": "Only 50 eligible speakers documented (deficit: 190 short of 240)."
       }
     },
     "US English": {
@@ -1049,7 +1105,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 5,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "Only 5 eligible speakers available (deficit: 235 speakers short of 240)."
+        "exclusion_rationale": "Only 5 eligible speakers documented (deficit: 235 speakers short of 240)."
       },
       "VoxCeleb": {
         "raw_speakers": 1800,
@@ -1209,7 +1265,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 2,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "Only 2 eligible speakers available (deficit: 238 speakers short of 240)."
+        "exclusion_rationale": "Only 2 eligible speakers documented (deficit: 238 speakers short of 240)."
       },
       "Canadian English": {
         "raw_speakers": 3,
@@ -1223,7 +1279,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 2,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "Only 2 eligible speakers available (deficit: 238 speakers short of 240)."
+        "exclusion_rationale": "Only 2 eligible speakers documented (deficit: 238 speakers short of 240)."
       },
       "England English": {
         "raw_speakers": 14,
@@ -1237,7 +1293,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 8,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "Only 8 eligible speakers available (deficit: 232 speakers short of 240)."
+        "exclusion_rationale": "Only 8 eligible speakers documented (deficit: 232 speakers short of 240)."
       },
       "Irish English": {
         "raw_speakers": 4,
@@ -1251,7 +1307,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 3,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "EdAcc contains only 4 total Irish speakers worldwide (3 eligible with C>=15 clips). Deficit: 237 speakers short of the 240 required by Decision Rule B."
+        "exclusion_rationale": "EdAcc contains only 4 total Irish speakers worldwide (at most 3 eligible with C>=15 clips). Deficit: 237 speakers short of the 240 required by Decision Rule B."
       },
       "South Asian English": {
         "raw_speakers": 16,
@@ -1265,7 +1321,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 10,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "Only 10 eligible speakers available (deficit: 230 speakers short of 240)."
+        "exclusion_rationale": "Only 10 eligible speakers documented (deficit: 230 speakers short of 240)."
       },
       "US English": {
         "raw_speakers": 8,
@@ -1279,7 +1335,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 5,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "Only 5 eligible speakers available (deficit: 235 speakers short of 240)."
+        "exclusion_rationale": "Only 5 eligible speakers documented (deficit: 235 speakers short of 240)."
       }
     },
     "VoxCeleb": {
@@ -1409,7 +1465,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 45,
         "status": "INSUFFICIENT",
-        "exclusion_rationale": "Only 45 eligible speakers available (deficit: 195 short of 240)."
+        "exclusion_rationale": "Only 45 eligible speakers estimated from catalog (deficit: 195 short of 240)."
       },
       "Irish English": {
         "raw_speakers": 35,
@@ -1423,7 +1479,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 12,
         "status": "CRITICAL_DEFICIT",
-        "exclusion_rationale": "OpenSLR 83 en_ie contains only ~450 total audio lines. At C >= 15 clips/speaker, yields at most 12-25 unique speakers (deficit: > 220 short of 240)."
+        "exclusion_rationale": "OpenSLR 83 en_ie contains only ~450 total audio lines. At C >= 15 clips/speaker, yields at most 12-25 unique speakers (deficit: > 215 short of 240)."
       },
       "South Asian English": {
         "raw_speakers": 0,
@@ -1609,7 +1665,7 @@
         "historical_exposure": 0,
         "available_independent_speakers": 50,
         "status": "INSUFFICIENT",
-        "exclusion_rationale": "Only 50 eligible speakers available (deficit: 190 short of 240)."
+        "exclusion_rationale": "Only 50 eligible speakers documented (deficit: 190 short of 240)."
       },
       "US English": {
         "raw_speakers": 0,
@@ -1681,122 +1737,85 @@
     "Australian English": {
       "total_available_across_all_corpora": 687,
       "required_under_rule_b": 240,
+      "cohort3_evaluation_required": 220,
+      "gate_reference_required": 20,
       "shortfall": 0,
       "status": "PASS"
     },
     "Canadian English": {
       "total_available_across_all_corpora": 420,
       "required_under_rule_b": 240,
+      "cohort3_evaluation_required": 220,
+      "gate_reference_required": 20,
       "shortfall": 0,
       "status": "PASS"
     },
     "England English": {
       "total_available_across_all_corpora": 1173,
       "required_under_rule_b": 240,
+      "cohort3_evaluation_required": 220,
+      "gate_reference_required": 20,
       "shortfall": 0,
       "status": "PASS"
     },
     "Irish English": {
       "total_available_across_all_corpora": 15,
       "required_under_rule_b": 240,
+      "cohort3_evaluation_required": 220,
+      "gate_reference_required": 20,
       "shortfall": 225,
       "status": "CRITICAL_SHORTFALL"
     },
     "South Asian English": {
       "total_available_across_all_corpora": 713,
       "required_under_rule_b": 240,
+      "cohort3_evaluation_required": 220,
+      "gate_reference_required": 20,
       "shortfall": 0,
       "status": "PASS"
     },
     "US English": {
       "total_available_across_all_corpora": 3796,
       "required_under_rule_b": 240,
+      "cohort3_evaluation_required": 220,
+      "gate_reference_required": 20,
       "shortfall": 0,
       "status": "PASS"
     }
   },
   "design_confounding_analysis": {
-    "confounding_verdict": "COLLINEAR_CONFOUNDED",
+    "confounding_verdict": "CONNECTED_UNBALANCED_NO_INTERACTION",
     "is_fully_crossed": false,
-    "matrix_rank": 5,
-    "max_possible_rank": 6,
-    "corpora_per_accent": {
-      "Australian English": 3,
-      "Canadian English": 2,
-      "England English": 3,
-      "Irish English": 2,
-      "South Asian English": 3,
-      "US English": 2
-    },
-    "accents_per_corpus": {
-      "CV27": 5,
-      "EdAcc": 6,
-      "VoxCeleb": 0,
-      "OpenSLR83": 2,
-      "AusTalk": 1,
-      "IndicTIMIT": 1
-    },
+    "connected_components_count": 1,
+    "additive_model_rank": 10,
+    "max_possible_additive_rank": 10,
+    "interaction_cells_observed": 15,
+    "total_possible_interaction_cells": 30,
+    "is_interaction_identifiable": false,
+    "is_strictly_orthogonal": false,
     "isolated_accents": [],
-    "incidence_matrix": {
-      "Australian English": {
-        "CV27": 305,
-        "EdAcc": 2,
-        "VoxCeleb": 0,
-        "OpenSLR83": 0,
-        "AusTalk": 380,
-        "IndicTIMIT": 0
-      },
-      "Canadian English": {
-        "CV27": 418,
-        "EdAcc": 2,
-        "VoxCeleb": 0,
-        "OpenSLR83": 0,
-        "AusTalk": 0,
-        "IndicTIMIT": 0
-      },
-      "England English": {
-        "CV27": 1120,
-        "EdAcc": 8,
-        "VoxCeleb": 0,
-        "OpenSLR83": 45,
-        "AusTalk": 0,
-        "IndicTIMIT": 0
-      },
-      "Irish English": {
-        "CV27": 0,
-        "EdAcc": 3,
-        "VoxCeleb": 0,
-        "OpenSLR83": 12,
-        "AusTalk": 0,
-        "IndicTIMIT": 0
-      },
-      "South Asian English": {
-        "CV27": 653,
-        "EdAcc": 10,
-        "VoxCeleb": 0,
-        "OpenSLR83": 0,
-        "AusTalk": 0,
-        "IndicTIMIT": 50
-      },
-      "US English": {
-        "CV27": 3791,
-        "EdAcc": 5,
-        "VoxCeleb": 0,
-        "OpenSLR83": 0,
-        "AusTalk": 0,
-        "IndicTIMIT": 0
-      }
-    },
-    "mathematical_collinearity_explanation": "When an accent stratum is populated from only one corpus while other strata are populated from different corpora, the linear mixed model design matrix X is rank-deficient: col(X_accent) intersects col(X_corpus). The expected WER contrast between accents is E[y_i - y_i'] = (alpha_i - alpha_i') + (gamma_j - gamma_j'). The acoustic differences (microphone, noise, codec, compression) cannot be distinguished from algorithmic adaptation."
+    "active_accents_count": 6,
+    "active_corpora_count": 5,
+    "total_allocated_speakers": 6804,
+    "mathematical_collinearity_explanation": "Under fixed-effects linear model theory, the additive main-effects design matrix X_add has rank 10 of max 10 across 1 connected component(s). When c > 1 (DISCONNECTED_CONFOUNDED), accent contrasts across disjoint components are collinear with corpus differences (E[y_i - y_i'] = (alpha_i - alpha_i') + Delta_gamma). When K_obs (15) < I*J (30), interaction parameters (alpha*gamma)_ij for unobserved cells cannot be identified."
   },
   "hierarchical_power_simulations": {
-    "design_rule_b_n1440": {
+    "design_rule_b_6accents_n1320": {
       "simulation_parameters": {
-        "n_speakers_per_stratum": 220,
+        "evaluated_accents": [
+          "Australian English",
+          "Canadian English",
+          "England English",
+          "Irish English",
+          "South Asian English",
+          "US English"
+        ],
+        "evaluated_accents_count": 6,
         "n_clips_per_speaker": 15,
         "total_speakers": 1320,
         "total_clips": 19800,
-        "n_trials": 2000,
+        "n_trials": 250,
+        "n_bootstraps_per_trial": 80,
         "random_seed": 20261030,
         "variance_components": {
           "sigma_speaker": 0.065,
@@ -1810,51 +1829,31 @@
         "event_a_static_superiority_power": 1.0,
         "event_b_suta_superiority_power": 1.0,
         "event_c_accent_regression_guard_power": 1.0,
-        "event_d_disparity_guard_power": 0.986,
-        "joint_confirmatory_power": 0.986,
+        "event_d_disparity_guard_power": 0.892,
+        "joint_confirmatory_power": 0.892,
         "joint_power_95_ci": [
-          0.9798,
-          0.9903
-        ],
-        "target_90_power_achieved": true
-      }
-    },
-    "rescaled_crossed_design_n240": {
-      "simulation_parameters": {
-        "n_speakers_per_stratum": 40,
-        "n_clips_per_speaker": 15,
-        "total_speakers": 240,
-        "total_clips": 3600,
-        "n_trials": 2000,
-        "random_seed": 20261030,
-        "variance_components": {
-          "sigma_speaker": 0.065,
-          "sigma_corpus": 0.035,
-          "sigma_accent": 0.05,
-          "sigma_interaction": 0.025,
-          "sigma_residual": 0.032
-        }
-      },
-      "power_results": {
-        "event_a_static_superiority_power": 1.0,
-        "event_b_suta_superiority_power": 1.0,
-        "event_c_accent_regression_guard_power": 1.0,
-        "event_d_disparity_guard_power": 0.342,
-        "joint_confirmatory_power": 0.342,
-        "joint_power_95_ci": [
-          0.3215,
-          0.3631
+          0.8474,
+          0.9247
         ],
         "target_90_power_achieved": false
       }
     },
-    "rescaled_crossed_design_n90": {
+    "rescaled_6accents_n240": {
       "simulation_parameters": {
-        "n_speakers_per_stratum": 15,
+        "evaluated_accents": [
+          "Australian English",
+          "Canadian English",
+          "England English",
+          "Irish English",
+          "South Asian English",
+          "US English"
+        ],
+        "evaluated_accents_count": 6,
         "n_clips_per_speaker": 15,
-        "total_speakers": 90,
-        "total_clips": 1350,
-        "n_trials": 2000,
+        "total_speakers": 240,
+        "total_clips": 3600,
+        "n_trials": 250,
+        "n_bootstraps_per_trial": 80,
         "random_seed": 20261030,
         "variance_components": {
           "sigma_speaker": 0.065,
@@ -1868,11 +1867,86 @@
         "event_a_static_superiority_power": 1.0,
         "event_b_suta_superiority_power": 1.0,
         "event_c_accent_regression_guard_power": 1.0,
-        "event_d_disparity_guard_power": 0.0,
-        "joint_confirmatory_power": 0.0,
+        "event_d_disparity_guard_power": 0.792,
+        "joint_confirmatory_power": 0.792,
         "joint_power_95_ci": [
-          0.0,
-          0.0019
+          0.7375,
+          0.8377
+        ],
+        "target_90_power_achieved": false
+      }
+    },
+    "rescaled_6accents_n90": {
+      "simulation_parameters": {
+        "evaluated_accents": [
+          "Australian English",
+          "Canadian English",
+          "England English",
+          "Irish English",
+          "South Asian English",
+          "US English"
+        ],
+        "evaluated_accents_count": 6,
+        "n_clips_per_speaker": 15,
+        "total_speakers": 90,
+        "total_clips": 1350,
+        "n_trials": 250,
+        "n_bootstraps_per_trial": 80,
+        "random_seed": 20261030,
+        "variance_components": {
+          "sigma_speaker": 0.065,
+          "sigma_corpus": 0.035,
+          "sigma_accent": 0.05,
+          "sigma_interaction": 0.025,
+          "sigma_residual": 0.032
+        }
+      },
+      "power_results": {
+        "event_a_static_superiority_power": 1.0,
+        "event_b_suta_superiority_power": 1.0,
+        "event_c_accent_regression_guard_power": 1.0,
+        "event_d_disparity_guard_power": 0.584,
+        "joint_confirmatory_power": 0.584,
+        "joint_power_95_ci": [
+          0.5221,
+          0.6434
+        ],
+        "target_90_power_achieved": false
+      }
+    },
+    "pathway_1_five_stratum_confirmatory_n1100": {
+      "simulation_parameters": {
+        "evaluated_accents": [
+          "Australian English",
+          "Canadian English",
+          "England English",
+          "South Asian English",
+          "US English"
+        ],
+        "evaluated_accents_count": 5,
+        "n_clips_per_speaker": 15,
+        "total_speakers": 1100,
+        "total_clips": 16500,
+        "n_trials": 250,
+        "n_bootstraps_per_trial": 80,
+        "random_seed": 20261030,
+        "variance_components": {
+          "sigma_speaker": 0.065,
+          "sigma_corpus": 0.035,
+          "sigma_accent": 0.05,
+          "sigma_interaction": 0.025,
+          "sigma_residual": 0.032
+        }
+      },
+      "power_results": {
+        "event_a_static_superiority_power": 1.0,
+        "event_b_suta_superiority_power": 1.0,
+        "event_c_accent_regression_guard_power": 1.0,
+        "event_d_disparity_guard_power": 0.728,
+        "joint_confirmatory_power": 0.728,
+        "joint_power_95_ci": [
+          0.6697,
+          0.7794
         ],
         "target_90_power_achieved": false
       }
@@ -1883,7 +1957,7 @@
     "Do NOT attempt confirmatory materialization from Common Voice 27 alone (Irish unexposed capacity = 0).",
     "Do NOT adopt an uncrossed patchwork (e.g. Irish only from OpenSLR/EdAcc, Australia only from AusTalk), as accent and corpus effects become mathematically collinear and non-identifiable.",
     "Do NOT ingest VoxCeleb without ground-truth verbatim transcripts and verified dialect tags.",
-    "Do NOT silently downsample to N_g <= 40 without supervisory approval, as joint power drops to ~71% (violating the 90% threshold).",
-    "Formally present this feasibility audit to the research supervisor to adopt one of the documented strategic academic decision pathways."
+    "Do NOT silently downsample to N_g <= 40, as joint power drops severely (violating the 90% threshold).",
+    "Evaluate Pathway 1 (5-Stratum Confirmatory Benchmark, N_g=220, Australian, Canadian, England, South Asian, US) via Project-Lead Academic Authorization, with Irish English treated as an exploratory case study."
   ]
 }

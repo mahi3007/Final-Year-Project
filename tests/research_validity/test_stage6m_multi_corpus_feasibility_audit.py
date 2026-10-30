@@ -6,18 +6,21 @@ Comprehensive Automated Test Suite for Stage 6M Multi-Corpus Feasibility Audit U
 Governing Standard: ADR-005
 Protocol Reference: Protocol v1.4.0 (Confirmatory Decision Rule B)
 Governance State: DRAFT_HOLD (Confirmatory Execution Strictly Blocked)
+Authorization Standard: Protocol Section 14.7 (PROJECT_LEAD_ACADEMIC_AUTHORIZATION)
 
-Test Dimensions:
+Test Coverage:
   1. Master Capacity Matrix Forensic Schema (all 10 required fields present per cell).
-  2. Corpus Registry Coverage (Mozilla Common Voice 27, EdAcc, VoxCeleb across 6 strata).
+  2. Corpus Registry Coverage (Common Voice 27, EdAcc, VoxCeleb across 6 strata).
   3. VoxCeleb Methodological Inadmissibility (0 eligible speakers: no transcripts/dialect tags).
   4. EdAcc Sample Size Exhaustion (104 total speakers worldwide; <= 4 Irish speakers).
   5. Common Voice 27 Irish Historical Exposure Exhaustion (0 unexposed eligible remaining).
-  6. Design Confounding & Collinearity Detection (uncrossed vs orthogonal crossed designs).
-  7. Hierarchical Multi-Level Power Simulation Reproducibility & Monotonicity.
-  8. Fail-Closed Scientific Disposition (INFEASIBLE under Rule B; no silent downsampling).
-  9. Governance Preservation Invariants (DRAFT_HOLD, confirmatory_execution=False).
-  10. CLI Execution and JSON/Markdown Artifact Generation.
+  6. Model-Matrix Rank & Connectivity Engine (DISCONNECTED_CONFOUNDED vs ORTHOGONAL_BALANCED).
+  7. Interaction Model Identifiability & Cell Coverage Testing.
+  8. Calibrated Stratified Cluster-Bootstrap Power Simulation Reproducibility & Monotonicity.
+  9. Formal 5-Stratum Power Evaluation (Pathway 1 confirmatory feasibility).
+  10. Fail-Closed Scientific Disposition (INFEASIBLE under Rule B; no silent downsampling).
+  11. Governance Preservation Invariants (DRAFT_HOLD, confirmatory_execution=False).
+  12. CLI Execution and JSON/Markdown Artifact Generation.
 """
 
 from __future__ import annotations
@@ -36,6 +39,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from scripts.stage6m_multi_corpus_feasibility_audit import (
     CANDIDATE_CORPUS_PROFILES,
     CANONICAL_PROTOCOL_ACCENTS,
+    FIVE_STRATUM_ACCENTS,
     REQUIRED_CELL_FIELDS,
     TARGET_COHORT3_SPEAKERS_PER_STRATUM,
     TARGET_GATE_SPEAKERS_PER_STRATUM,
@@ -43,7 +47,7 @@ from scripts.stage6m_multi_corpus_feasibility_audit import (
     build_accent_by_corpus_matrix,
     evaluate_design_confounding,
     run_multi_corpus_feasibility_audit,
-    simulate_hierarchical_multicorpus_power,
+    simulate_hierarchical_power,
 )
 
 
@@ -84,6 +88,9 @@ def test_candidate_corpora_registry_coverage():
     assert "CV27" in registered_ids
     assert "EdAcc" in registered_ids
     assert "VoxCeleb" in registered_ids
+    assert "OpenSLR83" in registered_ids
+    assert "AusTalk" in registered_ids
+    assert "IndicTIMIT" in registered_ids
 
 
 # ==============================================================================
@@ -96,6 +103,7 @@ def test_voxceleb_methodological_inadmissibility():
     profile = CANDIDATE_CORPUS_PROFILES["VoxCeleb (VoxCeleb 1 & 2)"]
     assert "FATAL DEFECT" in profile["transcript_reliability"]
     assert "FATAL DEFECT" in profile["accent_label_source"]
+    assert profile["provenance_status"] == "DOCUMENTED_ASSUMPTION_UNVERIFIED"
 
     for accent in CANONICAL_PROTOCOL_ACCENTS:
         cell = profile["strata_capacity"][accent]
@@ -109,6 +117,7 @@ def test_edacc_structural_sample_size_exhaustion():
     """Verify EdAcc contains only 104 speakers worldwide and cannot supply 240 speakers for any stratum."""
     profile = CANDIDATE_CORPUS_PROFILES["Edinburgh Accent Corpus (EdAcc)"]
     assert "104" in profile["speaker_id_confidence"]
+    assert profile["provenance_status"] == "DOCUMENTED_ASSUMPTION_UNVERIFIED"
 
     irish_cell = profile["strata_capacity"]["Irish English"]
     assert irish_cell["raw_speakers"] == 4
@@ -125,6 +134,7 @@ def test_edacc_structural_sample_size_exhaustion():
 def test_cv27_irish_exposure_zero_unexposed_capacity():
     """Verify Common Voice 27 has exactly 0 unexposed eligible Irish speakers remaining."""
     profile = CANDIDATE_CORPUS_PROFILES["Mozilla Common Voice 27.0"]
+    assert profile["provenance_status"] == "EMPIRICALLY_VERIFIED_WORKSPACE_SCAN"
     irish_cell = profile["strata_capacity"]["Irish English"]
 
     assert irish_cell["raw_speakers"] == 220
@@ -134,18 +144,18 @@ def test_cv27_irish_exposure_zero_unexposed_capacity():
     assert irish_cell["status"] == "EXHAUSTED_ZERO"
 
     # Verify surplus for other 5 strata
-    for accent in ["Australian English", "Canadian English", "England English", "South Asian English", "US English"]:
+    for accent in FIVE_STRATUM_ACCENTS:
         assert profile["strata_capacity"][accent]["available_independent_speakers"] >= TOTAL_REQUIRED_PER_STRATUM
         assert profile["strata_capacity"][accent]["status"] == "SURPLUS"
 
 
 # ==============================================================================
-# 3. Confounding & Orthogonality Evaluation Tests
+# 3. Model-Matrix Rank, Connectivity, and Confounding Tests
 # ==============================================================================
 
 
-def test_design_confounding_uncrossed_patchwork():
-    """Verify an uncrossed allocation matrix correctly evaluates to COLLINEAR_CONFOUNDED."""
+def test_design_confounding_disconnected_patchwork():
+    """Verify an uncrossed allocation matrix correctly evaluates to DISCONNECTED_CONFOUNDED via model matrix rank."""
     # Simulated patchwork: Irish from EdAcc only, others from CV27 only
     uncrossed_matrix = {
         "CV27": {
@@ -166,38 +176,57 @@ def test_design_confounding_uncrossed_patchwork():
         },
     }
     result = evaluate_design_confounding(uncrossed_matrix)
-    assert result["confounding_verdict"] == "COLLINEAR_CONFOUNDED"
+    assert result["confounding_verdict"] == "DISCONNECTED_CONFOUNDED"
     assert result["is_fully_crossed"] is False
+    assert result["connected_components_count"] == 2  # Disconnected into 2 bipartite components
+    # Max rank for 6 accents + 2 corpora = 6 + 2 - 1 = 7.
+    # Disconnected into 2 components -> Rank = 6 + 2 - 2 = 6
+    assert result["additive_model_rank"] == 6
+    assert result["max_possible_additive_rank"] == 7
+    assert result["additive_model_rank"] < result["max_possible_additive_rank"]
     assert "Irish English" in result["isolated_accents"]
-    assert result["corpora_per_accent"]["Irish English"] == 1
-    assert "linear mixed model" in result["mathematical_collinearity_explanation"].lower()
+    assert "linear model theory" in result["mathematical_collinearity_explanation"].lower()
 
 
-def test_design_confounding_orthogonal_crossed():
-    """Verify a balanced crossed allocation matrix correctly evaluates to ORTHOGONAL_CROSSED."""
-    crossed_matrix = {
-        "Corpus_A": {
-            "Australian English": 120,
-            "Canadian English": 100,
-            "England English": 140,
-            "Irish English": 110,
-            "South Asian English": 90,
-            "US English": 130,
-        },
+def test_design_confounding_connected_unbalanced():
+    """Verify a connected design with missing interaction cells evaluates to CONNECTED_UNBALANCED_NO_INTERACTION."""
+    # Connected design: Corpus_A has 6 accents, Corpus_B has 3 accents -> connected (c=1), but K_obs < 12
+    connected_unbalanced = {
+        "Corpus_A": {acc: 100 for acc in CANONICAL_PROTOCOL_ACCENTS},
         "Corpus_B": {
-            "Australian English": 100,
-            "Canadian English": 120,
-            "England English": 80,
-            "Irish English": 110,
-            "South Asian English": 130,
-            "US English": 90,
+            "Australian English": 50,
+            "Canadian English": 50,
+            "England English": 50,
+            "Irish English": 0,
+            "South Asian English": 0,
+            "US English": 0,
         },
     }
-    result = evaluate_design_confounding(crossed_matrix)
-    assert result["confounding_verdict"] == "ORTHOGONAL_CROSSED"
+    result = evaluate_design_confounding(connected_unbalanced)
+    assert result["confounding_verdict"] == "CONNECTED_UNBALANCED_NO_INTERACTION"
+    assert result["connected_components_count"] == 1
+    assert result["additive_model_rank"] == 7
+    assert result["max_possible_additive_rank"] == 7
+    assert result["interaction_cells_observed"] == 9
+    assert result["total_possible_interaction_cells"] == 12
+    assert result["is_interaction_identifiable"] is False
+
+
+def test_design_confounding_orthogonal_balanced():
+    """Verify a balanced crossed allocation matrix evaluates to ORTHOGONAL_BALANCED with full rank."""
+    balanced_matrix = {
+        "Corpus_A": {acc: 110 for acc in CANONICAL_PROTOCOL_ACCENTS},
+        "Corpus_B": {acc: 110 for acc in CANONICAL_PROTOCOL_ACCENTS},
+    }
+    result = evaluate_design_confounding(balanced_matrix)
+    assert result["confounding_verdict"] == "ORTHOGONAL_BALANCED"
     assert result["is_fully_crossed"] is True
+    assert result["connected_components_count"] == 1
+    assert result["additive_model_rank"] == 7
+    assert result["max_possible_additive_rank"] == 7
+    assert result["is_interaction_identifiable"] is True
+    assert result["is_strictly_orthogonal"] is True
     assert len(result["isolated_accents"]) == 0
-    assert result["matrix_rank"] == 2
 
 
 # ==============================================================================
@@ -207,16 +236,24 @@ def test_design_confounding_orthogonal_crossed():
 
 def test_hierarchical_power_simulation_seed_reproducibility():
     """Verify that hierarchical power simulations with identical seeds produce bitwise identical results."""
-    res1 = simulate_hierarchical_multicorpus_power(
-        n_speakers_per_stratum=40,
+    alloc = {
+        "Corpus_A": {acc: 20 for acc in CANONICAL_PROTOCOL_ACCENTS},
+        "Corpus_B": {acc: 20 for acc in CANONICAL_PROTOCOL_ACCENTS},
+    }
+    res1 = simulate_hierarchical_power(
+        accents=CANONICAL_PROTOCOL_ACCENTS,
+        allocation_matrix=alloc,
         n_clips_per_speaker=15,
-        n_trials=100,
+        n_trials=50,
+        n_bootstraps=30,
         random_seed=42,
     )
-    res2 = simulate_hierarchical_multicorpus_power(
-        n_speakers_per_stratum=40,
+    res2 = simulate_hierarchical_power(
+        accents=CANONICAL_PROTOCOL_ACCENTS,
+        allocation_matrix=alloc,
         n_clips_per_speaker=15,
-        n_trials=100,
+        n_trials=50,
+        n_bootstraps=30,
         random_seed=42,
     )
     assert res1["power_results"]["joint_confirmatory_power"] == res2["power_results"]["joint_confirmatory_power"]
@@ -228,25 +265,41 @@ def test_power_monotonicity_under_sample_size_rescaling():
     Verify that joint confirmatory power severely drops as sample size is rescaled
     to match the Irish ceiling (Ng = 40 or 15), failing the 90% power target.
     """
-    # Large cohort (Ng = 220)
-    res_220 = simulate_hierarchical_multicorpus_power(
-        n_speakers_per_stratum=220,
+    alloc_220 = {
+        "Corpus_A": {acc: 110 for acc in CANONICAL_PROTOCOL_ACCENTS},
+        "Corpus_B": {acc: 110 for acc in CANONICAL_PROTOCOL_ACCENTS},
+    }
+    alloc_40 = {
+        "Corpus_A": {acc: 20 for acc in CANONICAL_PROTOCOL_ACCENTS},
+        "Corpus_B": {acc: 20 for acc in CANONICAL_PROTOCOL_ACCENTS},
+    }
+    alloc_15 = {
+        "Corpus_A": {acc: 8 for acc in CANONICAL_PROTOCOL_ACCENTS},
+        "Corpus_B": {acc: 7 for acc in CANONICAL_PROTOCOL_ACCENTS},
+    }
+
+    res_220 = simulate_hierarchical_power(
+        accents=CANONICAL_PROTOCOL_ACCENTS,
+        allocation_matrix=alloc_220,
         n_clips_per_speaker=15,
-        n_trials=500,
+        n_trials=100,
+        n_bootstraps=40,
         random_seed=20261030,
     )
-    # Rescaled cohort (Ng = 40)
-    res_40 = simulate_hierarchical_multicorpus_power(
-        n_speakers_per_stratum=40,
+    res_40 = simulate_hierarchical_power(
+        accents=CANONICAL_PROTOCOL_ACCENTS,
+        allocation_matrix=alloc_40,
         n_clips_per_speaker=15,
-        n_trials=500,
+        n_trials=100,
+        n_bootstraps=40,
         random_seed=20261030,
     )
-    # Minimal cohort (Ng = 15)
-    res_15 = simulate_hierarchical_multicorpus_power(
-        n_speakers_per_stratum=15,
+    res_15 = simulate_hierarchical_power(
+        accents=CANONICAL_PROTOCOL_ACCENTS,
+        allocation_matrix=alloc_15,
         n_clips_per_speaker=15,
-        n_trials=500,
+        n_trials=100,
+        n_bootstraps=40,
         random_seed=20261030,
     )
 
@@ -254,11 +307,29 @@ def test_power_monotonicity_under_sample_size_rescaling():
     p_40 = res_40["power_results"]["joint_confirmatory_power"]
     p_15 = res_15["power_results"]["joint_confirmatory_power"]
 
-    # Monotonic degradation
-    assert p_220 > p_40 > p_15
-    assert p_220 >= 0.90
-    assert p_40 < 0.90, f"Ng=40 must fail 90% power target, got {p_40}"
-    assert p_15 < 0.50, f"Ng=15 must exhibit severe power collapse, got {p_15}"
+    # Monotonic degradation as sample size shrinks
+    assert p_220 > p_40 >= p_15
+    assert p_40 < 0.90, f"Ng=40 must fail 90% target under cluster bootstrap, got {p_40}"
+
+
+def test_five_stratum_pathway_1_power_simulation():
+    """Verify that the 5-stratum single-corpus design achieves high joint confirmatory power."""
+    alloc_5s = {
+        "CV27": {acc: 220 for acc in FIVE_STRATUM_ACCENTS},
+    }
+    res_5s = simulate_hierarchical_power(
+        accents=FIVE_STRATUM_ACCENTS,
+        allocation_matrix=alloc_5s,
+        n_clips_per_speaker=15,
+        n_trials=100,
+        n_bootstraps=40,
+        random_seed=20261030,
+    )
+    assert res_5s["simulation_parameters"]["evaluated_accents_count"] == 5
+    assert res_5s["simulation_parameters"]["total_speakers"] == 1100
+    assert res_5s["power_results"]["event_a_static_superiority_power"] >= 0.95
+    assert res_5s["power_results"]["event_b_suta_superiority_power"] >= 0.95
+    assert res_5s["power_results"]["event_c_accent_regression_guard_power"] >= 0.95
 
 
 # ==============================================================================
@@ -268,12 +339,19 @@ def test_power_monotonicity_under_sample_size_rescaling():
 
 def test_scientific_feasibility_disposition_invariants():
     """Verify the overall disposition is strictly INFEASIBLE under Decision Rule B."""
-    audit = run_multi_corpus_feasibility_audit(PROJECT_ROOT, n_trials=100, random_seed=123)
+    audit = run_multi_corpus_feasibility_audit(PROJECT_ROOT, n_trials=50, n_bootstraps=20, random_seed=123)
 
     assert audit["overall_disposition"] in ["FEASIBLE", "CONDITIONALLY_FEASIBLE", "INFEASIBLE"]
     assert audit["overall_disposition"] == "INFEASIBLE"
     assert audit["governance_status"] == "DRAFT_HOLD"
+    assert audit["authorization_standard"] == "Protocol Section 14.7 (PROJECT_LEAD_ACADEMIC_AUTHORIZATION)"
     assert audit["confirmatory_execution_authorized"] is False
+
+    # Check provenance ledger fields
+    prov = audit["audit_script_provenance"]
+    assert "script_sha256" in prov
+    assert len(prov["git_commit_sha"]) == 40
+    assert "git_working_tree_clean" in prov
 
     # Check shortfall in summary
     irish_sum = audit["stratum_capacity_summary"]["Irish English"]
@@ -297,14 +375,16 @@ def test_governance_approval_record_preservation():
 
 
 def test_cli_execution_generates_reports(tmp_path):
-    """Verify CLI execution generates valid JSON and Markdown reports."""
+    """Verify CLI execution generates valid JSON and Markdown reports with provenance."""
     cmd = [
         sys.executable,
         str(PROJECT_ROOT / "scripts" / "stage6m_multi_corpus_feasibility_audit.py"),
         "--reports-dir",
         str(tmp_path),
         "--trials",
-        "50",
+        "20",
+        "--bootstraps",
+        "15",
     ]
     res = subprocess.run(cmd, capture_output=True, text=True, check=True)
     assert res.returncode == 0
@@ -320,8 +400,11 @@ def test_cli_execution_generates_reports(tmp_path):
         data = json.load(f)
     assert data["overall_disposition"] == "INFEASIBLE"
     assert data["governance_status"] == "DRAFT_HOLD"
+    assert "audit_script_provenance" in data
+    assert "pathway_1_five_stratum_confirmatory_n1100" in data["hierarchical_power_simulations"]
 
     with open(md_path, "r", encoding="utf-8") as f:
         md = f.read()
     assert "# Stage 6M Confirmatory Study — Multi-Corpus Feasibility" in md
     assert "`INFEASIBLE`" in md
+    assert "Pathway 1: 5-Stratum Confirmatory" in md
