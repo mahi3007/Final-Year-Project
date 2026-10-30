@@ -112,7 +112,7 @@ def compute_sha256(data: bytes | str | Path) -> str:
 
 
 def get_git_commit_sha(repo_root: Path) -> str:
-    """Retrieve current Git commit SHA via git rev-parse HEAD."""
+    """Retrieve current Git commit SHA via git rev-parse HEAD (fail-closed)."""
     try:
         res = subprocess.run(
             ["git", "rev-parse", "HEAD"],
@@ -121,10 +121,14 @@ def get_git_commit_sha(repo_root: Path) -> str:
             text=True,
             check=True,
         )
-        return res.stdout.strip()
+        sha = res.stdout.strip()
+        if not sha or len(sha) != 40:
+            raise RuntimeError(f"Invalid git commit SHA resolved: '{sha}'")
+        return sha
     except Exception as exc:
-        logger.warning(f"Unable to resolve git commit SHA: {exc}")
-        return "UNKNOWN_COMMIT"
+        raise RuntimeError(
+            f"Fail-Closed Git Provenance Resolution: Unable to resolve HEAD commit SHA in {repo_root}: {exc}"
+        ) from exc
 
 
 def load_partition_speakers(
@@ -187,9 +191,14 @@ def load_partition_speakers(
             f"{expected_speaker_count} unique speakers, found {len(speakers)}."
         )
 
+    try:
+        rel_path = path.resolve().relative_to(PROJECT_ROOT.resolve()).as_posix()
+    except ValueError:
+        rel_path = path.name
+
     provenance = {
         "file_name": path.name,
-        "file_path": str(path),
+        "file_path": rel_path,
         "file_bytes": file_bytes,
         "file_sha256": file_sha256,
         "row_count": row_count,
@@ -228,6 +237,9 @@ def audit_speaker_capacity(
     c1_path: Path,
     sentinel_path: Path,
     c2_path: Path,
+    expected_c1_speakers: Optional[int] = 60,
+    expected_sentinel_speakers: Optional[int] = 30,
+    expected_c2_speakers: Optional[int] = 468,
 ) -> Dict[str, Any]:
     """
     Exhaustively scans Mozilla Common Voice validated.tsv with full provenance.
@@ -240,17 +252,17 @@ def audit_speaker_capacity(
     logger.info("Scanning and validating historical partitions...")
     c1_spks, c1_strata, c1_prov = load_partition_speakers(
         c1_path,
-        expected_speaker_count=EXPECTED_HISTORICAL_SPEAKER_COUNTS.get(c1_path.name),
+        expected_speaker_count=expected_c1_speakers,
         partition_name="Cohort 1 (Stage 5 External Eval)",
     )
     sent_spks, sent_strata, sent_prov = load_partition_speakers(
         sentinel_path,
-        expected_speaker_count=EXPECTED_HISTORICAL_SPEAKER_COUNTS.get(sentinel_path.name),
+        expected_speaker_count=expected_sentinel_speakers,
         partition_name="Stage 5 Sentinel Panel",
     )
     c2_spks, c2_strata, c2_prov = load_partition_speakers(
         c2_path,
-        expected_speaker_count=EXPECTED_HISTORICAL_SPEAKER_COUNTS.get(c2_path.name),
+        expected_speaker_count=expected_c2_speakers,
         partition_name="Cohort 2 Audio",
     )
 
@@ -291,6 +303,9 @@ def audit_speaker_capacity(
     speaker_accents: Dict[str, Set[str]] = defaultdict(set)
     raw_accent_speakers: Dict[str, Set[str]] = defaultdict(set)
     unrecognized_accents: Dict[str, int] = defaultdict(int)
+    speaker_clip_rejections: Dict[str, Dict[str, Dict[str, int]]] = defaultdict(
+        lambda: defaultdict(lambda: defaultdict(int))
+    )
 
     rows_scanned = 0
     header_fields: List[str] = []
@@ -342,6 +357,19 @@ def audit_speaker_capacity(
 
             if is_strict_clip:
                 speaker_distinct_strict_paths[norm_accent][client_id].add(path_raw)
+            else:
+                if not (bool(path_raw) and path_raw.endswith(".mp3")):
+                    speaker_clip_rejections[norm_accent][client_id]["invalid_path"] += 1
+                if locale != "en":
+                    speaker_clip_rejections[norm_accent][client_id]["locale_not_en"] += 1
+                if up_votes < 2:
+                    speaker_clip_rejections[norm_accent][client_id]["up_votes_lt_2"] += 1
+                if down_votes >= 2:
+                    speaker_clip_rejections[norm_accent][client_id]["down_votes_ge_2"] += 1
+                if words < 2:
+                    speaker_clip_rejections[norm_accent][client_id]["words_lt_2"] += 1
+                if not bool(sentence):
+                    speaker_clip_rejections[norm_accent][client_id]["empty_sentence"] += 1
 
     logger.info(
         f"Source TSV scan complete. Scanned {rows_scanned:,} rows. "
@@ -403,6 +431,42 @@ def audit_speaker_capacity(
     )
     ineligible_hist_irish = all_hist_irish - strict_irish_all
 
+
+    ineligible_speaker_details = []
+    for spk in sorted(list(ineligible_hist_irish)):
+        rejs = speaker_clip_rejections["Irish English"].get(spk, {})
+        reasons = []
+        if rejs.get("down_votes_ge_2"):
+            reasons.append(f"{rejs['down_votes_ge_2']} clip(s) fail down_votes < 2 (down_votes >= 2)")
+        if rejs.get("words_lt_2"):
+            reasons.append(f"{rejs['words_lt_2']} clip(s) fail words >= 2 (words < 2)")
+        if rejs.get("up_votes_lt_2"):
+            reasons.append(f"{rejs['up_votes_lt_2']} clip(s) fail up_votes >= 2")
+        if rejs.get("locale_not_en"):
+            reasons.append(f"{rejs['locale_not_en']} clip(s) fail locale == 'en'")
+        if rejs.get("invalid_path"):
+            reasons.append(f"{rejs['invalid_path']} clip(s) have invalid/missing path")
+        reason_str = ", ".join(reasons) if reasons else "Predicate V criteria not met"
+        tot_clips = speaker_total_clips["Irish English"].get(spk, 0)
+        strict_clips = len(speaker_distinct_strict_paths["Irish English"].get(spk, set()))
+        dyn_reason = (
+            f"Only {strict_clips} of {tot_clips} clips satisfy Predicate V: {reason_str}. "
+            f"Requires >= {TARGET_COHORT3_CLIPS_PER_SPEAKER}."
+        )
+        ineligible_speaker_details.append(
+            {
+                "speaker_id": spk,
+                "historical_partition": "Cohort 1 (Stage 5 External Eval)"
+                if spk in hist_irish_c1
+                else "Cohort 2"
+                if spk in hist_irish_c2
+                else "Stage 5 Sentinel",
+                "total_clips_in_cv27": tot_clips,
+                "distinct_strict_clips": strict_clips,
+                "exclusion_reason": dyn_reason,
+            }
+        )
+
     irish_reconciliation = {
         "historical_irish_speakers_total": len(all_hist_irish),
         "historical_irish_cohort1": len(hist_irish_c1),
@@ -412,28 +476,17 @@ def audit_speaker_capacity(
             all_hist_irish.intersection(strict_irish_all)
         ),
         "historical_irish_ineligible_under_strict_predicate": len(ineligible_hist_irish),
-        "ineligible_speaker_details": [
-            {
-                "speaker_id": spk,
-                "historical_partition": "Cohort 1 (Stage 5 External Eval)"
-                if spk in hist_irish_c1
-                else "Cohort 2"
-                if spk in hist_irish_c2
-                else "Stage 5 Sentinel",
-                "total_clips_in_cv27": speaker_total_clips["Irish English"].get(spk, 0),
-                "distinct_strict_clips": len(
-                    speaker_distinct_strict_paths["Irish English"].get(spk, set())
-                ),
-                "exclusion_reason": "Only 13 of 16 clips satisfy Predicate V: 2 clips fail down_votes < 2 (down_votes=2), 1 clip fails words >= 2 (words=1). Requires >= 15.",
-            }
-            for spk in sorted(list(ineligible_hist_irish))
-        ],
+        "ineligible_speaker_details": ineligible_speaker_details,
         "unexposed_strictly_eligible_irish_remaining": len(
             strict_irish_all - all_prior
         ),
     }
 
     repo_commit = get_git_commit_sha(PROJECT_ROOT)
+    try:
+        rel_tsv_path = val_tsv.resolve().relative_to(PROJECT_ROOT.resolve()).as_posix()
+    except ValueError:
+        rel_tsv_path = val_tsv.name
 
     audit_result = {
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -444,7 +497,7 @@ def audit_speaker_capacity(
         "immutable_source_provenance": {
             "source_dataset": "Mozilla Common Voice",
             "source_release": "cv-corpus-27.0-2026-09-11",
-            "source_file": "validated.tsv",
+            "source_file": rel_tsv_path,
             "source_file_bytes": tsv_bytes,
             "source_file_sha256": tsv_sha256,
             "source_rows_scanned": rows_scanned,

@@ -5,8 +5,8 @@
 - **Decision Rule:** Decision Rule B
 - **Predicate Version:** V1.4.0-Strict
 - **Target Specification:** 6 Strata x 220 Speakers x 15 Clips = 19,800 Cohort 3 Clips + 120-Speaker Dedicated Gate-Reference Panel (Total = 1,440 Speakers)
-- **Audit Timestamp (UTC):** 2026-10-30T11:02:43.487293+00:00
-- **Curation Script Commit:** [`7d19571`](https://github.com/mahi3007/Final-Year-Project/commit/7d195711288390f5442805ddbc21bcec5ab1f523)
+- **Audit Timestamp (UTC):** 2026-10-30T11:58:57.059166+00:00
+- **Curation Script Commit:** [`6a9190a`](https://github.com/mahi3007/Final-Year-Project/commit/6a9190a8d6bd81883a83bf0a971228118c4b790c)
 - **Overall Feasibility Disposition:** **FAIL-CLOSED CAPACITY BOTTLENECK (COHORT 3 MATERIALIZATION FORBIDDEN)**
 
 ---
@@ -55,7 +55,7 @@ This audit evaluates the empirical capacity of **Mozilla Common Voice 27.0** (`v
 - **Total Historically Exposed Irish Speakers:** **93 unique speakers** (10 in Cohort 1, 5 in Stage 5 Sentinel, 78 in Cohort 2).
 - **Historically Exposed Meeting Strict Predicate V:** **92 unique speakers**.
 - **Historical Irish Ineligible Under Strict Predicate V:** **1 speaker** (`f3ea04475e301f84785710b9c56023f3c81f7abff656d40e674db8acde55c748688d0a4285eb6e8ea7f4d8b1fb6c99ab3c7f7d460878c4193256a61831e17ce7`).
-- **Detailed Explanation:** Speaker `f3ea04475e301f84...` (from Cohort 1 (Stage 5 External Eval)) has 16 total clips in Common Voice 27, but only 13 clips satisfy strict Predicate V (Only 13 of 16 clips satisfy Predicate V: 2 clips fail down_votes < 2 (down_votes=2), 1 clip fails words >= 2 (words=1). Requires >= 15.).
+- **Detailed Explanation:** Speaker `f3ea04475e301f84...` (from Cohort 1 (Stage 5 External Eval)) has 16 total clips in Common Voice 27, but only 13 clips satisfy strict Predicate V (Only 13 of 16 clips satisfy Predicate V: 2 clip(s) fail down_votes < 2 (down_votes >= 2), 1 clip(s) fail words >= 2 (words < 2). Requires >= 15.).
 - **Unexposed Strictly Eligible Irish Speakers Remaining:** **0**.
 
 ---
@@ -66,11 +66,11 @@ This audit evaluates the empirical capacity of **Mozilla Common Voice 27.0** (`v
 {
   "source_dataset": "Mozilla Common Voice",
   "source_release": "cv-corpus-27.0-2026-09-11",
-  "source_file": "validated.tsv",
+  "source_file": "datasets/external/common_voice_27/validated.tsv",
   "source_file_bytes": 614927262,
   "source_file_sha256": "733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a",
   "source_rows_scanned": 1929267,
-  "curation_script_commit": "7d195711288390f5442805ddbc21bcec5ab1f523",
+  "curation_script_commit": "6a9190a8d6bd81883a83bf0a971228118c4b790c",
   "predicate_version": "V1.4.0-Strict",
   "historical_partition_hashes": {
     "stage5_external_eval.csv": "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32",

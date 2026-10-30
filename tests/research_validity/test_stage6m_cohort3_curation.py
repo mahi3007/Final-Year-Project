@@ -153,6 +153,9 @@ def test_distinct_clip_path_deduplication(tmp_path):
         c1_path=c1,
         sentinel_path=sent,
         c2_path=c2,
+        expected_c1_speakers=1,
+        expected_sentinel_speakers=1,
+        expected_c2_speakers=1,
     )
 
     # spk_dup has 16 rows, but only 10 distinct paths -> must NOT qualify as strictly eligible
@@ -203,6 +206,9 @@ def test_predicate_v_exclusion_boundaries(tmp_path):
         c1_path=c1,
         sentinel_path=sent,
         c2_path=c2,
+        expected_c1_speakers=1,
+        expected_sentinel_speakers=1,
+        expected_c2_speakers=1,
     )
 
     irish_capacity = result["strata_capacity"]["Irish English"]
@@ -239,11 +245,14 @@ def test_immutable_provenance_schema_and_reconciliation(tmp_path):
         c1_path=c1,
         sentinel_path=sent,
         c2_path=c2,
+        expected_c1_speakers=1,
+        expected_sentinel_speakers=1,
+        expected_c2_speakers=1,
     )
 
     prov = result["immutable_source_provenance"]
     assert prov["source_dataset"] == "Mozilla Common Voice"
-    assert prov["source_file"] == "validated.tsv"
+    assert "prov_test.tsv" in prov["source_file"]
     assert prov["source_file_bytes"] == tsv_file.stat().st_size
     assert prov["source_file_sha256"] == compute_sha256(tsv_file)
     assert prov["source_rows_scanned"] == 1
