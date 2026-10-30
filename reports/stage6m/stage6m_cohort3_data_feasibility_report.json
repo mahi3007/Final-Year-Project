@@ -1,0 +1,94 @@
+{
+  "timestamp_utc": "2026-10-30T10:35:14.326869+00:00",
+  "protocol_version": "v1.4.0",
+  "governing_standard": "ADR-005",
+  "decision_rule": "Decision Rule B",
+  "target_cohort3_speakers_per_stratum": 220,
+  "target_cohort3_clips_per_speaker": 15,
+  "target_gate_speakers_per_stratum": 20,
+  "total_required_per_stratum": 240,
+  "total_required_speakers_overall": 1440,
+  "total_required_cohort3_clips": 19800,
+  "has_capacity_failure": true,
+  "total_speaker_shortfall": 240,
+  "strata_capacity": {
+    "Australian English": {
+      "stratum": "Australian English",
+      "raw_declared_speakers": 804,
+      "strictly_qualified_speakers": 398,
+      "prior_exposed_speakers": 93,
+      "unexposed_available_speakers": 305,
+      "required_cohort3_speakers": 220,
+      "required_gate_speakers": 20,
+      "total_required_speakers": 240,
+      "shortfall": 0,
+      "status": "PASS"
+    },
+    "Canadian English": {
+      "stratum": "Canadian English",
+      "raw_declared_speakers": 1031,
+      "strictly_qualified_speakers": 511,
+      "prior_exposed_speakers": 93,
+      "unexposed_available_speakers": 418,
+      "required_cohort3_speakers": 220,
+      "required_gate_speakers": 20,
+      "total_required_speakers": 240,
+      "shortfall": 0,
+      "status": "PASS"
+    },
+    "England English": {
+      "stratum": "England English",
+      "raw_declared_speakers": 2733,
+      "strictly_qualified_speakers": 1213,
+      "prior_exposed_speakers": 93,
+      "unexposed_available_speakers": 1120,
+      "required_cohort3_speakers": 220,
+      "required_gate_speakers": 20,
+      "total_required_speakers": 240,
+      "shortfall": 0,
+      "status": "PASS"
+    },
+    "Irish English": {
+      "stratum": "Irish English",
+      "raw_declared_speakers": 220,
+      "strictly_qualified_speakers": 92,
+      "prior_exposed_speakers": 92,
+      "unexposed_available_speakers": 0,
+      "required_cohort3_speakers": 220,
+      "required_gate_speakers": 20,
+      "total_required_speakers": 240,
+      "shortfall": 240,
+      "status": "BOTTLENECK_SHORTFALL"
+    },
+    "South Asian English": {
+      "stratum": "South Asian English",
+      "raw_declared_speakers": 2459,
+      "strictly_qualified_speakers": 746,
+      "prior_exposed_speakers": 93,
+      "unexposed_available_speakers": 653,
+      "required_cohort3_speakers": 220,
+      "required_gate_speakers": 20,
+      "total_required_speakers": 240,
+      "shortfall": 0,
+      "status": "PASS"
+    },
+    "US English": {
+      "stratum": "US English",
+      "raw_declared_speakers": 9085,
+      "strictly_qualified_speakers": 3884,
+      "prior_exposed_speakers": 93,
+      "unexposed_available_speakers": 3791,
+      "required_cohort3_speakers": 220,
+      "required_gate_speakers": 20,
+      "total_required_speakers": 240,
+      "shortfall": 0,
+      "status": "PASS"
+    }
+  },
+  "prior_exposure_summary": {
+    "cohort1_speakers": 60,
+    "stage5_sentinel_speakers": 30,
+    "cohort2_speakers": 468,
+    "total_unique_exposed": 558
+  }
+}
