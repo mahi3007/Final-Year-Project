@@ -2,7 +2,7 @@
 
 This artifact summarizes the independent Gravitas audit and governance remediation certifying fail-closed deterministic code identity, authentic historical worktree validation with subprocess execution, fail-closed commit resolution, and running repository HEAD match enforcement across implementation commit [`a7a3b79`](https://github.com/mahi3007/Final-Year-Project/commit/a7a3b79c1f06524128d035537de138e473c6455f) and governance lock commit [`457b631`](https://github.com/mahi3007/Final-Year-Project/commit/457b6312873a5393d0df042a4992d8c9f4916e1c).
 
-Full report: [`reports/stage6m/stage6m_v1_4_independent_remediation_audit.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_v1_4_independent_remediation_audit.md)
+Full report: [`stage6m_v1_4_independent_remediation_audit.md`](stage6m_v1_4_independent_remediation_audit.md)
 
 ---
 

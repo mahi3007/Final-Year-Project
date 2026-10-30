@@ -1,8 +1,85 @@
 {
-  "timestamp_utc": "2026-10-30T10:35:14.326869+00:00",
+  "timestamp_utc": "2026-10-30T11:02:43.487293+00:00",
   "protocol_version": "v1.4.0",
   "governing_standard": "ADR-005",
   "decision_rule": "Decision Rule B",
+  "predicate_version": "V1.4.0-Strict",
+  "immutable_source_provenance": {
+    "source_dataset": "Mozilla Common Voice",
+    "source_release": "cv-corpus-27.0-2026-09-11",
+    "source_file": "validated.tsv",
+    "source_file_bytes": 614927262,
+    "source_file_sha256": "733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a",
+    "source_rows_scanned": 1929267,
+    "header_fields": [
+      "client_id",
+      "path",
+      "sentence_id",
+      "sentence",
+      "sentence_domain",
+      "up_votes",
+      "down_votes",
+      "age",
+      "gender",
+      "accents",
+      "variant",
+      "locale",
+      "segment"
+    ],
+    "curation_script_commit": "7d195711288390f5442805ddbc21bcec5ab1f523",
+    "historical_partition_hashes": {
+      "stage5_external_eval.csv": {
+        "file_name": "stage5_external_eval.csv",
+        "file_path": "C:\\Users\\venka\\Downloads\\final year project main\\datasets\\splits\\stage5_external_eval.csv",
+        "file_bytes": 451539,
+        "file_sha256": "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32",
+        "row_count": 900,
+        "unique_speakers": 60
+      },
+      "stage5_sentinel_panel.csv": {
+        "file_name": "stage5_sentinel_panel.csv",
+        "file_path": "C:\\Users\\venka\\Downloads\\final year project main\\datasets\\splits\\stage5_sentinel_panel.csv",
+        "file_bytes": 92340,
+        "file_sha256": "665009a00660f7e9bbdf8de8a53473fc1249362ca2a5bc0038518313d18f0543",
+        "row_count": 300,
+        "unique_speakers": 30
+      },
+      "stage6m_cohort2_audio.csv": {
+        "file_name": "stage6m_cohort2_audio.csv",
+        "file_path": "C:\\Users\\venka\\Downloads\\final year project main\\datasets\\splits\\stage6m_cohort2_audio.csv",
+        "file_bytes": 2591054,
+        "file_sha256": "dd837e249b15588cb15b7a3b234e820e08699722569cc24e57d119a868854f70",
+        "row_count": 7020,
+        "unique_speakers": 468
+      }
+    },
+    "historical_disjointness": {
+      "disjointness_status": "PASS",
+      "pairwise_overlaps": {
+        "Cohort 1 x Stage 5 Sentinel": 0,
+        "Cohort 1 x Cohort 2": 0,
+        "Stage 5 Sentinel x Cohort 2": 0
+      }
+    }
+  },
+  "irish_exposure_reconciliation": {
+    "historical_irish_speakers_total": 93,
+    "historical_irish_cohort1": 10,
+    "historical_irish_sentinel": 5,
+    "historical_irish_cohort2": 78,
+    "historical_irish_meeting_strict_predicate": 92,
+    "historical_irish_ineligible_under_strict_predicate": 1,
+    "ineligible_speaker_details": [
+      {
+        "speaker_id": "f3ea04475e301f84785710b9c56023f3c81f7abff656d40e674db8acde55c748688d0a4285eb6e8ea7f4d8b1fb6c99ab3c7f7d460878c4193256a61831e17ce7",
+        "historical_partition": "Cohort 1 (Stage 5 External Eval)",
+        "total_clips_in_cv27": 16,
+        "distinct_strict_clips": 13,
+        "exclusion_reason": "Only 13 of 16 clips satisfy Predicate V: 2 clips fail down_votes < 2 (down_votes=2), 1 clip fails words >= 2 (words=1). Requires >= 15."
+      }
+    ],
+    "unexposed_strictly_eligible_irish_remaining": 0
+  },
   "target_cohort3_speakers_per_stratum": 220,
   "target_cohort3_clips_per_speaker": 15,
   "target_gate_speakers_per_stratum": 20,
@@ -90,5 +167,18 @@
     "stage5_sentinel_speakers": 30,
     "cohort2_speakers": 468,
     "total_unique_exposed": 558
+  },
+  "unrecognized_accents_count": 862,
+  "unrecognized_accents_sample": {
+    "non native speaker|german english": 53295,
+    "southern african (south africa, zimbabwe, namibia)": 26964,
+    "scottish english": 20688,
+    "new zealand english": 15984,
+    "northern irish": 10546,
+    "filipino": 5818,
+    "hong kong english": 4777,
+    "singaporean english": 3800,
+    "united states english|england english": 3208,
+    "england english|new zealand english": 2652
   }
 }
