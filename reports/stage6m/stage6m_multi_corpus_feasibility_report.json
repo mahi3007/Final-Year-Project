@@ -1,13 +1,13 @@
 {
-  "timestamp_utc": "2026-10-30T12:20:37.144711+00:00",
+  "timestamp_utc": "2026-10-31T13:08:07.322867+00:00",
   "governing_standard": "ADR-005",
   "protocol_version": "v1.4.0",
   "audit_script_provenance": {
     "script_path": "scripts/stage6m_multi_corpus_feasibility_audit.py",
-    "script_sha256": "81659464d4db3baffadb58969a0d2baeecb1b41b6bae74a89cd12752c7b11328",
-    "git_commit_sha": "0e1913c9ad3a7cd2313062be9d2b194534bf72e3",
+    "script_sha256": "314b8d6612655251e1c9d8d49d5275cfd81c89e232f91894dc004530ef8d6901",
+    "git_commit_sha": "278444e1aa8702c66abe6ac832d7b0d16b75b27a",
     "git_working_tree_clean": false,
-    "git_uncommitted_changes_count": 6
+    "git_uncommitted_changes_count": 4
   },
   "governance_status": "DRAFT_HOLD",
   "authorization_standard": "Protocol Section 14.7 (PROJECT_LEAD_ACADEMIC_AUTHORIZATION)",
@@ -1814,9 +1814,13 @@
         "n_clips_per_speaker": 15,
         "total_speakers": 1320,
         "total_clips": 19800,
-        "n_trials": 250,
-        "n_bootstraps_per_trial": 80,
+        "n_trials": 1000,
+        "n_bootstraps_per_trial": 500,
         "random_seed": 20261030,
+        "m_simultaneous_hypotheses": 9,
+        "adj_alpha_per_hypothesis": 0.00555556,
+        "simultaneous_ucb_percentile": 99.4444,
+        "inference_procedure": "Protocol-exact v1.4.0: word-weighted Binomial WER, cluster-robust linearized t-UCB (Bonferroni alpha/M) for Events A/B/C, stratified bootstrap Bonferroni UCB at (1-alpha/M)*100 for Event D",
         "variance_components": {
           "sigma_speaker": 0.065,
           "sigma_corpus": 0.035,
@@ -1829,13 +1833,14 @@
         "event_a_static_superiority_power": 1.0,
         "event_b_suta_superiority_power": 1.0,
         "event_c_accent_regression_guard_power": 1.0,
-        "event_d_disparity_guard_power": 0.892,
-        "joint_confirmatory_power": 0.892,
+        "event_d_disparity_guard_power": 0.761,
+        "joint_confirmatory_power": 0.761,
         "joint_power_95_ci": [
-          0.8474,
-          0.9247
+          0.7333,
+          0.7871
         ],
-        "target_90_power_achieved": false
+        "target_90_power_achieved": false,
+        "lcb_90_power_achieved": false
       }
     },
     "rescaled_6accents_n240": {
@@ -1852,9 +1857,13 @@
         "n_clips_per_speaker": 15,
         "total_speakers": 240,
         "total_clips": 3600,
-        "n_trials": 250,
-        "n_bootstraps_per_trial": 80,
+        "n_trials": 1000,
+        "n_bootstraps_per_trial": 500,
         "random_seed": 20261030,
+        "m_simultaneous_hypotheses": 9,
+        "adj_alpha_per_hypothesis": 0.00555556,
+        "simultaneous_ucb_percentile": 99.4444,
+        "inference_procedure": "Protocol-exact v1.4.0: word-weighted Binomial WER, cluster-robust linearized t-UCB (Bonferroni alpha/M) for Events A/B/C, stratified bootstrap Bonferroni UCB at (1-alpha/M)*100 for Event D",
         "variance_components": {
           "sigma_speaker": 0.065,
           "sigma_corpus": 0.035,
@@ -1865,15 +1874,16 @@
       },
       "power_results": {
         "event_a_static_superiority_power": 1.0,
-        "event_b_suta_superiority_power": 1.0,
+        "event_b_suta_superiority_power": 0.986,
         "event_c_accent_regression_guard_power": 1.0,
-        "event_d_disparity_guard_power": 0.792,
-        "joint_confirmatory_power": 0.792,
+        "event_d_disparity_guard_power": 0.263,
+        "joint_confirmatory_power": 0.26,
         "joint_power_95_ci": [
-          0.7375,
-          0.8377
+          0.2331,
+          0.2884
         ],
-        "target_90_power_achieved": false
+        "target_90_power_achieved": false,
+        "lcb_90_power_achieved": false
       }
     },
     "rescaled_6accents_n90": {
@@ -1890,9 +1900,13 @@
         "n_clips_per_speaker": 15,
         "total_speakers": 90,
         "total_clips": 1350,
-        "n_trials": 250,
-        "n_bootstraps_per_trial": 80,
+        "n_trials": 1000,
+        "n_bootstraps_per_trial": 500,
         "random_seed": 20261030,
+        "m_simultaneous_hypotheses": 9,
+        "adj_alpha_per_hypothesis": 0.00555556,
+        "simultaneous_ucb_percentile": 99.4444,
+        "inference_procedure": "Protocol-exact v1.4.0: word-weighted Binomial WER, cluster-robust linearized t-UCB (Bonferroni alpha/M) for Events A/B/C, stratified bootstrap Bonferroni UCB at (1-alpha/M)*100 for Event D",
         "variance_components": {
           "sigma_speaker": 0.065,
           "sigma_corpus": 0.035,
@@ -1903,15 +1917,16 @@
       },
       "power_results": {
         "event_a_static_superiority_power": 1.0,
-        "event_b_suta_superiority_power": 1.0,
-        "event_c_accent_regression_guard_power": 1.0,
-        "event_d_disparity_guard_power": 0.584,
-        "joint_confirmatory_power": 0.584,
+        "event_b_suta_superiority_power": 0.627,
+        "event_c_accent_regression_guard_power": 0.557,
+        "event_d_disparity_guard_power": 0.09,
+        "joint_confirmatory_power": 0.052,
         "joint_power_95_ci": [
-          0.5221,
-          0.6434
+          0.0391,
+          0.0676
         ],
-        "target_90_power_achieved": false
+        "target_90_power_achieved": false,
+        "lcb_90_power_achieved": false
       }
     },
     "pathway_1_five_stratum_confirmatory_n1100": {
@@ -1927,9 +1942,13 @@
         "n_clips_per_speaker": 15,
         "total_speakers": 1100,
         "total_clips": 16500,
-        "n_trials": 250,
-        "n_bootstraps_per_trial": 80,
+        "n_trials": 1000,
+        "n_bootstraps_per_trial": 500,
         "random_seed": 20261030,
+        "m_simultaneous_hypotheses": 8,
+        "adj_alpha_per_hypothesis": 0.00625,
+        "simultaneous_ucb_percentile": 99.375,
+        "inference_procedure": "Protocol-exact v1.4.0: word-weighted Binomial WER, cluster-robust linearized t-UCB (Bonferroni alpha/M) for Events A/B/C, stratified bootstrap Bonferroni UCB at (1-alpha/M)*100 for Event D",
         "variance_components": {
           "sigma_speaker": 0.065,
           "sigma_corpus": 0.035,
@@ -1942,13 +1961,14 @@
         "event_a_static_superiority_power": 1.0,
         "event_b_suta_superiority_power": 1.0,
         "event_c_accent_regression_guard_power": 1.0,
-        "event_d_disparity_guard_power": 0.728,
-        "joint_confirmatory_power": 0.728,
+        "event_d_disparity_guard_power": 0.624,
+        "joint_confirmatory_power": 0.624,
         "joint_power_95_ci": [
-          0.6697,
-          0.7794
+          0.5931,
+          0.6541
         ],
-        "target_90_power_achieved": false
+        "target_90_power_achieved": false,
+        "lcb_90_power_achieved": false
       }
     }
   },

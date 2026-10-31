@@ -313,7 +313,11 @@ def test_power_monotonicity_under_sample_size_rescaling():
 
 
 def test_five_stratum_pathway_1_power_simulation():
-    """Verify that the 5-stratum single-corpus design achieves high joint confirmatory power."""
+    """
+    Verify that the 5-stratum single-corpus design achieves high superiority and regression
+    guard power, while confirming that under protocol-exact Bonferroni inference (M=8, 99.375% UCB),
+    joint power LCB does not reach 90%, thereby retaining DRAFT_HOLD governance status.
+    """
     alloc_5s = {
         "CV27": {acc: 220 for acc in FIVE_STRATUM_ACCENTS},
     }
@@ -327,9 +331,58 @@ def test_five_stratum_pathway_1_power_simulation():
     )
     assert res_5s["simulation_parameters"]["evaluated_accents_count"] == 5
     assert res_5s["simulation_parameters"]["total_speakers"] == 1100
+    assert res_5s["simulation_parameters"]["m_simultaneous_hypotheses"] == 8
+    assert res_5s["simulation_parameters"]["simultaneous_ucb_percentile"] == 99.375
+    assert "Protocol-exact" in res_5s["simulation_parameters"]["inference_procedure"]
+
     assert res_5s["power_results"]["event_a_static_superiority_power"] >= 0.95
     assert res_5s["power_results"]["event_b_suta_superiority_power"] >= 0.95
     assert res_5s["power_results"]["event_c_accent_regression_guard_power"] >= 0.95
+    assert "target_90_power_achieved" in res_5s["power_results"]
+    assert "lcb_90_power_achieved" in res_5s["power_results"]
+    # Pathway 1 joint power LCB fails 90% target, justifying DRAFT_HOLD
+    assert res_5s["power_results"]["lcb_90_power_achieved"] is False
+
+
+def test_protocol_exact_inference_parameters_and_multiplicity():
+    """
+    Verify protocol-exact multiplicity adjustment (M = 2 + n_accents + 1)
+    and Bonferroni simultaneous UCB percentile calculation for 6-stratum and 5-stratum designs.
+    """
+    # 6-stratum design: M = 2 + 6 + 1 = 9 hypotheses
+    alloc_6s = {"Corpus_A": {acc: 10 for acc in CANONICAL_PROTOCOL_ACCENTS}}
+    res_6s = simulate_hierarchical_power(
+        accents=CANONICAL_PROTOCOL_ACCENTS,
+        allocation_matrix=alloc_6s,
+        n_clips_per_speaker=5,
+        n_trials=20,
+        n_bootstraps=10,
+        random_seed=42,
+    )
+    sim_params_6s = res_6s["simulation_parameters"]
+    assert sim_params_6s["m_simultaneous_hypotheses"] == 9
+    assert abs(sim_params_6s["adj_alpha_per_hypothesis"] - (0.05 / 9.0)) < 1e-6
+    assert abs(sim_params_6s["simultaneous_ucb_percentile"] - (100.0 * (1.0 - 0.05 / 9.0))) < 1e-4
+
+    # 5-stratum design: M = 2 + 5 + 1 = 8 hypotheses
+    alloc_5s = {"Corpus_A": {acc: 10 for acc in FIVE_STRATUM_ACCENTS}}
+    res_5s = simulate_hierarchical_power(
+        accents=FIVE_STRATUM_ACCENTS,
+        allocation_matrix=alloc_5s,
+        n_clips_per_speaker=5,
+        n_trials=20,
+        n_bootstraps=10,
+        random_seed=42,
+    )
+    sim_params_5s = res_5s["simulation_parameters"]
+    assert sim_params_5s["m_simultaneous_hypotheses"] == 8
+    assert abs(sim_params_5s["adj_alpha_per_hypothesis"] - (0.05 / 8.0)) < 1e-6
+    assert abs(sim_params_5s["simultaneous_ucb_percentile"] - 99.375) < 1e-4
+
+    # Confidence interval bounds validity
+    ci_low, ci_high = res_6s["power_results"]["joint_power_95_ci"]
+    jp = res_6s["power_results"]["joint_confirmatory_power"]
+    assert 0.0 <= ci_low <= jp <= ci_high <= 1.0
 
 
 # ==============================================================================

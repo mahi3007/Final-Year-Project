@@ -3,10 +3,10 @@
 - **Standard:** ADR-005
 - **Protocol Version:** v1.4.0
 - **Target Specification:** Decision Rule B (N = 1,440 total speakers: 1,320 Cohort 3 evaluation speakers + 120 Gate speakers across 6 strata)
-- **Audit Timestamp (UTC):** 2026-10-30T12:20:37.144711+00:00
-- **Script Commit SHA:** [`0e1913c`](https://github.com/mahi3007/Final-Year-Project/commit/0e1913c9ad3a7cd2313062be9d2b194534bf72e3)
-- **Script SHA-256:** `81659464d4db3baffadb58969a0d2baeecb1b41b6bae74a89cd12752c7b11328`
-- **Working Tree Clean:** `False` (Uncommitted changes: 6)
+- **Audit Timestamp (UTC):** 2026-10-31T13:08:07.322867+00:00
+- **Script Commit SHA:** [`278444e`](https://github.com/mahi3007/Final-Year-Project/commit/278444e1aa8702c66abe6ac832d7b0d16b75b27a)
+- **Script SHA-256:** `314b8d6612655251e1c9d8d49d5275cfd81c89e232f91894dc004530ef8d6901`
+- **Working Tree Clean:** `False` (Uncommitted changes: 4)
 - **Governance State:** **`DRAFT_HOLD`** (`confirmatory_execution_authorized = false`)
 - **Authorization Standard:** Protocol Section 14.7 (PROJECT_LEAD_ACADEMIC_AUTHORIZATION)
 - **Overall Scientific Feasibility Decision:** **`INFEASIBLE`**
@@ -27,10 +27,10 @@ In accordance with independent audit directives, this study executed a reproduci
    - Fixed-effects linear model analysis proves that an uncrossed patchwork (e.g. sourcing Irish from EdAcc/OpenSLR while other accents come from Common Voice) creates a **disconnected bipartite graph ($c > 1$)**.
    - In a disconnected design, the additive design matrix $X_{\text{add}}$ is rank-deficient: accent contrasts across components are mathematically collinear with acoustic corpus differences ($\operatorname{Rank}(X_{\text{add}}) < I + J - 1$), making it impossible to separate accent adaptation from recording hardware.
 3. **Power Destruction Under Sample Rescaling**:
-   - Rescaling the design to match the global Irish ceiling ($N_g \le 40$ per stratum) causes joint confirmatory power to collapse from **89.2%** down to **79.2%** ($N_g = 40$) and **58.4%** ($N_g = 15$).
+   - Rescaling the design to match the global Irish ceiling ($N_g \le 40$ per stratum) causes joint confirmatory power to collapse from **76.1%** down to **26.0%** ($N_g = 40$) and **5.2%** ($N_g = 15$).
    - Using the exact Protocol v1.4.0 stratified cluster-bootstrap procedure, the standard error of the extreme-value disparity metric inflates as $1/\sqrt{N_g}$, causing the prespecified upper confidence bound disparity guard to fail in the majority of trials.
 4. **Validated Feasibility of Pathway 1 (5-Stratum Study)**:
-   - When formally simulated under the 5-accent population (Australian, Canadian, England, South Asian, US English at $N_g = 220$), joint confirmatory power reaches **72.8%** (95% CI: [67.0%, 77.9%]) with zero corpus confounding.
+   - When formally simulated under the 5-accent population (Australian, Canadian, England, South Asian, US English at $N_g = 220$), joint confirmatory power reaches **62.4%** (95% CI: [59.3%, 65.4%]) with zero corpus confounding.
 
 ---
 
@@ -109,17 +109,17 @@ In accordance with independent audit directives, this study executed a reproduci
 
 ## 4. Calibrated Hierarchical Multi-Level Power Modeling
 
-Power simulations were executed across $S = 250$ Monte Carlo trials using exact Protocol v1.4.0 stratified speaker cluster bootstrap ($B = 80$ resamples per trial):
+Power simulations were executed across $S = 1000$ Monte Carlo trials using exact Protocol v1.4.0 stratified speaker cluster bootstrap ($B = 500$ resamples per trial):
 - Multi-level variance components: $\sigma_{\text{speaker}} = 0.065$, $\sigma_{\text{corpus}} = 0.035$, $\sigma_{\text{accent}} = 0.050$, $\sigma_{\text{interaction}} = 0.025$, $\sigma_{\epsilon} = 0.032$ with $C = 15$ clips/speaker.
 
 | Scenario | Strata Count | $N_g$ / Stratum | Total Speakers | Static Super. (A) | SUTA Super. (B) | Accent Reg. (C) | Disparity Guard (D) | Joint Power | Target $\ge 90\%$ |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Decision Rule B (Theoretical 6-Accent Crossed)** | 6 | 220 | 1,320 | 100.0% | 100.0% | 100.0% | 89.2% | **89.2%** | **FAIL** |
-| **Rescaled 6-Accent ($N_g = 40$)** | 6 | 40 | 240 | 100.0% | 100.0% | 100.0% | 79.2% | **79.2%** | **FAIL** |
-| **Rescaled 6-Accent ($N_g = 15$, Irish Ceiling)** | 6 | 15 | 90 | 100.0% | 100.0% | 100.0% | 58.4% | **58.4%** | **FAIL** |
-| **Pathway 1: 5-Stratum Confirmatory (CV27 Single-Corpus)** | 5 | 220 | 1,100 | 100.0% | 100.0% | 100.0% | 72.8% | **72.8%** | **FAIL** |
+| **Decision Rule B (Theoretical 6-Accent Crossed)** | 6 | 220 | 1,320 | 100.0% | 100.0% | 100.0% | 76.1% | **76.1%** | **FAIL** |
+| **Rescaled 6-Accent ($N_g = 40$)** | 6 | 40 | 240 | 100.0% | 98.6% | 100.0% | 26.3% | **26.0%** | **FAIL** |
+| **Rescaled 6-Accent ($N_g = 15$, Irish Ceiling)** | 6 | 15 | 90 | 100.0% | 62.7% | 55.7% | 9.0% | **5.2%** | **FAIL** |
+| **Pathway 1: 5-Stratum Confirmatory (CV27 Single-Corpus)** | 5 | 220 | 1,100 | 100.0% | 100.0% | 100.0% | 62.4% | **62.4%** | **FAIL** |
 
-*Statistical Finding:* The 5-stratum confirmatory design achieves **72.8%** joint confirmatory power with zero corpus confounding. In contrast, attempting to salvage 6 strata by downsampling $N_g \le 40$ inflates extreme-value disparity variance, causing Event D to fail in 65-100% of trials.
+*Statistical Finding:* The 5-stratum confirmatory design achieves **62.4%** joint confirmatory power with zero corpus confounding. In contrast, attempting to salvage 6 strata by downsampling $N_g \le 40$ inflates extreme-value disparity variance, causing Event D to fail in 65-100% of trials.
 
 ---
 
@@ -131,7 +131,7 @@ Power simulations were executed across $S = 250$ Monte Carlo trials using exact 
    Status remains strictly locked at **`DRAFT_HOLD`** under `PROJECT_LEAD_ACADEMIC_AUTHORIZATION`. No physical audio downloading, manifest freezing, or model inference should occur.
 3. **Evaluation of Strategic Decision Pathways:**
    - **Pathway 1 (Re-Anchored Single-Corpus 5-Stratum Confirmatory Benchmark — Scientifically Justified):**
-     Formally amend the confirmatory protocol to the 5 surplus strata in Common Voice 27 (Australian, Canadian, England, South Asian, US English at $N_g = 220$; total 1,100 Cohort 3 evaluation speakers + 100 Gate speakers = 1,200 speakers). Achieves zero corpus confounding and **72.8%** joint statistical power. Irish English is retained and evaluated as an exploratory out-of-domain case study.
+     Formally amend the confirmatory protocol to the 5 surplus strata in Common Voice 27 (Australian, Canadian, England, South Asian, US English at $N_g = 220$; total 1,100 Cohort 3 evaluation speakers + 100 Gate speakers = 1,200 speakers). Achieves zero corpus confounding and **62.4%** joint statistical power. Irish English is retained and evaluated as an exploratory out-of-domain case study.
    - **Pathway 2 (Institutional Irish Speech Archive Acquisition):**
      If a full 240-speaker Irish cohort is non-negotiable, the research team must initiate formal institutional licensing of regional broadcast or academic speech archives (e.g. RTÉ archives or Trinity College Dublin phonetics collections).
    - **Pathway 3 (New Multi-Corpus Pre-Registration):**

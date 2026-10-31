@@ -857,45 +857,72 @@ def evaluate_design_confounding(
 
 
 # ==============================================================================
-# 3. Calibrated Stratified Cluster-Bootstrap Power Simulator
+# 3. Protocol-Exact Stratified Cluster-Bootstrap Power Simulator
 # ==============================================================================
 
 
 def simulate_hierarchical_power(
-    accents: List[str],
-    allocation_matrix: Dict[str, Dict[str, int]],
-    n_clips_per_speaker: int = 15,
-    sigma_speaker: float = 0.065,
-    sigma_corpus: float = 0.035,
-    sigma_accent: float = 0.050,
-    sigma_interaction: float = 0.025,
-    sigma_epsilon: float = 0.032,
-    n_trials: int = 2000,
-    n_bootstraps: int = 200,
-    random_seed: int = 20261030,
-) -> Dict[str, Any]:
+    accents,
+    allocation_matrix,
+    n_clips_per_speaker=15,
+    sigma_speaker=0.065,
+    sigma_corpus=0.035,
+    sigma_accent=0.050,
+    sigma_interaction=0.025,
+    sigma_epsilon=0.032,
+    n_trials=2000,
+    n_bootstraps=2000,
+    random_seed=20261030,
+):
+    # type: (List[str], Dict[str,Dict[str,int]], int, float, float, float, float, float, int, int, int) -> Dict[str, Any]
     """
-    Simulates statistical power incorporating multi-level variance components:
-      - Accent random effects: alpha_i ~ N(0, sigma^2_accent)
-      - Corpus acoustic effects: gamma_j ~ N(0, sigma^2_corpus)
-      - Interaction effects: (alpha*gamma)_ij ~ N(0, sigma^2_interaction)
-      - Speaker-level random effects: u_k ~ N(0, sigma^2_speaker)
-      - Residual clip noise: epsilon ~ N(0, sigma^2_epsilon / C) with C=15 clips
+    Protocol-exact power simulation mirroring run_confirmatory_paired_cluster_inference
+    (src/dsg_ctta/evaluation/paired_cluster_inference.py, Protocol v1.4.0).
 
-    Evaluates exact Protocol v1.4.0 Confirmatory Success Criteria:
-      1. Event A: Primary WER superiority vs Static baseline (paired t-test, p < 0.05, diff < 0)
-      2. Event B: Non-inferiority / superiority vs Ungated SUTA (paired t-test, p < 0.05, diff < 0)
-      3. Event C: Per-accent regression guard (all active accents regression <= +2.0 pp)
-      4. Event D: Disparity expansion guard (Adj. UCB97.5(Delta_D) <= 0.00 pp)
-         Estimated via Stratified Speaker Cluster Bootstrap (Protocol Section 5.4 / 14.7).
-      Joint Power = P(Event A & Event B & Event C & Event D).
+    DATA MODEL (matches frozen inference):
+      - Integer word counts wc_k drawn from Uniform[100, 181) per speaker k.
+      - Integer Binomial error counts e1_k, e2_k, e3_k per arm per speaker.
+      - Corpus WER = sum(errors) / sum(words) * 100  (word-weighted, not per-speaker mean).
+
+    MULTIPLICITY FAMILY:
+      M = 2 primary + n_accents accent guards + 1 disparity
+        6-stratum design: M = 9
+        5-stratum design: M = 8
+      adj_alpha = 0.05 / M
+      t_crit = t_{1 - adj_alpha, df}   (Bonferroni one-sided upper bound)
+
+    EVENT A  DSG vs Static baseline   (cluster-robust linearized t-UCB at adj_alpha):
+      Criterion: delta_static < 0.0 pp  AND  UCB_A < 0.0 pp
+
+    EVENT B  DSG vs Corrected Ungated SUTA   (cluster-robust linearized t-UCB at adj_alpha):
+      Criterion: delta_ungated < 0.0 pp  AND  UCB_B < 0.0 pp
+
+    EVENT C  Per-accent regression guard   (per-stratum cluster-robust t-UCB at adj_alpha):
+      Criterion: UCB_g <= +2.0 pp for ALL accent strata g
+
+    EVENT D  Cross-accent disparity non-increase   (stratified bootstrap Bonferroni UCB):
+      Bootstrap percentile = (1 - adj_alpha) * 100
+        M=9 (6-stratum): ~99.444th percentile  -- NOT the naive 97.5%
+        M=8 (5-stratum):  99.375th percentile
+      Criterion: bootstrap UCB_D <= 0.0 pp
+
+    JOINT POWER = P(Event A and Event B and Event C and Event D).
+    Monte Carlo CI: 95% Clopper-Pearson (exact binomial) interval on joint pass count.
     """
+    from scipy import stats as scipy_stats
+
     rng = np.random.default_rng(random_seed)
     n_accents = len(accents)
     corpora = list(allocation_matrix.keys())
 
-    # Benchmark effect parameters for the 6 canonical accents:
-    # Australian (19.3%), Canadian (16.1%), England (17.4%), Irish (26.1%), South Asian (23.5%), US (14.2%)
+    # Multiplicity family size: 2 primary + n_accents accent guards + 1 disparity
+    m_hypotheses = 2 + n_accents + 1
+    alpha_family = 0.05
+    adj_alpha = alpha_family / float(m_hypotheses)
+    # Bonferroni simultaneous percentile for Event D bootstrap UCB
+    simultaneous_percentile = 100.0 * (1.0 - adj_alpha)
+
+    # Benchmark WER parameters for canonical accents (Section 7 calibration)
     canon_base_wers = {
         "Australian English": 0.193,
         "Canadian English": 0.161,
@@ -904,6 +931,7 @@ def simulate_hierarchical_power(
         "South Asian English": 0.235,
         "US English": 0.142,
     }
+    # DSG treatment effects vs Static (negative = WER improvement)
     canon_dsg_benefits = {
         "Australian English": -0.035,
         "Canadian English": -0.025,
@@ -912,6 +940,7 @@ def simulate_hierarchical_power(
         "South Asian English": -0.045,
         "US English": -0.025,
     }
+    # SUTA treatment effects vs Static (SUTA improves less than DSG)
     canon_suta_benefits = {
         "Australian English": -0.020,
         "Canadian English": -0.015,
@@ -921,145 +950,175 @@ def simulate_hierarchical_power(
         "US English": -0.015,
     }
 
-    base_wers = np.array([canon_base_wers[a] for a in accents])
-    dsg_benefits = np.array([canon_dsg_benefits[a] for a in accents])
-    suta_benefits = np.array([canon_suta_benefits[a] for a in accents])
-
-    passed_a = 0
-    passed_b = 0
-    passed_c = 0
-    passed_d = 0
-    passed_joint = 0
-
     total_allocated_speakers = sum(
         allocation_matrix[c].get(a, 0) for c in corpora for a in accents
     )
     if total_allocated_speakers == 0:
         raise ValueError("Cannot simulate power on empty speaker allocation.")
 
-    for _ in range(n_trials):
-        # 1. Sample random effects
-        accent_effects = rng.normal(0, sigma_accent, size=n_accents)
-        corpus_effects = {c: rng.normal(0, sigma_corpus) for c in corpora}
+    passed_a = passed_b = passed_c = passed_d = passed_joint = 0
+
+    for trial_idx in range(n_trials):
+        trial_rng = np.random.default_rng(random_seed + trial_idx * 31337)
+
+        # Sample trial-level random effects
+        accent_effects = trial_rng.normal(0, sigma_accent, size=n_accents)
+        corpus_effects = {c: trial_rng.normal(0, sigma_corpus) for c in corpora}
         interaction_effects = {
-            (a_idx, c): rng.normal(0, sigma_interaction)
+            (a_idx, c): trial_rng.normal(0, sigma_interaction)
             for a_idx in range(n_accents)
             for c in corpora
         }
 
-        # Collect paired speaker WERs per accent
-        stratum_spk_static: Dict[int, List[float]] = defaultdict(list)
-        stratum_spk_dsg: Dict[int, List[float]] = defaultdict(list)
-        stratum_spk_suta: Dict[int, List[float]] = defaultdict(list)
-
-        all_static_spk: List[float] = []
-        all_dsg_spk: List[float] = []
-        all_suta_spk: List[float] = []
-
+        # Build speaker-level paired records with integer counts (faithful to frozen inference)
+        spk_records = []
         for a_idx, accent in enumerate(accents):
+            base_wer = canon_base_wers.get(accent, 0.18) + accent_effects[a_idx]
+            dsg_eff = canon_dsg_benefits.get(accent, -0.030)
+            suta_eff = canon_suta_benefits.get(accent, -0.018)
+
             for c in corpora:
                 n_spk = allocation_matrix[c].get(accent, 0)
                 if n_spk <= 0:
                     continue
 
-                spk_eff = rng.normal(0, sigma_speaker, size=n_spk)
-                noise_stat = rng.normal(0, sigma_epsilon / math.sqrt(n_clips_per_speaker), size=n_spk)
-                noise_dsg = rng.normal(0, sigma_epsilon / math.sqrt(n_clips_per_speaker), size=n_spk)
-                noise_suta = rng.normal(0, (sigma_epsilon * 1.3) / math.sqrt(n_clips_per_speaker), size=n_spk)
-
-                base_ijk = (
-                    base_wers[a_idx]
-                    + accent_effects[a_idx]
-                    + corpus_effects[c]
-                    + interaction_effects[(a_idx, c)]
+                spk_re = trial_rng.normal(0, sigma_speaker, size=n_spk)
+                clip_noise = trial_rng.normal(
+                    0, sigma_epsilon / math.sqrt(max(1, n_clips_per_speaker)), size=n_spk
                 )
+                # Arm 1 — Static Baseline (p1_raw shared for paired structure)
+                p1_raw = base_wer + corpus_effects[c] + interaction_effects[(a_idx, c)] + spk_re + clip_noise
+                p1 = np.clip(p1_raw, 0.01, 0.99)
 
-                stat_vals = base_ijk + spk_eff + noise_stat
-                dsg_vals = base_ijk + dsg_benefits[a_idx] + spk_eff + noise_dsg
-                suta_vals = base_ijk + suta_benefits[a_idx] + spk_eff + noise_suta
+                # Arm 2 — Corrected Ungated SUTA (independent clip noise)
+                suta_noise = trial_rng.normal(
+                    0, (sigma_epsilon * 1.3) / math.sqrt(max(1, n_clips_per_speaker)), size=n_spk
+                )
+                p2 = np.clip(p1_raw + suta_eff + suta_noise, 0.01, 0.99)
 
-                stratum_spk_static[a_idx].extend(stat_vals)
-                stratum_spk_dsg[a_idx].extend(dsg_vals)
-                stratum_spk_suta[a_idx].extend(suta_vals)
+                # Arm 3 — DSG-CTTA (independent clip noise)
+                dsg_noise = trial_rng.normal(
+                    0, sigma_epsilon / math.sqrt(max(1, n_clips_per_speaker)), size=n_spk
+                )
+                p3 = np.clip(p1_raw + dsg_eff + dsg_noise, 0.01, 0.99)
 
-                all_static_spk.extend(stat_vals)
-                all_dsg_spk.extend(dsg_vals)
-                all_suta_spk.extend(suta_vals)
+                # Integer word counts (Uniform[100, 181), mean ~140, matching 15 clips/speaker)
+                wc = trial_rng.integers(100, 181, size=n_spk)
+                # Integer Binomial error counts per arm
+                e1 = trial_rng.binomial(wc, p1)
+                e2 = trial_rng.binomial(wc, p2)
+                e3 = trial_rng.binomial(wc, p3)
 
-        # 1. Primary WER superiority vs Static (Event A)
-        diff_static = np.array(all_dsg_spk) - np.array(all_static_spk)
-        mean_diff_static = float(np.mean(diff_static))
-        se_static = float(np.std(diff_static, ddof=1) / math.sqrt(len(diff_static)))
-        t_stat_static = mean_diff_static / se_static if se_static > 0 else 0.0
-        event_a = bool(mean_diff_static < 0 and t_stat_static < -1.96)
+                for k in range(n_spk):
+                    spk_records.append({
+                        "accent_idx": a_idx,
+                        "accent": accent,
+                        "wc": int(wc[k]),
+                        "err1": int(e1[k]),
+                        "err2": int(e2[k]),
+                        "err3": int(e3[k]),
+                    })
 
-        # 2. Primary WER superiority vs Ungated SUTA (Event B)
-        diff_suta = np.array(all_dsg_spk) - np.array(all_suta_spk)
-        mean_diff_suta = float(np.mean(diff_suta))
-        se_suta = float(np.std(diff_suta, ddof=1) / math.sqrt(len(diff_suta)))
-        t_stat_suta = mean_diff_suta / se_suta if se_suta > 0 else 0.0
-        event_b = bool(mean_diff_suta < 0 and t_stat_suta < -1.96)
+        # --- Corpus-level word-weighted WER (exact protocol procedure) ---
+        total_w = float(sum(r["wc"] for r in spk_records))
+        if total_w <= 0:
+            continue
+        total_e1 = float(sum(r["err1"] for r in spk_records))
+        total_e2 = float(sum(r["err2"] for r in spk_records))
+        total_e3 = float(sum(r["err3"] for r in spk_records))
+        delta_static = ((total_e3 - total_e1) / total_w) * 100.0   # DSG minus Static
+        delta_ungated = ((total_e3 - total_e2) / total_w) * 100.0  # DSG minus SUTA
 
-        # 3. Per-accent regression guard: max accent regression <= +2.0 pp (Event C)
-        stratum_means_static = np.array([np.mean(stratum_spk_static[a_idx]) for a_idx in range(n_accents)])
-        stratum_means_dsg = np.array([np.mean(stratum_spk_dsg[a_idx]) for a_idx in range(n_accents)])
-        accent_regressions = (stratum_means_dsg - stratum_means_static) * 100.0
-        event_c = bool(np.max(accent_regressions) <= 2.0)
+        n_clust = len(spk_records)
+        df_corp = max(1, n_clust - 1)
+        all_wc = np.array([r["wc"] for r in spk_records], dtype=float)
+        all_e1 = np.array([r["err1"] for r in spk_records], dtype=float)
+        all_e2 = np.array([r["err2"] for r in spk_records], dtype=float)
+        all_e3 = np.array([r["err3"] for r in spk_records], dtype=float)
+        w_bar = float(np.mean(all_wc))
+        # Bonferroni-adjusted t-critical value for corpus-level linearized tests
+        t_crit = float(scipy_stats.t.ppf(1.0 - adj_alpha, df=df_corp))
 
-        # 4. Disparity expansion guard (Event D) via Stratified Cluster Bootstrap
-        # Point estimates:
-        disp_static = (np.max(stratum_means_static) - np.min(stratum_means_static)) * 100.0
-        disp_dsg = (np.max(stratum_means_dsg) - np.min(stratum_means_dsg)) * 100.0
-        delta_d_point = disp_dsg - disp_static
+        # --- Event A: DSG vs Static (cluster-robust linearized ratio test) ---
+        u_s = (all_e3 - all_e1) - (delta_static / 100.0) * all_wc
+        se_s = (100.0 * float(np.std(u_s, ddof=1)) / math.sqrt(n_clust)) / w_bar if w_bar > 0 else 0.0
+        event_a = bool(delta_static < 0.0 and (delta_static + t_crit * se_s) < 0.0)
 
-        # Fast vectorized stratified cluster bootstrap over speakers within accents
+        # --- Event B: DSG vs SUTA (cluster-robust linearized ratio test) ---
+        u_u = (all_e3 - all_e2) - (delta_ungated / 100.0) * all_wc
+        se_u = (100.0 * float(np.std(u_u, ddof=1)) / math.sqrt(n_clust)) / w_bar if w_bar > 0 else 0.0
+        event_b = bool(delta_ungated < 0.0 and (delta_ungated + t_crit * se_u) < 0.0)
+
+        # --- Event C: Per-accent regression guard (UCB_g <= +2.0 pp each stratum) ---
+        epsilon_g = 2.0
+        accent_passes = True
+        for a_idx, accent in enumerate(accents):
+            acc_r = [r for r in spk_records if r["accent_idx"] == a_idx]
+            if not acc_r:
+                accent_passes = False
+                break
+            n_g = len(acc_r)
+            df_g = max(1, n_g - 1)
+            t_g = float(scipy_stats.t.ppf(1.0 - adj_alpha, df=df_g))
+            gw = np.array([r["wc"] for r in acc_r], dtype=float)
+            ge1 = np.array([r["err1"] for r in acc_r], dtype=float)
+            ge3 = np.array([r["err3"] for r in acc_r], dtype=float)
+            d_g = ((float(np.sum(ge3)) - float(np.sum(ge1))) / float(np.sum(gw))) * 100.0
+            u_g = (ge3 - ge1) - (d_g / 100.0) * gw
+            wb_g = float(np.mean(gw))
+            se_g = (100.0 * float(np.std(u_g, ddof=1)) / math.sqrt(n_g)) / wb_g if wb_g > 0 else 0.0
+            if (d_g + t_g * se_g) > epsilon_g:
+                accent_passes = False
+                break
+        event_c = accent_passes
+
+        # --- Event D: Disparity non-increase via stratified bootstrap Bonferroni UCB ---
+        # Build per-accent speaker arrays for stratified resampling
+        acc_wc_arr = {}
+        acc_e1_arr = {}
+        acc_e3_arr = {}
+        for a_idx in range(n_accents):
+            acc_r = [r for r in spk_records if r["accent_idx"] == a_idx]
+            if acc_r:
+                acc_wc_arr[a_idx] = np.array([r["wc"] for r in acc_r], dtype=float)
+                acc_e1_arr[a_idx] = np.array([r["err1"] for r in acc_r], dtype=float)
+                acc_e3_arr[a_idx] = np.array([r["err3"] for r in acc_r], dtype=float)
+
         boot_delta_ds = np.zeros(n_bootstraps, dtype=float)
         for b in range(n_bootstraps):
-            b_means_static = np.zeros(n_accents, dtype=float)
-            b_means_dsg = np.zeros(n_accents, dtype=float)
+            bw1 = np.zeros(n_accents)
+            bw3 = np.zeros(n_accents)
             for a_idx in range(n_accents):
-                spk_stat = np.array(stratum_spk_static[a_idx])
-                spk_dsg = np.array(stratum_spk_dsg[a_idx])
-                n_a = len(spk_stat)
-                # Resample speaker indices with replacement
-                boot_idx = rng.integers(0, n_a, size=n_a)
-                b_means_static[a_idx] = np.mean(spk_stat[boot_idx])
-                b_means_dsg[a_idx] = np.mean(spk_dsg[boot_idx])
+                if a_idx not in acc_wc_arr:
+                    continue
+                wc_a = acc_wc_arr[a_idx]
+                n_a = len(wc_a)
+                bi = trial_rng.integers(0, n_a, size=n_a)
+                bw = float(np.sum(wc_a[bi]))
+                if bw > 0:
+                    bw1[a_idx] = (float(np.sum(acc_e1_arr[a_idx][bi])) / bw) * 100.0
+                    bw3[a_idx] = (float(np.sum(acc_e3_arr[a_idx][bi])) / bw) * 100.0
+            boot_delta_ds[b] = (np.max(bw3) - np.min(bw3)) - (np.max(bw1) - np.min(bw1))
 
-            b_disp_static = (np.max(b_means_static) - np.min(b_means_static)) * 100.0
-            b_disp_dsg = (np.max(b_means_dsg) - np.min(b_means_dsg)) * 100.0
-            boot_delta_ds[b] = b_disp_dsg - b_disp_static
+        # Bonferroni simultaneous UCB: (1 - alpha/M)*100 percentile -- NOT naive 97.5%
+        event_d = bool(float(np.percentile(boot_delta_ds, simultaneous_percentile)) <= 0.0)
 
-        # One-sided 97.5% Upper Confidence Bound from bootstrap replicates
-        adj_ucb_d = float(np.percentile(boot_delta_ds, 97.5))
-        event_d = bool(adj_ucb_d <= 0.00)
-
-        if event_a:
-            passed_a += 1
-        if event_b:
-            passed_b += 1
-        if event_c:
-            passed_c += 1
-        if event_d:
-            passed_d += 1
+        if event_a: passed_a += 1
+        if event_b: passed_b += 1
+        if event_c: passed_c += 1
+        if event_d: passed_d += 1
         if event_a and event_b and event_c and event_d:
             passed_joint += 1
 
-    power_a = passed_a / n_trials
-    power_b = passed_b / n_trials
-    power_c = passed_c / n_trials
-    power_d = passed_d / n_trials
-    joint_power = passed_joint / n_trials
-
-    # 95% Wilson score interval for joint power
-    z = 1.96
-    denom = 1 + z**2 / n_trials
-    center = (joint_power + z**2 / (2 * n_trials)) / denom
-    margin = (z * math.sqrt((joint_power * (1 - joint_power) + z**2 / (4 * n_trials)) / n_trials)) / denom
-    ci_low = max(0.0, center - margin)
-    ci_high = min(1.0, center + margin)
-
-    meets_90_target = bool(ci_low >= 0.90)
+    p_a = passed_a / n_trials
+    p_b = passed_b / n_trials
+    p_c = passed_c / n_trials
+    p_d = passed_d / n_trials
+    jp = passed_joint / n_trials
+    k, n = passed_joint, n_trials
+    # 95% Clopper-Pearson exact binomial CI
+    ci_low = float(scipy_stats.beta.ppf(0.025, k, n - k + 1)) if k > 0 else 0.0
+    ci_high = float(scipy_stats.beta.ppf(0.975, k + 1, n - k)) if k < n else 1.0
 
     return {
         "simulation_parameters": {
@@ -1071,6 +1130,14 @@ def simulate_hierarchical_power(
             "n_trials": n_trials,
             "n_bootstraps_per_trial": n_bootstraps,
             "random_seed": random_seed,
+            "m_simultaneous_hypotheses": m_hypotheses,
+            "adj_alpha_per_hypothesis": round(adj_alpha, 8),
+            "simultaneous_ucb_percentile": round(simultaneous_percentile, 4),
+            "inference_procedure": (
+                "Protocol-exact v1.4.0: word-weighted Binomial WER, "
+                "cluster-robust linearized t-UCB (Bonferroni alpha/M) for Events A/B/C, "
+                "stratified bootstrap Bonferroni UCB at (1-alpha/M)*100 for Event D"
+            ),
             "variance_components": {
                 "sigma_speaker": sigma_speaker,
                 "sigma_corpus": sigma_corpus,
@@ -1080,13 +1147,14 @@ def simulate_hierarchical_power(
             },
         },
         "power_results": {
-            "event_a_static_superiority_power": round(power_a, 4),
-            "event_b_suta_superiority_power": round(power_b, 4),
-            "event_c_accent_regression_guard_power": round(power_c, 4),
-            "event_d_disparity_guard_power": round(power_d, 4),
-            "joint_confirmatory_power": round(joint_power, 4),
+            "event_a_static_superiority_power": round(p_a, 4),
+            "event_b_suta_superiority_power": round(p_b, 4),
+            "event_c_accent_regression_guard_power": round(p_c, 4),
+            "event_d_disparity_guard_power": round(p_d, 4),
+            "joint_confirmatory_power": round(jp, 4),
             "joint_power_95_ci": [round(ci_low, 4), round(ci_high, 4)],
-            "target_90_power_achieved": meets_90_target,
+            "target_90_power_achieved": bool(jp >= 0.90),
+            "lcb_90_power_achieved": bool(ci_low >= 0.90),
         },
     }
 
@@ -1099,7 +1167,7 @@ def simulate_hierarchical_power(
 def run_multi_corpus_feasibility_audit(
     repo_root: Path,
     n_trials: int = 1000,
-    n_bootstraps: int = 150,
+    n_bootstraps: int = 500,
     random_seed: int = 20261030,
 ) -> Dict[str, Any]:
     """
@@ -1477,8 +1545,8 @@ def parse_args():
     parser.add_argument(
         "--bootstraps",
         type=int,
-        default=150,
-        help="Number of stratified cluster-bootstrap replicates per trial",
+        default=500,
+        help="Number of stratified cluster-bootstrap replicates per trial (production: >=500; protocol default: 2000)",
     )
     parser.add_argument(
         "--seed",
