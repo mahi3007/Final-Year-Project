@@ -148,7 +148,7 @@ class _ScriptedRNG:
         return 0.0 if size is None else np.zeros(size)
 
     def integers(self, low, high=None, size=None):
-        if low == 100 and high == 181:  # speaker word-count draw in the audit
+        if low == 100 and high in (180, 181):  # speaker word-count draw in the audit
             return next(self._wc)
         return self._boot.integers(low, high, size=size)  # bootstrap indices
 

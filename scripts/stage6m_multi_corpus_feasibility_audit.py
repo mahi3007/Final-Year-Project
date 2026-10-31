@@ -869,20 +869,33 @@ def simulate_hierarchical_power(
     sigma_corpus=0.035,
     sigma_accent=0.050,
     sigma_interaction=0.025,
-    sigma_epsilon=0.032,
+    sigma_paired_diff=0.032,
+    target_primary_effect_pp=3.5,
+    target_ungated_effect_pp=3.5,
+    target_disparity_effect_pp=-2.0,
+    accent_effect_mode="random",
     n_trials=2000,
     n_bootstraps=2000,
     random_seed=20261030,
+    sigma_epsilon=None,
 ):
-    # type: (List[str], Dict[str,Dict[str,int]], int, float, float, float, float, float, int, int, int) -> Dict[str, Any]
+    # type: (List[str], Dict[str,Dict[str,int]], int, float, float, float, float, float, float, float, float, str, int, int, int, Optional[float]) -> Dict[str, Any]
     """
     Protocol-exact power simulation mirroring run_confirmatory_paired_cluster_inference
-    (src/dsg_ctta/evaluation/paired_cluster_inference.py, Protocol v1.4.0).
+    (src/dsg_ctta/evaluation/paired_cluster_inference.py, aligned with v1.5 Candidate / DesignStagePowerSpec).
 
-    DATA MODEL (matches frozen inference):
-      - Integer word counts wc_k drawn from Uniform[100, 181) per speaker k.
+    DATA MODEL (Task 3 specification):
+      - Between-speaker variability: sigma_speaker = 0.065 (6.5 pp).
+      - Paired treatment-difference variability: sigma_paired_diff = 0.032 (3.2 pp).
+        Not divided by sqrt(15); represents direct speaker-level paired difference noise.
+      - Treatment effects:
+          DSG vs Static: target_primary_effect_pp = 3.5 pp mean improvement.
+          DSG vs Ungated SUTA: target_ungated_effect_pp = 3.5 pp mean improvement.
+          Disparity reduction: target_disparity_effect_pp = -2.0 pp population reduction.
+      - Accent effects: fixed strata in primary design scenario; optional "random" for sensitivity.
+      - Integer word counts wc_k drawn from Uniform[100, 180) per speaker k (single draw per speaker).
       - Integer Binomial error counts e1_k, e2_k, e3_k per arm per speaker.
-      - Corpus WER = sum(errors) / sum(words) * 100  (word-weighted, not per-speaker mean).
+      - Corpus WER = sum(errors) / sum(words) * 100 (word-weighted, not per-speaker mean).
 
     MULTIPLICITY FAMILY:
       M = 2 primary + n_accents accent guards + 1 disparity
@@ -902,7 +915,7 @@ def simulate_hierarchical_power(
 
     EVENT D  Cross-accent disparity non-increase   (stratified bootstrap Bonferroni UCB):
       Bootstrap percentile = (1 - adj_alpha) * 100
-        M=9 (6-stratum): ~99.444th percentile  -- NOT the naive 97.5%
+        M=9 (6-stratum): ~99.444th percentile
         M=8 (5-stratum):  99.375th percentile
       Criterion: bootstrap UCB_D <= 0.0 pp
 
@@ -910,6 +923,9 @@ def simulate_hierarchical_power(
     Monte Carlo CI: 95% Clopper-Pearson (exact binomial) interval on joint pass count.
     """
     from scipy import stats as scipy_stats
+
+    if sigma_epsilon is not None:
+        sigma_paired_diff = sigma_epsilon
 
     rng = np.random.default_rng(random_seed)
     n_accents = len(accents)
@@ -931,24 +947,26 @@ def simulate_hierarchical_power(
         "South Asian English": 0.235,
         "US English": 0.142,
     }
-    # DSG treatment effects vs Static (negative = WER improvement)
-    canon_dsg_benefits = {
-        "Australian English": -0.035,
-        "Canadian English": -0.025,
-        "England English": -0.035,
-        "Irish English": -0.045,
-        "South Asian English": -0.045,
-        "US English": -0.025,
-    }
-    # SUTA treatment effects vs Static (SUTA improves less than DSG)
-    canon_suta_benefits = {
-        "Australian English": -0.020,
-        "Canadian English": -0.015,
-        "England English": -0.020,
-        "Irish English": -0.025,
-        "South Asian English": -0.025,
-        "US English": -0.015,
-    }
+
+    # Calculate population baseline statistics strictly across the evaluated accents
+    mu_vals = np.array([canon_base_wers.get(a, 0.18) for a in accents], dtype=float)
+    mu_bar = float(np.mean(mu_vals))
+    mu_min = float(np.min(mu_vals))
+    mu_max = float(np.max(mu_vals))
+    mu_range = (mu_max - mu_min) if (mu_max > mu_min) else 1.0
+
+    # Accent-specific treatment effect delta_g:
+    # 1. Average DSG improvement vs Static equals target_primary_effect_pp (-3.5 pp)
+    # 2. DSG produces target_disparity_effect_pp (-2.0 pp) reduction in max-minus-min disparity
+    prim_eff = float(target_primary_effect_pp) / 100.0
+    disp_eff = float(target_disparity_effect_pp) / 100.0
+    ungated_eff = float(target_ungated_effect_pp) / 100.0
+
+    accent_delta_g = {}
+    for a_idx, accent in enumerate(accents):
+        mu_g = mu_vals[a_idx]
+        delta_g = -prim_eff + ((mu_g - mu_bar) / mu_range) * disp_eff
+        accent_delta_g[accent] = float(delta_g)
 
     total_allocated_speakers = sum(
         allocation_matrix[c].get(a, 0) for c in corpora for a in accents
@@ -961,8 +979,12 @@ def simulate_hierarchical_power(
     for trial_idx in range(n_trials):
         trial_rng = np.random.default_rng(random_seed + trial_idx * 31337)
 
-        # Sample trial-level random effects
-        accent_effects = trial_rng.normal(0, sigma_accent, size=n_accents)
+        # Sample trial-level effects
+        if accent_effect_mode == "random":
+            accent_effects = trial_rng.normal(0, sigma_accent, size=n_accents)
+        else:  # "fixed" (default primary design scenario)
+            accent_effects = np.zeros(n_accents, dtype=float)
+
         corpus_effects = {c: trial_rng.normal(0, sigma_corpus) for c in corpora}
         interaction_effects = {
             (a_idx, c): trial_rng.normal(0, sigma_interaction)
@@ -974,8 +996,7 @@ def simulate_hierarchical_power(
         spk_records = []
         for a_idx, accent in enumerate(accents):
             base_wer = canon_base_wers.get(accent, 0.18) + accent_effects[a_idx]
-            dsg_eff = canon_dsg_benefits.get(accent, -0.030)
-            suta_eff = canon_suta_benefits.get(accent, -0.018)
+            delta_g = accent_delta_g[accent]
 
             for c in corpora:
                 n_spk = allocation_matrix[c].get(accent, 0)
@@ -983,27 +1004,27 @@ def simulate_hierarchical_power(
                     continue
 
                 spk_re = trial_rng.normal(0, sigma_speaker, size=n_spk)
-                clip_noise = trial_rng.normal(
-                    0, sigma_epsilon / math.sqrt(max(1, n_clips_per_speaker)), size=n_spk
-                )
-                # Arm 1 — Static Baseline (p1_raw shared for paired structure)
-                p1_raw = base_wer + corpus_effects[c] + interaction_effects[(a_idx, c)] + spk_re + clip_noise
+                if len(corpora) > 1:
+                    p1_raw = (
+                        base_wer
+                        + corpus_effects[c]
+                        + (interaction_effects[(a_idx, c)] if accent_effect_mode == "random" else 0.0)
+                        + spk_re
+                    )
+                else:
+                    p1_raw = base_wer + spk_re
                 p1 = np.clip(p1_raw, 0.01, 0.99)
 
-                # Arm 2 — Corrected Ungated SUTA (independent clip noise)
-                suta_noise = trial_rng.normal(
-                    0, (sigma_epsilon * 1.3) / math.sqrt(max(1, n_clips_per_speaker)), size=n_spk
-                )
-                p2 = np.clip(p1_raw + suta_eff + suta_noise, 0.01, 0.99)
+                # Arm 3 — DSG-CTTA (treatment effect delta_g + speaker-level paired noise epsilon_3)
+                eps3 = trial_rng.normal(0, sigma_paired_diff, size=n_spk)
+                p3 = np.clip(p1 + delta_g + eps3, 0.01, 0.99)
 
-                # Arm 3 — DSG-CTTA (independent clip noise)
-                dsg_noise = trial_rng.normal(
-                    0, sigma_epsilon / math.sqrt(max(1, n_clips_per_speaker)), size=n_spk
-                )
-                p3 = np.clip(p1_raw + dsg_eff + dsg_noise, 0.01, 0.99)
+                # Arm 2 — Corrected Ungated SUTA (target +3.5 pp over DSG + separate paired noise epsilon_2)
+                eps2 = trial_rng.normal(0, sigma_paired_diff, size=n_spk)
+                p2 = np.clip(p3 + ungated_eff + eps2, 0.01, 0.99)
 
-                # Integer word counts (Uniform[100, 181), mean ~140, matching 15 clips/speaker)
-                wc = trial_rng.integers(100, 181, size=n_spk)
+                # Integer word counts (Uniform[100, 180), matching DesignStagePowerSpec)
+                wc = trial_rng.integers(100, 180, size=n_spk)
                 # Integer Binomial error counts per arm
                 e1 = trial_rng.binomial(wc, p1)
                 e2 = trial_rng.binomial(wc, p2)
