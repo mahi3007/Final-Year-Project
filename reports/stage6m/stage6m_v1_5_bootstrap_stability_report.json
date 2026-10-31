@@ -1,0 +1,351 @@
+{
+  "audit_meta": {
+    "task": "Stage 6M Task 4 (Bootstrap Quantile Stability Audit)",
+    "governance_status": "DRAFT_HOLD",
+    "candidate_model": "v1.5.0-Candidate",
+    "confirmatory_accents": [
+      "Australian English",
+      "Canadian English",
+      "England English",
+      "South Asian English",
+      "US English"
+    ],
+    "simultaneous_percentile": 99.375,
+    "alpha_family": 0.05,
+    "m_hypotheses": 8
+  },
+  "dataset_sensitivity_matrix": [
+    {
+      "dataset_index": 1,
+      "dataset_seed": 20261030,
+      "speakers_per_stratum": 220,
+      "total_speakers": 1100,
+      "point_estimates": {
+        "static_disparity_pp": 9.6793,
+        "dsg_disparity_pp": 7.6039,
+        "delta_disparity_pp": -2.0754
+      },
+      "depth_evaluations": [
+        {
+          "bootstrap_depth": 500,
+          "ucb_d_pp": -0.78809,
+          "diff_from_ref_pp": 0.11474,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 2000,
+          "ucb_d_pp": -0.715,
+          "diff_from_ref_pp": 0.04164,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 5000,
+          "ucb_d_pp": -0.70166,
+          "diff_from_ref_pp": 0.02831,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 10000,
+          "ucb_d_pp": -0.69346,
+          "diff_from_ref_pp": 0.0201,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 20000,
+          "ucb_d_pp": -0.67336,
+          "diff_from_ref_pp": 0.0,
+          "decision": "PASS",
+          "is_reference": true,
+          "decision_flip_relative_to_ref": false
+        }
+      ]
+    },
+    {
+      "dataset_index": 2,
+      "dataset_seed": 20261031,
+      "speakers_per_stratum": 220,
+      "total_speakers": 1100,
+      "point_estimates": {
+        "static_disparity_pp": 9.7032,
+        "dsg_disparity_pp": 6.8391,
+        "delta_disparity_pp": -2.8641
+      },
+      "depth_evaluations": [
+        {
+          "bootstrap_depth": 500,
+          "ucb_d_pp": -1.42272,
+          "diff_from_ref_pp": 0.07473,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 2000,
+          "ucb_d_pp": -1.52624,
+          "diff_from_ref_pp": 0.0288,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 5000,
+          "ucb_d_pp": -1.50588,
+          "diff_from_ref_pp": 0.00843,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 10000,
+          "ucb_d_pp": -1.52113,
+          "diff_from_ref_pp": 0.02369,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 20000,
+          "ucb_d_pp": -1.49744,
+          "diff_from_ref_pp": 0.0,
+          "decision": "PASS",
+          "is_reference": true,
+          "decision_flip_relative_to_ref": false
+        }
+      ]
+    },
+    {
+      "dataset_index": 3,
+      "dataset_seed": 20261032,
+      "speakers_per_stratum": 220,
+      "total_speakers": 1100,
+      "point_estimates": {
+        "static_disparity_pp": 9.0744,
+        "dsg_disparity_pp": 7.3919,
+        "delta_disparity_pp": -1.6825
+      },
+      "depth_evaluations": [
+        {
+          "bootstrap_depth": 500,
+          "ucb_d_pp": -0.52176,
+          "diff_from_ref_pp": 0.13623,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 2000,
+          "ucb_d_pp": -0.43811,
+          "diff_from_ref_pp": 0.05258,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 5000,
+          "ucb_d_pp": -0.37547,
+          "diff_from_ref_pp": 0.01005,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 10000,
+          "ucb_d_pp": -0.36635,
+          "diff_from_ref_pp": 0.01918,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 20000,
+          "ucb_d_pp": -0.38553,
+          "diff_from_ref_pp": 0.0,
+          "decision": "PASS",
+          "is_reference": true,
+          "decision_flip_relative_to_ref": false
+        }
+      ]
+    },
+    {
+      "dataset_index": 4,
+      "dataset_seed": 20261033,
+      "speakers_per_stratum": 220,
+      "total_speakers": 1100,
+      "point_estimates": {
+        "static_disparity_pp": 8.0991,
+        "dsg_disparity_pp": 6.2566,
+        "delta_disparity_pp": -1.8425
+      },
+      "depth_evaluations": [
+        {
+          "bootstrap_depth": 500,
+          "ucb_d_pp": -0.66943,
+          "diff_from_ref_pp": 0.12913,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 2000,
+          "ucb_d_pp": -0.60414,
+          "diff_from_ref_pp": 0.06385,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 5000,
+          "ucb_d_pp": -0.52525,
+          "diff_from_ref_pp": 0.01504,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 10000,
+          "ucb_d_pp": -0.53685,
+          "diff_from_ref_pp": 0.00344,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 20000,
+          "ucb_d_pp": -0.54029,
+          "diff_from_ref_pp": 0.0,
+          "decision": "PASS",
+          "is_reference": true,
+          "decision_flip_relative_to_ref": false
+        }
+      ]
+    },
+    {
+      "dataset_index": 5,
+      "dataset_seed": 20261034,
+      "speakers_per_stratum": 220,
+      "total_speakers": 1100,
+      "point_estimates": {
+        "static_disparity_pp": 9.2495,
+        "dsg_disparity_pp": 7.0706,
+        "delta_disparity_pp": -2.1788
+      },
+      "depth_evaluations": [
+        {
+          "bootstrap_depth": 500,
+          "ucb_d_pp": -1.0595,
+          "diff_from_ref_pp": 0.13073,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 2000,
+          "ucb_d_pp": -0.93462,
+          "diff_from_ref_pp": 0.00585,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 5000,
+          "ucb_d_pp": -0.93216,
+          "diff_from_ref_pp": 0.00338,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 10000,
+          "ucb_d_pp": -0.90728,
+          "diff_from_ref_pp": 0.0215,
+          "decision": "PASS",
+          "is_reference": false,
+          "decision_flip_relative_to_ref": false
+        },
+        {
+          "bootstrap_depth": 20000,
+          "ucb_d_pp": -0.92877,
+          "diff_from_ref_pp": 0.0,
+          "decision": "PASS",
+          "is_reference": true,
+          "decision_flip_relative_to_ref": false
+        }
+      ]
+    }
+  ],
+  "depth_sensitivity_summary": {
+    "evaluated_datasets_count": 5,
+    "evaluated_depths": [
+      500,
+      2000,
+      5000,
+      10000,
+      20000
+    ],
+    "total_evaluations": 25,
+    "non_reference_evaluations_count": 20,
+    "median_absolute_diff_pp": 0.026,
+    "p95_absolute_diff_pp": 0.13101,
+    "max_absolute_diff_pp": 0.13623,
+    "min_absolute_diff_pp": 0.00338,
+    "event_d_decision_flips_count": 0,
+    "event_d_decision_flip_rate": 0.0
+  },
+  "independent_stream_repeatability": {
+    "dataset_seed": 20261030,
+    "bootstrap_depth": 20000,
+    "streams_count": 5,
+    "stream_evaluations": [
+      {
+        "stream_index": 1,
+        "stream_seed": 9001,
+        "bootstrap_depth": 20000,
+        "ucb_d_pp": -0.68951,
+        "decision": "PASS"
+      },
+      {
+        "stream_index": 2,
+        "stream_seed": 9002,
+        "bootstrap_depth": 20000,
+        "ucb_d_pp": -0.68184,
+        "decision": "PASS"
+      },
+      {
+        "stream_index": 3,
+        "stream_seed": 9003,
+        "bootstrap_depth": 20000,
+        "ucb_d_pp": -0.68192,
+        "decision": "PASS"
+      },
+      {
+        "stream_index": 4,
+        "stream_seed": 9004,
+        "bootstrap_depth": 20000,
+        "ucb_d_pp": -0.67056,
+        "decision": "PASS"
+      },
+      {
+        "stream_index": 5,
+        "stream_seed": 9005,
+        "bootstrap_depth": 20000,
+        "ucb_d_pp": -0.70709,
+        "decision": "PASS"
+      }
+    ],
+    "mean_ucb_d_pp": -0.68618,
+    "std_ucb_d_pp": 0.0135,
+    "min_ucb_d_pp": -0.70709,
+    "max_ucb_d_pp": -0.67056,
+    "max_pairwise_diff_pp": 0.03652,
+    "decision_agreement_count": 5,
+    "decision_agreement_unanimous": true
+  }
+}
