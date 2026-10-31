@@ -1,6 +1,6 @@
 {
   "audit_meta": {
-    "task": "Stage 6M Task 4 (Bootstrap Quantile Stability Audit)",
+    "task": "Stage 6M Tasks 4 & 4.1 (Bootstrap Quantile Stability & Boundary Audit)",
     "governance_status": "DRAFT_HOLD",
     "candidate_model": "v1.5.0-Candidate",
     "confirmatory_accents": [
@@ -341,11 +341,285 @@
       }
     ],
     "mean_ucb_d_pp": -0.68618,
+    "between_stream_std_ucb_d_pp": 0.0135,
+    "standard_error_mean_ucb_d_pp": 0.00604,
     "std_ucb_d_pp": 0.0135,
     "min_ucb_d_pp": -0.70709,
     "max_ucb_d_pp": -0.67056,
     "max_pairwise_diff_pp": 0.03652,
     "decision_agreement_count": 5,
     "decision_agreement_unanimous": true
+  },
+  "task_4_1_boundary_addendum": {
+    "boundary_stress_panel": {
+      "evaluations": [
+        {
+          "target_disparity_effect_pp": -0.2,
+          "dataset_seed": 20261050,
+          "static_disparity_pp": 9.514,
+          "dsg_disparity_pp": 8.6483,
+          "delta_disparity_point_pp": -0.8657,
+          "ucb_d_2k_pp": 0.46075,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 0.49015,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.02939,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": -0.2,
+          "dataset_seed": 20261051,
+          "static_disparity_pp": 9.7019,
+          "dsg_disparity_pp": 9.1534,
+          "delta_disparity_point_pp": -0.5485,
+          "ucb_d_2k_pp": 0.74454,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 0.67701,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.06753,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": -0.2,
+          "dataset_seed": 20261052,
+          "static_disparity_pp": 8.4791,
+          "dsg_disparity_pp": 8.7787,
+          "delta_disparity_point_pp": 0.2996,
+          "ucb_d_2k_pp": 1.53292,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 1.63486,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.10193,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": -0.2,
+          "dataset_seed": 20261053,
+          "static_disparity_pp": 8.6909,
+          "dsg_disparity_pp": 8.2705,
+          "delta_disparity_point_pp": -0.4204,
+          "ucb_d_2k_pp": 0.84164,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 0.86421,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.02257,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": -0.2,
+          "dataset_seed": 20261054,
+          "static_disparity_pp": 9.2669,
+          "dsg_disparity_pp": 8.882,
+          "delta_disparity_point_pp": -0.3849,
+          "ucb_d_2k_pp": 0.84407,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 0.85757,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.0135,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": 0.0,
+          "dataset_seed": 20261050,
+          "static_disparity_pp": 9.6232,
+          "dsg_disparity_pp": 8.2934,
+          "delta_disparity_point_pp": -1.3298,
+          "ucb_d_2k_pp": -0.06395,
+          "decision_2k": "PASS",
+          "ucb_d_20k_pp": -0.06802,
+          "decision_20k": "PASS",
+          "diff_pp": 0.00406,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": 0.0,
+          "dataset_seed": 20261051,
+          "static_disparity_pp": 9.7697,
+          "dsg_disparity_pp": 10.0758,
+          "delta_disparity_point_pp": 0.3061,
+          "ucb_d_2k_pp": 1.53751,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 1.57606,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.03855,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": 0.0,
+          "dataset_seed": 20261052,
+          "static_disparity_pp": 9.7198,
+          "dsg_disparity_pp": 8.9117,
+          "delta_disparity_point_pp": -0.8081,
+          "ucb_d_2k_pp": 0.38028,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 0.46468,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.0844,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": 0.0,
+          "dataset_seed": 20261053,
+          "static_disparity_pp": 8.3554,
+          "dsg_disparity_pp": 8.2122,
+          "delta_disparity_point_pp": -0.1432,
+          "ucb_d_2k_pp": 1.11711,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 1.14486,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.02775,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": 0.0,
+          "dataset_seed": 20261054,
+          "static_disparity_pp": 9.6301,
+          "dsg_disparity_pp": 9.3093,
+          "delta_disparity_point_pp": -0.3207,
+          "ucb_d_2k_pp": 0.8975,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 0.90132,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.00382,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": 0.2,
+          "dataset_seed": 20261050,
+          "static_disparity_pp": 9.8588,
+          "dsg_disparity_pp": 9.6498,
+          "delta_disparity_point_pp": -0.209,
+          "ucb_d_2k_pp": 1.08882,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 1.03519,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.05363,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": 0.2,
+          "dataset_seed": 20261051,
+          "static_disparity_pp": 10.5141,
+          "dsg_disparity_pp": 9.7684,
+          "delta_disparity_point_pp": -0.7458,
+          "ucb_d_2k_pp": 0.51203,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 0.52901,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.01698,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": 0.2,
+          "dataset_seed": 20261052,
+          "static_disparity_pp": 8.0291,
+          "dsg_disparity_pp": 8.793,
+          "delta_disparity_point_pp": 0.7639,
+          "ucb_d_2k_pp": 1.9953,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 1.97375,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.02155,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": 0.2,
+          "dataset_seed": 20261053,
+          "static_disparity_pp": 8.4243,
+          "dsg_disparity_pp": 8.785,
+          "delta_disparity_point_pp": 0.3607,
+          "ucb_d_2k_pp": 1.59072,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 1.66182,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.0711,
+          "decision_flip": false
+        },
+        {
+          "target_disparity_effect_pp": 0.2,
+          "dataset_seed": 20261054,
+          "static_disparity_pp": 9.4259,
+          "dsg_disparity_pp": 8.8632,
+          "delta_disparity_point_pp": -0.5626,
+          "ucb_d_2k_pp": 0.58634,
+          "decision_2k": "FAIL",
+          "ucb_d_20k_pp": 0.63396,
+          "decision_20k": "FAIL",
+          "diff_pp": 0.04763,
+          "decision_flip": false
+        }
+      ],
+      "summary": {
+        "total_boundary_evaluations": 15,
+        "tested_targets_pp": [
+          -0.2,
+          0.0,
+          0.2
+        ],
+        "tested_seeds_count": 5,
+        "median_diff_pp": 0.02939,
+        "p95_diff_pp": 0.08966,
+        "max_diff_pp": 0.10193,
+        "min_diff_pp": 0.00382,
+        "total_decision_flips": 0,
+        "decision_flip_rate": 0.0
+      }
+    },
+    "boundary_stream_repeatability": {
+      "dataset_seed": 20261050,
+      "target_disparity_effect_pp": 0.0,
+      "bootstrap_depth": 20000,
+      "streams_count": 5,
+      "stream_evaluations": [
+        {
+          "stream_index": 1,
+          "stream_seed": 9101,
+          "ucb_d_2k_pp": -0.09442,
+          "ucb_d_20k_pp": -0.07198,
+          "decision": "PASS",
+          "diff_2k_vs_20k_pp": 0.02244
+        },
+        {
+          "stream_index": 2,
+          "stream_seed": 9102,
+          "ucb_d_2k_pp": -0.03537,
+          "ucb_d_20k_pp": -0.05273,
+          "decision": "PASS",
+          "diff_2k_vs_20k_pp": 0.01736
+        },
+        {
+          "stream_index": 3,
+          "stream_seed": 9103,
+          "ucb_d_2k_pp": -0.05917,
+          "ucb_d_20k_pp": -0.0407,
+          "decision": "PASS",
+          "diff_2k_vs_20k_pp": 0.01848
+        },
+        {
+          "stream_index": 4,
+          "stream_seed": 9104,
+          "ucb_d_2k_pp": -0.09435,
+          "ucb_d_20k_pp": -0.03181,
+          "decision": "PASS",
+          "diff_2k_vs_20k_pp": 0.06254
+        },
+        {
+          "stream_index": 5,
+          "stream_seed": 9105,
+          "ucb_d_2k_pp": -0.06376,
+          "ucb_d_20k_pp": -0.02758,
+          "decision": "PASS",
+          "diff_2k_vs_20k_pp": 0.03618
+        }
+      ],
+      "mean_ucb_d_pp": -0.04496,
+      "between_stream_std_ucb_d_pp": 0.01791,
+      "standard_error_mean_ucb_d_pp": 0.00801,
+      "min_ucb_d_pp": -0.07198,
+      "max_ucb_d_pp": -0.02758,
+      "max_pairwise_diff_pp": 0.0444,
+      "decision_agreement_count": 5,
+      "decision_agreement_unanimous": true
+    }
   }
 }

@@ -25,6 +25,8 @@ import pytest
 
 from scripts.stage6m_bootstrap_stability_audit import (
     compute_point_estimates,
+    evaluate_boundary_stress_scenarios,
+    evaluate_boundary_stream_repeatability,
     evaluate_nested_prefixes,
     extract_stratum_arrays,
     run_bootstrap_stability_audit,
@@ -280,3 +282,95 @@ def test_audit_execution_metrics_consistency():
     assert r["streams_count"] == 2
     assert r["std_ucb_d_pp"] >= 0.0
     assert r["max_pairwise_diff_pp"] >= 0.0
+
+
+# ------------------------------------------------------------------------------
+# 11. Boundary scenario deterministic reproducibility
+# ------------------------------------------------------------------------------
+def test_boundary_scenario_reproducibility():
+    """
+    Test 11 (Task 4.1): Verifies that identical seeds and boundary disparity targets
+    produce bitwise identical datasets and point estimates.
+    """
+    for t in [-0.20, 0.00, +0.20]:
+        spec = CandidateFiveStratumPowerSpec(target_disparity_effect_pp=t)
+        d1 = generate_candidate_dataset(spec, num_speakers_per_stratum=30, rng=np.random.default_rng(20261050))
+        d2 = generate_candidate_dataset(spec, num_speakers_per_stratum=30, rng=np.random.default_rng(20261050))
+
+        pt1 = compute_point_estimates(extract_stratum_arrays(d1["speaker_records"]))
+        pt2 = compute_point_estimates(extract_stratum_arrays(d2["speaker_records"]))
+        assert pt1["delta_disparity_pp"] == pytest.approx(pt2["delta_disparity_pp"], abs=1e-12)
+
+
+# ------------------------------------------------------------------------------
+# 12. Decision stability and low discrepancy at the boundary
+# ------------------------------------------------------------------------------
+def test_boundary_decision_stability_and_flip_rate():
+    """
+    Test 12 (Task 4.1): Evaluates boundary stress panel across targets {-0.2, 0.0, +0.2} pp.
+    Verifies that the difference between B=2,000 and B=20,000 is bounded (max diff < 0.15 pp)
+    and zero decision flips occur across the tested panel.
+    """
+    res = evaluate_boundary_stress_scenarios(
+        boundary_targets=[-0.20, 0.00, +0.20],
+        boundary_seeds=[20261050, 20261051, 20261052],
+        num_speakers_per_stratum=220,
+        percentile=99.375,
+    )
+    s = res["summary"]
+    assert s["total_boundary_evaluations"] == 9
+    assert s["total_decision_flips"] == 0
+    assert s["max_diff_pp"] < 0.15
+    assert s["median_diff_pp"] < 0.06
+
+
+# ------------------------------------------------------------------------------
+# 13. Boundary stream repeatability and unanimous agreement
+# ------------------------------------------------------------------------------
+def test_boundary_stream_repeatability_agreement():
+    """
+    Test 13 (Task 4.1): Evaluates independent 20,000-replicate streams on a dataset
+    deliberately located near the zero boundary (target delta_D = 0.00 pp).
+    Verifies unanimous decision agreement and low between-stream standard deviation.
+    """
+    res = evaluate_boundary_stream_repeatability(
+        target_disparity_effect_pp=0.00,
+        dataset_seed=20261050,
+        stream_seeds=[9101, 9102, 9103],
+        num_speakers_per_stratum=220,
+        bootstrap_depth=20000,
+        percentile=99.375,
+    )
+    assert res["decision_agreement_unanimous"] is True
+    assert res["decision_agreement_count"] == 3
+    assert res["between_stream_std_ucb_d_pp"] < 0.03
+    assert res["standard_error_mean_ucb_d_pp"] == pytest.approx(
+        res["between_stream_std_ucb_d_pp"] / math.sqrt(3), abs=1e-5
+    )
+
+
+# ------------------------------------------------------------------------------
+# 14. Statistical terminology consistency in repeatability metrics
+# ------------------------------------------------------------------------------
+def test_statistical_terminology_consistency():
+    """
+    Test 14 (Task 4.1): Verifies that between-stream standard deviation and standard
+    error of the stream mean are explicitly distinguished and mathematically consistent.
+    """
+    res = run_bootstrap_stability_audit(
+        dataset_seeds=[20261030],
+        bootstrap_depths=[500, 2000],
+        stream_seeds=[9001, 9002, 9003, 9004, 9005],
+        boundary_targets=[0.00],
+        boundary_seeds=[20261050],
+        boundary_stream_seeds=[9101, 9102],
+        num_speakers_per_stratum=30,
+    )
+    r = res["independent_stream_repeatability"]
+    assert "between_stream_std_ucb_d_pp" in r
+    assert "standard_error_mean_ucb_d_pp" in r
+    assert r["standard_error_mean_ucb_d_pp"] == pytest.approx(
+        r["between_stream_std_ucb_d_pp"] / math.sqrt(5), abs=1e-5
+    )
+    assert "task_4_1_boundary_addendum" in res
+
