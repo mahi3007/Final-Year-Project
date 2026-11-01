@@ -1,0 +1,1225 @@
+{
+  "timestamp_utc": "2026-11-01T06:29:42.467681+00:00",
+  "task": "Stage 6M Task 6 (Scientific Feasibility & Readiness Audit)",
+  "protocol_version": "v1.5.0-Candidate",
+  "governance_status": "DRAFT_HOLD",
+  "governance_disposition": "READY FOR PROJECT-LEAD AUTHORIZATION",
+  "confirmatory_accents": [
+    "Australian English",
+    "Canadian English",
+    "England English",
+    "South Asian English",
+    "US English"
+  ],
+  "exploratory_accents": [
+    "Irish English"
+  ],
+  "multiplicity_family": {
+    "m_hypotheses": 8,
+    "alpha_family": 0.05,
+    "alpha_adj": 0.00625,
+    "simultaneous_percentile": 99.375,
+    "method": "Fixed Single-Step Simultaneous Bonferroni"
+  },
+  "confirmations": {
+    "N_285": {
+      "evaluation_stage": "FINAL_CONFIRMATION",
+      "speakers_per_stratum": 285,
+      "total_speakers": 1425,
+      "outer_trials": 10000,
+      "bootstrap_replicates": 20000,
+      "elapsed_seconds": 1031.11,
+      "successful_joint_trajectories": 9874,
+      "joint_power": 0.9874,
+      "clopper_pearson_95_ci": [
+        0.98502,
+        0.98949
+      ],
+      "lcb_95": 0.98502,
+      "ucb_95": 0.98949,
+      "target_90_power_achieved": true,
+      "lcb_90_power_achieved": true,
+      "final_scientific_verdict": "PASS",
+      "marginal_event_probabilities": {
+        "event_a_static_superiority": 1.0,
+        "event_b_suta_superiority": 1.0,
+        "event_c_accent_regression_guard": 1.0,
+        "event_d_disparity_guard": 0.9874
+      },
+      "limiting_event": "Event D"
+    },
+    "N_220": {
+      "evaluation_stage": "FINAL_CONFIRMATION",
+      "speakers_per_stratum": 220,
+      "total_speakers": 1100,
+      "outer_trials": 10000,
+      "bootstrap_replicates": 20000,
+      "elapsed_seconds": 546.72,
+      "successful_joint_trajectories": 9535,
+      "joint_power": 0.9535,
+      "clopper_pearson_95_ci": [
+        0.94919,
+        0.95754
+      ],
+      "lcb_95": 0.94919,
+      "ucb_95": 0.95754,
+      "target_90_power_achieved": true,
+      "lcb_90_power_achieved": true,
+      "final_scientific_verdict": "PASS",
+      "marginal_event_probabilities": {
+        "event_a_static_superiority": 1.0,
+        "event_b_suta_superiority": 1.0,
+        "event_c_accent_regression_guard": 1.0,
+        "event_d_disparity_guard": 0.9535
+      },
+      "limiting_event": "Event D"
+    }
+  },
+  "sensitivity": {
+    "evaluation_timestamp": "2026-11-01T06:29:42.467681+00:00",
+    "total_elapsed_seconds": 1935.37,
+    "trials_per_scenario": 1000,
+    "bootstrap_replicates": 2000,
+    "evaluated_sample_sizes": [
+      285,
+      220
+    ],
+    "scenarios_count": 16,
+    "results_by_sample_size": {
+      "N_285": [
+        {
+          "scenario_id": "primary_baseline",
+          "scenario_name": "Primary Candidate Scenario (Reference)",
+          "category": "Reference",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.64,
+          "successful_joint_trajectories": 986,
+          "joint_power": 0.986,
+          "clopper_pearson_95_ci": [
+            0.97662,
+            0.99233
+          ],
+          "lcb_95": 0.97662,
+          "ucb_95": 0.99233,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.986
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_static_3.0pp",
+          "scenario_name": "Degraded Static Superiority (3.0 pp)",
+          "category": "Static Superiority Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.0,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.69,
+          "successful_joint_trajectories": 990,
+          "joint_power": 0.99,
+          "clopper_pearson_95_ci": [
+            0.98169,
+            0.99519
+          ],
+          "lcb_95": 0.98169,
+          "ucb_95": 0.99519,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.99
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_static_2.5pp",
+          "scenario_name": "Degraded Static Superiority (2.5 pp)",
+          "category": "Static Superiority Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 2.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.82,
+          "successful_joint_trajectories": 978,
+          "joint_power": 0.978,
+          "clopper_pearson_95_ci": [
+            0.96688,
+            0.98616
+          ],
+          "lcb_95": 0.96688,
+          "ucb_95": 0.98616,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.978
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_static_2.0pp",
+          "scenario_name": "Degraded Static Superiority (2.0 pp)",
+          "category": "Static Superiority Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 2.0,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.74,
+          "successful_joint_trajectories": 977,
+          "joint_power": 0.977,
+          "clopper_pearson_95_ci": [
+            0.96569,
+            0.98537
+          ],
+          "lcb_95": 0.96569,
+          "ucb_95": 0.98537,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.977
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_suta_3.0pp",
+          "scenario_name": "Degraded SUTA Superiority (3.0 pp)",
+          "category": "SUTA Superiority Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.0,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.95,
+          "successful_joint_trajectories": 991,
+          "joint_power": 0.991,
+          "clopper_pearson_95_ci": [
+            0.98298,
+            0.99588
+          ],
+          "lcb_95": 0.98298,
+          "ucb_95": 0.99588,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.991
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_suta_2.5pp",
+          "scenario_name": "Degraded SUTA Superiority (2.5 pp)",
+          "category": "SUTA Superiority Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 2.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.64,
+          "successful_joint_trajectories": 990,
+          "joint_power": 0.99,
+          "clopper_pearson_95_ci": [
+            0.98169,
+            0.99519
+          ],
+          "lcb_95": 0.98169,
+          "ucb_95": 0.99519,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.99
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_suta_2.0pp",
+          "scenario_name": "Degraded SUTA Superiority (2.0 pp)",
+          "category": "SUTA Superiority Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 2.0,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.72,
+          "successful_joint_trajectories": 986,
+          "joint_power": 0.986,
+          "clopper_pearson_95_ci": [
+            0.97662,
+            0.99233
+          ],
+          "lcb_95": 0.97662,
+          "ucb_95": 0.99233,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.986
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_disp_1.5pp",
+          "scenario_name": "Attenuated Disparity Narrowing (-1.5 pp)",
+          "category": "Disparity Reduction Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -1.5,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.62,
+          "successful_joint_trajectories": 893,
+          "joint_power": 0.893,
+          "clopper_pearson_95_ci": [
+            0.87217,
+            0.91148
+          ],
+          "lcb_95": 0.87217,
+          "ucb_95": 0.91148,
+          "target_90_power_achieved": false,
+          "lcb_90_power_achieved": false,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.893
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_disp_1.0pp",
+          "scenario_name": "Attenuated Disparity Narrowing (-1.0 pp)",
+          "category": "Disparity Reduction Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -1.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.89,
+          "successful_joint_trajectories": 588,
+          "joint_power": 0.588,
+          "clopper_pearson_95_ci": [
+            0.55677,
+            0.61871
+          ],
+          "lcb_95": 0.55677,
+          "ucb_95": 0.61871,
+          "target_90_power_achieved": false,
+          "lcb_90_power_achieved": false,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.588
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_disp_0.0pp",
+          "scenario_name": "Null Disparity Change (0.0 pp)",
+          "category": "Disparity Reduction Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": 0.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.77,
+          "successful_joint_trajectories": 26,
+          "joint_power": 0.026,
+          "clopper_pearson_95_ci": [
+            0.01705,
+            0.03787
+          ],
+          "lcb_95": 0.01705,
+          "ucb_95": 0.03787,
+          "target_90_power_achieved": false,
+          "lcb_90_power_achieved": false,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.026
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_sd_between_7.5pp",
+          "scenario_name": "Elevated Between-Speaker SD (7.5 pp)",
+          "category": "Variance Inflation Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 7.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.8,
+          "successful_joint_trajectories": 992,
+          "joint_power": 0.992,
+          "clopper_pearson_95_ci": [
+            0.9843,
+            0.99654
+          ],
+          "lcb_95": 0.9843,
+          "ucb_95": 0.99654,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.992
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_sd_between_8.5pp",
+          "scenario_name": "Elevated Between-Speaker SD (8.5 pp)",
+          "category": "Variance Inflation Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 8.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.54,
+          "successful_joint_trajectories": 993,
+          "joint_power": 0.993,
+          "clopper_pearson_95_ci": [
+            0.98563,
+            0.99718
+          ],
+          "lcb_95": 0.98563,
+          "ucb_95": 0.99718,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.993
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_sd_paired_4.0pp",
+          "scenario_name": "Elevated Paired-Difference SD (4.0 pp)",
+          "category": "Variance Inflation Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 4.0,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 25.34,
+          "successful_joint_trajectories": 976,
+          "joint_power": 0.976,
+          "clopper_pearson_95_ci": [
+            0.9645,
+            0.98456
+          ],
+          "lcb_95": 0.9645,
+          "ucb_95": 0.98456,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.976
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_sd_paired_5.0pp",
+          "scenario_name": "Elevated Paired-Difference SD (5.0 pp)",
+          "category": "Variance Inflation Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 5.0,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 25.11,
+          "successful_joint_trajectories": 956,
+          "joint_power": 0.956,
+          "clopper_pearson_95_ci": [
+            0.94138,
+            0.96785
+          ],
+          "lcb_95": 0.94138,
+          "ucb_95": 0.96785,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.956
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_compound_mild",
+          "scenario_name": "Compound Moderate Stress (Eff 3.0 pp, Disp -1.5 pp, Paired SD 4.0 pp)",
+          "category": "Compound Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 3.0,
+          "target_ungated_effect_pp": 3.0,
+          "target_disparity_effect_pp": -1.5,
+          "between_speaker_wer_std": 7.0,
+          "paired_diff_std": 4.0,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.84,
+          "successful_joint_trajectories": 824,
+          "joint_power": 0.824,
+          "clopper_pearson_95_ci": [
+            0.79895,
+            0.84712
+          ],
+          "lcb_95": 0.79895,
+          "ucb_95": 0.84712,
+          "target_90_power_achieved": false,
+          "lcb_90_power_achieved": false,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.824
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_compound_severe",
+          "scenario_name": "Compound Severe Stress (Eff 2.5 pp, Disp -1.0 pp, Paired SD 5.0 pp)",
+          "category": "Compound Stress",
+          "speakers_per_stratum": 285,
+          "total_speakers": 1425,
+          "target_primary_effect_pp": 2.5,
+          "target_ungated_effect_pp": 2.5,
+          "target_disparity_effect_pp": -1.0,
+          "between_speaker_wer_std": 8.0,
+          "paired_diff_std": 5.0,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 24.91,
+          "successful_joint_trajectories": 470,
+          "joint_power": 0.47,
+          "clopper_pearson_95_ci": [
+            0.43869,
+            0.50148
+          ],
+          "lcb_95": 0.43869,
+          "ucb_95": 0.50148,
+          "target_90_power_achieved": false,
+          "lcb_90_power_achieved": false,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.47
+          },
+          "limiting_event": "Event D"
+        }
+      ],
+      "N_220": [
+        {
+          "scenario_id": "primary_baseline",
+          "scenario_name": "Primary Candidate Scenario (Reference)",
+          "category": "Reference",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 16.13,
+          "successful_joint_trajectories": 943,
+          "joint_power": 0.943,
+          "clopper_pearson_95_ci": [
+            0.92678,
+            0.95655
+          ],
+          "lcb_95": 0.92678,
+          "ucb_95": 0.95655,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.943
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_static_3.0pp",
+          "scenario_name": "Degraded Static Superiority (3.0 pp)",
+          "category": "Static Superiority Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.0,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 16.28,
+          "successful_joint_trajectories": 955,
+          "joint_power": 0.955,
+          "clopper_pearson_95_ci": [
+            0.94025,
+            0.96699
+          ],
+          "lcb_95": 0.94025,
+          "ucb_95": 0.96699,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.955
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_static_2.5pp",
+          "scenario_name": "Degraded Static Superiority (2.5 pp)",
+          "category": "Static Superiority Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 2.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 16.86,
+          "successful_joint_trajectories": 940,
+          "joint_power": 0.94,
+          "clopper_pearson_95_ci": [
+            0.92344,
+            0.9539
+          ],
+          "lcb_95": 0.92344,
+          "ucb_95": 0.9539,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.94
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_static_2.0pp",
+          "scenario_name": "Degraded Static Superiority (2.0 pp)",
+          "category": "Static Superiority Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 2.0,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 19.65,
+          "successful_joint_trajectories": 927,
+          "joint_power": 0.927,
+          "clopper_pearson_95_ci": [
+            0.90909,
+            0.94235
+          ],
+          "lcb_95": 0.90909,
+          "ucb_95": 0.94235,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.927
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_suta_3.0pp",
+          "scenario_name": "Degraded SUTA Superiority (3.0 pp)",
+          "category": "SUTA Superiority Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.0,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 29.1,
+          "successful_joint_trajectories": 962,
+          "joint_power": 0.962,
+          "clopper_pearson_95_ci": [
+            0.94821,
+            0.97297
+          ],
+          "lcb_95": 0.94821,
+          "ucb_95": 0.97297,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.962
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_suta_2.5pp",
+          "scenario_name": "Degraded SUTA Superiority (2.5 pp)",
+          "category": "SUTA Superiority Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 2.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 28.25,
+          "successful_joint_trajectories": 957,
+          "joint_power": 0.957,
+          "clopper_pearson_95_ci": [
+            0.94251,
+            0.96871
+          ],
+          "lcb_95": 0.94251,
+          "ucb_95": 0.96871,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.957
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_suta_2.0pp",
+          "scenario_name": "Degraded SUTA Superiority (2.0 pp)",
+          "category": "SUTA Superiority Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 2.0,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 27.16,
+          "successful_joint_trajectories": 950,
+          "joint_power": 0.95,
+          "clopper_pearson_95_ci": [
+            0.93461,
+            0.96266
+          ],
+          "lcb_95": 0.93461,
+          "ucb_95": 0.96266,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.95
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_disp_1.5pp",
+          "scenario_name": "Attenuated Disparity Narrowing (-1.5 pp)",
+          "category": "Disparity Reduction Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -1.5,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 26.85,
+          "successful_joint_trajectories": 775,
+          "joint_power": 0.775,
+          "clopper_pearson_95_ci": [
+            0.74783,
+            0.80054
+          ],
+          "lcb_95": 0.74783,
+          "ucb_95": 0.80054,
+          "target_90_power_achieved": false,
+          "lcb_90_power_achieved": false,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.775
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_disp_1.0pp",
+          "scenario_name": "Attenuated Disparity Narrowing (-1.0 pp)",
+          "category": "Disparity Reduction Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -1.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 969.08,
+          "successful_joint_trajectories": 417,
+          "joint_power": 0.417,
+          "clopper_pearson_95_ci": [
+            0.38622,
+            0.44827
+          ],
+          "lcb_95": 0.38622,
+          "ucb_95": 0.44827,
+          "target_90_power_achieved": false,
+          "lcb_90_power_achieved": false,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.417
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_disp_0.0pp",
+          "scenario_name": "Null Disparity Change (0.0 pp)",
+          "category": "Disparity Reduction Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": 0.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 281.83,
+          "successful_joint_trajectories": 23,
+          "joint_power": 0.023,
+          "clopper_pearson_95_ci": [
+            0.01463,
+            0.03431
+          ],
+          "lcb_95": 0.01463,
+          "ucb_95": 0.03431,
+          "target_90_power_achieved": false,
+          "lcb_90_power_achieved": false,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.023
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_sd_between_7.5pp",
+          "scenario_name": "Elevated Between-Speaker SD (7.5 pp)",
+          "category": "Variance Inflation Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 7.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 14.03,
+          "successful_joint_trajectories": 955,
+          "joint_power": 0.955,
+          "clopper_pearson_95_ci": [
+            0.94025,
+            0.96699
+          ],
+          "lcb_95": 0.94025,
+          "ucb_95": 0.96699,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.955
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_sd_between_8.5pp",
+          "scenario_name": "Elevated Between-Speaker SD (8.5 pp)",
+          "category": "Variance Inflation Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 8.5,
+          "paired_diff_std": 3.2,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 19.0,
+          "successful_joint_trajectories": 965,
+          "joint_power": 0.965,
+          "clopper_pearson_95_ci": [
+            0.95166,
+            0.9755
+          ],
+          "lcb_95": 0.95166,
+          "ucb_95": 0.9755,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.965
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_sd_paired_4.0pp",
+          "scenario_name": "Elevated Paired-Difference SD (4.0 pp)",
+          "category": "Variance Inflation Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 4.0,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 18.86,
+          "successful_joint_trajectories": 933,
+          "joint_power": 0.933,
+          "clopper_pearson_95_ci": [
+            0.91569,
+            0.9477
+          ],
+          "lcb_95": 0.91569,
+          "ucb_95": 0.9477,
+          "target_90_power_achieved": true,
+          "lcb_90_power_achieved": true,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.933
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_sd_paired_5.0pp",
+          "scenario_name": "Elevated Paired-Difference SD (5.0 pp)",
+          "category": "Variance Inflation Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.5,
+          "target_ungated_effect_pp": 3.5,
+          "target_disparity_effect_pp": -2.0,
+          "between_speaker_wer_std": 6.5,
+          "paired_diff_std": 5.0,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 17.64,
+          "successful_joint_trajectories": 857,
+          "joint_power": 0.857,
+          "clopper_pearson_95_ci": [
+            0.83375,
+            0.87812
+          ],
+          "lcb_95": 0.83375,
+          "ucb_95": 0.87812,
+          "target_90_power_achieved": false,
+          "lcb_90_power_achieved": false,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.857
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_compound_mild",
+          "scenario_name": "Compound Moderate Stress (Eff 3.0 pp, Disp -1.5 pp, Paired SD 4.0 pp)",
+          "category": "Compound Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 3.0,
+          "target_ungated_effect_pp": 3.0,
+          "target_disparity_effect_pp": -1.5,
+          "between_speaker_wer_std": 7.0,
+          "paired_diff_std": 4.0,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 18.73,
+          "successful_joint_trajectories": 716,
+          "joint_power": 0.716,
+          "clopper_pearson_95_ci": [
+            0.68694,
+            0.74378
+          ],
+          "lcb_95": 0.68694,
+          "ucb_95": 0.74378,
+          "target_90_power_achieved": false,
+          "lcb_90_power_achieved": false,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.716
+          },
+          "limiting_event": "Event D"
+        },
+        {
+          "scenario_id": "sens_compound_severe",
+          "scenario_name": "Compound Severe Stress (Eff 2.5 pp, Disp -1.0 pp, Paired SD 5.0 pp)",
+          "category": "Compound Stress",
+          "speakers_per_stratum": 220,
+          "total_speakers": 1100,
+          "target_primary_effect_pp": 2.5,
+          "target_ungated_effect_pp": 2.5,
+          "target_disparity_effect_pp": -1.0,
+          "between_speaker_wer_std": 8.0,
+          "paired_diff_std": 5.0,
+          "outer_trials": 1000,
+          "bootstrap_replicates": 2000,
+          "elapsed_seconds": 18.88,
+          "successful_joint_trajectories": 342,
+          "joint_power": 0.342,
+          "clopper_pearson_95_ci": [
+            0.3126,
+            0.37233
+          ],
+          "lcb_95": 0.3126,
+          "ucb_95": 0.37233,
+          "target_90_power_achieved": false,
+          "lcb_90_power_achieved": false,
+          "marginal_event_probabilities": {
+            "event_a_static_superiority": 1.0,
+            "event_b_suta_superiority": 1.0,
+            "event_c_accent_regression_guard": 1.0,
+            "event_d_disparity_guard": 0.342
+          },
+          "limiting_event": "Event D"
+        }
+      ]
+    }
+  },
+  "source_data_reconciliation": {
+    "source_dataset": "Mozilla Common Voice",
+    "source_release": "cv-corpus-27.0-2026-09-11",
+    "source_mdc_id": "cmu5jplf300nwmh07iqvk9leo",
+    "source_file": "datasets/external/common_voice_27/validated.tsv",
+    "source_file_exists_locally": true,
+    "source_file_bytes": 614927262,
+    "authoritative_full_scan": {
+      "scanned_source_bytes": 614927262,
+      "scanned_source_sha256": "733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a",
+      "scanned_source_rows": 1929267,
+      "curation_script": "scripts/curate_stage6m_cohort3_dataset.py",
+      "predicate_version": "V1.4.0-Strict",
+      "findings": {
+        "Australian English": {
+          "raw_declared_speakers": 804,
+          "strictly_qualified_speakers": 398,
+          "prior_exposed_speakers": 93,
+          "unexposed_available_speakers": 305,
+          "gate_reserve_speakers": 20,
+          "max_unexposed_eval_capacity": 285,
+          "reserve_margin_at_ng285": 0,
+          "reserve_margin_at_ng220": 65
+        },
+        "Canadian English": {
+          "raw_declared_speakers": 1031,
+          "strictly_qualified_speakers": 511,
+          "prior_exposed_speakers": 93,
+          "unexposed_available_speakers": 418,
+          "gate_reserve_speakers": 20,
+          "max_unexposed_eval_capacity": 398,
+          "reserve_margin_at_ng285": 113,
+          "reserve_margin_at_ng220": 178
+        },
+        "England English": {
+          "raw_declared_speakers": 2733,
+          "strictly_qualified_speakers": 1213,
+          "prior_exposed_speakers": 93,
+          "unexposed_available_speakers": 1120,
+          "gate_reserve_speakers": 20,
+          "max_unexposed_eval_capacity": 1100,
+          "reserve_margin_at_ng285": 815,
+          "reserve_margin_at_ng220": 880
+        },
+        "South Asian English": {
+          "raw_declared_speakers": 2459,
+          "strictly_qualified_speakers": 746,
+          "prior_exposed_speakers": 93,
+          "unexposed_available_speakers": 653,
+          "gate_reserve_speakers": 20,
+          "max_unexposed_eval_capacity": 633,
+          "reserve_margin_at_ng285": 348,
+          "reserve_margin_at_ng220": 413
+        },
+        "US English": {
+          "raw_declared_speakers": 9085,
+          "strictly_qualified_speakers": 3884,
+          "prior_exposed_speakers": 93,
+          "unexposed_available_speakers": 3791,
+          "gate_reserve_speakers": 20,
+          "max_unexposed_eval_capacity": 3771,
+          "reserve_margin_at_ng285": 3486,
+          "reserve_margin_at_ng220": 3551
+        },
+        "Irish English": {
+          "raw_declared_speakers": 220,
+          "strictly_qualified_speakers": 92,
+          "prior_exposed_speakers": 92,
+          "unexposed_available_speakers": 0,
+          "gate_reserve_speakers": 0,
+          "max_unexposed_eval_capacity": 0,
+          "status": "EXHAUSTED_ZERO_UNEXPOSED",
+          "role_in_v1_5": "EXPLORATORY_OUT_OF_DOMAIN"
+        }
+      }
+    },
+    "scan_discrepancy_reconciliation": {
+      "preliminary_audit_record": {
+        "document": "reports/stage6m/stage6m_multi_corpus_feasibility_report.json",
+        "recorded_bytes": 147752357,
+        "recorded_rows": 1234324,
+        "recorded_sha256": "cf2ba256d091e7ee429d2f2eafece507a2c74d812328df8ad72584d41c9c0ad4",
+        "explanation": "The preliminary scan in stage6m_multi_corpus_feasibility_audit.py utilized a filtered or pre-cleaned subset of validated.tsv (1.23M rows, 147.75 MB). The authoritative forensic scan executed by curate_stage6m_cohort3_dataset.py directly scanned the full physical Mozilla Common Voice 27.0 release archive file (1,929,267 rows, 614,927,262 bytes). Crucially, both scans yield identical set-theoretic conclusions: exactly 0 unexposed strictly eligible Irish speakers remain, while Australian English unexposed capacity is reconciled to 305 total available speakers (285 evaluation + 20 gate reserve)."
+      }
+    },
+    "historical_partitions_disjointness": {
+      "Cohort 1 (Stage 5 External Eval)": {
+        "file": "datasets/splits/stage5_external_eval.csv",
+        "speakers": 60,
+        "sha256": "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32"
+      },
+      "Stage 5 Sentinel Panel": {
+        "file": "datasets/splits/stage5_sentinel_panel.csv",
+        "speakers": 30,
+        "sha256": "665009a00660f7e9bbdf8de8a53473fc1249362ca2a5bc0038518313d18f0543"
+      },
+      "Cohort 2 (Confirmatory Stage 6M)": {
+        "file": "datasets/splits/stage6m_cohort2_audio.csv",
+        "speakers": 468,
+        "sha256": "dd837e249b15588cb15b7a3b234e820e08699722569cc24e57d119a868854f70"
+      },
+      "total_historical_speakers": 558,
+      "pairwise_overlaps": 0,
+      "disjointness_status": "PASS"
+    }
+  }
+}
