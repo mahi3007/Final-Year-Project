@@ -1,0 +1,251 @@
+{
+  "audit_metadata": {
+    "task_id": "STAGE6M_TASK_6_3",
+    "audit_title": "Primary Model and Power Consistency Audit",
+    "protocol_candidate": "v1.5 Five-Stratum Confirmatory Protocol",
+    "git_branch": "stage6m-five-stratum-parity",
+    "git_head_commit": "1212954",
+    "governance_status": "DRAFT_HOLD",
+    "final_verdict": "CONDITIONAL HOLD",
+    "primary_sample_size_ng": 220,
+    "benchmark_sample_size_ng": 285,
+    "timestamp_utc": "2026-11-01T09:41:45Z"
+  },
+  "task_a_primary_model_calibration": {
+    "accents": [
+      "Australian English",
+      "Canadian English",
+      "England English",
+      "South Asian English",
+      "US English"
+    ],
+    "static_disparity_pp": 9.24964037,
+    "uncalibrated_model": {
+      "mean_improvement_pp": 3.4044,
+      "dsg_disparity_pp": 7.0763,
+      "delta_disparity_pp": -2.1733,
+      "target_disparity_overshoot_pp": -0.1733
+    },
+    "calibrated_model": {
+      "mean_improvement_pp": 3.5,
+      "dsg_disparity_pp": 7.24964037,
+      "delta_disparity_pp": -2.0,
+      "target_disparity_residual_pp": 0.0,
+      "calibrated_accent_deltas_pp": {
+        "Australian English": -3.8137,
+        "Canadian English": -3.2001,
+        "England English": -3.4425,
+        "South Asian English": -4.6798,
+        "US English": -2.868
+      }
+    },
+    "mc_10m_validation": {
+      "mean_improvement_pp": 3.5006,
+      "static_disparity_pp": 9.2458,
+      "dsg_disparity_pp": 7.2434,
+      "delta_disparity_pp": -2.0025,
+      "mc_standard_error_pp": 0.004111,
+      "mc_ci_95_delta_disp_pp": [
+        -2.0105,
+        -1.9944
+      ],
+      "residual_from_exact_null_target_pp": -0.0025
+    },
+    "per_accent_table": [
+      {
+        "accent": "Australian English",
+        "baseline_wer_pp": 19.3,
+        "static_expected_p1_pp": 19.3047,
+        "uncalibrated_delta_pp": -3.7581,
+        "uncalibrated_expected_p3_pp": 15.6025,
+        "uncalibrated_improvement_pp": 3.7021,
+        "calibrated_delta_pp": -3.8137,
+        "calibrated_expected_p3_pp": 15.5481,
+        "calibrated_improvement_pp": 3.7566,
+        "lower_point_mass_pp": 0.0029
+      },
+      {
+        "accent": "Canadian English",
+        "baseline_wer_pp": 16.1,
+        "static_expected_p1_pp": 16.1222,
+        "uncalibrated_delta_pp": -3.0699,
+        "uncalibrated_expected_p3_pp": 13.1777,
+        "uncalibrated_improvement_pp": 2.9446,
+        "calibrated_delta_pp": -3.2001,
+        "calibrated_expected_p3_pp": 13.0538,
+        "calibrated_improvement_pp": 3.0685,
+        "lower_point_mass_pp": 0.0128
+      },
+      {
+        "accent": "England English",
+        "baseline_wer_pp": 17.4,
+        "static_expected_p1_pp": 17.4121,
+        "uncalibrated_delta_pp": -3.3495,
+        "uncalibrated_expected_p3_pp": 14.1545,
+        "uncalibrated_improvement_pp": 3.2577,
+        "calibrated_delta_pp": -3.4425,
+        "calibrated_expected_p3_pp": 14.0648,
+        "calibrated_improvement_pp": 3.3474,
+        "lower_point_mass_pp": 0.0072
+      },
+      {
+        "accent": "South Asian English",
+        "baseline_wer_pp": 23.5,
+        "static_expected_p1_pp": 23.5004,
+        "uncalibrated_delta_pp": -4.6613,
+        "uncalibrated_expected_p3_pp": 18.855,
+        "uncalibrated_improvement_pp": 4.6454,
+        "calibrated_delta_pp": -4.6798,
+        "calibrated_expected_p3_pp": 18.8366,
+        "calibrated_improvement_pp": 4.6638,
+        "lower_point_mass_pp": 0.0003
+      },
+      {
+        "accent": "US English",
+        "baseline_wer_pp": 14.2,
+        "static_expected_p1_pp": 14.2508,
+        "uncalibrated_delta_pp": -2.6613,
+        "uncalibrated_expected_p3_pp": 11.7787,
+        "uncalibrated_improvement_pp": 2.4721,
+        "calibrated_delta_pp": -2.868,
+        "calibrated_expected_p3_pp": 11.587,
+        "calibrated_improvement_pp": 2.6638,
+        "lower_point_mass_pp": 0.028
+      }
+    ]
+  },
+  "task_b_power_confirmation_calibrated": {
+    "n_220_primary": {
+      "sample_size_ng": 220,
+      "total_confirmatory_speakers": 1100,
+      "outer_trials": 10000,
+      "bootstrap_replicates": 20000,
+      "elapsed_seconds": 512.4,
+      "passed_a": 10000,
+      "power_a_pct": 100.0,
+      "passed_b": 10000,
+      "power_b_pct": 100.0,
+      "passed_c": 10000,
+      "power_c_pct": 100.0,
+      "passed_d": 9058,
+      "power_d_pct": 90.58,
+      "passed_joint": 9058,
+      "joint_power_pct": 90.58,
+      "exact_two_sided_95_ci_pct": [
+        89.99,
+        91.15
+      ],
+      "one_sided_95_lcb_pct": 90.09,
+      "satisfies_power_threshold": true,
+      "satisfies_lcb_threshold": true
+    },
+    "n_285_benchmark": {
+      "sample_size_ng": 285,
+      "total_confirmatory_speakers": 1425,
+      "outer_trials": 2500,
+      "bootstrap_replicates": 20000,
+      "elapsed_seconds": 245.2,
+      "passed_a": 2500,
+      "power_a_pct": 100.0,
+      "passed_b": 2500,
+      "power_b_pct": 100.0,
+      "passed_c": 2500,
+      "power_c_pct": 100.0,
+      "passed_d": 2424,
+      "power_d_pct": 96.96,
+      "passed_joint": 2424,
+      "joint_power_pct": 96.96,
+      "exact_two_sided_95_ci_pct": [
+        96.21,
+        97.6
+      ],
+      "one_sided_95_lcb_pct": 96.33,
+      "satisfies_power_threshold": true,
+      "satisfies_lcb_threshold": true
+    },
+    "provenance_reconciliation": {
+      "historical_task_5_power_n220": 95.35,
+      "historical_realized_delta_disp_pp": -2.1733,
+      "calibrated_task_6_3_power_n220": 90.58,
+      "calibrated_realized_delta_disp_pp": -2.0,
+      "explanation": "The original 95.35% power result at N_g = 220 was obtained under an uncalibrated generator where nonlinear probability clipping produced a -2.1733 pp disparity narrowing (a 0.1733 pp overshoot). Under the exact nested-clipping quadrature calibration targeting Delta D = -2.0000 pp strictly, confirmatory joint power is 90.58% (95% LCB = 90.09%), which strictly satisfies the registered >= 90.00% power and >= 90.00% LCB criteria."
+    }
+  },
+  "task_c_sensitivity_analysis_provenance": {
+    "status": "AUDITED",
+    "exploratory_trials": 1000,
+    "exploratory_bootstraps": 2000,
+    "note": "Sensitivity analyses represent exploratory design screening curves, NOT 10,000-trial confirmatory benchmarks.",
+    "scientific_limitation_disclosure": "The five-stratum candidate is adequately powered (>= 90%) only if the hypothesized -2.0 pp disparity reduction is realized in practice. Under weaker effects (-1.5 pp or -1.0 pp), confirmatory power drops to 77.5% and 41.7% respectively. These effects must be characterized in the dissertation as development-stage design scenario assumptions rather than established physical constants.",
+    "sensitivity_curve": [
+      {
+        "disparity_effect_pp": -2.0,
+        "description": "Primary registered design scenario",
+        "exploratory_joint_power_pct": 94.3,
+        "status": "ADEQUATELY POWERED"
+      },
+      {
+        "disparity_effect_pp": -1.5,
+        "description": "Moderately weaker disparity narrowing",
+        "exploratory_joint_power_pct": 77.5,
+        "status": "UNDERPOWERED (< 90%)"
+      },
+      {
+        "disparity_effect_pp": -1.0,
+        "description": "Substantially weaker disparity narrowing",
+        "exploratory_joint_power_pct": 41.7,
+        "status": "UNDERPOWERED (< 90%)"
+      },
+      {
+        "disparity_effect_pp": 0.0,
+        "description": "Genuine null disparity change",
+        "exploratory_joint_power_pct": 2.3,
+        "status": "NULL (Rejection = False Pass)"
+      }
+    ]
+  },
+  "task_d_null_calibration_provenance": {
+    "alpha_adj_pct": 0.625,
+    "expected_false_passes_per_10k": 62.5,
+    "sd_count_per_10k": 7.88,
+    "n_220": {
+      "outer_trials": 10000,
+      "bootstrap_replicates": 20000,
+      "false_passes": 58,
+      "false_pass_rate_pct": 0.58,
+      "exact_two_sided_95_ci_pct": [
+        0.441,
+        0.749
+      ],
+      "one_sided_95_ucb_pct": 0.721,
+      "distance_from_expectation_sd": -0.57,
+      "binomial_p_value": 0.568,
+      "status": "COMPATIBLE"
+    },
+    "n_285": {
+      "outer_trials": 10000,
+      "bootstrap_replicates": 20000,
+      "false_passes": 63,
+      "false_pass_rate_pct": 0.63,
+      "exact_two_sided_95_ci_pct": [
+        0.484,
+        0.805
+      ],
+      "one_sided_95_ucb_pct": 0.776,
+      "distance_from_expectation_sd": 0.06,
+      "binomial_p_value": 0.95,
+      "status": "COMPATIBLE"
+    },
+    "latent_mc_10m_validation": {
+      "residual_delta_disp_pp": -0.002432,
+      "mc_standard_error_pp": 0.004111,
+      "mc_95_ci_pp": [
+        -0.01049,
+        0.005626
+      ],
+      "z_score": -0.59,
+      "p_value": 0.5541,
+      "interpretation": "The 10M-sample Monte Carlo disparity difference residual (-0.0024 pp) is statistically indistinguishable from exact null 0.0000 pp (z = -0.59, p = 0.5541, 95% MC CI: [-0.0105, +0.0056] pp)."
+    }
+  }
+}
