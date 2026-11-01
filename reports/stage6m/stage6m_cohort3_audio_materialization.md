@@ -6,7 +6,7 @@
 > **GOVERNANCE DISPOSITION:** **IN_PROGRESS_CONTROLLED_PIPELINE**  
 > **PROVISIONAL MANIFEST STATUS:** **UNLOCKED (PROVISIONAL)**  
 > **EXECUTION GATING:** **GPU CTTA Adaptation & Confirmatory Inference STRICTLY BLOCKED**  
-> **TIMESTAMP (UTC):** 2026-11-01T12:03:07.087274+00:00  
+> **TIMESTAMP (UTC):** 2026-11-01T12:24:51.390669+00:00  
 
 ---
 
@@ -28,7 +28,7 @@ This report documents the physical audio materialization and cryptographic integ
 | **Gate-Reference Clips** | 1,500 ($100 \times 15$) | 0 | **TRACKED** |
 | **Australian Reserve Clips** | 975 ($65 \times 15$) | 0 | **TRACKED** |
 | **Grand Total Audio Clips** | **18,975** | **0** | **0.00%** |
-| **Complete Speakers ($\\ge 15$ valid clips)** | 1,265 | 0 | **TRACKED** |
+| **Complete Speakers ($\\ge 15$ valid clips)** | 1,265 | 0 / 1,265 (Incomplete: 1,265) | **IN_PROGRESS** |
 | **Failed / Corrupt Clips** | 0 allowed | 0 | **PASS** |
 | **Total Physical Audio Duration** | — | 0.00 s (0.00 h) | **NOMINAL** |
 | **Total Physical Audio Bytes** | — | 0 bytes (0.00 MB) | **NOMINAL** |

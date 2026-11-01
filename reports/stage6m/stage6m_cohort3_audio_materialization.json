@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-11-01T12:03:07.087274+00:00",
+  "timestamp_utc": "2026-11-01T12:24:51.390669+00:00",
   "protocol_version": "v1.5-five-stratum-parity",
   "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
   "governance_status": "AUTHORIZED_FOR_DATA_PREPARATION",
@@ -17,7 +17,9 @@
     "valid_clips_count": 0,
     "remaining_clips_count": 18975,
     "failed_clips_count": 0,
+    "total_target_speakers": 1265,
     "complete_speakers_count": 0,
+    "incomplete_speakers_count": 1265,
     "completion_rate_pct": 0.0,
     "total_duration_seconds": 0,
     "total_duration_hours": 0.0,

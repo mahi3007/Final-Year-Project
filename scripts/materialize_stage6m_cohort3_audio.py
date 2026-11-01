@@ -121,27 +121,64 @@ def safe_rel_path(p: Path, base: Path = PROJECT_ROOT) -> str:
         return str(p.as_posix())
 
 
-def validate_audio_file(path: Path) -> Tuple[bool, float, int, int, str, str]:
+def validate_audio_file(
+    path: Path,
+    expected_format: str = "MP3",
+    allowed_sample_rates: Optional[Set[int]] = None,
+) -> Tuple[bool, float, int, int, str, str]:
     """
-    Validates physical audio file using soundfile.
+    Validates physical audio file decodability and container integrity using soundfile.
+
+    Audio Ingest & Downstream Resampling Contract:
+    ----------------------------------------------
+    1. Container & Codec: Strictly validates genuine MP3 bitstreams (info.format.upper() == 'MP3').
+       Non-MP3 formats (e.g., WAV or OGG containers masquerading under a .mp3 filename)
+       are strictly rejected as format mismatches.
+    2. Decodability & Content: Verifies that audio frames can be successfully decoded and
+       are non-empty. Truncated or bitstream-corrupted MP3 files are rejected.
+    3. Sample Rate Policy: Mozilla Common Voice 27.0 recordings natively feature varied sample
+       rates (typically 32,000 Hz, 44,100 Hz, or 48,000 Hz). The materialization validator
+       verifies that the sample rate is positive and belongs to standard audio rates
+       (default: {16000, 22050, 24000, 32000, 44100, 48000}).
+       Downstream CTTA adaptation and inference models require 16,000 Hz mono audio, which is
+       performed deterministically on-the-fly by src/dsg_ctta/data/acoustic.py::load_and_resample_audio
+       (converting multi-channel to mono via channel averaging and resample to 16 kHz).
+    4. Channels: Validates mono (1) or stereo (2) audio channels.
+    5. Cryptographic Provenance: Computes SHA-256 digest of the raw on-disk audio bytes.
+
     Returns: (is_valid, duration_sec, sample_rate, channels, sha256_hash, error_msg)
     """
+    if allowed_sample_rates is None:
+        allowed_sample_rates = {16000, 22050, 24000, 32000, 44100, 48000}
+
     if not path.exists():
         return False, 0.0, 0, 0, "", "File does not exist"
     if path.stat().st_size == 0:
         return False, 0.0, 0, 0, "", "File is 0 bytes (empty)"
     try:
         info = sf.info(str(path))
+        detected_fmt = (info.format or "").upper()
+        if detected_fmt != expected_format.upper():
+            return False, 0.0, 0, 0, "", f"Invalid audio format: expected {expected_format.upper()} container, got {detected_fmt}"
         if info.duration <= 0.0:
             return False, 0.0, 0, 0, "", f"Invalid non-positive duration: {info.duration}"
         if info.samplerate <= 0:
-            return False, 0.0, 0, 0, "", f"Invalid sample rate: {info.samplerate}"
-        if info.channels < 1:
-            return False, 0.0, 0, 0, "", f"Invalid channel count: {info.channels}"
+            return False, 0.0, 0, 0, "", f"Invalid non-positive sample rate: {info.samplerate}"
+        if info.samplerate not in allowed_sample_rates:
+            return False, 0.0, 0, 0, "", f"Unsupported sample rate: {info.samplerate} Hz (allowed: {sorted(allowed_sample_rates)})"
+        if info.channels not in (1, 2):
+            return False, 0.0, 0, 0, "", f"Invalid channel count: {info.channels} (expected 1 or 2)"
+
+        # Decodability check: verify reading frames does not raise error and yields audio
+        frames, _ = sf.read(str(path), stop=1000)
+        if len(frames) == 0:
+            return False, 0.0, 0, 0, "", "Audio file contains zero decoded frames"
+
         h = compute_sha256(path)
         return True, float(info.duration), int(info.samplerate), int(info.channels), h, ""
     except Exception as exc:
         return False, 0.0, 0, 0, "", f"Decode failure: {str(exc)}"
+
 
 
 class ThreadedResilientGzipStream(io.RawIOBase):
@@ -149,13 +186,21 @@ class ThreadedResilientGzipStream(io.RawIOBase):
     High-throughput resilient gzip stream over HTTP.
     Uses a background producer thread with 2MB chunk prefetching to saturate
     the network pipe while decompressing synchronously into tarfile.
-    Auto-reconnects at exact byte offset when Cloudflare drops TCP session.
+    Auto-reconnects at exact byte offset when Cloudflare drops TCP session,
+    strictly validating HTTP 206 Partial Content status and Content-Range alignment.
     """
 
-    def __init__(self, dataset_id: str, plan_getter: Any, queue_size: int = 32):
+    def __init__(
+        self,
+        dataset_id: str,
+        plan_getter: Any,
+        queue_size: int = 32,
+        url_opener: Optional[Any] = None,
+    ):
         super().__init__()
         self._dataset_id = dataset_id
         self._plan_getter = plan_getter
+        self._url_opener = url_opener or urllib.request.urlopen
         self.compressed_bytes_read = 0
         self._producer_bytes_read = 0
         self._decompressor = zlib.decompressobj(16 + zlib.MAX_WBITS)
@@ -164,6 +209,7 @@ class ThreadedResilientGzipStream(io.RawIOBase):
         self._queue: queue.Queue = queue.Queue(maxsize=queue_size)
         self._stop_event = threading.Event()
         self._producer_thread: Optional[threading.Thread] = None
+        self._producer_error: Optional[Exception] = None
         self._uc_buf = bytearray()
         self._offset = 0
 
@@ -186,6 +232,7 @@ class ThreadedResilientGzipStream(io.RawIOBase):
 
     def _producer_loop(self):
         consecutive_zero_reads = 0
+        consecutive_errors = 0
         while not self._stop_event.is_set():
             if time.time() - self._url_ts > 36000:
                 logger.info("[MDC] Presigned URL nearing expiry -- refreshing...")
@@ -194,20 +241,62 @@ class ThreadedResilientGzipStream(io.RawIOBase):
             resp = None
             try:
                 headers = {"User-Agent": "datacollective-python/0.1.0"}
-                if self._producer_bytes_read > 0:
+                is_resuming = self._producer_bytes_read > 0
+                if is_resuming:
                     headers["Range"] = f"bytes={self._producer_bytes_read}-"
                     logger.info(f"[RESUME] Reconnecting at compressed offset {self._producer_bytes_read:,} B...")
                 else:
                     logger.info("[RESUME] Opening initial stream from byte 0...")
 
                 req = urllib.request.Request(self._url, headers=headers)
-                resp = urllib.request.urlopen(req, timeout=120)
+                resp = self._url_opener(req, timeout=120)
 
+                # HTTP Range and Status Code Validation
+                status_code = getattr(resp, "status", None)
+                if status_code is None and hasattr(resp, "getcode"):
+                    status_code = resp.getcode()
+                if status_code is None and hasattr(resp, "code"):
+                    status_code = resp.code
+
+                if is_resuming:
+                    if status_code != 206:
+                        raise IOError(
+                            f"HTTP resume failed: server returned status {status_code} "
+                            f"(expected 206 Partial Content) when requesting range bytes={self._producer_bytes_read}-"
+                        )
+                    content_range = None
+                    if hasattr(resp, "headers") and resp.headers:
+                        content_range = resp.headers.get("Content-Range")
+                    elif hasattr(resp, "getheader"):
+                        content_range = resp.getheader("Content-Range")
+
+                    if not content_range:
+                        raise IOError(
+                            f"HTTP resume failed: missing Content-Range header in 206 response at offset {self._producer_bytes_read}"
+                        )
+                    cr_str = content_range.strip()
+                    if not cr_str.lower().startswith("bytes "):
+                        raise IOError(f"HTTP resume failed: malformed Content-Range header '{content_range}'")
+                    range_spec = cr_str[6:].split("/")[0].strip()
+                    if "-" not in range_spec:
+                        raise IOError(f"HTTP resume failed: malformed Content-Range header '{content_range}'")
+                    range_start = int(range_spec.split("-")[0].strip())
+                    if range_start != self._producer_bytes_read:
+                        raise IOError(
+                            f"HTTP resume failed: Content-Range start {range_start} does not match "
+                            f"requested offset {self._producer_bytes_read} ('{content_range}')"
+                        )
+                else:
+                    # Initial connection (offset == 0): status should be 200 or 206
+                    if status_code not in (200, 206):
+                        raise IOError(f"HTTP stream initial connect failed: unexpected status {status_code}")
+
+                consecutive_errors = 0
                 bytes_this_conn = 0
                 while not self._stop_event.is_set():
                     chunk = resp.read(2 * 1024 * 1024)
                     if not chunk:
-                        logger.info(f"[RESUME] Socket closed by Cloudflare at byte {self._producer_bytes_read:,}.")
+                        logger.info(f"[RESUME] Socket closed by server at byte {self._producer_bytes_read:,}.")
                         if bytes_this_conn == 0:
                             consecutive_zero_reads += 1
                             if consecutive_zero_reads >= 3:
@@ -228,17 +317,32 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                             continue
 
             except urllib.error.HTTPError as he:
+                consecutive_errors += 1
                 if he.code == 403:
                     logger.warning("[MDC] 403 Forbidden / Presigned URL expired -- refreshing...")
                     self._refresh_url()
                 elif he.code == 416:
                     logger.info("[STREAM] HTTP 416 Range Not Satisfiable -- entire archive consumed.")
                     break
-                time.sleep(5)
+                if consecutive_errors >= 5:
+                    self._producer_error = he
+                    self._stop_event.set()
+                    break
+                time.sleep(min(consecutive_errors * 2, 10))
             except Exception as e:
+                consecutive_errors += 1
+                logger.warning(f"[STREAM] Connection/Stream error ({e}). Consecutive errors: {consecutive_errors}")
+                if isinstance(e, IOError) and "HTTP resume failed" in str(e):
+                    # Fatal range/resume contract violation
+                    self._producer_error = e
+                    self._stop_event.set()
+                    break
+                elif consecutive_errors >= 5:
+                    self._producer_error = e
+                    self._stop_event.set()
+                    break
                 if not self._stop_event.is_set():
-                    logger.warning(f"[STREAM] Connection dropped ({e}). Waiting 5s before reconnecting...")
-                    time.sleep(5)
+                    time.sleep(min(consecutive_errors * 2, 10))
             finally:
                 if resp is not None:
                     try:
@@ -246,7 +350,7 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                     except Exception:
                         pass
 
-        # Signal EOF to consumer
+        # Signal EOF or error to consumer
         self._queue.put(None)
 
     def _start_producer(self):
@@ -263,10 +367,18 @@ class ThreadedResilientGzipStream(io.RawIOBase):
         return False
 
     def readinto(self, b: bytearray | memoryview) -> int:
+        if self._producer_error is not None:
+            raise self._producer_error
+
         while len(self._uc_buf) == self._offset:
+            if self._producer_error is not None:
+                raise self._producer_error
+
             try:
                 chunk = self._queue.get(timeout=60)
             except queue.Empty:
+                if self._producer_error is not None:
+                    raise self._producer_error
                 if self._stop_event.is_set() or (self._producer_thread and not self._producer_thread.is_alive()):
                     flushed = self._decompressor.flush()
                     if flushed:
@@ -282,6 +394,8 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                 continue
 
             if chunk is None:
+                if self._producer_error is not None:
+                    raise self._producer_error
                 self._queue.put(None)
                 flushed = self._decompressor.flush()
                 if flushed:
@@ -564,14 +678,16 @@ def generate_materialization_artifacts(
     """
     logger.info("Computing materialization completeness ledgers...")
 
-    # Speaker-level completeness
-    speaker_clips: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    # Speaker-level completeness: Initialize EVERY target speaker from the provisional manifest
+    speaker_clips: Dict[str, List[Dict[str, Any]]] = {}
     speaker_strata: Dict[str, str] = {}
     speaker_roles: Dict[str, str] = {}
     for r in records:
         sid = r["speaker_id"]
-        speaker_strata[sid] = r["accent_group"]
-        speaker_roles[sid] = r["panel_role"]
+        if sid not in speaker_clips:
+            speaker_clips[sid] = []
+            speaker_strata[sid] = r["accent_group"]
+            speaker_roles[sid] = r["panel_role"]
         c_fname = r["clip_filename"]
         if c_fname in valid_inv:
             speaker_clips[sid].append(valid_inv[c_fname])
@@ -579,7 +695,8 @@ def generate_materialization_artifacts(
     speaker_completeness = {}
     complete_speakers_count = 0
     incomplete_speakers_count = 0
-    for sid, clips in speaker_clips.items():
+    for sid in sorted(speaker_clips.keys()):
+        clips = speaker_clips[sid]
         is_comp = len(clips) == CLIPS_PER_SPEAKER
         if is_comp:
             complete_speakers_count += 1
@@ -599,7 +716,7 @@ def generate_materialization_artifacts(
         json.dump(
             {
                 "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-                "total_target_speakers": len(records) // CLIPS_PER_SPEAKER,
+                "total_target_speakers": len(speaker_completeness),
                 "complete_speakers": complete_speakers_count,
                 "incomplete_speakers": incomplete_speakers_count,
                 "speakers": speaker_completeness,
@@ -675,7 +792,9 @@ def generate_materialization_artifacts(
             "valid_clips_count": total_valid_clips,
             "remaining_clips_count": TOTAL_EXPECTED_CLIPS - total_valid_clips,
             "failed_clips_count": len(failed_inv),
+            "total_target_speakers": len(speaker_completeness),
             "complete_speakers_count": complete_speakers_count,
+            "incomplete_speakers_count": incomplete_speakers_count,
             "completion_rate_pct": round(completion_rate_pct, 4),
             "total_duration_seconds": round(total_duration_sec, 2),
             "total_duration_hours": round(total_duration_sec / 3600.0, 3),
@@ -727,7 +846,7 @@ This report documents the physical audio materialization and cryptographic integ
 | **Gate-Reference Clips** | 1,500 ($100 \\times 15$) | {sum(1 for x in valid_inv.values() if x['panel_role'] == 'gate_reference'):,} | **TRACKED** |
 | **Australian Reserve Clips** | 975 ($65 \\times 15$) | {sum(1 for x in valid_inv.values() if x['panel_role'] == 'australian_reserve'):,} | **TRACKED** |
 | **Grand Total Audio Clips** | **18,975** | **{total_valid_clips:,}** | **{completion_rate_pct:.2f}%** |
-| **Complete Speakers ($\\\\ge 15$ valid clips)** | 1,265 | {complete_speakers_count:,} | **TRACKED** |
+| **Complete Speakers ($\\\\ge 15$ valid clips)** | 1,265 | {complete_speakers_count:,} / {len(speaker_completeness):,} (Incomplete: {incomplete_speakers_count:,}) | **{('PASS' if complete_speakers_count == len(speaker_completeness) and len(speaker_completeness) > 0 else 'IN_PROGRESS')}** |
 | **Failed / Corrupt Clips** | 0 allowed | {len(failed_inv)} | **{('PASS' if len(failed_inv) == 0 else 'INVESTIGATE')}** |
 | **Total Physical Audio Duration** | — | {total_duration_sec:.2f} s ({total_duration_sec/3600.0:.2f} h) | **NOMINAL** |
 | **Total Physical Audio Bytes** | — | {total_bytes:,} bytes ({total_bytes / (1024*1024):.2f} MB) | **NOMINAL** |
