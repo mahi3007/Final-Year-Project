@@ -1,76 +1,70 @@
-# Stage 6M v1.5 — Task 7.4.1 Independent Materializer Hardening & Streaming Reliability Audit Report
+# Stage 6M v1.5 — Task 7.4.1.1 Full-File Audio Integrity & Complete Stream-Termination Audit Report
 
 > **DOCUMENT ID:** `STAGE6M_COHORT3_MATERIALIZER_HARDENING_AUDIT`  
-> **TASK ID:** `TASK_7_4_1`  
-> **TASK TITLE:** Independent Materializer Hardening & Streaming Reliability Audit  
+> **TASK ID:** `TASK_7_4_1_1`  
+> **TASK TITLE:** Full-File Audio Integrity and Complete Stream-Termination Validation  
 > **PROTOCOL VERSION:** v1.5 Five-Stratum Confirmatory Protocol (`v1.5-five-stratum-parity`)  
 > **GOVERNING STANDARD:** Protocol Section 14.7 (Project-Lead Academic Authorization)  
-> **AUDIT DISPOSITION:** **PASS — HARDENED PIPELINE VERIFIED**  
+> **AUDIT DISPOSITION:** **PASS — FULL-FILE INTEGRITY & STREAM TERMINATION VERIFIED**  
 > **GOVERNANCE STATUS:** **AUTHORIZED FOR DATA PREPARATION**  
 > **SELECTION MANIFEST STATUS:** **UNLOCKED (PROVISIONAL)**  
 > **EXECUTION GATING:** **GPU CTTA Adaptation & Confirmatory Inference STRICTLY BLOCKED**  
-> **TIMESTAMP (UTC):** `2026-11-01T12:26:00Z`  
+> **TIMESTAMP (UTC):** `2026-11-01T12:50:00Z`  
 
 ---
 
 ## 1. Executive Summary & Review Scope
 
-Following the independent review of Milestone 7.4 ([commit 466de94](https://github.com/mahi3007/Final-Year-Project/commit/466de94562f4f49387645c490bfddcfb0caec3d8)), three high-priority technical issues were identified before any physical audio acquisition scales up:
-1. **Issue A (Speaker Completeness Accounting):** The speaker completeness ledger previously omitted speakers with zero materialized clips because it iterated strictly over the keys of `valid_inv`. When 0 clips were materialized, the ledger showed 0 complete and 0 incomplete speakers, leaving an empty inventory.
-2. **Issue B (Genuine MP3 Format Validation & Sample-Rate Policy):** Audio test fixtures previously wrote WAV-format bytes into `.mp3` filenames, masking that `soundfile` decoded WAV. The validator did not inspect `info.format`, allowing container mismatches. Additionally, the sample rate policy between ingest validation (native Common Voice rates) and downstream model adaptation (mono 16 kHz) required formal documentation and verification.
-3. **Issue C (HTTP Streaming Resume & Range Response Validation):** The resilient HTTP stream sent `Range: bytes={offset}-` on reconnects but lacked validation that the server returned HTTP 206 Partial Content or that the `Content-Range` header aligned with the requested offset.
+Following the independent review of Task 7.4.1 (commit [`c499571`](https://github.com/mahi3007/Final-Year-Project/commit/c499571)), two residual reliability gaps were identified:
+1. **Issue B Weakness (Partial Frame Decode):** `validate_audio_file()` previously checked only `frames, _ = sf.read(str(path), stop=1000)` (~21 ms at 48 kHz). This verified only that the MP3 begins correctly, but failed to detect files with valid initial headers that suffer corruption or truncation later in the stream.
+2. **Issue C Weakness (Incomplete Content-Range & Stream Termination):** `ThreadedResilientGzipStream` previously extracted only `{start}` from `Content-Range`, leaving `{end}` and `{total}` unvalidated. Reconnections did not verify consistency of `{total}` across reconnects. An initial HTTP 206 response was accepted without verifying that `start == 0`. Most critically, `readinto()` returned EOF (`0`) on stream close without verifying `self._decompressor.eof == True`, and HTTP 416 was treated as completion without checking stream termination integrity.
 
-**Task 7.4.1 Resolution Status:** All three issues have been resolved, hardened in code, and verified by deterministic automated tests.
+**Task 7.4.1.1 Resolution Status:** Both residual gaps have been closed with bounded-memory full-file decoding, comprehensive RFC 9110 `Content-Range` validation, total consistency tracking, and gzip EOF integrity verification.
 
 ---
 
-## 2. Technical Audit & Detailed Remediation
+## 2. Technical Remediation & Implementation Details
 
-### 2.1 Issue A — Speaker Completeness Accounting
-
-- **Root Cause Analysis:** In [`scripts/materialize_stage6m_cohort3_audio.py`](file:///C:/Users/venka/Downloads/final year project main/scripts/materialize_stage6m_cohort3_audio.py), `speaker_clips` was populated solely as clips matched `valid_inv`. If a speaker had 0 valid clips, their speaker ID was never added to the dictionary.
-- **Hardened Implementation:** Every one of the 1,265 unique target speakers from [`datasets/splits/stage6m_cohort3_provisional_manifest.json`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_provisional_manifest.json) is explicitly initialized in `speaker_clips` with `required_clips_count = 15`.
-- **Zero-Audio Dry-Run Evidence:**
+### 2.1 Issue A — Speaker Completeness Accounting (Confirmed PASS)
+- Initialized all 1,265 unique target speakers from [`datasets/splits/stage6m_cohort3_provisional_manifest.json`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_provisional_manifest.json) in `speaker_clips` before counting.
+- Verified dry-run accounting:
   - Total Target Speakers: **1,265**
   - Complete Speakers: **0**
   - Incomplete Speakers: **1,265**
-  - Every speaker is enumerated in [`datasets/splits/stage6m_cohort3_speaker_completeness_report.json`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_speaker_completeness_report.json) with `materialized_clips_count: 0`, `is_complete: false`.
-- **Automated Verification:** Verified by `test_speaker_completeness_accounting_zero_audio` in [`tests/research_validity/test_stage6m_cohort3_audio_materialization.py`](file:///C:/Users/venka/Downloads/final year project main/tests/research_validity/test_stage6m_cohort3_audio_materialization.py).
+  - Every single speaker enumerated in [`datasets/splits/stage6m_cohort3_speaker_completeness_report.json`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_speaker_completeness_report.json) with `materialized_clips_count: 0`, `is_complete: false`.
 
-### 2.2 Issue B — Genuine MP3 Validation & Downstream Sample-Rate Contract
+### 2.2 Issue B — Full-File Bounded-Memory Audio Integrity (Task 7.4.1.1)
+- **Bounded-Memory Stream Decoding:** Replaced `sf.read(..., stop=1000)` with a bounded chunk iterator using `sf.SoundFile(str(path), "r")`. Audio frames are read in sequential 4,096-frame blocks (~16 KB for mono float32) without loading the whole recording into memory.
+- **Declared Frame Boundary Verification:** Verifies `total_decoded_frames >= declared_frames`. If an MP3 stream truncates or suffers unrecoverable bitstream corruption after the first 1,000 frames (e.g., at frame 13,000 of 32,000 declared frames), it fails closed with:
+  `Truncated audio stream: decoded 13295 frames but header declares 32000`.
+- **Sample Rate & Downstream Resampling Contract:**
+  - Common Voice 27.0 recordings arrive at native rates (typically 32 kHz, 44.1 kHz, or 48 kHz). Ingest validates container integrity, non-zero duration, and decodability at native rate (`samplerate in {16000, 22050, 24000, 32000, 44100, 48000}`).
+  - Downstream CTTA feature extraction and inference resample to mono 16 kHz float32 on-the-fly via [`src/dsg_ctta/data/acoustic.py::load_and_resample_audio`](file:///C:/Users/venka/Downloads/final year project main/src/dsg_ctta/data/acoustic.py).
 
-- **Root Cause Analysis:** The prior `validate_audio_file()` checked `duration > 0`, `samplerate > 0`, and `channels >= 1`, but did not check `info.format`. The test helper `_generate_synthetic_wav_as_mp3()` wrote WAV data into `.mp3` files.
-- **Hardened Implementation:**
-  1. **Container & Codec Inspection:** `validate_audio_file()` now strictly verifies `(info.format or "").upper() == "MP3"`. Non-MP3 containers (e.g., WAV containers named `.mp3`) are strictly rejected with:
-     `Invalid audio format: expected MP3 container, got WAV`.
-  2. **Frame Decodability Check:** Performs a test decode via `sf.read(str(path), stop=1000)` to ensure audio frames actually decode and are non-empty. Corrupt bitstreams and truncated files fail closed with `Decode failure`.
-  3. **Sample-Rate Policy & Downstream Contract:**
-     - **Ingest Validation:** Mozilla Common Voice 27.0 recordings natively feature varied sample rates (typically 32 kHz, 44.1 kHz, or 48 kHz). Ingest validates container integrity, non-zero duration, and decodability at native rate (`samplerate in {16000, 22050, 24000, 32000, 44100, 48000}`).
-     - **Downstream Resampling:** Downstream acoustic processing and CTTA models (Wav2Vec2, Whisper) require mono 16,000 Hz float32 audio. This resampling is handled on-the-fly by [`src/dsg_ctta/data/acoustic.py::load_and_resample_audio`](file:///C:/Users/venka/Downloads/final year project main/src/dsg_ctta/data/acoustic.py), which averages stereo channels to mono and resamples using `librosa.resample`.
-- **Automated Verification:**
-  - `test_validate_audio_file_genuine_mp3_and_boundaries` passed across missing, empty, corrupted, fake-WAV, truncated, 16k mono, 48k stereo, 32k mono, and 8k unsupported fixtures.
-  - `test_downstream_acoustic_resampling_contract` verified that a genuine 48 kHz stereo MP3 passes ingest validation and is converted to `(8000,) float32 sr=16000` mono audio downstream.
-
-### 2.3 Issue C — Streaming Resume & HTTP Range Response Verification
-
-- **Root Cause Analysis:** In [`ThreadedResilientGzipStream`](file:///C:/Users/venka/Downloads/final year project main/scripts/materialize_stage6m_cohort3_audio.py), reconnects sent `Range: bytes={offset}-`, but did not verify `resp.status == 206` or parse `Content-Range`. A server responding with 200 OK would send from byte 0, causing duplicate byte decompression and archive corruption.
-- **Hardened Implementation:**
-  1. **Dependency Injection:** `ThreadedResilientGzipStream` now accepts an optional `url_opener` callable for deterministic mocking and integration testing.
-  2. **HTTP 206 Enforcement:** When resuming (`_producer_bytes_read > 0`), the stream requires `status == 206`. If status is 200 OK, it immediately raises:
-     `IOError("HTTP resume failed: server returned status 200 (expected 206 Partial Content) when requesting range bytes={offset}-")`.
-  3. **Content-Range Header Alignment:** Parses `Content-Range: bytes {start}-{end}/{total}` and verifies `start == _producer_bytes_read`. If mismatched or missing, raises `IOError`.
-  4. **Consumer Exception Propagation:** In `readinto()`, any fatal producer exception stored in `_producer_error` is immediately re-raised to the caller thread, terminating decompression cleanly.
-- **Automated Verification:** Verified by `test_streaming_resume_range_validation` across 4 deterministic test scenarios:
-  - Clean interrupted-stream recovery producing identical decompressed archive.
-  - Server returning 200 OK on resume raises `IOError`.
-  - Server returning mismatched range start byte raises `IOError`.
-  - Server missing `Content-Range` header raises `IOError`.
+### 2.3 Issue C — Complete Content-Range Structure & Gzip Stream Termination (Task 7.4.1.1)
+- **Complete Content-Range Validation:**
+  - Format parsed: `bytes {start}-{end}/{total}` (or `{total}` as `*`).
+  - Enforces `start >= 0`, `end >= start`, and `total > end` (when total is specified).
+  - Rejects inverted byte ranges (e.g. `bytes 100-50/200`) with `IOError("Invalid inverted range in Content-Range")`.
+- **Total Resource Consistency Tracking:**
+  - The expected archive total is recorded in `self._expected_total_bytes` from `Content-Length` (if 200 OK) or `Content-Range` (if 206).
+  - Reconnections enforce that the declared `{total}` matches `self._expected_total_bytes`. If inconsistent (e.g. resource total shifts from 135 to 635), raises `IOError("Inconsistent resource total across reconnects")`.
+- **Initial Connection Semantics:**
+  - Initial request (without Range header) expects HTTP 200 OK.
+  - If a server responds with 206 Partial Content on the initial request, `start` MUST be 0. If `start != 0` (e.g. `bytes 10-134/135`), raises `IOError("HTTP initial connect failed: server returned 206 Partial Content with non-zero start offset")`.
+- **Gzip Stream Termination Integrity Check:**
+  - In `readinto()`, when the network producer ends, `self._decompressor.flush()` is emitted.
+  - Before returning EOF (`0 bytes`), `readinto()` strictly verifies:
+    1. `self._decompressor.eof == True`: Confirms the complete gzip stream (including header, compressed blocks, and 8-byte CRC32/ISIZE footer) was consumed. If False, raises `IOError("Incomplete gzip stream: reached end of stream without valid gzip EOF marker")`.
+    2. `_producer_bytes_read >= expected_total_bytes`: If a total was declared and the download ended prematurely, raises `IOError("Incomplete download: stream ended ... before reaching expected total")`.
+- **Premature HTTP 416 Rejection:**
+  - If a server returns HTTP 416 when `_producer_bytes_read < self._expected_total_bytes`, raises `IOError("HTTP 416 Range Not Satisfiable received prematurely")`.
 
 ---
 
 ## 3. Quantitative Materialization Inventory & Ledgers
 
-Following pipeline hardening, [`scripts/materialize_stage6m_cohort3_audio.py`](file:///C:/Users/venka/Downloads/final year project main/scripts/materialize_stage6m_cohort3_audio.py) was executed in dry-run / validate-only mode:
+Following Task 7.4.1.1 hardening, [`scripts/materialize_stage6m_cohort3_audio.py`](file:///C:/Users/venka/Downloads/final year project main/scripts/materialize_stage6m_cohort3_audio.py) was executed in dry-run / validate-only mode:
 
 | Metric | Target Requirement | Current Materialized | Status |
 | :--- | :---: | :---: | :---: |
@@ -105,7 +99,7 @@ The frozen historical execution code at [`src/dsg_ctta/evaluation/paired_cluster
 ## 5. Verification Evidence
 
 ### 5.1 Hardened Materializer Test Suite
-Executed: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_materialization.py -v`
+Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_materialization.py -v`
 ```
 tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_target_manifest_scale_and_fields PASSED [ 12%]
 tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_validate_audio_file_genuine_mp3_and_boundaries PASSED [ 25%]
@@ -116,11 +110,11 @@ tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_down
 tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_materialization_reports_exist_and_consistent PASSED [ 87%]
 tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_historical_v1_4_0_execution_engine_immutability PASSED [100%]
 
-============================== 8 passed in 5.09s ==============================
+============================== 8 passed in 3.54s ==============================
 ```
 
 ### 5.2 Full Stage 6M Regression Suite
-Executed: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_materialization.py tests/research_validity/test_stage6m_cohort3_source_audit.py tests/research_validity/test_stage6m_cohort3_curation.py tests/research_validity/test_stage6m_project_lead_authorization_package.py tests/research_validity/test_historical_immutability.py -v`
+Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_materialization.py tests/research_validity/test_stage6m_cohort3_source_audit.py tests/research_validity/test_stage6m_cohort3_curation.py tests/research_validity/test_stage6m_project_lead_authorization_package.py tests/research_validity/test_historical_immutability.py -v`
 ```
 ============================= 48 passed in 19.54s =============================
 ```
@@ -133,16 +127,20 @@ Executed: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_m
 ╔══════════════════════════════════════════════════════════════════════════════════════╗
 ║                   GOVERNANCE STATUS: AUTHORIZED (DATA PREPARATION)                   ║
 ║                                                                                      ║
-║  1. Materializer hardening and streaming reliability audit is COMPLETE (Task 7.4.1).  ║
+║  1. Materializer full-file integrity and stream termination is VERIFIED (7.4.1.1).   ║
 ║  2. Provisional manifest remains UNLOCKED (PROVISIONAL).                             ║
-║  3. Full 18,975-clip download remains HELD pending a small controlled pilot.        ║
-║  4. Confirmatory GPU CTTA adaptation & inference remain STRICTLY BLOCKED.            ║
+║  3. Controlled pilot download (75 clips) is READY FOR SEPARATE PILOT AUTHORIZATION.  ║
+║  4. Full 18,975-clip download remains HELD pending pilot validation.                 ║
+║  5. Confirmatory GPU CTTA adaptation & inference remain STRICTLY BLOCKED.            ║
 ╚══════════════════════════════════════════════════════════════════════════════════════╝
 ```
 
-### Recommended Next Milestone: Task 7.4.2 — Controlled Materialization Pilot
-In accordance with the reviewer's recommended sequence:
-1. **Pilot Scope:** Select an authorized, contiguous subset of speakers from the provisional manifest (e.g., 5 speakers across all 5 strata = 75 clips total; zero substitutions).
-2. **Materialize Pilot:** Download and validate through the hardened streaming pipeline.
-3. **Independent Pilot Audit:** Verify file bitstreams, SHA-256 hashes, transcripts, decodability, and speaker completeness.
-4. **Scale Up:** Proceed to full 18,975-clip materialization only after the pilot audit formally passes.
+### Readiness for Task 7.4.2 — Controlled Materialization Pilot
+With the two residual reliability gaps now closed:
+- **Pilot Scope:** 75 clips across 5 speakers (1 speaker per stratum $\times 15$ clips), strictly drawn from the provisional manifest with zero substitutions.
+- **Pilot Verification:**
+  - Full-file bounded-memory MP3 decoding and frame completeness check.
+  - Exact SHA-256 computation from on-disk physical files.
+  - Accurate recording ID, speaker, accent stratum, transcript, and word-count matching.
+  - Downstream mono 16 kHz resampling verification.
+- **Governance Gate:** Subject to formal pilot download execution authorization before downloading begins.

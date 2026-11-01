@@ -4,27 +4,29 @@ tests/research_validity/test_stage6m_cohort3_audio_materialization.py
 Deterministic Automated Test Suite for Stage 6M v1.5 Cohort 3 Audio Materializer & Integrity Validator
 =====================================================================================================
 Governing Standard: Protocol Section 14.7 (Project-Lead Academic Authorization)
-Phase: Stage 6M v1.5 Milestone 7.4 / Task 7.4.1 (Independent Materializer Hardening & Streaming Reliability Audit)
+Phase: Stage 6M v1.5 Task 7.4.1.1 (Full-File Audio Integrity & Complete Stream-Termination Validation)
 
 Test Invariants:
 1. Target Manifest Agreement:
    - Loads exactly 18,975 target clips across 1,265 speakers from provisional manifest.
-2. Genuine MP3 Audio & Decodability Validation:
+2. Genuine MP3 Audio & Full-File Bounded-Memory Decodability Validation:
    - Detection and fail-closed handling of zero-byte, missing, or corrupt files.
    - Strict rejection of format/container mismatches (e.g., WAV disguised as .mp3).
+   - Rejection of truncation or bitstream corruption occurring after the first 1,000 frames.
    - Validation of genuine MP3 bitstreams at Common Voice native rates (32/44.1/48 kHz).
    - Verification of downstream 16 kHz mono resampling contract in src.dsg_ctta.data.acoustic.
 3. Speaker Completeness Accounting (Issue A):
    - Every one of the 1,265 target speakers must be accounted for in completeness ledgers.
    - Zero-audio case must report exactly 1,265 target speakers, 0 complete, and 1,265 incomplete.
-4. HTTP Streaming Resume & Range Validation (Issue C):
-   - Interrupted HTTP connections must resume with Range: bytes={offset}-.
-   - Server must return 206 Partial Content with matching Content-Range start byte.
-   - Rejection of 200 OK or mismatched range on resume.
-   - Stream recovery produces identical extracted archive contents.
+4. HTTP Streaming Resume & Complete Range Structure Validation (Issue C):
+   - Full Content-Range parsing: validates start, end (end >= start), and total (total > end).
+   - Resource total consistency: rejects varying total length across reconnections.
+   - Initial connection validation: rejects initial 206 responses with non-zero start offset.
+   - Gzip stream termination integrity: verifies decompressor.eof before returning EOF.
+   - Premature HTTP 416 detection: rejects 416 received before total bytes or gzip EOF reached.
 5. Local Sourcing & Zero Substitution:
    - Verifies local sourcing mode with genuine MP3 fixtures.
-6. Execution Gating & Immutability:
+6. Execution Gating & Historical Immutability:
    - Confirmatory GPU adaptation and model inference remain STRICTLY BLOCKED.
    - Provisional manifest remains UNLOCKED.
    - Historical v1.4.0 execution code remains 100% immutable.
@@ -40,6 +42,7 @@ import subprocess
 import sys
 import tarfile
 import types
+import urllib.error
 from pathlib import Path
 
 import numpy as np
@@ -115,7 +118,7 @@ def test_target_manifest_scale_and_fields():
 def test_validate_audio_file_genuine_mp3_and_boundaries(tmp_path):
     """
     Verify audio file validator enforces genuine MP3 format, standard sample rates,
-    frame decodability, and fail-closed handling of boundary conditions.
+    full-stream bounded-memory decodability, and fail-closed handling of boundary conditions.
     """
     # 1. Missing file
     missing = tmp_path / "nonexistent.mp3"
@@ -144,17 +147,29 @@ def test_validate_audio_file_genuine_mp3_and_boundaries(tmp_path):
     assert not valid
     assert "Invalid audio format: expected MP3 container, got WAV" in err
 
-    # 5. Truncated MP3: genuine MP3 header cut off mid-frame
+    # 5. Truncated MP3 near beginning: header cut off mid-frame
     good_tmp = tmp_path / "full.mp3"
     _generate_synthetic_mp3(good_tmp, duration_sec=1.0, sr=16000)
     full_bytes = good_tmp.read_bytes()
-    trunc = tmp_path / "truncated.mp3"
-    trunc.write_bytes(full_bytes[:120])
-    valid, dur, sr, ch, h, err = validate_audio_file(trunc)
+    trunc_early = tmp_path / "truncated_early.mp3"
+    trunc_early.write_bytes(full_bytes[:120])
+    valid, dur, sr, ch, h, err = validate_audio_file(trunc_early)
     assert not valid
     assert "Decode failure" in err
 
-    # 6. Genuine MP3 - 16 kHz Mono
+    # 6. Truncated MP3 AFTER the first 1,000 frames (Task 7.4.1.1):
+    # Create 2.0s audio at 16kHz (32,000 frames). Truncating at 50% byte length yields
+    # ~13,000 frames (well past the first 1,000 frames), but falls short of declared 32,000 frames.
+    long_mp3 = tmp_path / "long_audio.mp3"
+    _generate_synthetic_mp3(long_mp3, duration_sec=2.0, sr=16000)
+    long_bytes = long_mp3.read_bytes()
+    trunc_late = tmp_path / "truncated_late.mp3"
+    trunc_late.write_bytes(long_bytes[: len(long_bytes) // 2])
+    valid, dur, sr, ch, h, err = validate_audio_file(trunc_late)
+    assert not valid
+    assert "Truncated audio stream" in err or "Decode failure" in err
+
+    # 7. Genuine MP3 - 16 kHz Mono
     mp3_16k = tmp_path / "genuine_16k.mp3"
     _generate_synthetic_mp3(mp3_16k, duration_sec=1.5, sr=16000, channels=1)
     valid, dur, sr, ch, h, err = validate_audio_file(mp3_16k)
@@ -165,7 +180,7 @@ def test_validate_audio_file_genuine_mp3_and_boundaries(tmp_path):
     assert len(h) == 64
     assert err == ""
 
-    # 7. Genuine MP3 - 48 kHz Stereo (Common Voice native rate)
+    # 8. Genuine MP3 - 48 kHz Stereo (Common Voice native rate)
     mp3_48k = tmp_path / "genuine_48k.mp3"
     _generate_synthetic_mp3(mp3_48k, duration_sec=0.8, sr=48000, channels=2)
     valid, dur, sr, ch, h, err = validate_audio_file(mp3_48k)
@@ -176,7 +191,7 @@ def test_validate_audio_file_genuine_mp3_and_boundaries(tmp_path):
     assert len(h) == 64
     assert err == ""
 
-    # 8. Genuine MP3 - 32 kHz Mono (Common Voice native rate)
+    # 9. Genuine MP3 - 32 kHz Mono (Common Voice native rate)
     mp3_32k = tmp_path / "genuine_32k.mp3"
     _generate_synthetic_mp3(mp3_32k, duration_sec=1.2, sr=32000, channels=1)
     valid, dur, sr, ch, h, err = validate_audio_file(mp3_32k)
@@ -186,7 +201,7 @@ def test_validate_audio_file_genuine_mp3_and_boundaries(tmp_path):
     assert ch == 1
     assert err == ""
 
-    # 9. Unsupported sample rate (e.g. 8000 Hz)
+    # 10. Unsupported sample rate (e.g. 8000 Hz)
     mp3_8k = tmp_path / "unsupported_8k.mp3"
     _generate_synthetic_mp3(mp3_8k, duration_sec=1.0, sr=8000, channels=1)
     valid, dur, sr, ch, h, err = validate_audio_file(mp3_8k)
@@ -282,18 +297,23 @@ def test_local_sourcing_and_completeness_tracking(tmp_path):
 
 def test_streaming_resume_range_validation():
     """
-    Verify Issue C:
-    1. Interrupted stream recovery: reconnects at exact byte offset with Range header,
-       receives 206 Partial Content with Content-Range, producing identical decompressed archive.
+    Verify Issue C & Task 7.4.1.1:
+    1. Interrupted stream recovery: reconnects with Range header, receives 206 with full Content-Range,
+       reaches valid gzip EOF marker, producing identical decompressed archive.
     2. HTTP status 200 on resume (server ignoring Range) is rejected with IOError.
     3. Mismatched Content-Range start byte on resume is rejected with IOError.
     4. Missing Content-Range header on 206 response is rejected with IOError.
+    5. Inverted Content-Range interval (end < start) is rejected with IOError.
+    6. Inconsistent total resource length across reconnects is rejected with IOError.
+    7. Initial connection returning 206 with non-zero start is rejected with IOError.
+    8. Truncated gzip archive (ending before gzip EOF marker) is rejected with IOError.
+    9. Premature HTTP 416 received before total bytes or archive complete is rejected with IOError.
     """
     # Create an in-memory valid gzip archive containing a tar file
     buf = io.BytesIO()
     with gzip.GzipFile(fileobj=buf, mode="wb") as gz:
         with tarfile.open(fileobj=gz, mode="w") as tar:
-            data = b"AUDIO_DATA_PAYLOAD_TEST_1234567890"
+            data = b"AUDIO_DATA_PAYLOAD_TEST_1234567890" * 20
             ti = tarfile.TarInfo(name="clips/sample_01.mp3")
             ti.size = len(data)
             tar.addfile(ti, io.BytesIO(data))
@@ -323,7 +343,7 @@ def test_streaming_resume_range_validation():
         call_log.append(range_hdr)
         if range_hdr is None:
             # Initial connection drops halfway
-            return MockHTTPResponse(gz_bytes[:split_point], 200, {})
+            return MockHTTPResponse(gz_bytes[:split_point], 200, {"Content-Length": str(total_len)})
         else:
             # Resume request
             assert range_hdr == f"bytes={split_point}-"
@@ -344,7 +364,7 @@ def test_streaming_resume_range_validation():
 
     assert len(extracted) == 1
     assert extracted[0][0] == "clips/sample_01.mp3"
-    assert extracted[0][1] == b"AUDIO_DATA_PAYLOAD_TEST_1234567890"
+    assert extracted[0][1] == b"AUDIO_DATA_PAYLOAD_TEST_1234567890" * 20
     assert call_log[0] is None  # Initial request
     assert call_log[1] == f"bytes={split_point}-"  # Resumed request
 
@@ -413,6 +433,121 @@ def test_streaming_resume_range_validation():
                 pass
     stream4.close()
     assert "HTTP resume failed: missing Content-Range header" in str(exc_info.value)
+
+    # Scenario 5: Server returns inverted range (end < start) -> must raise IOError
+    def mock_inverted_range(req, timeout=120):
+        if req.headers.get("Range") is None:
+            return MockHTTPResponse(gz_bytes[:split_point], 200, {})
+        return MockHTTPResponse(
+            gz_bytes[split_point:], 206, {"Content-Range": f"bytes 100-50/{total_len}"}
+        )
+
+    stream5 = ThreadedResilientGzipStream(
+        dataset_id="test_dataset",
+        plan_getter=lambda: types.SimpleNamespace(download_url="http://mock.test/archive.tar.gz"),
+        url_opener=mock_inverted_range,
+    )
+    buffered5 = io.BufferedReader(stream5)
+    with pytest.raises(IOError) as exc_info:
+        with tarfile.open(fileobj=buffered5, mode="r|") as tar5:
+            for _ in tar5:
+                pass
+    stream5.close()
+    assert "Invalid inverted range in Content-Range" in str(exc_info.value)
+
+    # Scenario 6: Inconsistent total resource length across reconnects -> must raise IOError
+    calls_s6 = 0
+
+    def mock_inconsistent_total(req, timeout=120):
+        nonlocal calls_s6
+        calls_s6 += 1
+        if req.headers.get("Range") is None:
+            return MockHTTPResponse(gz_bytes[:10], 200, {})
+        if calls_s6 == 2:
+            return MockHTTPResponse(
+                gz_bytes[10:20], 206, {"Content-Range": f"bytes 10-19/{total_len}"}
+            )
+        return MockHTTPResponse(
+            gz_bytes[20:], 206, {"Content-Range": f"bytes 20-{total_len-1}/{total_len + 500}"}
+        )
+
+    stream6 = ThreadedResilientGzipStream(
+        dataset_id="test_dataset",
+        plan_getter=lambda: types.SimpleNamespace(download_url="http://mock.test/archive.tar.gz"),
+        url_opener=mock_inconsistent_total,
+    )
+    buffered6 = io.BufferedReader(stream6)
+    with pytest.raises(IOError) as exc_info:
+        with tarfile.open(fileobj=buffered6, mode="r|") as tar6:
+            for _ in tar6:
+                pass
+    stream6.close()
+    assert "Inconsistent resource total across reconnects" in str(exc_info.value)
+
+    # Scenario 7: Initial connection returns 206 with non-zero start -> must raise IOError
+    def mock_initial_nonzero_start(req, timeout=120):
+        return MockHTTPResponse(
+            gz_bytes[10:], 206, {"Content-Range": f"bytes 10-{total_len-1}/{total_len}"}
+        )
+
+    stream7 = ThreadedResilientGzipStream(
+        dataset_id="test_dataset",
+        plan_getter=lambda: types.SimpleNamespace(download_url="http://mock.test/archive.tar.gz"),
+        url_opener=mock_initial_nonzero_start,
+    )
+    buffered7 = io.BufferedReader(stream7)
+    with pytest.raises(IOError) as exc_info:
+        with tarfile.open(fileobj=buffered7, mode="r|") as tar7:
+            for _ in tar7:
+                pass
+    stream7.close()
+    assert "server returned 206 Partial Content with non-zero start offset" in str(exc_info.value)
+
+    # Scenario 8: Truncated gzip archive (ending before gzip EOF marker) -> must raise IOError
+    def mock_truncated_gzip(req, timeout=120):
+        range_hdr = req.headers.get("Range")
+        if range_hdr is None:
+            return MockHTTPResponse(gz_bytes[: len(gz_bytes) // 2], 200, {})
+        # Subsequent requests return empty bytes, simulating server closed stream prematurely
+        return MockHTTPResponse(
+            b"", 206, {"Content-Range": f"bytes {len(gz_bytes)//2}-{len(gz_bytes)//2}/{total_len}"}
+        )
+
+    stream8 = ThreadedResilientGzipStream(
+        dataset_id="test_dataset",
+        plan_getter=lambda: types.SimpleNamespace(download_url="http://mock.test/archive.tar.gz"),
+        url_opener=mock_truncated_gzip,
+    )
+    buffered8 = io.BufferedReader(stream8)
+    with pytest.raises(IOError) as exc_info:
+        with tarfile.open(fileobj=buffered8, mode="r|") as tar8:
+            for _ in tar8:
+                pass
+    stream8.close()
+    assert "Incomplete gzip stream: reached end of stream without valid gzip EOF marker" in str(
+        exc_info.value
+    )
+
+    # Scenario 9: Premature HTTP 416 received before archive fully received -> must raise IOError
+    def mock_premature_416(req, timeout=120):
+        if req.headers.get("Range") is None:
+            return MockHTTPResponse(
+                gz_bytes[:split_point], 200, {"Content-Length": str(total_len)}
+            )
+        raise urllib.error.HTTPError("http://mock.test", 416, "Range Not Satisfiable", {}, None)
+
+    stream9 = ThreadedResilientGzipStream(
+        dataset_id="test_dataset",
+        plan_getter=lambda: types.SimpleNamespace(download_url="http://mock.test/archive.tar.gz"),
+        url_opener=mock_premature_416,
+    )
+    buffered9 = io.BufferedReader(stream9)
+    with pytest.raises(IOError) as exc_info:
+        with tarfile.open(fileobj=buffered9, mode="r|") as tar9:
+            for _ in tar9:
+                pass
+    stream9.close()
+    assert "HTTP 416 Range Not Satisfiable received prematurely" in str(exc_info.value)
 
 
 def test_downstream_acoustic_resampling_contract(tmp_path):

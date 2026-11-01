@@ -1,15 +1,15 @@
 {
-  "timestamp_utc": "2026-11-01T12:26:00.000000+00:00",
+  "timestamp_utc": "2026-11-01T12:50:00.000000+00:00",
   "document_id": "STAGE6M_COHORT3_MATERIALIZER_HARDENING_AUDIT",
-  "task_id": "TASK_7_4_1",
-  "task_title": "Independent Materializer Hardening & Streaming Reliability Audit",
+  "task_id": "TASK_7_4_1_1",
+  "task_title": "Full-File Audio Integrity & Complete Stream-Termination Validation",
   "protocol_version": "v1.5-five-stratum-parity",
   "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
   "governance_status": "AUTHORIZED_FOR_DATA_PREPARATION",
   "manifest_status": "UNLOCKED (PROVISIONAL)",
-  "audit_disposition": "PASS_HARDENED_PIPELINE_VERIFIED",
+  "audit_disposition": "PASS_FULL_FILE_INTEGRITY_AND_STREAM_TERMINATION_VERIFIED",
   "execution_gating": {
-    "audio_materialization_hardening": "VERIFIED",
+    "audio_materialization_hardening": "VERIFIED_FULL_FILE_AND_TERMINATION",
     "controlled_pilot_download": "PENDING_SEPARATE_PILOT_AUTHORIZATION",
     "full_audio_materialization": "BLOCKED_PENDING_PILOT_VALIDATION",
     "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
@@ -17,7 +17,7 @@
     "confirmatory_inference": "STRICTLY_BLOCKED"
   },
   "issue_a_speaker_completeness": {
-    "status": "RESOLVED",
+    "status": "RESOLVED_AND_VERIFIED",
     "description": "Initialize completeness inventory from all 1,265 provisional manifest speakers, ensuring zero-clip state reports 1,265 incomplete speakers.",
     "total_target_speakers": 1265,
     "complete_speakers_count": 0,
@@ -26,10 +26,11 @@
     "zero_audio_case_verified": true
   },
   "issue_b_genuine_mp3_validation": {
-    "status": "RESOLVED",
-    "description": "Strict MP3 container validation, rejection of container mismatches (e.g. WAV named .mp3), and explicit sample-rate contract.",
+    "status": "RESOLVED_AND_VERIFIED",
+    "description": "Strict MP3 container validation, full-file bounded-memory chunk decoding, late truncation detection, and explicit sample-rate contract.",
     "container_format_check": "info.format.upper() == 'MP3'",
-    "frame_decodability_check": "sf.read(str(path), stop=1000) yields non-empty frames",
+    "full_stream_chunk_decoding": "sf.SoundFile(str(path)).read(4096) decodes entire file in bounded-memory chunks without loading full audio into memory",
+    "frame_completeness_check": "total_decoded_frames >= declared_frames strictly enforced; detects and rejects truncation or corruption occurring after the first 1,000 frames",
     "sample_rate_policy": {
       "ingest_validation": "Positive rate in {16000, 22050, 24000, 32000, 44100, 48000}",
       "common_voice_native_rates": "32000, 44100, 48000 Hz",
@@ -41,7 +42,8 @@
       "zero_byte_file",
       "corrupted_header",
       "wav_container_named_mp3_rejected",
-      "truncated_mp3_rejected",
+      "truncated_mp3_early_rejected",
+      "truncated_mp3_after_1000_frames_rejected",
       "genuine_16k_mono_mp3_passed",
       "genuine_48k_stereo_mp3_passed",
       "genuine_32k_mono_mp3_passed",
@@ -49,22 +51,30 @@
     ]
   },
   "issue_c_streaming_resume_verification": {
-    "status": "RESOLVED",
-    "description": "Deterministic HTTP Range request validation, 206 Partial Content enforcement, Content-Range offset alignment verification, and error propagation.",
+    "status": "RESOLVED_AND_VERIFIED",
+    "description": "Full Content-Range structure parsing (start/end/total), total consistency tracking across reconnects, initial 206 zero-offset validation, gzip EOF termination integrity check, and premature 416 rejection.",
     "http_resume_contract": {
       "initial_request_offset": 0,
       "resumed_request_header": "Range: bytes={offset}-",
       "required_resume_status": 206,
       "rejection_of_status_200_on_resume": true,
-      "content_range_header_format": "bytes {start}-{end}/{total}",
-      "start_offset_alignment_check": "start == _producer_bytes_read",
+      "content_range_structure": "bytes {start}-{end}/{total} parsed; validates start >= 0, end >= start, total > end (when total != '*')",
+      "total_consistency_tracking": "Resource total length must remain identical across all reconnections",
+      "initial_connection_validation": "Initial request (no Range) expects 200 OK; if 206 received, start must be 0",
+      "gzip_termination_integrity": "readinto() enforces decompressor.eof == True before returning EOF (0 bytes); rejects truncated streams",
+      "premature_http_416_rejection": "Rejects HTTP 416 received before total bytes or archive completion",
       "error_propagation_to_consumer": true
     },
     "test_scenarios_passed": [
-      "interrupted_stream_recovery_clean_decompression",
+      "interrupted_stream_recovery_clean_decompression_and_eof",
       "server_returning_200_on_resume_raises_ioerror",
       "server_returning_mismatched_range_start_raises_ioerror",
-      "server_missing_content_range_raises_ioerror"
+      "server_missing_content_range_raises_ioerror",
+      "server_returning_inverted_range_end_less_than_start_raises_ioerror",
+      "server_returning_inconsistent_total_across_reconnects_raises_ioerror",
+      "server_returning_initial_206_with_nonzero_start_raises_ioerror",
+      "truncated_gzip_archive_ending_before_eof_marker_raises_ioerror",
+      "premature_http_416_before_archive_complete_raises_ioerror"
     ]
   },
   "execution_engine_immutability": {

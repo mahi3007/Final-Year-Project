@@ -169,10 +169,28 @@ def validate_audio_file(
         if info.channels not in (1, 2):
             return False, 0.0, 0, 0, "", f"Invalid channel count: {info.channels} (expected 1 or 2)"
 
-        # Decodability check: verify reading frames does not raise error and yields audio
-        frames, _ = sf.read(str(path), stop=1000)
-        if len(frames) == 0:
+        # Full-file stream decoding check: decode entire file in bounded-memory chunks (4,096 frames/chunk)
+        total_decoded_frames = 0
+        with sf.SoundFile(str(path), "r") as reader:
+            declared_frames = reader.frames
+            while True:
+                chunk = reader.read(4096)
+                if len(chunk) == 0:
+                    break
+                total_decoded_frames += len(chunk)
+
+        if total_decoded_frames == 0:
             return False, 0.0, 0, 0, "", "Audio file contains zero decoded frames"
+
+        if declared_frames > 0 and total_decoded_frames < declared_frames:
+            return (
+                False,
+                0.0,
+                0,
+                0,
+                "",
+                f"Truncated audio stream: decoded {total_decoded_frames} frames but header declares {declared_frames}",
+            )
 
         h = compute_sha256(path)
         return True, float(info.duration), int(info.samplerate), int(info.channels), h, ""
@@ -203,6 +221,7 @@ class ThreadedResilientGzipStream(io.RawIOBase):
         self._url_opener = url_opener or urllib.request.urlopen
         self.compressed_bytes_read = 0
         self._producer_bytes_read = 0
+        self._expected_total_bytes: Optional[int] = None
         self._decompressor = zlib.decompressobj(16 + zlib.MAX_WBITS)
         self._url = None
         self._url_ts = 0.0
@@ -258,38 +277,100 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                 if status_code is None and hasattr(resp, "code"):
                     status_code = resp.code
 
+                content_range = None
+                content_length_hdr = None
+                if hasattr(resp, "headers") and resp.headers:
+                    content_range = resp.headers.get("Content-Range")
+                    content_length_hdr = resp.headers.get("Content-Length")
+                elif hasattr(resp, "getheader"):
+                    content_range = resp.getheader("Content-Range")
+                    content_length_hdr = resp.getheader("Content-Length")
+
+                parsed_cr_start: Optional[int] = None
+                parsed_cr_end: Optional[int] = None
+                parsed_cr_total: Optional[int] = None
+
+                if content_range:
+                    cr_str = content_range.strip()
+                    if not cr_str.lower().startswith("bytes "):
+                        raise IOError(f"Malformed Content-Range header: '{content_range}'")
+                    range_and_total = cr_str[6:].strip()
+                    if "/" not in range_and_total:
+                        raise IOError(f"Malformed Content-Range header missing '/': '{content_range}'")
+                    range_part, total_part = range_and_total.split("/", 1)
+                    range_part = range_part.strip()
+                    total_part = total_part.strip()
+
+                    if "-" not in range_part:
+                        raise IOError(f"Malformed Content-Range byte interval: '{content_range}'")
+                    start_str, end_str = range_part.split("-", 1)
+                    try:
+                        parsed_cr_start = int(start_str.strip())
+                        parsed_cr_end = int(end_str.strip())
+                    except ValueError:
+                        raise IOError(f"Malformed non-integer byte range in Content-Range: '{content_range}'")
+
+                    if parsed_cr_start < 0:
+                        raise IOError(f"Invalid negative start in Content-Range: {parsed_cr_start}")
+                    if parsed_cr_end < parsed_cr_start:
+                        raise IOError(
+                            f"Invalid inverted range in Content-Range: end {parsed_cr_end} < start {parsed_cr_start} ('{content_range}')"
+                        )
+
+                    if total_part != "*":
+                        try:
+                            parsed_cr_total = int(total_part)
+                        except ValueError:
+                            raise IOError(f"Malformed non-integer total in Content-Range: '{content_range}'")
+                        if parsed_cr_total <= parsed_cr_end:
+                            raise IOError(
+                                f"Invalid total in Content-Range: total {parsed_cr_total} <= end {parsed_cr_end} ('{content_range}')"
+                            )
+
+                        # Validate consistency of total resource length across connections
+                        if self._expected_total_bytes is None:
+                            self._expected_total_bytes = parsed_cr_total
+                            logger.info(f"[STREAM] Total archive size recorded: {self._expected_total_bytes:,} B")
+                        elif parsed_cr_total != self._expected_total_bytes:
+                            raise IOError(
+                                f"Inconsistent resource total across reconnects: received {parsed_cr_total} "
+                                f"but previously recorded {self._expected_total_bytes} ('{content_range}')"
+                            )
+
                 if is_resuming:
                     if status_code != 206:
                         raise IOError(
                             f"HTTP resume failed: server returned status {status_code} "
                             f"(expected 206 Partial Content) when requesting range bytes={self._producer_bytes_read}-"
                         )
-                    content_range = None
-                    if hasattr(resp, "headers") and resp.headers:
-                        content_range = resp.headers.get("Content-Range")
-                    elif hasattr(resp, "getheader"):
-                        content_range = resp.getheader("Content-Range")
-
                     if not content_range:
                         raise IOError(
                             f"HTTP resume failed: missing Content-Range header in 206 response at offset {self._producer_bytes_read}"
                         )
-                    cr_str = content_range.strip()
-                    if not cr_str.lower().startswith("bytes "):
-                        raise IOError(f"HTTP resume failed: malformed Content-Range header '{content_range}'")
-                    range_spec = cr_str[6:].split("/")[0].strip()
-                    if "-" not in range_spec:
-                        raise IOError(f"HTTP resume failed: malformed Content-Range header '{content_range}'")
-                    range_start = int(range_spec.split("-")[0].strip())
-                    if range_start != self._producer_bytes_read:
+                    if parsed_cr_start != self._producer_bytes_read:
                         raise IOError(
-                            f"HTTP resume failed: Content-Range start {range_start} does not match "
+                            f"HTTP resume failed: Content-Range start {parsed_cr_start} does not match "
                             f"requested offset {self._producer_bytes_read} ('{content_range}')"
                         )
                 else:
-                    # Initial connection (offset == 0): status should be 200 or 206
-                    if status_code not in (200, 206):
-                        raise IOError(f"HTTP stream initial connect failed: unexpected status {status_code}")
+                    # Initial connection (no Range header sent)
+                    if status_code == 200:
+                        if content_length_hdr and self._expected_total_bytes is None:
+                            try:
+                                self._expected_total_bytes = int(content_length_hdr.strip())
+                                logger.info(f"[STREAM] Total archive size recorded from Content-Length: {self._expected_total_bytes:,} B")
+                            except ValueError:
+                                pass
+                    elif status_code == 206:
+                        if not content_range:
+                            raise IOError("HTTP initial connect failed: server returned 206 Partial Content without Content-Range header")
+                        if parsed_cr_start != 0:
+                            raise IOError(
+                                f"HTTP initial connect failed: server returned 206 Partial Content with non-zero start offset "
+                                f"{parsed_cr_start} ('{content_range}')"
+                            )
+                    else:
+                        raise IOError(f"HTTP initial connect failed: unexpected status {status_code} (expected 200 or 206)")
 
                 consecutive_errors = 0
                 bytes_this_conn = 0
@@ -322,8 +403,18 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                     logger.warning("[MDC] 403 Forbidden / Presigned URL expired -- refreshing...")
                     self._refresh_url()
                 elif he.code == 416:
-                    logger.info("[STREAM] HTTP 416 Range Not Satisfiable -- entire archive consumed.")
-                    break
+                    if self._expected_total_bytes is not None and self._producer_bytes_read < self._expected_total_bytes:
+                        err = IOError(
+                            f"HTTP 416 Range Not Satisfiable received prematurely at byte "
+                            f"{self._producer_bytes_read:,} before archive fully received (expected {self._expected_total_bytes:,} B)."
+                        )
+                        logger.error(f"[STREAM] {err}")
+                        self._producer_error = err
+                        self._stop_event.set()
+                        break
+                    else:
+                        logger.info(f"[STREAM] HTTP 416 at byte {self._producer_bytes_read:,}. Reached declared archive length.")
+                        break
                 if consecutive_errors >= 5:
                     self._producer_error = he
                     self._stop_event.set()
@@ -332,7 +423,7 @@ class ThreadedResilientGzipStream(io.RawIOBase):
             except Exception as e:
                 consecutive_errors += 1
                 logger.warning(f"[STREAM] Connection/Stream error ({e}). Consecutive errors: {consecutive_errors}")
-                if isinstance(e, IOError) and "HTTP resume failed" in str(e):
+                if isinstance(e, IOError) and ("HTTP resume failed" in str(e) or "HTTP initial connect failed" in str(e) or "Inconsistent resource total" in str(e) or "Content-Range" in str(e)):
                     # Fatal range/resume contract violation
                     self._producer_error = e
                     self._stop_event.set()
@@ -389,6 +480,19 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                         b[:n] = self._uc_buf[self._offset : self._offset + n]
                         self._offset += n
                         return n
+                    # Check EOF integrity
+                    if not self._decompressor.eof:
+                        raise IOError(
+                            f"Incomplete gzip stream: reached end of stream without valid gzip EOF marker "
+                            f"(compressed bytes read: {self.compressed_bytes_read:,}"
+                            + (f" of expected {self._expected_total_bytes:,}" if self._expected_total_bytes else "")
+                            + ")"
+                        )
+                    if self._expected_total_bytes is not None and self._producer_bytes_read < self._expected_total_bytes:
+                        raise IOError(
+                            f"Incomplete download: stream ended at byte {self._producer_bytes_read:,} "
+                            f"before reaching expected total of {self._expected_total_bytes:,} bytes."
+                        )
                     return 0
                 logger.info("[STREAM] Waiting for chunks from network producer...")
                 continue
@@ -406,6 +510,19 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                     b[:n] = self._uc_buf[self._offset : self._offset + n]
                     self._offset += n
                     return n
+                # Check EOF integrity
+                if not self._decompressor.eof:
+                    raise IOError(
+                        f"Incomplete gzip stream: reached end of stream without valid gzip EOF marker "
+                        f"(compressed bytes read: {self.compressed_bytes_read:,}"
+                        + (f" of expected {self._expected_total_bytes:,}" if self._expected_total_bytes else "")
+                        + ")"
+                    )
+                if self._expected_total_bytes is not None and self._producer_bytes_read < self._expected_total_bytes:
+                    raise IOError(
+                        f"Incomplete download: stream ended at byte {self._producer_bytes_read:,} "
+                        f"before reaching expected total of {self._expected_total_bytes:,} bytes."
+                    )
                 return 0
 
             self.compressed_bytes_read += len(chunk)
