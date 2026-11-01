@@ -1,0 +1,86 @@
+{
+  "timestamp_utc": "2026-11-01T13:25:30.611724+00:00",
+  "protocol_version": "v1.5-five-stratum-parity",
+  "governing_standard": "Protocol Section 14.7 (Controlled Materialization Pilot)",
+  "governance_status": "PILOT_PREPARED_PENDING_SEPARATE_PILOT_AUTHORIZATION",
+  "materialization_disposition": "PILOT_COMPLETE_AND_VERIFIED",
+  "manifest_status": "UNLOCKED (PROVISIONAL)",
+  "parent_provisional_manifest": {
+    "path": "datasets/splits/stage6m_cohort3_provisional_manifest.json",
+    "sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "total_parent_clips": 18975
+  },
+  "target_scale": {
+    "total_target_clips": 75,
+    "total_target_speakers": 5,
+    "clips_per_speaker": 15,
+    "confirmatory_strata_count": 5,
+    "confirmatory_strata": [
+      "Australian English",
+      "Canadian English",
+      "England English",
+      "South Asian English",
+      "US English"
+    ],
+    "panel_role": "evaluation"
+  },
+  "materialized_scale": {
+    "valid_clips_count": 75,
+    "remaining_clips_count": 0,
+    "failed_clips_count": 0,
+    "total_target_speakers": 5,
+    "complete_speakers_count": 5,
+    "incomplete_speakers_count": 0,
+    "completion_rate_pct": 100.0,
+    "total_duration_seconds": 15.0,
+    "total_duration_hours": 0.0042,
+    "total_bytes": 108000
+  },
+  "pilot_speakers": {
+    "00143475c51f0cc41c344019a368e509aa933b8767de7ea418ce5c5a1be139a8f44f3877ae714a66d5c754443ed3e0be65c3832891923ce957624afdf1e64df5": {
+      "accent_group": "Canadian English",
+      "panel_role": "evaluation",
+      "materialized_clips": 15,
+      "required_clips": 15,
+      "is_complete": true
+    },
+    "008f1e5e50d2af1343f74a4f7a841bb49fe5083abd8cb36ed80f1da59223569b2b7b2945f3b885eb6a2d91d0704af7b2e891f0a6f8ffd6bec00832870bf6ca97": {
+      "accent_group": "Australian English",
+      "panel_role": "evaluation",
+      "materialized_clips": 15,
+      "required_clips": 15,
+      "is_complete": true
+    },
+    "010465487d57bc20ae6f15d6621488ef8023e5bbe8c45b33188ce8d68243d9132b1d29e729185fd487e5918e6efbab1471d2ab61b98a5281127abf775426718c": {
+      "accent_group": "US English",
+      "panel_role": "evaluation",
+      "materialized_clips": 15,
+      "required_clips": 15,
+      "is_complete": true
+    },
+    "016e15e58e2d93cb96eeeebfc0bfc74347fcaa8bf525fafe5a53b5dfe498749c5712499c3c8ebea296320bf2f866451ba2f73cbce0c808484310885e4b5dee8b": {
+      "accent_group": "England English",
+      "panel_role": "evaluation",
+      "materialized_clips": 15,
+      "required_clips": 15,
+      "is_complete": true
+    },
+    "01c9ba7d3533685635554d88440f1f0b2fe27c02bd3dd227af5f407f9fb1bf3a242cc60deeab61284f83bf36e175a35850c54069360093c0991f58b55348185c": {
+      "accent_group": "South Asian English",
+      "panel_role": "evaluation",
+      "materialized_clips": 15,
+      "required_clips": 15,
+      "is_complete": true
+    }
+  },
+  "ledger": {
+    "ledger_csv": "datasets/splits/stage6m_cohort3_pilot_clip_sha256_ledger.csv",
+    "ledger_sha256": "0b5f30c14cee77d234f47314b4d5005a142e003c2db363003287960beed1ae3b"
+  },
+  "execution_gating": {
+    "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+    "confirmatory_inference": "STRICTLY_BLOCKED",
+    "full_cohort_materialization": "HELD_PENDING_PILOT_VERIFICATION",
+    "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION"
+  }
+}

@@ -103,6 +103,24 @@ TOTAL_EXPECTED_CLIPS = 18975
 TOTAL_EXPECTED_SPEAKERS = 1265
 CLIPS_PER_SPEAKER = 15
 
+# Pilot Materialization Constants & Paths (Task 7.4.2)
+PILOT_EXPECTED_SPEAKERS = 5
+PILOT_EXPECTED_CLIPS_PER_SPEAKER = 15
+PILOT_TOTAL_EXPECTED_CLIPS = 75
+PILOT_CONFIRMATORY_STRATA = [
+    "Australian English",
+    "Canadian English",
+    "England English",
+    "South Asian English",
+    "US English",
+]
+COHORT3_PILOT_AUDIO_DIR = CV27_DIR / "cohort3_pilot_audio"
+PILOT_MATERIALIZATION_JSON = REPORTS_DIR / "stage6m_cohort3_pilot_materialization.json"
+PILOT_MATERIALIZATION_MD = REPORTS_DIR / "stage6m_cohort3_pilot_materialization.md"
+PILOT_LEDGER_CSV = SPLITS_DIR / "stage6m_cohort3_pilot_clip_sha256_ledger.csv"
+PILOT_FAILED_REPORT_JSON = SPLITS_DIR / "stage6m_cohort3_pilot_failed_clips_report.json"
+PILOT_SPEAKER_REPORT_JSON = SPLITS_DIR / "stage6m_cohort3_pilot_speaker_completeness_report.json"
+
 
 def compute_sha256(path: Path) -> str:
     """Compute lowercase SHA-256 hex digest for a file."""
@@ -182,6 +200,9 @@ def validate_audio_file(
         if total_decoded_frames == 0:
             return False, 0.0, 0, 0, "", "Audio file contains zero decoded frames"
 
+        # Frame boundary invariant: Enforce that the decoder reaches at least the declared frame count
+        # (total_decoded_frames >= declared_frames). Any shortfall (total_decoded_frames < declared_frames)
+        # indicates mid/late-file truncation or unrecoverable bitstream corruption, failing closed.
         if declared_frames > 0 and total_decoded_frames < declared_frames:
             return (
                 False,
@@ -378,6 +399,10 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                     chunk = resp.read(2 * 1024 * 1024)
                     if not chunk:
                         logger.info(f"[RESUME] Socket closed by server at byte {self._producer_bytes_read:,}.")
+                        if self._expected_total_bytes is not None and self._producer_bytes_read >= self._expected_total_bytes:
+                            logger.info(f"[STREAM] Reached expected archive size ({self._producer_bytes_read:,} B). Entire archive received.")
+                            self._stop_event.set()
+                            break
                         if bytes_this_conn == 0:
                             consecutive_zero_reads += 1
                             if consecutive_zero_reads >= 3:
@@ -390,6 +415,15 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                     consecutive_zero_reads = 0
                     bytes_this_conn += len(chunk)
                     self._producer_bytes_read += len(chunk)
+                    if self._expected_total_bytes is not None and self._producer_bytes_read > self._expected_total_bytes:
+                        err = IOError(
+                            f"Excess compressed bytes received: stream delivered {self._producer_bytes_read:,} bytes, "
+                            f"exceeding expected total of {self._expected_total_bytes:,} bytes."
+                        )
+                        logger.error(f"[STREAM] {err}")
+                        self._producer_error = err
+                        self._stop_event.set()
+                        break
                     while not self._stop_event.is_set():
                         try:
                             self._queue.put(chunk, timeout=1.0)
@@ -488,10 +522,23 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                             + (f" of expected {self._expected_total_bytes:,}" if self._expected_total_bytes else "")
                             + ")"
                         )
-                    if self._expected_total_bytes is not None and self._producer_bytes_read < self._expected_total_bytes:
+                    # Exact-length completion condition
+                    if self._expected_total_bytes is not None:
+                        if self._producer_bytes_read < self._expected_total_bytes:
+                            raise IOError(
+                                f"Incomplete download: stream ended at byte {self._producer_bytes_read:,} "
+                                f"before reaching expected total of {self._expected_total_bytes:,} bytes."
+                            )
+                        elif self._producer_bytes_read > self._expected_total_bytes:
+                            raise IOError(
+                                f"Excess compressed bytes received: stream delivered {self._producer_bytes_read:,} bytes, "
+                                f"exceeding expected total of {self._expected_total_bytes:,} bytes."
+                            )
+                    # Check for unexpected trailing data after gzip member
+                    if self._decompressor.unused_data:
                         raise IOError(
-                            f"Incomplete download: stream ended at byte {self._producer_bytes_read:,} "
-                            f"before reaching expected total of {self._expected_total_bytes:,} bytes."
+                            f"Unexpected trailing compressed data: found {len(self._decompressor.unused_data):,} unexpected bytes "
+                            f"after gzip EOF marker."
                         )
                     return 0
                 logger.info("[STREAM] Waiting for chunks from network producer...")
@@ -518,15 +565,39 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                         + (f" of expected {self._expected_total_bytes:,}" if self._expected_total_bytes else "")
                         + ")"
                     )
-                if self._expected_total_bytes is not None and self._producer_bytes_read < self._expected_total_bytes:
+                # Exact-length completion condition
+                if self._expected_total_bytes is not None:
+                    if self._producer_bytes_read < self._expected_total_bytes:
+                        raise IOError(
+                            f"Incomplete download: stream ended at byte {self._producer_bytes_read:,} "
+                            f"before reaching expected total of {self._expected_total_bytes:,} bytes."
+                        )
+                    elif self._producer_bytes_read > self._expected_total_bytes:
+                        raise IOError(
+                            f"Excess compressed bytes received: stream delivered {self._producer_bytes_read:,} bytes, "
+                            f"exceeding expected total of {self._expected_total_bytes:,} bytes."
+                        )
+                # Check for unexpected trailing data after gzip member
+                if self._decompressor.unused_data:
                     raise IOError(
-                        f"Incomplete download: stream ended at byte {self._producer_bytes_read:,} "
-                        f"before reaching expected total of {self._expected_total_bytes:,} bytes."
+                        f"Unexpected trailing compressed data: found {len(self._decompressor.unused_data):,} unexpected bytes "
+                        f"after gzip EOF marker."
                     )
                 return 0
 
+            if self._decompressor.eof:
+                raise IOError(
+                    f"Unexpected trailing compressed data: received extra chunk of {len(chunk)} bytes "
+                    f"after gzip EOF marker."
+                )
+
             self.compressed_bytes_read += len(chunk)
             decomp = self._decompressor.decompress(chunk)
+            if self._decompressor.eof and self._decompressor.unused_data:
+                raise IOError(
+                    f"Unexpected trailing compressed data: found {len(self._decompressor.unused_data):,} unexpected bytes "
+                    f"after gzip EOF marker."
+                )
             if decomp:
                 self._uc_buf = bytearray(decomp)
                 self._offset = 0
@@ -1001,6 +1072,308 @@ This report documents the physical audio materialization and cryptographic integ
     return materialization_data
 
 
+def select_pilot_speakers_and_clips(
+    records: List[Dict[str, Any]],
+    parent_manifest_sha256: str,
+) -> Tuple[List[str], Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
+    """
+    Deterministically selects exactly 5 speakers (1 from each confirmatory evaluation stratum)
+    and their corresponding 15 clips each (75 clips total) from the provisional manifest.
+    Verifies zero substitution, exact clip counts, and records parent manifest traceability.
+    """
+    eval_records = [r for r in records if r.get("panel_role") == "evaluation"]
+    strata_speakers: Dict[str, Dict[str, List[Dict[str, Any]]]] = defaultdict(lambda: defaultdict(list))
+    for r in eval_records:
+        strata_speakers[r["accent_group"]][r["speaker_id"]].append(r)
+
+    pilot_speaker_ids: List[str] = []
+    pilot_records: List[Dict[str, Any]] = []
+    pilot_target_map: Dict[str, Dict[str, Any]] = {}
+
+    for stratum in sorted(PILOT_CONFIRMATORY_STRATA):
+        if stratum not in strata_speakers:
+            raise ValueError(f"Pilot selection error: missing confirmatory stratum '{stratum}' in manifest")
+        available_speakers = sorted(strata_speakers[stratum].keys())
+        if not available_speakers:
+            raise ValueError(f"Pilot selection error: zero evaluation speakers found for stratum '{stratum}'")
+
+        # Deterministic selection: first speaker sorted by speaker_id in each stratum
+        selected_spk = available_speakers[0]
+        spk_clips = strata_speakers[stratum][selected_spk]
+        if len(spk_clips) != PILOT_EXPECTED_CLIPS_PER_SPEAKER:
+            raise ValueError(
+                f"Pilot speaker {selected_spk} in {stratum} has {len(spk_clips)} clips "
+                f"(expected exactly {PILOT_EXPECTED_CLIPS_PER_SPEAKER})"
+            )
+        pilot_speaker_ids.append(selected_spk)
+        for c in spk_clips:
+            clip_fname = c["clip_filename"]
+            if clip_fname in pilot_target_map:
+                raise ValueError(f"Duplicate clip filename in pilot: {clip_fname}")
+            pilot_target_map[clip_fname] = c
+            pilot_records.append(c)
+
+    if len(pilot_speaker_ids) != PILOT_EXPECTED_SPEAKERS:
+        raise ValueError(f"Pilot speaker count mismatch: {len(pilot_speaker_ids)} != {PILOT_EXPECTED_SPEAKERS}")
+    if len(pilot_target_map) != PILOT_TOTAL_EXPECTED_CLIPS:
+        raise ValueError(f"Pilot clip count mismatch: {len(pilot_target_map)} != {PILOT_TOTAL_EXPECTED_CLIPS}")
+
+    logger.info(
+        f"[PILOT] Selected {len(pilot_speaker_ids)} speakers across {len(PILOT_CONFIRMATORY_STRATA)} strata: "
+        f"{len(pilot_target_map)} clips total."
+    )
+    return pilot_speaker_ids, pilot_target_map, pilot_records
+
+
+def generate_pilot_materialization_artifacts(
+    parent_meta: Dict[str, Any],
+    parent_manifest_sha256: str,
+    pilot_speaker_ids: List[str],
+    pilot_records: List[Dict[str, Any]],
+    pilot_target_map: Dict[str, Dict[str, Any]],
+    valid_inv: Dict[str, Dict[str, Any]],
+    failed_inv: Dict[str, Dict[str, Any]],
+    audio_dir: Path,
+) -> Dict[str, Any]:
+    """
+    Generates isolated pilot materialization artifacts, reports, and ledgers
+    without overwriting full-cohort reports.
+    Records parent provisional manifest SHA-256 for cryptographic traceability.
+    """
+    logger.info("Computing pilot materialization completeness ledgers...")
+
+    speaker_clips: Dict[str, List[Dict[str, Any]]] = {sid: [] for sid in pilot_speaker_ids}
+    speaker_strata: Dict[str, str] = {}
+    speaker_roles: Dict[str, str] = {}
+    for r in pilot_records:
+        sid = r["speaker_id"]
+        speaker_strata[sid] = r["accent_group"]
+        speaker_roles[sid] = r["panel_role"]
+        c_fname = r["clip_filename"]
+        if c_fname in valid_inv:
+            speaker_clips[sid].append(valid_inv[c_fname])
+
+    speaker_completeness = {}
+    complete_speakers_count = 0
+    incomplete_speakers_count = 0
+    for sid in sorted(speaker_clips.keys()):
+        clips = speaker_clips[sid]
+        is_comp = len(clips) == PILOT_EXPECTED_CLIPS_PER_SPEAKER
+        if is_comp:
+            complete_speakers_count += 1
+        else:
+            incomplete_speakers_count += 1
+        speaker_completeness[sid] = {
+            "speaker_id": sid,
+            "accent_group": speaker_strata[sid],
+            "panel_role": speaker_roles[sid],
+            "materialized_clips_count": len(clips),
+            "required_clips_count": PILOT_EXPECTED_CLIPS_PER_SPEAKER,
+            "is_complete": is_comp,
+        }
+
+    # 1. Write pilot speaker completeness report
+    with open(PILOT_SPEAKER_REPORT_JSON, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+                "parent_provisional_manifest_sha256": parent_manifest_sha256,
+                "total_target_speakers": len(speaker_completeness),
+                "complete_speakers": complete_speakers_count,
+                "incomplete_speakers": incomplete_speakers_count,
+                "speakers": speaker_completeness,
+            },
+            f,
+            indent=2,
+        )
+
+    # 2. Write pilot failed clips report
+    with open(PILOT_FAILED_REPORT_JSON, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+                "parent_provisional_manifest_sha256": parent_manifest_sha256,
+                "total_failed_count": len(failed_inv),
+                "failed_clips": list(failed_inv.values()),
+            },
+            f,
+            indent=2,
+        )
+
+    # 3. Write pilot per-clip SHA-256 ledger CSV
+    inv_list = sorted(valid_inv.values(), key=lambda x: (x["stratum_code"], x["speaker_id"], x["recording_id"]))
+    ledger_fieldnames = [
+        "recording_id",
+        "clip_filename",
+        "speaker_id",
+        "accent_group",
+        "stratum_code",
+        "panel_role",
+        "local_path",
+        "file_size",
+        "duration_sec",
+        "sample_rate",
+        "channels",
+        "sha256",
+        "word_count",
+        "transcript",
+    ]
+    with open(PILOT_LEDGER_CSV, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=ledger_fieldnames)
+        writer.writeheader()
+        for item in inv_list:
+            row_dict = {k: item.get(k, "") for k in ledger_fieldnames}
+            writer.writerow(row_dict)
+
+    pilot_ledger_sha256 = compute_sha256(PILOT_LEDGER_CSV)
+    logger.info(f"Wrote Pilot SHA-256 ledger CSV: {PILOT_LEDGER_CSV} (SHA-256: {pilot_ledger_sha256})")
+
+    # Aggregate metrics
+    total_valid_clips = len(valid_inv)
+    total_duration_sec = sum(x["duration_sec"] for x in valid_inv.values())
+    total_bytes = sum(x["file_size"] for x in valid_inv.values())
+    completion_rate_pct = (total_valid_clips / PILOT_TOTAL_EXPECTED_CLIPS) * 100.0
+
+    pilot_disposition = (
+        "PILOT_COMPLETE_AND_VERIFIED"
+        if total_valid_clips == PILOT_TOTAL_EXPECTED_CLIPS and len(failed_inv) == 0
+        else ("PILOT_ZERO_AUDIO_DRY_RUN" if total_valid_clips == 0 else "PILOT_IN_PROGRESS")
+    )
+
+    pilot_data = {
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "protocol_version": "v1.5-five-stratum-parity",
+        "governing_standard": "Protocol Section 14.7 (Controlled Materialization Pilot)",
+        "governance_status": "PILOT_PREPARED_PENDING_SEPARATE_PILOT_AUTHORIZATION",
+        "materialization_disposition": pilot_disposition,
+        "manifest_status": "UNLOCKED (PROVISIONAL)",
+        "parent_provisional_manifest": {
+            "path": safe_rel_path(PROVISIONAL_MANIFEST_JSON),
+            "sha256": parent_manifest_sha256,
+            "total_parent_clips": len(parent_meta.get("records", [])) if "records" in parent_meta else TOTAL_EXPECTED_CLIPS,
+        },
+        "target_scale": {
+            "total_target_clips": PILOT_TOTAL_EXPECTED_CLIPS,
+            "total_target_speakers": PILOT_EXPECTED_SPEAKERS,
+            "clips_per_speaker": PILOT_EXPECTED_CLIPS_PER_SPEAKER,
+            "confirmatory_strata_count": len(PILOT_CONFIRMATORY_STRATA),
+            "confirmatory_strata": PILOT_CONFIRMATORY_STRATA,
+            "panel_role": "evaluation",
+        },
+        "materialized_scale": {
+            "valid_clips_count": total_valid_clips,
+            "remaining_clips_count": PILOT_TOTAL_EXPECTED_CLIPS - total_valid_clips,
+            "failed_clips_count": len(failed_inv),
+            "total_target_speakers": len(speaker_completeness),
+            "complete_speakers_count": complete_speakers_count,
+            "incomplete_speakers_count": incomplete_speakers_count,
+            "completion_rate_pct": round(completion_rate_pct, 4),
+            "total_duration_seconds": round(total_duration_sec, 2),
+            "total_duration_hours": round(total_duration_sec / 3600.0, 4),
+            "total_bytes": total_bytes,
+        },
+        "pilot_speakers": {
+            sid: {
+                "accent_group": speaker_strata[sid],
+                "panel_role": speaker_roles[sid],
+                "materialized_clips": len(speaker_clips[sid]),
+                "required_clips": PILOT_EXPECTED_CLIPS_PER_SPEAKER,
+                "is_complete": len(speaker_clips[sid]) == PILOT_EXPECTED_CLIPS_PER_SPEAKER,
+            }
+            for sid in sorted(speaker_clips.keys())
+        },
+        "ledger": {
+            "ledger_csv": safe_rel_path(PILOT_LEDGER_CSV),
+            "ledger_sha256": pilot_ledger_sha256,
+        },
+        "execution_gating": {
+            "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+            "confirmatory_inference": "STRICTLY_BLOCKED",
+            "full_cohort_materialization": "HELD_PENDING_PILOT_VERIFICATION",
+            "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
+        },
+    }
+
+    # 4. Write pilot JSON report
+    with open(PILOT_MATERIALIZATION_JSON, "w", encoding="utf-8") as f:
+        json.dump(pilot_data, f, indent=2)
+
+    # 5. Write pilot Markdown report
+    speaker_table_rows = []
+    for sid in sorted(speaker_clips.keys()):
+        strat = speaker_strata[sid]
+        n_mat = len(speaker_clips[sid])
+        is_c = "PASS" if n_mat == PILOT_EXPECTED_CLIPS_PER_SPEAKER else "INCOMPLETE"
+        speaker_table_rows.append(
+            f"| **{strat}** | `{sid[:16]}...` | {PILOT_EXPECTED_CLIPS_PER_SPEAKER} | {n_mat} | **{is_c}** |"
+        )
+    speaker_table_str = "\n".join(speaker_table_rows)
+
+    md_content = f"""# Stage 6M v1.5 — Cohort 3 Controlled Audio Materialization Pilot Report
+
+> **DOCUMENT ID:** `STAGE6M_COHORT3_PILOT_MATERIALIZATION`  
+> **PROTOCOL VERSION:** v1.5 Five-Stratum Confirmatory Protocol  
+> **GOVERNING STANDARD:** Protocol Section 14.7 (Controlled Materialization Pilot)  
+> **GOVERNANCE DISPOSITION:** **{pilot_data['materialization_disposition']}**  
+> **PARENT PROVISIONAL MANIFEST:** [`{pilot_data['parent_provisional_manifest']['path']}`](file:///{PROJECT_ROOT.as_posix()}/{pilot_data['parent_provisional_manifest']['path']}) (SHA-256: `{parent_manifest_sha256}`)  
+> **PROVISIONAL MANIFEST STATUS:** **UNLOCKED (PROVISIONAL)**  
+> **EXECUTION GATING:** **GPU CTTA Adaptation & Confirmatory Inference STRICTLY BLOCKED**  
+> **TIMESTAMP (UTC):** {pilot_data['timestamp_utc']}  
+
+---
+
+## 1. Executive Summary
+
+This report documents the preparation and execution of the **Controlled Audio Materialization Pilot** for **Cohort 3**:
+- **Target Specification:** Exactly $75$ clips across $5$ unique speakers ($1$ speaker per confirmatory evaluation stratum $\\times 15$ clips/speaker).
+- **Stratum Representation:** Australian English, Canadian English, England English, South Asian English, US English.
+- **Parent Manifest Traceability:** Deterministically derived from provisional manifest (SHA-256 `{parent_manifest_sha256}`).
+- **Current Progress:** **{total_valid_clips:,} / {PILOT_TOTAL_EXPECTED_CLIPS:,}** clips verified ({completion_rate_pct:.2f}%).
+- **Execution Gating:** Confirmatory GPU CTTA adaptation and model inference remain **STRICTLY BLOCKED**.
+
+---
+
+## 2. Quantitative Pilot Inventory
+
+| Stratum | Speaker ID | Target Clips | Materialized | Status |
+| :--- | :--- | :---: | :---: | :---: |
+{speaker_table_str}
+| **Grand Total** | **5 Speakers** | **{PILOT_TOTAL_EXPECTED_CLIPS}** | **{total_valid_clips}** | **{('PASS' if complete_speakers_count == PILOT_EXPECTED_SPEAKERS else 'IN_PROGRESS')}** |
+
+---
+
+## 3. Cryptographic Provenance & Ledgers
+
+- **Pilot SHA-256 Ledger:** [`{pilot_data['ledger']['ledger_csv']}`](file:///{PROJECT_ROOT.as_posix()}/{pilot_data['ledger']['ledger_csv']})  
+  - Ledger File SHA-256: `{pilot_ledger_sha256}`
+- **Pilot Speaker Completeness Report:** [`datasets/splits/stage6m_cohort3_pilot_speaker_completeness_report.json`](file:///{PROJECT_ROOT.as_posix()}/datasets/splits/stage6m_cohort3_pilot_speaker_completeness_report.json)
+- **Pilot Failed Clips Report:** [`datasets/splits/stage6m_cohort3_pilot_failed_clips_report.json`](file:///{PROJECT_ROOT.as_posix()}/datasets/splits/stage6m_cohort3_pilot_failed_clips_report.json)
+- **Parent Provisional Manifest:** [`{pilot_data['parent_provisional_manifest']['path']}`](file:///{PROJECT_ROOT.as_posix()}/{pilot_data['parent_provisional_manifest']['path']}) (SHA-256: `{parent_manifest_sha256}`)
+
+---
+
+## 4. Execution Gating & Next Operational Milestones
+
+```
+╔══════════════════════════════════════════════════════════════════════════════════════╗
+║                   GOVERNANCE STATUS: CONTROLLED PILOT PREPARED                       ║
+║                                                                                      ║
+║  1. 75-clip pilot execution harness is fully isolated and operational.               ║
+║  2. Pilot manifests and ledgers are distinct; full-cohort reports are untouched.     ║
+║  3. Physical acquisition requires separate Project-Lead pilot authorization.         ║
+║  4. Confirmatory GPU adaptation & model inference remain STRICTLY BLOCKED.           ║
+╚══════════════════════════════════════════════════════════════════════════════════════╝
+```
+"""
+
+    with open(PILOT_MATERIALIZATION_MD, "w", encoding="utf-8") as f:
+        f.write(md_content)
+
+    logger.info(f"Wrote pilot materialization report MD: {PILOT_MATERIALIZATION_MD}")
+    logger.info(f"Wrote pilot materialization report JSON: {PILOT_MATERIALIZATION_JSON}")
+    return pilot_data
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Stage 6M v1.5 Cohort 3 Controlled Audio Materialization Pipeline"
@@ -1016,6 +1389,17 @@ def main():
         type=Path,
         default=COHORT3_AUDIO_DIR,
         help="Destination directory for materialized audio",
+    )
+    parser.add_argument(
+        "--pilot",
+        action="store_true",
+        help="Run controlled 75-clip pilot materialization (5 speakers, 1 per stratum x 15 clips)",
+    )
+    parser.add_argument(
+        "--pilot-audio-dir",
+        type=Path,
+        default=COHORT3_PILOT_AUDIO_DIR,
+        help="Destination directory for pilot audio clips (default: datasets/external/common_voice_27/cohort3_pilot_audio)",
     )
     parser.add_argument(
         "--source-dir",
@@ -1047,24 +1431,55 @@ def main():
     logger.info("=" * 80)
 
     # 1. Load provisional manifest
-    meta, records, target_map = load_provisional_manifest(args.manifest_json)
+    meta, records, full_target_map = load_provisional_manifest(args.manifest_json)
 
-    # 2. Scan existing local files
-    valid_inv, failed_inv = scan_local_inventory(target_map, args.audio_dir)
-    logger.info(f"Initial scan: {len(valid_inv):,} / {len(target_map):,} clips already validated on disk.")
-
-    # 3. Local source mode
-    if args.source_dir and args.source_dir.exists():
-        materialize_from_local_source(args.source_dir, target_map, valid_inv, failed_inv, args.audio_dir)
-
-    # 4. Stream mode
-    if args.stream and not args.validate_only:
-        materialize_from_stream(
-            target_map, valid_inv, failed_inv, args.audio_dir, max_duration_seconds=args.max_stream_seconds
+    # 2. Pilot mode vs Full Cohort mode
+    if args.pilot:
+        logger.info("[PILOT] Running in Controlled Pilot Mode (75 clips across 5 confirmatory evaluation strata)...")
+        parent_manifest_sha256 = compute_sha256(args.manifest_json)
+        pilot_spk_ids, pilot_target_map, pilot_records = select_pilot_speakers_and_clips(
+            records, parent_manifest_sha256
         )
 
-    # 5. Generate artifacts
-    generate_materialization_artifacts(meta, records, target_map, valid_inv, failed_inv, args.audio_dir)
+        pilot_dest_dir = args.pilot_audio_dir if args.audio_dir == COHORT3_AUDIO_DIR else args.audio_dir
+        logger.info(f"[PILOT] Destination directory: {pilot_dest_dir}")
+
+        valid_inv, failed_inv = scan_local_inventory(pilot_target_map, pilot_dest_dir)
+        logger.info(f"[PILOT] Initial scan: {len(valid_inv)} / {len(pilot_target_map)} pilot clips validated on disk.")
+
+        if args.source_dir and args.source_dir.exists():
+            materialize_from_local_source(args.source_dir, pilot_target_map, valid_inv, failed_inv, pilot_dest_dir)
+
+        if args.stream and not args.validate_only:
+            materialize_from_stream(
+                pilot_target_map, valid_inv, failed_inv, pilot_dest_dir, max_duration_seconds=args.max_stream_seconds
+            )
+
+        generate_pilot_materialization_artifacts(
+            meta,
+            parent_manifest_sha256,
+            pilot_spk_ids,
+            pilot_records,
+            pilot_target_map,
+            valid_inv,
+            failed_inv,
+            pilot_dest_dir,
+        )
+        return
+
+    # Full Cohort Mode:
+    valid_inv, failed_inv = scan_local_inventory(full_target_map, args.audio_dir)
+    logger.info(f"Initial scan: {len(valid_inv):,} / {len(full_target_map):,} clips already validated on disk.")
+
+    if args.source_dir and args.source_dir.exists():
+        materialize_from_local_source(args.source_dir, full_target_map, valid_inv, failed_inv, args.audio_dir)
+
+    if args.stream and not args.validate_only:
+        materialize_from_stream(
+            full_target_map, valid_inv, failed_inv, args.audio_dir, max_duration_seconds=args.max_stream_seconds
+        )
+
+    generate_materialization_artifacts(meta, records, full_target_map, valid_inv, failed_inv, args.audio_dir)
 
 
 if __name__ == "__main__":

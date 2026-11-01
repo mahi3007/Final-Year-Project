@@ -43,6 +43,7 @@ import sys
 import tarfile
 import types
 import urllib.error
+from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
@@ -54,19 +55,32 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.materialize_stage6m_cohort3_audio import (
     CLIPS_PER_SPEAKER,
+    COHORT3_PILOT_AUDIO_DIR,
     FAILED_REPORT_JSON,
     LEDGER_CSV,
     MATERIALIZATION_JSON,
     MATERIALIZATION_MD,
+    PILOT_CONFIRMATORY_STRATA,
+    PILOT_EXPECTED_CLIPS_PER_SPEAKER,
+    PILOT_EXPECTED_SPEAKERS,
+    PILOT_FAILED_REPORT_JSON,
+    PILOT_LEDGER_CSV,
+    PILOT_MATERIALIZATION_JSON,
+    PILOT_MATERIALIZATION_MD,
+    PILOT_SPEAKER_REPORT_JSON,
+    PILOT_TOTAL_EXPECTED_CLIPS,
     PROVISIONAL_MANIFEST_JSON,
     SPEAKER_REPORT_JSON,
     TOTAL_EXPECTED_CLIPS,
     TOTAL_EXPECTED_SPEAKERS,
     ThreadedResilientGzipStream,
+    compute_sha256,
     generate_materialization_artifacts,
+    generate_pilot_materialization_artifacts,
     load_provisional_manifest,
     materialize_from_local_source,
     scan_local_inventory,
+    select_pilot_speakers_and_clips,
     validate_audio_file,
 )
 from src.dsg_ctta.data.acoustic import load_and_resample_audio
@@ -549,6 +563,43 @@ def test_streaming_resume_range_validation():
     stream9.close()
     assert "HTTP 416 Range Not Satisfiable received prematurely" in str(exc_info.value)
 
+    # Scenario 10: Server delivering excess compressed bytes (> expected_total_bytes) -> must raise IOError
+    def mock_excess_bytes(req, timeout=120):
+        extra_garbage = b"X" * 100
+        return MockHTTPResponse(gz_bytes + extra_garbage, 200, {"Content-Length": str(total_len)})
+
+    stream10 = ThreadedResilientGzipStream(
+        dataset_id="test_dataset",
+        plan_getter=lambda: types.SimpleNamespace(download_url="http://mock.test/archive.tar.gz"),
+        url_opener=mock_excess_bytes,
+    )
+    buffered10 = io.BufferedReader(stream10)
+    with pytest.raises(IOError) as exc_info:
+        with tarfile.open(fileobj=buffered10, mode="r|") as tar10:
+            for _ in tar10:
+                pass
+    stream10.close()
+    assert ("Excess compressed bytes received" in str(exc_info.value)) or ("Network stream overflow" in str(exc_info.value))
+
+    # Scenario 11: Archive containing unexpected trailing bytes after valid gzip member -> must raise IOError
+    def mock_trailing_garbage(req, timeout=120):
+        garbage = b"UNEXPECTED_TRAILING_GARBAGE"
+        combined = gz_bytes + garbage
+        return MockHTTPResponse(combined, 200, {"Content-Length": str(len(combined))})
+
+    stream11 = ThreadedResilientGzipStream(
+        dataset_id="test_dataset",
+        plan_getter=lambda: types.SimpleNamespace(download_url="http://mock.test/archive.tar.gz"),
+        url_opener=mock_trailing_garbage,
+    )
+    buffered11 = io.BufferedReader(stream11)
+    with pytest.raises(IOError) as exc_info:
+        with tarfile.open(fileobj=buffered11, mode="r|") as tar11:
+            for _ in tar11:
+                pass
+    stream11.close()
+    assert "Unexpected trailing compressed data" in str(exc_info.value)
+
 
 def test_downstream_acoustic_resampling_contract(tmp_path):
     """
@@ -623,3 +674,132 @@ def test_historical_v1_4_0_execution_engine_immutability():
     assert (
         diff_res.stdout.strip() == ""
     ), f"Frozen execution file has changes against baseline commit a7a3b79: {diff_res.stdout}"
+
+
+def test_pilot_speaker_and_clip_selection():
+    """
+    Verify Task 7.4.2 Pilot selection:
+    Deterministically selects exactly 5 speakers (1 from each confirmatory evaluation stratum)
+    and exactly 15 clips per speaker = 75 clips total.
+    Verifies zero overlap with gate reference or reserve panel.
+    """
+    parent_manifest_sha256 = compute_sha256(PROVISIONAL_MANIFEST_JSON)
+    meta, records, full_target_map = load_provisional_manifest(PROVISIONAL_MANIFEST_JSON)
+
+    pilot_spk_ids, pilot_target_map, pilot_records = select_pilot_speakers_and_clips(
+        records, parent_manifest_sha256
+    )
+
+    assert len(pilot_spk_ids) == PILOT_EXPECTED_SPEAKERS == 5
+    assert len(pilot_target_map) == PILOT_TOTAL_EXPECTED_CLIPS == 75
+    assert len(pilot_records) == 75
+
+    # Check 1 speaker per confirmatory stratum
+    strata_covered = set()
+    spk_clip_counts = defaultdict(int)
+    for r in pilot_records:
+        assert r["panel_role"] == "evaluation"
+        strata_covered.add(r["accent_group"])
+        spk_clip_counts[r["speaker_id"]] += 1
+
+    assert strata_covered == set(PILOT_CONFIRMATORY_STRATA)
+    for sid, count in spk_clip_counts.items():
+        assert count == PILOT_EXPECTED_CLIPS_PER_SPEAKER == 15
+
+
+def test_pilot_cli_execution_and_report_isolation(tmp_path):
+    """
+    Verify that executing --pilot --validate-only creates isolated pilot ledgers
+    and preserves full-cohort reports without modification.
+    """
+    # 1. Snapshot full cohort report modified time and content
+    with open(MATERIALIZATION_JSON, "r", encoding="utf-8") as f:
+        full_data_before = json.load(f)
+
+    # 2. Run CLI with --pilot --validate-only
+    res = subprocess.run(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "scripts" / "materialize_stage6m_cohort3_audio.py"),
+            "--pilot",
+            "--validate-only",
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert res.returncode == 0
+
+    # 3. Verify pilot reports exist and match 75-clip scale
+    assert PILOT_MATERIALIZATION_JSON.exists()
+    assert PILOT_MATERIALIZATION_MD.exists()
+    assert PILOT_SPEAKER_REPORT_JSON.exists()
+    assert PILOT_FAILED_REPORT_JSON.exists()
+    assert PILOT_LEDGER_CSV.exists()
+
+    with open(PILOT_MATERIALIZATION_JSON, "r", encoding="utf-8") as f:
+        pilot_data = json.load(f)
+
+    assert pilot_data["target_scale"]["total_target_clips"] == 75
+    assert pilot_data["target_scale"]["total_target_speakers"] == 5
+    assert pilot_data["materialized_scale"]["total_target_speakers"] == 5
+    assert pilot_data["governance_status"] == "PILOT_PREPARED_PENDING_SEPARATE_PILOT_AUTHORIZATION"
+    assert pilot_data["materialization_disposition"] == "PILOT_ZERO_AUDIO_DRY_RUN"
+    assert pilot_data["execution_gating"]["gpu_ctta_adaptation"] == "STRICTLY_BLOCKED"
+    assert pilot_data["execution_gating"]["confirmatory_inference"] == "STRICTLY_BLOCKED"
+    assert pilot_data["execution_gating"]["full_cohort_materialization"] == "HELD_PENDING_PILOT_VERIFICATION"
+
+    parent_sha256 = compute_sha256(PROVISIONAL_MANIFEST_JSON)
+    assert pilot_data["parent_provisional_manifest"]["sha256"] == parent_sha256
+
+    # 4. Verify full-cohort reports are UNTOUCHED
+    with open(MATERIALIZATION_JSON, "r", encoding="utf-8") as f:
+        full_data_after = json.load(f)
+
+    assert full_data_before["target_scale"]["total_target_clips"] == full_data_after["target_scale"]["total_target_clips"] == 18975
+    assert full_data_before["target_scale"]["total_target_speakers"] == full_data_after["target_scale"]["total_target_speakers"] == 1265
+
+
+def test_pilot_mock_materialization_verification(tmp_path):
+    """
+    Verify complete pilot materialization verification with 75 valid synthetic MP3 clips.
+    Asserts 75/75 valid clips, 5/5 complete speakers, 0 failures, and PILOT_COMPLETE_AND_VERIFIED disposition.
+    """
+    parent_manifest_sha256 = compute_sha256(PROVISIONAL_MANIFEST_JSON)
+    meta, records, full_target_map = load_provisional_manifest(PROVISIONAL_MANIFEST_JSON)
+    pilot_spk_ids, pilot_target_map, pilot_records = select_pilot_speakers_and_clips(
+        records, parent_manifest_sha256
+    )
+
+    pilot_audio_dir = tmp_path / "mock_pilot_audio"
+    pilot_audio_dir.mkdir(parents=True, exist_ok=True)
+
+    # Generate 75 valid MP3 files
+    for r in pilot_records:
+        rec_id = r["recording_id"]
+        clip_path = pilot_audio_dir / f"{rec_id}.mp3"
+        _generate_synthetic_mp3(clip_path, duration_sec=0.2, sr=16000, channels=1)
+
+    # Scan and validate
+    valid_inv, failed_inv = scan_local_inventory(pilot_target_map, pilot_audio_dir)
+    assert len(valid_inv) == 75
+    assert len(failed_inv) == 0
+
+    # Generate pilot artifacts
+    pilot_artifacts = generate_pilot_materialization_artifacts(
+        meta,
+        parent_manifest_sha256,
+        pilot_spk_ids,
+        pilot_records,
+        pilot_target_map,
+        valid_inv,
+        failed_inv,
+        pilot_audio_dir,
+    )
+
+    assert pilot_artifacts["materialization_disposition"] == "PILOT_COMPLETE_AND_VERIFIED"
+    assert pilot_artifacts["materialized_scale"]["valid_clips_count"] == 75
+    assert pilot_artifacts["materialized_scale"]["complete_speakers_count"] == 5
+    assert pilot_artifacts["materialized_scale"]["incomplete_speakers_count"] == 0
+    assert pilot_artifacts["materialized_scale"]["failed_clips_count"] == 0
+    assert pilot_artifacts["materialized_scale"]["completion_rate_pct"] == 100.0

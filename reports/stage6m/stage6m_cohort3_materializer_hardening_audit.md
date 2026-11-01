@@ -35,8 +35,10 @@ Following the independent review of Task 7.4.1 (commit [`c499571`](https://githu
 
 ### 2.2 Issue B — Full-File Bounded-Memory Audio Integrity (Task 7.4.1.1)
 - **Bounded-Memory Stream Decoding:** Replaced `sf.read(..., stop=1000)` with a bounded chunk iterator using `sf.SoundFile(str(path), "r")`. Audio frames are read in sequential 4,096-frame blocks (~16 KB for mono float32) without loading the whole recording into memory.
-- **Declared Frame Boundary Verification:** Verifies `total_decoded_frames >= declared_frames`. If an MP3 stream truncates or suffers unrecoverable bitstream corruption after the first 1,000 frames (e.g., at frame 13,000 of 32,000 declared frames), it fails closed with:
+- **Declared Frame Boundary Verification (Reaching At Least Declared Frames):**
+  The implementation verifies `total_decoded_frames >= declared_frames` via `if declared_frames > 0 and total_decoded_frames < declared_frames:`. It enforces that the decoder reaches at least the declared frame count. Any shortfall indicates mid/late-file truncation or bitstream corruption and fails closed with:
   `Truncated audio stream: decoded 13295 frames but header declares 32000`.
+  This check tolerates trailing decoder padding/lead-out frames while strictly detecting and rejecting incomplete streams.
 - **Sample Rate & Downstream Resampling Contract:**
   - Common Voice 27.0 recordings arrive at native rates (typically 32 kHz, 44.1 kHz, or 48 kHz). Ingest validates container integrity, non-zero duration, and decodability at native rate (`samplerate in {16000, 22050, 24000, 32000, 44100, 48000}`).
   - Downstream CTTA feature extraction and inference resample to mono 16 kHz float32 on-the-fly via [`src/dsg_ctta/data/acoustic.py::load_and_resample_audio`](file:///C:/Users/venka/Downloads/final year project main/src/dsg_ctta/data/acoustic.py).
@@ -52,13 +54,29 @@ Following the independent review of Task 7.4.1 (commit [`c499571`](https://githu
 - **Initial Connection Semantics:**
   - Initial request (without Range header) expects HTTP 200 OK.
   - If a server responds with 206 Partial Content on the initial request, `start` MUST be 0. If `start != 0` (e.g. `bytes 10-134/135`), raises `IOError("HTTP initial connect failed: server returned 206 Partial Content with non-zero start offset")`.
-- **Gzip Stream Termination Integrity Check:**
+- **Exact-Length Completion Condition:**
+  - Enforces exact equality upon completion:
+    $$\text{received compressed bytes} == \text{expected total bytes}$$
+  - Rejects incomplete downloads (`_producer_bytes_read < expected_total_bytes`) with `IOError("Incomplete download: stream ended ... before reaching expected total")`.
+  - Rejects excess delivered bytes / network overflow (`_producer_bytes_read > expected_total_bytes`) with `IOError("Excess compressed bytes received: stream delivered ... exceeding expected total")`.
+- **Gzip Stream Termination Integrity Check & Trailing Data Rejection:**
   - In `readinto()`, when the network producer ends, `self._decompressor.flush()` is emitted.
   - Before returning EOF (`0 bytes`), `readinto()` strictly verifies:
     1. `self._decompressor.eof == True`: Confirms the complete gzip stream (including header, compressed blocks, and 8-byte CRC32/ISIZE footer) was consumed. If False, raises `IOError("Incomplete gzip stream: reached end of stream without valid gzip EOF marker")`.
-    2. `_producer_bytes_read >= expected_total_bytes`: If a total was declared and the download ended prematurely, raises `IOError("Incomplete download: stream ended ... before reaching expected total")`.
+    2. `not self._decompressor.unused_data`: Verifies no unexpected trailing compressed data or garbage exists after the gzip member. If present, raises `IOError("Unexpected trailing compressed data: found ... unexpected bytes after gzip EOF marker")`.
 - **Premature HTTP 416 Rejection:**
   - If a server returns HTTP 416 when `_producer_bytes_read < self._expected_total_bytes`, raises `IOError("HTTP 416 Range Not Satisfiable received prematurely")`.
+
+### 2.4 Task 7.4.2 — Controlled Materialization Pilot Interface
+- **Dedicated CLI Flag:** `--pilot` option executes the isolated 75-clip pilot materialization without touching or modifying the full-cohort ledgers or reports.
+- **Deterministic Stratum Sampling:** Selects exactly 5 speakers, 1 from each confirmatory evaluation stratum (`Australian English`, `Canadian English`, `England English`, `South Asian English`, `US English`), sorted deterministically by `speaker_id`.
+- **Full Traceability:** Validates that each selected pilot speaker has exactly 15 clips ($5 \times 15 = 75$ clips) and records the parent provisional manifest SHA-256 (`b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547`) in all pilot ledgers.
+- **Isolated Destination & Ledgers:** Audio is written to a distinct directory (`datasets/external/common_voice_27/cohort3_pilot_audio`), and independent ledgers are produced:
+  - [`datasets/splits/stage6m_cohort3_pilot_speaker_completeness_report.json`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_pilot_speaker_completeness_report.json)
+  - [`datasets/splits/stage6m_cohort3_pilot_failed_clips_report.json`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_pilot_failed_clips_report.json)
+  - [`datasets/splits/stage6m_cohort3_pilot_clip_sha256_ledger.csv`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_pilot_clip_sha256_ledger.csv)
+  - [`reports/stage6m/stage6m_cohort3_pilot_materialization.json`](file:///C:/Users/venka/Downloads/final year project main/reports/stage6m/stage6m_cohort3_pilot_materialization.json)
+  - [`reports/stage6m/stage6m_cohort3_pilot_materialization.md`](file:///C:/Users/venka/Downloads/final year project main/reports/stage6m/stage6m_cohort3_pilot_materialization.md)
 
 ---
 
