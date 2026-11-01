@@ -51,6 +51,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 import numpy as np
 from scipy import stats as scipy_stats
 from scipy import optimize
+from scipy import integrate
 
 
 # ------------------------------------------------------------------------------
@@ -206,16 +207,72 @@ def derive_five_stratum_treatment_effects(
     }
 
 
+def single_clipped_normal_mean(mu: float, sigma: float, a: float = 0.01, b: float = 0.99) -> float:
+    """Exact closed-form expectation of single clipped normal variable clip(X, a, b) where X ~ N(mu, sigma^2)."""
+    alpha = (a - mu) / sigma
+    beta = (b - mu) / sigma
+    phi_a = float(scipy_stats.norm.pdf(alpha))
+    phi_b = float(scipy_stats.norm.pdf(beta))
+    Phi_a = float(scipy_stats.norm.cdf(alpha))
+    Phi_b = float(scipy_stats.norm.cdf(beta))
+    return float(a * Phi_a + b * (1.0 - Phi_b) + mu * (Phi_b - Phi_a) - sigma * (phi_b - phi_a))
+
+
+def nested_clipped_normal_mean(
+    mu: float,
+    delta: float,
+    sigma_spk: float = 0.065,
+    sigma_paired: float = 0.032,
+    a: float = 0.01,
+    b: float = 0.99,
+) -> Tuple[float, float, float, float]:
+    """
+    Exact expectation of nested clipped normal variable:
+      p1 = clip(mu + u, a, b), where u ~ N(0, sigma_spk^2)
+      p3 = clip(p1 + delta + eps, a, b), where eps ~ N(0, sigma_paired^2)
+
+    Decomposes into:
+      E[p3] = T_lower + T_upper + T_interior
+    where:
+      T_lower    = P(p1 = a) * E[clip(a + delta + eps, a, b)]
+      T_upper    = P(p1 = b) * E[clip(b + delta + eps, a, b)]
+      T_interior = integral_a^b E[clip(x + delta + eps, a, b)] * f_p1(x) dx
+
+    Returns:
+      (total_expectation, t_lower_point_mass, t_upper_point_mass, t_interior_integral)
+    """
+    p_lower = float(scipy_stats.norm.cdf((a - mu) / sigma_spk))
+    p_upper = float(1.0 - scipy_stats.norm.cdf((b - mu) / sigma_spk))
+
+    t_lower = p_lower * single_clipped_normal_mean(a + delta, sigma_paired, a=a, b=b)
+    t_upper = p_upper * single_clipped_normal_mean(b + delta, sigma_paired, a=a, b=b)
+
+    def integrand(x: float) -> float:
+        cond_exp = single_clipped_normal_mean(x + delta, sigma_paired, a=a, b=b)
+        dens = float(scipy_stats.norm.pdf((x - mu) / sigma_spk)) / sigma_spk
+        return cond_exp * dens
+
+    t_interior, _ = integrate.quad(integrand, a, b, epsabs=1e-12, epsrel=1e-12)
+    total = float(t_lower + t_upper + t_interior)
+    return total, float(t_lower), float(t_upper), float(t_interior)
+
+
 def derive_calibrated_five_stratum_treatment_effects(
     spec: CandidateFiveStratumPowerSpec,
+    method: str = "quadrature",
     seed: int = 20261101,
     num_samples: int = 5_000_000,
 ) -> Dict[str, Any]:
     """
     Derives accent-specific treatment effects delta_g that account for the non-linear
-    probability clipping [0.01, 0.99] in generate_candidate_dataset, ensuring that the
+    nested probability clipping [0.01, 0.99] in generate_candidate_dataset, ensuring that the
     true population expected disparity difference matches spec.target_disparity_effect_pp
     EXACTLY.
+
+    Methods:
+      - "quadrature" (default, exact): Uses numerical integration of the exact nested
+        law-of-total-expectation distribution with boundary point mass decomposition.
+      - "monte_carlo": Solves over num_samples draws of the latent variables.
 
     For target_disparity_effect_pp = 0.00 pp:
       guarantees Delta D_population = 0.00000 pp exactly.
@@ -223,50 +280,117 @@ def derive_calibrated_five_stratum_treatment_effects(
     accents = list(spec.confirmatory_accents)
     mu_dict = spec.baseline_wers
 
-    rng = np.random.default_rng(seed)
-    u = rng.normal(0, spec.sigma_between_speaker, (len(accents), num_samples))
-    p1 = np.clip(np.array([mu_dict[a] for a in accents])[:, None] + u, 0.01, 0.99)
-    E_p1 = np.mean(p1, axis=1)
-
-    mu_bar_p1 = float(np.mean(E_p1))
-    mu_range_p1 = float(np.max(E_p1) - np.min(E_p1))
-
     prim_eff = spec.target_primary_effect_pp / 100.0
     disp_eff = spec.target_disparity_effect_pp / 100.0
 
-    target_E_p3 = np.zeros(len(accents))
-    for a in range(len(accents)):
-        if spec.target_disparity_effect_pp == 0.0:
-            target_E_p3[a] = E_p1[a] - prim_eff
-        else:
-            delta_target = -prim_eff + ((E_p1[a] - mu_bar_p1) / mu_range_p1) * disp_eff
-            target_E_p3[a] = E_p1[a] + delta_target
+    if method == "quadrature":
+        # 1. Exact Arm 1 expectations via closed form
+        E_p1 = {a: single_clipped_normal_mean(mu_dict[a], spec.sigma_between_speaker) for a in accents}
+        p1_vals = np.array([E_p1[a] for a in accents])
+        mu_bar_p1 = float(np.mean(p1_vals))
+        mu_range_p1 = float(np.max(p1_vals) - np.min(p1_vals))
 
-    calibrated_deltas: Dict[str, float] = {}
-    eps = rng.normal(0, spec.sigma_paired_diff, (num_samples,))
-    for a, acc in enumerate(accents):
-        target_val = float(target_E_p3[a])
-        p1_a = p1[a]
-        def objective(d: float) -> float:
-            p3 = np.clip(p1_a + d + eps, 0.01, 0.99)
-            return float(np.mean(p3) - target_val)
+        # 2. Target Arm 3 expectations
+        target_E_p3: Dict[str, float] = {}
+        for a in accents:
+            if spec.target_disparity_effect_pp == 0.0:
+                target_E_p3[a] = E_p1[a] - prim_eff
+            else:
+                delta_target = -prim_eff + ((E_p1[a] - mu_bar_p1) / mu_range_p1) * disp_eff
+                target_E_p3[a] = E_p1[a] + delta_target
 
-        d_sol = float(optimize.brentq(objective, -0.09, -0.005))
-        calibrated_deltas[acc] = d_sol
+        # 3. Solve for exact delta_g per accent using nested quadrature
+        calibrated_deltas: Dict[str, float] = {}
+        breakdowns: Dict[str, Dict[str, float]] = {}
+        for a in accents:
+            mu_a = mu_dict[a]
+            target_val = target_E_p3[a]
 
-    actual_disp1 = float((np.max(E_p1) - np.min(E_p1)) * 100.0)
-    actual_disp3 = float((np.max(target_E_p3) - np.min(target_E_p3)) * 100.0)
-    actual_delta_disp = actual_disp3 - actual_disp1
+            def obj_func(d: float) -> float:
+                tot, _, _, _ = nested_clipped_normal_mean(
+                    mu=mu_a,
+                    delta=d,
+                    sigma_spk=spec.sigma_between_speaker,
+                    sigma_paired=spec.sigma_paired_diff,
+                )
+                return tot - target_val
 
-    return {
-        "accent_deltas": calibrated_deltas,
-        "accent_deltas_pp": {a: d * 100.0 for a, d in calibrated_deltas.items()},
-        "population_disp1_pp": actual_disp1,
-        "population_disp3_pp": actual_disp3,
-        "population_delta_disp_pp": actual_delta_disp,
-        "E_p1": {acc: float(E_p1[a]) for a, acc in enumerate(accents)},
-        "target_E_p3": {acc: float(target_E_p3[a]) for a, acc in enumerate(accents)},
-    }
+            d_sol = float(optimize.brentq(obj_func, -0.09, -0.005, xtol=1e-13, rtol=1e-13))
+            calibrated_deltas[a] = d_sol
+            tot, t_lo, t_hi, t_int = nested_clipped_normal_mean(
+                mu=mu_a,
+                delta=d_sol,
+                sigma_spk=spec.sigma_between_speaker,
+                sigma_paired=spec.sigma_paired_diff,
+            )
+            breakdowns[a] = {
+                "total": tot,
+                "t_lower_point_mass": t_lo,
+                "t_upper_point_mass": t_hi,
+                "t_interior": t_int,
+            }
+
+        actual_disp1 = float((max(E_p1.values()) - min(E_p1.values())) * 100.0)
+        actual_disp3 = float((max(target_E_p3.values()) - min(target_E_p3.values())) * 100.0)
+        actual_delta_disp = actual_disp3 - actual_disp1
+
+        return {
+            "method": "quadrature",
+            "accent_deltas": calibrated_deltas,
+            "accent_deltas_pp": {a: d * 100.0 for a, d in calibrated_deltas.items()},
+            "population_disp1_pp": actual_disp1,
+            "population_disp3_pp": actual_disp3,
+            "population_delta_disp_pp": actual_delta_disp,
+            "E_p1": E_p1,
+            "target_E_p3": target_E_p3,
+            "nested_breakdown": breakdowns,
+        }
+
+    elif method == "monte_carlo":
+        rng = np.random.default_rng(seed)
+        u = rng.normal(0, spec.sigma_between_speaker, (len(accents), num_samples))
+        p1 = np.clip(np.array([mu_dict[a] for a in accents])[:, None] + u, 0.01, 0.99)
+        E_p1_mc = np.mean(p1, axis=1)
+
+        mu_bar_p1 = float(np.mean(E_p1_mc))
+        mu_range_p1 = float(np.max(E_p1_mc) - np.min(E_p1_mc))
+
+        target_E_p3_mc = np.zeros(len(accents))
+        for a in range(len(accents)):
+            if spec.target_disparity_effect_pp == 0.0:
+                target_E_p3_mc[a] = E_p1_mc[a] - prim_eff
+            else:
+                delta_target = -prim_eff + ((E_p1_mc[a] - mu_bar_p1) / mu_range_p1) * disp_eff
+                target_E_p3_mc[a] = E_p1_mc[a] + delta_target
+
+        calibrated_deltas_mc: Dict[str, float] = {}
+        eps = rng.normal(0, spec.sigma_paired_diff, (num_samples,))
+        for a, acc in enumerate(accents):
+            target_val = float(target_E_p3_mc[a])
+            p1_a = p1[a]
+            def objective(d: float) -> float:
+                p3 = np.clip(p1_a + d + eps, 0.01, 0.99)
+                return float(np.mean(p3) - target_val)
+
+            d_sol = float(optimize.brentq(objective, -0.09, -0.005))
+            calibrated_deltas_mc[acc] = d_sol
+
+        actual_disp1 = float((np.max(E_p1_mc) - np.min(E_p1_mc)) * 100.0)
+        actual_disp3 = float((np.max(target_E_p3_mc) - np.min(target_E_p3_mc)) * 100.0)
+        actual_delta_disp = actual_disp3 - actual_disp1
+
+        return {
+            "method": "monte_carlo",
+            "accent_deltas": calibrated_deltas_mc,
+            "accent_deltas_pp": {a: d * 100.0 for a, d in calibrated_deltas_mc.items()},
+            "population_disp1_pp": actual_disp1,
+            "population_disp3_pp": actual_disp3,
+            "population_delta_disp_pp": actual_delta_disp,
+            "E_p1": {acc: float(E_p1_mc[a]) for a, acc in enumerate(accents)},
+            "target_E_p3": {acc: float(target_E_p3_mc[a]) for a, acc in enumerate(accents)},
+        }
+    else:
+        raise ValueError(f"Unknown calibration method '{method}'; must be 'quadrature' or 'monte_carlo'.")
 
 
 # ------------------------------------------------------------------------------

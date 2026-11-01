@@ -1,12 +1,13 @@
 {
   "audit_metadata": {
-    "timestamp": "2026-11-01T08:06:17Z",
+    "task": "Stage 6M Task 6.2 \u2014 Nested-Clipping Calibration Verification & Statistical Interpretation",
+    "timestamp": "2026-11-01T09:01:51Z",
     "git_branch": "stage6m-five-stratum-parity",
-    "git_head_commit": "386a0c8",
+    "git_head_commit": "e0e1647",
     "governance_status": "DRAFT_HOLD",
     "verdict": "CONDITIONAL HOLD"
   },
-  "task_a_null_model": {
+  "task_a_and_b_nested_clipping_validation": {
     "accents": [
       "Australian English",
       "Canadian English",
@@ -22,279 +23,136 @@
       "US English": 14.2
     },
     "nominal_static_disparity_pp": 9.3,
-    "analytical_clipped_static_disparity_pp": 9.2496,
+    "exact_analytical_static_disparity_pp": 9.24964,
     "static_clip_probabilities": {
-      "Australian English": 0.244,
-      "Canadian English": 1.009,
-      "England English": 0.582,
-      "South Asian English": 0.027,
-      "US English": 2.114
+      "Australian English": 0.2436,
+      "Canadian English": 1.0088,
+      "England English": 0.5817,
+      "South Asian English": 0.0269,
+      "US English": 2.1139
     },
-    "uncalibrated_arm3_clip_probabilities": {
-      "Australian English": 2.054,
-      "Canadian English": 5.468,
-      "England English": 3.749,
-      "South Asian English": 0.436,
-      "US English": 9.031
+    "uncalibrated_comparison": {
+      "naive_single_step_delta_disp_pp": -0.243292,
+      "nested_quadrature_delta_disp_pp": -0.246255,
+      "mc_10m_delta_disp_pp": -0.248703,
+      "naive_vs_quadrature_diff_pp": 0.002963,
+      "mc_vs_quadrature_diff_pp": -0.002448,
+      "us_english_arm3_naive_pp": 11.003522,
+      "us_english_arm3_quad_pp": 11.006517,
+      "us_english_arm3_mc_pp": 11.006804,
+      "us_english_point_mass_breakdown": {
+        "total": 11.006517,
+        "t_lower_point_mass": 0.025839,
+        "t_upper_point_mass": 0.0,
+        "t_interior": 10.980678
+      }
     },
-    "uncalibrated_analytical_dsg_disparity_pp": 9.0063,
-    "uncalibrated_analytical_delta_disparity_pp": -0.2433,
-    "uncalibrated_mc_static_disparity_pp": 9.2494,
-    "uncalibrated_mc_dsg_disparity_pp": 9.007,
-    "uncalibrated_mc_delta_disparity_pp": -0.2423,
-    "calibrated_accent_deltas_pp": {
-      "Australian English": -3.5507488657346977,
-      "Canadian English": -3.65459435556414,
-      "England English": -3.6005534916132156,
-      "South Asian English": -3.508747124310478,
-      "US English": -3.780383215342041
-    },
-    "calibrated_population_disp1_pp": 9.2447,
-    "calibrated_population_disp3_pp": 9.2447,
-    "calibrated_population_delta_disp_pp": 0.0
+    "calibrated_exact_null": {
+      "calibrated_accent_deltas_pp": {
+        "Australian English": -3.551482527595864,
+        "Canadian English": -3.6556656559822804,
+        "England English": -3.60105359575929,
+        "South Asian English": -3.509500978405095,
+        "US English": -3.78159390159303
+      },
+      "quadrature_static_disparity_pp": 9.24964037,
+      "quadrature_dsg_disparity_pp": 9.24964037,
+      "quadrature_delta_disparity_pp": 0.0,
+      "mc_10m_static_disparity_pp": 9.245823,
+      "mc_10m_dsg_disparity_pp": 9.24339,
+      "mc_10m_delta_disparity_pp": -0.002432,
+      "mc_deviation_from_null_pp": 0.002432
+    }
   },
-  "task_b_and_c_replicated_uncalibrated": {
-    "scenario_label": "Uncalibrated Delta D = -0.25 pp (Task 6 Replication)",
-    "sample_size_ng": 220,
-    "total_speakers": 1100,
-    "outer_trials": 1000,
-    "bootstrap_replicates": 20000,
-    "elapsed_seconds": 60.04,
-    "ms_per_trial": 60.04,
-    "event_d_passes": 19,
-    "event_d_false_pass_rate": 0.019,
-    "event_d_false_pass_pct": 1.9,
-    "clopper_pearson_95_ci_pct": [
-      1.1477,
-      2.9512
+  "task_c_corrected_null_interpretation": {
+    "statement": "The observed null rejection rates are compatible with the nominal Bonferroni level. No statistically significant inflation was detected in the 10,000-trial simulations. Strict finite-simulation certification of Type I error control has not been established.",
+    "compatibility_n220": "58 / 10,000 (0.580%) is 0.57 standard deviations below nominal expectation (62.5), compatible with 0.625% (p = 0.568).",
+    "compatibility_n285": "63 / 10,000 (0.630%) is 0.06 standard deviations above nominal expectation (62.5), compatible with 0.625% (p = 0.950).",
+    "two_sided_95_ci_n220": [
+      0.4407,
+      0.7491
     ],
-    "lcb_95_pct": 1.1477,
-    "ucb_95_pct": 2.9512,
-    "bonferroni_alpha_adj_pct": 0.625,
-    "is_strictly_type_i_controlled": false,
-    "is_upper_ci_controlled": false,
-    "joint_passes": 19,
-    "joint_pass_rate": 0.019,
-    "joint_pass_pct": 1.9,
-    "mean_point_estimate_delta_disp_pp": -0.2544,
-    "mean_ucb_d_pp": 1.0394,
-    "median_ucb_d_pp": 1.0474,
-    "std_ucb_d_pp": 0.5003
+    "two_sided_95_ci_n285": [
+      0.4844,
+      0.8053
+    ],
+    "one_sided_95_upper_n220": 0.7213,
+    "one_sided_95_upper_n285": 0.7765,
+    "statistical_distinction": "N=220 and N=285 are statistically indistinguishable in false-pass rate (|0.580% - 0.630%| = 0.05 pp, z = 0.45, p = 0.65). Neither demonstrates strict finite-sample certified control below 0.625% with 95% confidence because finite Monte Carlo confidence bounds extend to 0.721% and 0.776%.",
+    "sample_size_selection_rationale": "N=220 is preferred primarily because it leaves a 65-speaker unexposed physical reserve under CV27 capacity (buffering against audio corruption and validation attrition), whereas N=285 consumes 100% of capacity."
   },
-  "task_b_and_c_calibrated_exact_null": {
-    "n_220_primary": {
-      "scenario_label": "Calibrated Exact Null (Delta D = 0.0000 pp, Primary Candidate N=220)",
+  "null_simulations": {
+    "n_220": {
+      "scenario_label": "Calibrated Exact Null (Primary Candidate N=220)",
       "sample_size_ng": 220,
       "total_speakers": 1100,
       "outer_trials": 10000,
       "bootstrap_replicates": 20000,
-      "elapsed_seconds": 722.66,
-      "ms_per_trial": 72.27,
       "event_d_passes": 58,
-      "event_d_false_pass_rate": 0.0058,
       "event_d_false_pass_pct": 0.58,
-      "clopper_pearson_95_ci_pct": [
+      "two_sided_95_ci_pct": [
         0.4407,
         0.7491
       ],
-      "lcb_95_pct": 0.4407,
-      "ucb_95_pct": 0.7491,
+      "one_sided_95_upper_bound_pct": 0.7213,
       "bonferroni_alpha_adj_pct": 0.625,
-      "is_strictly_type_i_controlled": true,
-      "is_upper_ci_controlled": false,
-      "joint_passes": 58,
-      "joint_pass_rate": 0.0058,
-      "joint_pass_pct": 0.58,
-      "mean_point_estimate_delta_disp_pp": 0.0021,
-      "mean_ucb_d_pp": 1.2943,
-      "median_ucb_d_pp": 1.299,
-      "std_ucb_d_pp": 0.5124
+      "expected_null_passes": 62.5,
+      "null_pass_count_std": 7.88,
+      "z_score_vs_nominal": -0.571,
+      "p_value_binomial_compatibility": 0.568,
+      "is_statistically_compatible_with_nominal": true,
+      "is_strictly_below_nominal": true
     },
-    "n_285_benchmark": {
-      "scenario_label": "Calibrated Exact Null (Delta D = 0.0000 pp, Benchmark Candidate N=285)",
+    "n_285": {
+      "scenario_label": "Calibrated Exact Null (Benchmark Candidate N=285)",
       "sample_size_ng": 285,
       "total_speakers": 1425,
       "outer_trials": 10000,
       "bootstrap_replicates": 20000,
-      "elapsed_seconds": 1247.26,
-      "ms_per_trial": 124.73,
       "event_d_passes": 63,
-      "event_d_false_pass_rate": 0.0063,
       "event_d_false_pass_pct": 0.63,
-      "clopper_pearson_95_ci_pct": [
+      "two_sided_95_ci_pct": [
         0.4844,
         0.8053
       ],
-      "lcb_95_pct": 0.4844,
-      "ucb_95_pct": 0.8053,
+      "one_sided_95_upper_bound_pct": 0.7765,
       "bonferroni_alpha_adj_pct": 0.625,
-      "is_strictly_type_i_controlled": false,
-      "is_upper_ci_controlled": false,
-      "joint_passes": 63,
-      "joint_pass_rate": 0.0063,
-      "joint_pass_pct": 0.63,
-      "mean_point_estimate_delta_disp_pp": -0.0052,
-      "mean_ucb_d_pp": 1.13,
-      "median_ucb_d_pp": 1.1235,
-      "std_ucb_d_pp": 0.4549
+      "expected_null_passes": 62.5,
+      "null_pass_count_std": 7.88,
+      "z_score_vs_nominal": 0.0634,
+      "p_value_binomial_compatibility": 0.9494,
+      "is_statistically_compatible_with_nominal": true,
+      "is_strictly_below_nominal": false
     }
   },
-  "task_d_harm_stress_tests": {
-    "harm_plus_05_pp": {
-      "n_220": {
-        "scenario_label": "Harm Stress (+0.50 pp Disparity Expansion, N=220)",
-        "sample_size_ng": 220,
-        "total_speakers": 1100,
-        "outer_trials": 2000,
-        "bootstrap_replicates": 20000,
-        "elapsed_seconds": 159.18,
-        "ms_per_trial": 79.59,
-        "event_d_passes": 1,
-        "event_d_false_pass_rate": 0.0005,
-        "event_d_false_pass_pct": 0.05,
-        "clopper_pearson_95_ci_pct": [
-          0.0013,
-          0.2783
-        ],
-        "lcb_95_pct": 0.0013,
-        "ucb_95_pct": 0.2783,
-        "bonferroni_alpha_adj_pct": 0.625,
-        "is_strictly_type_i_controlled": true,
-        "is_upper_ci_controlled": true,
-        "joint_passes": 1,
-        "joint_pass_rate": 0.0005,
-        "joint_pass_pct": 0.05,
-        "mean_point_estimate_delta_disp_pp": 0.4876,
-        "mean_ucb_d_pp": 1.7777,
-        "median_ucb_d_pp": 1.7757,
-        "std_ucb_d_pp": 0.5197
-      },
-      "n_285": {
-        "scenario_label": "Harm Stress (+0.50 pp Disparity Expansion, N=285)",
-        "sample_size_ng": 285,
-        "total_speakers": 1425,
-        "outer_trials": 2000,
-        "bootstrap_replicates": 20000,
-        "elapsed_seconds": 248.69,
-        "ms_per_trial": 124.35,
-        "event_d_passes": 0,
-        "event_d_false_pass_rate": 0.0,
-        "event_d_false_pass_pct": 0.0,
-        "clopper_pearson_95_ci_pct": [
-          0.0,
-          0.1843
-        ],
-        "lcb_95_pct": 0.0,
-        "ucb_95_pct": 0.1843,
-        "bonferroni_alpha_adj_pct": 0.625,
-        "is_strictly_type_i_controlled": true,
-        "is_upper_ci_controlled": true,
-        "joint_passes": 0,
-        "joint_pass_rate": 0.0,
-        "joint_pass_pct": 0.0,
-        "mean_point_estimate_delta_disp_pp": 0.504,
-        "mean_ucb_d_pp": 1.6384,
-        "median_ucb_d_pp": 1.6416,
-        "std_ucb_d_pp": 0.4562
-      }
+  "harm_scenarios_reported_separately": {
+    "harm_plus_05_pp_n220": {
+      "sample_size_ng": 220,
+      "delta_d": 0.5,
+      "passes": 1,
+      "trials": 2000,
+      "rate_pct": 0.05
     },
-    "harm_plus_10_pp": {
-      "n_220": {
-        "scenario_label": "Harm Stress (+1.00 pp Disparity Expansion, N=220)",
-        "sample_size_ng": 220,
-        "total_speakers": 1100,
-        "outer_trials": 2000,
-        "bootstrap_replicates": 20000,
-        "elapsed_seconds": 157.98,
-        "ms_per_trial": 78.99,
-        "event_d_passes": 0,
-        "event_d_false_pass_rate": 0.0,
-        "event_d_false_pass_pct": 0.0,
-        "clopper_pearson_95_ci_pct": [
-          0.0,
-          0.1843
-        ],
-        "lcb_95_pct": 0.0,
-        "ucb_95_pct": 0.1843,
-        "bonferroni_alpha_adj_pct": 0.625,
-        "is_strictly_type_i_controlled": true,
-        "is_upper_ci_controlled": true,
-        "joint_passes": 0,
-        "joint_pass_rate": 0.0,
-        "joint_pass_pct": 0.0,
-        "mean_point_estimate_delta_disp_pp": 0.987,
-        "mean_ucb_d_pp": 2.2753,
-        "median_ucb_d_pp": 2.2614,
-        "std_ucb_d_pp": 0.5227
-      },
-      "n_285": {
-        "scenario_label": "Harm Stress (+1.00 pp Disparity Expansion, N=285)",
-        "sample_size_ng": 285,
-        "total_speakers": 1425,
-        "outer_trials": 2000,
-        "bootstrap_replicates": 20000,
-        "elapsed_seconds": 248.0,
-        "ms_per_trial": 124.0,
-        "event_d_passes": 0,
-        "event_d_false_pass_rate": 0.0,
-        "event_d_false_pass_pct": 0.0,
-        "clopper_pearson_95_ci_pct": [
-          0.0,
-          0.1843
-        ],
-        "lcb_95_pct": 0.0,
-        "ucb_95_pct": 0.1843,
-        "bonferroni_alpha_adj_pct": 0.625,
-        "is_strictly_type_i_controlled": true,
-        "is_upper_ci_controlled": true,
-        "joint_passes": 0,
-        "joint_pass_rate": 0.0,
-        "joint_pass_pct": 0.0,
-        "mean_point_estimate_delta_disp_pp": 1.0134,
-        "mean_ucb_d_pp": 2.1429,
-        "median_ucb_d_pp": 2.1397,
-        "std_ucb_d_pp": 0.4563
-      }
+    "harm_plus_05_pp_n285": {
+      "sample_size_ng": 285,
+      "delta_d": 0.5,
+      "passes": 0,
+      "trials": 2000,
+      "rate_pct": 0.0
+    },
+    "harm_plus_10_pp_n220": {
+      "sample_size_ng": 220,
+      "delta_d": 1.0,
+      "passes": 0,
+      "trials": 2000,
+      "rate_pct": 0.0
+    },
+    "harm_plus_10_pp_n285": {
+      "sample_size_ng": 285,
+      "delta_d": 1.0,
+      "passes": 0,
+      "trials": 2000,
+      "rate_pct": 0.0
     }
-  },
-  "task_e_implementation_audit": {
-    "paired_speaker_cluster_resampling": {
-      "status": "VERIFIED",
-      "evidence": "Resample index vector bi applies jointly to wc, err1, err3 per speaker in each stratum."
-    },
-    "within_accent_stratified_resampling": {
-      "status": "VERIFIED",
-      "evidence": "Resampling is strictly stratified per stratum a in 1..5; each stratum resamples N_g speakers with replacement."
-    },
-    "word_weighted_wer_computation": {
-      "status": "VERIFIED",
-      "evidence": "WER_arm = 100 * sum(err_i) / sum(wc_i); ratio-linearized word weighting preserved exactly."
-    },
-    "identical_indices_across_arms": {
-      "status": "VERIFIED",
-      "evidence": "Single bi index vector indexes both Arm 1 and Arm 3 for speaker i, ensuring paired cluster comparison."
-    },
-    "exact_99_375th_percentile": {
-      "status": "VERIFIED",
-      "evidence": "Bonferroni M=8 -> alpha_adj = 0.05/8 = 0.00625; simultaneous percentile = 100 * (1 - 0.00625) = 99.375%."
-    },
-    "sign_convention_for_delta_disparity": {
-      "status": "VERIFIED",
-      "evidence": "Delta_D = D_DSG - D_Static = Range(WER_3) - Range(WER_1); negative values indicate disparity narrowing."
-    },
-    "inclusive_versus_strict_ucb_boundary_logic": {
-      "status": "VERIFIED",
-      "evidence": "Event D passes when UCB_D <= 0.00 pp; non-increase null threshold H1: Delta_D <= 0.00 pp enforced inclusively."
-    },
-    "agreement_candidate_inference_and_simulator": {
-      "status": "VERIFIED",
-      "evidence": "100% agreement between run_confirmatory_paired_cluster_inference_v15 and evaluate_trial_all_events."
-    }
-  },
-  "task_f_remediation": {
-    "discrepancy_root_cause": "The data-generating equation p_{3,gi} = clip(p_{1,gi} + delta_g + eps_{3,gi}, 0.01, 0.99) applies a lower-boundary clamp at 0.01. Because US English has the lowest baseline WER (14.2% -> 10.7% in Arm 3), 9.03% of its probability distribution fell below 0.01 and was clamped, shifting its expected Arm 3 error rate up by +0.31 pp. In contrast, South Asian English (23.5% -> 20.0%) had only 0.44% probability clamped at 0.01, shifting its error rate up by only +0.01 pp. Consequently, the population disparity range Range(WER_3) was compressed by -0.247 pp relative to Range(WER_1). When Task 6 specified target_disparity_effect_pp = 0.00 pp, the data-generating model actually imposed a true population disparity reduction of -0.25 pp. Event D passed 2.3% - 2.6% of the time because the data was drawn from an advantageous non-null distribution.",
-    "remediation_applied": "1. Created derive_calibrated_five_stratum_treatment_effects() in candidate power simulator which solves for the exact accent-specific shifts delta_g that cancel boundary clipping asymmetry, ensuring true population Delta D = 0.00000 pp exactly.\n2. Verified Event D Type I error control under true Delta D = 0.0000 pp: empirical false-pass rate is strictly <= 0.625% (0.43% at N_g=220, 0.48% at N_g=285).\n3. Under harm scenarios (+0.5 pp and +1.0 pp), Event D false-pass rate is 0.000%, demonstrating conservative behavior.",
-    "candidate_path_only": true,
-    "frozen_v1_4_0_preserved": true
   }
 }
