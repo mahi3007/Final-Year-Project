@@ -1,0 +1,302 @@
+{
+  "metadata": {
+    "task": "Stage 6M Task 5 (Sample-Size Power Sweep)",
+    "governance_status": "DRAFT_HOLD",
+    "candidate_model": "v1.5.0-Candidate",
+    "confirmatory_accents": [
+      "Australian English",
+      "Canadian English",
+      "England English",
+      "South Asian English",
+      "US English"
+    ],
+    "alpha_family": 0.05,
+    "m_hypotheses": 8,
+    "adj_alpha": 0.00625,
+    "simultaneous_percentile": 99.375
+  },
+  "capacity_reconciliation": {
+    "strata_capacities": {
+      "Australian English": {
+        "source_corpus": "Mozilla Common Voice 27.0",
+        "total_eligible_speakers": 305,
+        "gate_reserve_speakers": 20,
+        "max_unexposed_eval_capacity": 285,
+        "is_limiting_constraint": true,
+        "notes": "Limiting stratum. Capacity provisional pending source record reconciliation."
+      },
+      "Canadian English": {
+        "source_corpus": "Mozilla Common Voice 27.0",
+        "total_eligible_speakers": 418,
+        "gate_reserve_speakers": 20,
+        "max_unexposed_eval_capacity": 398,
+        "is_limiting_constraint": false,
+        "notes": "Surplus capacity above Australian limit (+113)."
+      },
+      "England English": {
+        "source_corpus": "Mozilla Common Voice 27.0",
+        "total_eligible_speakers": 1120,
+        "gate_reserve_speakers": 20,
+        "max_unexposed_eval_capacity": 1100,
+        "is_limiting_constraint": false,
+        "notes": "Abundant capacity (+815 above Australian limit)."
+      },
+      "South Asian English": {
+        "source_corpus": "Mozilla Common Voice 27.0",
+        "total_eligible_speakers": 653,
+        "gate_reserve_speakers": 20,
+        "max_unexposed_eval_capacity": 633,
+        "is_limiting_constraint": false,
+        "notes": "Surplus capacity (+348 above Australian limit)."
+      },
+      "US English": {
+        "source_corpus": "Mozilla Common Voice 27.0",
+        "total_eligible_speakers": 3791,
+        "gate_reserve_speakers": 20,
+        "max_unexposed_eval_capacity": 3771,
+        "is_limiting_constraint": false,
+        "notes": "Abundant capacity (+3,486 above Australian limit)."
+      }
+    },
+    "limiting_accent": "Australian English",
+    "max_balanced_eval_speakers_per_stratum": 285,
+    "max_total_confirmatory_speakers": 1425,
+    "governance_note": "N_g = 285 is treated as a provisional maximum until Australian unexposed evaluation capacity and 20-person gate reserve are reconciled against physical manifests."
+  },
+  "exploratory_screening": {
+    "evaluation_stage": "EXPLORATORY_SCREENING",
+    "sample_size_grid": [
+      220,
+      230,
+      240,
+      250,
+      260,
+      270,
+      280,
+      285
+    ],
+    "outer_trials_per_grid_point": 2000,
+    "bootstrap_replicates": 2000,
+    "elapsed_seconds": 196.34,
+    "evaluations": [
+      {
+        "speakers_per_stratum": 220,
+        "total_speakers": 1100,
+        "outer_trials": 2000,
+        "bootstrap_replicates": 2000,
+        "successful_joint_trajectories": 1893,
+        "joint_power": 0.9465,
+        "clopper_pearson_95_ci": [
+          0.93571,
+          0.95595
+        ],
+        "lcb_95": 0.93571,
+        "ucb_95": 0.95595,
+        "target_90_power_achieved": true,
+        "lcb_90_power_achieved": true,
+        "marginal_event_probabilities": {
+          "event_a_static_superiority": 1.0,
+          "event_b_suta_superiority": 1.0,
+          "event_c_accent_regression_guard": 1.0,
+          "event_d_disparity_guard": 0.9465
+        },
+        "limiting_event": "Event D",
+        "evaluation_stage": "EXPLORATORY_SCREENING"
+      },
+      {
+        "speakers_per_stratum": 230,
+        "total_speakers": 1150,
+        "outer_trials": 2000,
+        "bootstrap_replicates": 2000,
+        "successful_joint_trajectories": 1916,
+        "joint_power": 0.958,
+        "clopper_pearson_95_ci": [
+          0.94826,
+          0.96636
+        ],
+        "lcb_95": 0.94826,
+        "ucb_95": 0.96636,
+        "target_90_power_achieved": true,
+        "lcb_90_power_achieved": true,
+        "marginal_event_probabilities": {
+          "event_a_static_superiority": 1.0,
+          "event_b_suta_superiority": 1.0,
+          "event_c_accent_regression_guard": 1.0,
+          "event_d_disparity_guard": 0.958
+        },
+        "limiting_event": "Event D",
+        "evaluation_stage": "EXPLORATORY_SCREENING"
+      },
+      {
+        "speakers_per_stratum": 240,
+        "total_speakers": 1200,
+        "outer_trials": 2000,
+        "bootstrap_replicates": 2000,
+        "successful_joint_trajectories": 1934,
+        "joint_power": 0.967,
+        "clopper_pearson_95_ci": [
+          0.95821,
+          0.97439
+        ],
+        "lcb_95": 0.95821,
+        "ucb_95": 0.97439,
+        "target_90_power_achieved": true,
+        "lcb_90_power_achieved": true,
+        "marginal_event_probabilities": {
+          "event_a_static_superiority": 1.0,
+          "event_b_suta_superiority": 1.0,
+          "event_c_accent_regression_guard": 1.0,
+          "event_d_disparity_guard": 0.967
+        },
+        "limiting_event": "Event D",
+        "evaluation_stage": "EXPLORATORY_SCREENING"
+      },
+      {
+        "speakers_per_stratum": 250,
+        "total_speakers": 1250,
+        "outer_trials": 2000,
+        "bootstrap_replicates": 2000,
+        "successful_joint_trajectories": 1945,
+        "joint_power": 0.9725,
+        "clopper_pearson_95_ci": [
+          0.96435,
+          0.97922
+        ],
+        "lcb_95": 0.96435,
+        "ucb_95": 0.97922,
+        "target_90_power_achieved": true,
+        "lcb_90_power_achieved": true,
+        "marginal_event_probabilities": {
+          "event_a_static_superiority": 1.0,
+          "event_b_suta_superiority": 1.0,
+          "event_c_accent_regression_guard": 1.0,
+          "event_d_disparity_guard": 0.9725
+        },
+        "limiting_event": "Event D",
+        "evaluation_stage": "EXPLORATORY_SCREENING"
+      },
+      {
+        "speakers_per_stratum": 260,
+        "total_speakers": 1300,
+        "outer_trials": 2000,
+        "bootstrap_replicates": 2000,
+        "successful_joint_trajectories": 1962,
+        "joint_power": 0.981,
+        "clopper_pearson_95_ci": [
+          0.97401,
+          0.98652
+        ],
+        "lcb_95": 0.97401,
+        "ucb_95": 0.98652,
+        "target_90_power_achieved": true,
+        "lcb_90_power_achieved": true,
+        "marginal_event_probabilities": {
+          "event_a_static_superiority": 1.0,
+          "event_b_suta_superiority": 1.0,
+          "event_c_accent_regression_guard": 1.0,
+          "event_d_disparity_guard": 0.981
+        },
+        "limiting_event": "Event D",
+        "evaluation_stage": "EXPLORATORY_SCREENING"
+      },
+      {
+        "speakers_per_stratum": 270,
+        "total_speakers": 1350,
+        "outer_trials": 2000,
+        "bootstrap_replicates": 2000,
+        "successful_joint_trajectories": 1967,
+        "joint_power": 0.9835,
+        "clopper_pearson_95_ci": [
+          0.97691,
+          0.98862
+        ],
+        "lcb_95": 0.97691,
+        "ucb_95": 0.98862,
+        "target_90_power_achieved": true,
+        "lcb_90_power_achieved": true,
+        "marginal_event_probabilities": {
+          "event_a_static_superiority": 1.0,
+          "event_b_suta_superiority": 1.0,
+          "event_c_accent_regression_guard": 1.0,
+          "event_d_disparity_guard": 0.9835
+        },
+        "limiting_event": "Event D",
+        "evaluation_stage": "EXPLORATORY_SCREENING"
+      },
+      {
+        "speakers_per_stratum": 280,
+        "total_speakers": 1400,
+        "outer_trials": 2000,
+        "bootstrap_replicates": 2000,
+        "successful_joint_trajectories": 1970,
+        "joint_power": 0.985,
+        "clopper_pearson_95_ci": [
+          0.97866,
+          0.98986
+        ],
+        "lcb_95": 0.97866,
+        "ucb_95": 0.98986,
+        "target_90_power_achieved": true,
+        "lcb_90_power_achieved": true,
+        "marginal_event_probabilities": {
+          "event_a_static_superiority": 1.0,
+          "event_b_suta_superiority": 1.0,
+          "event_c_accent_regression_guard": 1.0,
+          "event_d_disparity_guard": 0.985
+        },
+        "limiting_event": "Event D",
+        "evaluation_stage": "EXPLORATORY_SCREENING"
+      },
+      {
+        "speakers_per_stratum": 285,
+        "total_speakers": 1425,
+        "outer_trials": 2000,
+        "bootstrap_replicates": 2000,
+        "successful_joint_trajectories": 1977,
+        "joint_power": 0.9885,
+        "clopper_pearson_95_ci": [
+          0.98279,
+          0.9927
+        ],
+        "lcb_95": 0.98279,
+        "ucb_95": 0.9927,
+        "target_90_power_achieved": true,
+        "lcb_90_power_achieved": true,
+        "marginal_event_probabilities": {
+          "event_a_static_superiority": 1.0,
+          "event_b_suta_superiority": 1.0,
+          "event_c_accent_regression_guard": 1.0,
+          "event_d_disparity_guard": 0.9885
+        },
+        "limiting_event": "Event D",
+        "evaluation_stage": "EXPLORATORY_SCREENING"
+      }
+    ]
+  },
+  "final_confirmation": {
+    "evaluation_stage": "FINAL_CONFIRMATION",
+    "speakers_per_stratum": 285,
+    "total_speakers": 1425,
+    "outer_trials": 10000,
+    "bootstrap_replicates": 20000,
+    "elapsed_seconds": 1031.11,
+    "successful_joint_trajectories": 9874,
+    "joint_power": 0.9874,
+    "clopper_pearson_95_ci": [
+      0.98502,
+      0.98949
+    ],
+    "lcb_95": 0.98502,
+    "ucb_95": 0.98949,
+    "target_90_power_achieved": true,
+    "lcb_90_power_achieved": true,
+    "final_scientific_verdict": "PASS",
+    "marginal_event_probabilities": {
+      "event_a_static_superiority": 1.0,
+      "event_b_suta_superiority": 1.0,
+      "event_c_accent_regression_guard": 1.0,
+      "event_d_disparity_guard": 0.9874
+    },
+    "limiting_event": "Event D"
+  }
+}
