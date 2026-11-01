@@ -131,8 +131,8 @@ Before running final power evaluations or sample-size sweeps, the candidate powe
    - **Primary Confirmatory Recommendation ($N_g = 220$, $N_{\text{total}} = 1,100$):**
      - Confirmed Joint Power (Corrected Model): **$90.58\%$** ($9,058 / 10,000$ trials, $B = 20,000$).
      - Exact Confidence Bounds:
-       - **One-Sided 95% Clopper-Pearson LCB:** **$90.09\%$** ($\ge 90.00\% \implies \text{PASS}$).
-       - **Two-Sided 95% CI Lower Endpoint:** **$89.99\%$** ($89.9906\%$, shortfall of $0.0094$ pp / 1 trial).
+       - **One-Sided 95% Clopper-Pearson LCB:** **$90.09\%$** ($90.085739\%$, $\ge 90.0000\% \implies \text{PASS}$ by $+0.0857$ pp / $+8$ trials).
+       - **Two-Sided 95% CI Lower Endpoint:** **$89.99\%$** ($89.990601\%$, shortfall of $-0.0094$ pp / $-1$ trial vs $90.0000\%$).
      - Operational Reserve: Preserves **65 strictly eligible unexposed Australian speakers** ($21.3\%$ buffer) as a replacement reserve against physical audio corruption or decoding dropouts.
      - *Historical Superseded Finding:* Task 5 initially reported $95.35\%$ ($95\%$ CI: $[94.92\%, 95.75\%]$) under an uncalibrated generator where clipping induced a $-2.1733$ pp disparity reduction; this is formally superseded by the exact $-2.0000$ pp calibrated estimate.
    - **Ceiling Capacity Benchmark ($N_g = 285$, $N_{\text{total}} = 1,425$):**

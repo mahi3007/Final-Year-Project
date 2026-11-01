@@ -151,6 +151,16 @@ def clopper_pearson_interval(k: int, n: int, alpha: float = 0.05) -> Tuple[float
     return low, high
 
 
+def clopper_pearson_one_sided_lcb(k: int, n: int, alpha: float = 0.05) -> float:
+    """
+    Computes exact one-sided (1 - alpha) Clopper-Pearson lower confidence bound for a binomial proportion.
+    Allocates the full alpha tail probability to the lower tail.
+    """
+    if n <= 0 or k <= 0:
+        return 0.0
+    return float(sp_stats.beta.ppf(alpha, k, n - k + 1))
+
+
 # ------------------------------------------------------------------------------
 # Bootstrap Acceleration Engine
 # ------------------------------------------------------------------------------

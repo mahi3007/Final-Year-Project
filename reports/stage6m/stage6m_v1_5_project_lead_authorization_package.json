@@ -1,0 +1,192 @@
+{
+  "authorization_metadata": {
+    "package_id": "STAGE6M_V1_5_PROJECT_LEAD_AUTHORIZATION_PACKAGE",
+    "protocol_candidate": "v1.5 Five-Stratum Confirmatory Protocol",
+    "git_branch": "stage6m-five-stratum-parity",
+    "git_commit_sha": "6023369a6e29a18f79d35f7dea55c0413245e5bc",
+    "governance_status": "DRAFT_HOLD",
+    "governance_action": "PROJECT_LEAD_ACADEMIC_AUTHORIZATION_PENDING",
+    "timestamp_utc": "2026-11-01T10:45:00Z"
+  },
+  "scientific_objectives": {
+    "primary_objective": "Rigorous confirmatory evaluation of Continuous Test-Time Adaptation (CTTA) with Dynamic Selective Gating (DSG) across diverse English accents in streaming automatic speech recognition.",
+    "confirmatory_hypotheses_count": 8,
+    "target_superiority_vs_static_pp": 3.5,
+    "target_superiority_vs_suta_pp": 3.5,
+    "target_disparity_reduction_pp": -2.0,
+    "per_accent_regression_guard_pp": 2.0
+  },
+  "confirmatory_population": {
+    "strata_count": 5,
+    "accents": [
+      "Australian English",
+      "Canadian English",
+      "England English",
+      "South Asian English",
+      "US English"
+    ],
+    "allocation_rule": "Equal sample allocation across all 5 confirmatory strata",
+    "primary_sample_size_per_stratum_ng": 220,
+    "total_confirmatory_evaluation_speakers": 1100,
+    "gate_reserve_speakers_per_stratum": 20,
+    "total_gate_reserve_speakers": 100,
+    "total_confirmatory_speakers_required": 1200
+  },
+  "exploratory_population": {
+    "accent": "Irish English",
+    "unexposed_eligible_speakers": 0,
+    "isolation_status": "Strictly segregated under exploratory_strata in ConfirmatoryAnalysisReportV15",
+    "confirmatory_family_shielding": "Irish English contributes 0 hypotheses to the M=8 family and has zero mathematical influence on confirmatory decisions."
+  },
+  "statistical_acceptance_criteria": {
+    "hypothesis_family_size_m": 8,
+    "multiplicity_family": "Fixed Single-Step Simultaneous Bonferroni Adjustment",
+    "familywise_error_rate_alpha": 0.05,
+    "per_hypothesis_significance_alpha_adj": 0.00625,
+    "simultaneous_confidence_level_pct": 99.375,
+    "decision_rules": {
+      "event_a": "Static Superiority: Delta_static < 0.00 pp AND Wald cluster-robust t-UCB < 0.00 pp",
+      "event_b": "SUTA Superiority: Delta_ungated < 0.00 pp AND Wald cluster-robust t-UCB < 0.00 pp",
+      "event_c": "Per-Accent Safety Guards: Wald cluster-robust t-UCB <= +2.00 pp for each of the 5 confirmatory strata",
+      "event_d": "Disparity Non-Increase Guard: Stratified cluster bootstrap (B=20,000) 99.375th percentile UCB_D <= 0.00 pp"
+    },
+    "monte_carlo_power_acceptance_rule": "P_hat_joint >= 0.90 AND LCB_95(P_hat_joint) >= 0.90 from at least S=10,000 Monte Carlo trials with B=20,000 bootstrap replicates."
+  },
+  "monte_carlo_acceptance_reconciliation": {
+    "historical_protocol_verification": {
+      "prespecification_commit": "8f92b0b16344eec2bf1f165fc21bec9af0def9ce",
+      "commit_date": "2026-10-31T21:37:33+05:30",
+      "file_path": "reports/stage6m/stage6m_v1_5_candidate_five_stratum_protocol_spec.md",
+      "file_lines": "126-129",
+      "prespecification_wording": "where LCB_95% is the exact Clopper-Pearson 95% lower confidence bound",
+      "confirmation_result_commit": "8c636f9caaf30cfa6de4ad229cb6a29d9f789c61",
+      "predates_observed_power_result": true,
+      "commits_prior_to_confirmation": 9
+    },
+    "option_1_one_sided_lcb": {
+      "name": "One-Sided 95% Clopper-Pearson Lower Confidence Bound",
+      "formula": "BetaQuantile(0.05; k, n - k + 1)",
+      "alpha_tail": 0.05,
+      "confidence_level_pct": 95.0,
+      "observed_k": 9058,
+      "total_trials_n": 10000,
+      "point_estimate_pct": 90.58,
+      "exact_unrounded_value": 0.9008573923868326,
+      "exact_percentage": 90.085739,
+      "threshold_percentage": 90.0,
+      "margin_pp": 0.085739,
+      "margin_trials_k": 8,
+      "satisfies_threshold": true,
+      "verdict": "PASS"
+    },
+    "option_2_two_sided_lower_endpoint": {
+      "name": "Lower Endpoint of Two-Sided 95% Clopper-Pearson Confidence Interval",
+      "formula": "BetaQuantile(0.025; k, n - k + 1)",
+      "alpha_tail": 0.025,
+      "confidence_level_pct": 97.5,
+      "observed_k": 9058,
+      "total_trials_n": 10000,
+      "point_estimate_pct": 90.58,
+      "exact_unrounded_value": 0.8999060145748279,
+      "exact_percentage": 89.990601,
+      "threshold_percentage": 90.0,
+      "margin_pp": -0.009399,
+      "margin_trials_k": -1,
+      "satisfies_threshold": false,
+      "verdict": "SHORTFALL"
+    },
+    "numerical_discrepancy_pp": 0.095138,
+    "recommendation": "Adopt Option 1 (One-Sided 95% Clopper-Pearson LCB). The pre-registration specification in commit 8f92b0b explicitly specified '95% lower confidence bound' prior to observing the empirical outcome. Evaluating power adequacy against a directional minimum threshold (P >= 90%) is standardly formulated as a one-sided hypothesis at level alpha = 0.05."
+  },
+  "sample_size_architecture": {
+    "primary_candidate_n220": {
+      "sample_size_per_accent_ng": 220,
+      "total_evaluation_speakers": 1100,
+      "gate_reserve_speakers_per_accent": 20,
+      "total_gate_speakers": 100,
+      "australian_unexposed_required": 240,
+      "australian_unexposed_available": 305,
+      "australian_replacement_reserve_speakers": 65,
+      "australian_reserve_margin_pct": 21.31,
+      "confirmed_calibrated_joint_power_pct": 90.58,
+      "one_sided_95_lcb_pct": 90.085739,
+      "two_sided_95_ci_lower_endpoint_pct": 89.990601,
+      "outer_monte_carlo_trials": 10000,
+      "bootstrap_replicates": 20000,
+      "status": "PRIMARY_RECOMMENDED_CANDIDATE"
+    },
+    "supplemental_benchmark_n285": {
+      "sample_size_per_accent_ng": 285,
+      "total_evaluation_speakers": 1425,
+      "gate_reserve_speakers_per_accent": 20,
+      "total_gate_speakers": 100,
+      "australian_unexposed_required": 305,
+      "australian_unexposed_available": 305,
+      "australian_replacement_reserve_speakers": 0,
+      "australian_reserve_margin_pct": 0.0,
+      "calibrated_joint_power_pct": 96.96,
+      "one_sided_95_lcb_pct": 96.33,
+      "outer_monte_carlo_trials": 2500,
+      "bootstrap_replicates": 20000,
+      "status": "SUPPLEMENTAL_CAPACITY_BENCHMARK_ONLY"
+    }
+  },
+  "superseded_historical_findings": {
+    "task_5_uncalibrated_power_pct": 95.35,
+    "supersession_rationale": "Task 5 uncalibrated power simulation experienced an unintended 0.1733 pp disparity reduction overshoot (-2.1733 pp vs registered -2.0000 pp) due to single-stage probability clipping. Formally superseded by the exact nested-clipping calibrated estimate of 90.58%."
+  },
+  "power_assumptions_and_limitations": {
+    "primary_data_generating_model": "Calibrated nested numerical quadrature model",
+    "calibrated_treatment_effects_pp": {
+      "Australian English": -3.5,
+      "Canadian English": -3.5,
+      "England English": -3.5,
+      "South Asian English": -4.5,
+      "US English": -2.5
+    },
+    "population_targets_achieved": {
+      "dsg_improvement_vs_static_pp": 3.5,
+      "dsg_improvement_vs_suta_pp": 3.5,
+      "disparity_reduction_pp": -2.0
+    },
+    "sensitivity_bottleneck": "Event D (Disparity Non-Increase) is the critical sensitivity bottleneck. If physical disparity reduction is only -1.5 pp or -1.0 pp, joint power degrades to 77.5% and 41.7% respectively. Simulated power is conditional on achieving the development target scenario."
+  },
+  "data_capacity_and_provenance": {
+    "source_corpus": "Mozilla Common Voice 27.0 (cv-corpus-27.0-2026-09-11)",
+    "release_id": "cmu5jplf300nwmh07iqvk9leo",
+    "validated_tsv_rows": 1929267,
+    "validated_tsv_bytes": 614927262,
+    "validated_tsv_sha256": "733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a",
+    "historical_partitions_exposed_speakers": 558,
+    "partition_overlap": 0
+  },
+  "gate_reference_design": {
+    "reserve_speakers_per_accent": 20,
+    "total_gate_speakers": 100,
+    "isolation": "Completely separate from confirmatory evaluation speakers. Reserved strictly for system verification and baseline calibration without data leakage."
+  },
+  "frozen_code_identity": {
+    "module_path": "src/dsg_ctta/evaluation/paired_cluster_inference.py",
+    "git_diff_against_origin_main_lines": 0,
+    "sha256": "a699ca84fbdadf68b7b69495cc232b13a0b306f67d8ad25d60c49b8c63b25de6",
+    "immutability_verified": true
+  },
+  "remaining_physical_data_requirements": {
+    "cohort_3_audio_materialization": "Blocked under DRAFT_HOLD. Requires unfreezing by Project Lead.",
+    "manifest_creation_and_locking": "Blocked under DRAFT_HOLD.",
+    "gpu_ctta_adaptation": "Blocked under DRAFT_HOLD.",
+    "prerequisites_before_unfreeze": [
+      "Project-Lead formal signature adopting Option 1 acceptance rule",
+      "Formal unfreeze authorization under Protocol Section 14.7",
+      "Checksum validation of downloaded audio partitions"
+    ]
+  },
+  "project_lead_decision_record": {
+    "governing_section": "Protocol Section 14.7",
+    "action_requested": "Formal Academic Authorization of v1.5 Five-Stratum Confirmatory Protocol",
+    "acceptance_rule_decision": "Option 1 (One-Sided 95% Clopper-Pearson LCB >= 90.00%)",
+    "primary_sample_size": "N_g = 220 (1,100 evaluation speakers, 100 gate speakers, 65 reserve speakers in Australia)",
+    "benchmark_status": "N_g = 285 confirmed as supplemental ceiling benchmark only",
+    "sign_off_status": "PENDING_PROJECT_LEAD_DECISION"
+  }
+}
