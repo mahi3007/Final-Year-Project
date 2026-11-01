@@ -50,6 +50,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 from scipy import stats as scipy_stats
+from scipy import optimize
 
 
 # ------------------------------------------------------------------------------
@@ -205,6 +206,69 @@ def derive_five_stratum_treatment_effects(
     }
 
 
+def derive_calibrated_five_stratum_treatment_effects(
+    spec: CandidateFiveStratumPowerSpec,
+    seed: int = 20261101,
+    num_samples: int = 5_000_000,
+) -> Dict[str, Any]:
+    """
+    Derives accent-specific treatment effects delta_g that account for the non-linear
+    probability clipping [0.01, 0.99] in generate_candidate_dataset, ensuring that the
+    true population expected disparity difference matches spec.target_disparity_effect_pp
+    EXACTLY.
+
+    For target_disparity_effect_pp = 0.00 pp:
+      guarantees Delta D_population = 0.00000 pp exactly.
+    """
+    accents = list(spec.confirmatory_accents)
+    mu_dict = spec.baseline_wers
+
+    rng = np.random.default_rng(seed)
+    u = rng.normal(0, spec.sigma_between_speaker, (len(accents), num_samples))
+    p1 = np.clip(np.array([mu_dict[a] for a in accents])[:, None] + u, 0.01, 0.99)
+    E_p1 = np.mean(p1, axis=1)
+
+    mu_bar_p1 = float(np.mean(E_p1))
+    mu_range_p1 = float(np.max(E_p1) - np.min(E_p1))
+
+    prim_eff = spec.target_primary_effect_pp / 100.0
+    disp_eff = spec.target_disparity_effect_pp / 100.0
+
+    target_E_p3 = np.zeros(len(accents))
+    for a in range(len(accents)):
+        if spec.target_disparity_effect_pp == 0.0:
+            target_E_p3[a] = E_p1[a] - prim_eff
+        else:
+            delta_target = -prim_eff + ((E_p1[a] - mu_bar_p1) / mu_range_p1) * disp_eff
+            target_E_p3[a] = E_p1[a] + delta_target
+
+    calibrated_deltas: Dict[str, float] = {}
+    eps = rng.normal(0, spec.sigma_paired_diff, (num_samples,))
+    for a, acc in enumerate(accents):
+        target_val = float(target_E_p3[a])
+        p1_a = p1[a]
+        def objective(d: float) -> float:
+            p3 = np.clip(p1_a + d + eps, 0.01, 0.99)
+            return float(np.mean(p3) - target_val)
+
+        d_sol = float(optimize.brentq(objective, -0.09, -0.005))
+        calibrated_deltas[acc] = d_sol
+
+    actual_disp1 = float((np.max(E_p1) - np.min(E_p1)) * 100.0)
+    actual_disp3 = float((np.max(target_E_p3) - np.min(target_E_p3)) * 100.0)
+    actual_delta_disp = actual_disp3 - actual_disp1
+
+    return {
+        "accent_deltas": calibrated_deltas,
+        "accent_deltas_pp": {a: d * 100.0 for a, d in calibrated_deltas.items()},
+        "population_disp1_pp": actual_disp1,
+        "population_disp3_pp": actual_disp3,
+        "population_delta_disp_pp": actual_delta_disp,
+        "E_p1": {acc: float(E_p1[a]) for a, acc in enumerate(accents)},
+        "target_E_p3": {acc: float(target_E_p3[a]) for a, acc in enumerate(accents)},
+    }
+
+
 # ------------------------------------------------------------------------------
 # Candidate Dataset Generator (Tasks A, C, D)
 # ------------------------------------------------------------------------------
@@ -214,6 +278,7 @@ def generate_candidate_dataset(
     num_speakers_per_stratum: int,
     rng: np.random.Generator,
     accent_effect_mode: str = "fixed",
+    custom_accent_deltas: Optional[Dict[str, float]] = None,
 ) -> Dict[str, Any]:
     """
     Generates a single simulated candidate study dataset containing both latent error
@@ -252,7 +317,10 @@ def generate_candidate_dataset(
     accents = list(spec.confirmatory_accents)
     n_accents = len(accents)
     derived = derive_five_stratum_treatment_effects(spec)
-    accent_deltas = derived["accent_deltas"]
+    if custom_accent_deltas is not None:
+        accent_deltas = custom_accent_deltas
+    else:
+        accent_deltas = derived["accent_deltas"]
     ungated_eff = spec.target_ungated_effect_pp / 100.0
 
     # Accent random effects (0 for primary fixed scenario)
@@ -298,6 +366,7 @@ def generate_candidate_dataset(
 
         for k in range(n_spk):
             rec = {
+                "speaker_id": f"spk_{len(speaker_records)}",
                 "speaker_idx": len(speaker_records),
                 "accent_idx": a_idx,
                 "accent": accent,

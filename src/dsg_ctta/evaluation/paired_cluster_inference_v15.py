@@ -37,6 +37,42 @@ import numpy as np
 import pandas as pd
 from scipy import stats as scipy_stats
 
+try:
+    from numba import njit, prange
+    HAS_NUMBA = True
+except ImportError:
+    HAS_NUMBA = False
+
+if HAS_NUMBA:
+    @njit(parallel=True, fastmath=True)
+    def _numba_stratified_bootstrap_v15(wc, err1, err3, n_spk_per_accent, n_accents, B):
+        delta_ds = np.empty(B, dtype=np.float64)
+        for b in prange(B):
+            max1 = -1e9
+            min1 = 1e9
+            max3 = -1e9
+            min3 = 1e9
+            for a in range(n_accents):
+                n_spk = n_spk_per_accent[a]
+                w_sum = 0.0
+                e1_sum = 0.0
+                e3_sum = 0.0
+                for i in range(n_spk):
+                    idx = np.random.randint(0, n_spk)
+                    w_sum += wc[a, idx]
+                    e1_sum += err1[a, idx]
+                    e3_sum += err3[a, idx]
+                wer1 = (e1_sum / w_sum) * 100.0
+                wer3 = (e3_sum / w_sum) * 100.0
+                if wer1 > max1: max1 = wer1
+                if wer1 < min1: min1 = wer1
+                if wer3 > max3: max3 = wer3
+                if wer3 < min3: min3 = wer3
+            d1 = max1 - min1
+            d3 = max3 - min3
+            delta_ds[b] = d3 - d1
+        return delta_ds
+
 
 FIVE_STRATUM_CONFIRMATORY_ACCENTS: FrozenSet[str] = frozenset([
     "Australian English",
@@ -239,6 +275,7 @@ def run_confirmatory_paired_cluster_inference_v15(
     confirmatory_accents: FrozenSet[str] = FIVE_STRATUM_CONFIRMATORY_ACCENTS,
     exploratory_accents: FrozenSet[str] = EXPLORATORY_OUT_OF_DOMAIN_ACCENTS,
     custom_bootstrap_resamples: Optional[np.ndarray] = None,
+    use_fast_bootstrap: bool = True,
 ) -> ConfirmatoryAnalysisReportV15:
     """
     Executes the v1.5 Candidate Five-Stratum confirmatory inferential analysis.
@@ -549,6 +586,20 @@ def run_confirmatory_paired_cluster_inference_v15(
                     bw1[a_idx] = (float(np.sum(s["e1"][bi])) / gw) * 100.0
                     bw3[a_idx] = (float(np.sum(s["e3"][bi])) / gw) * 100.0
             boot_delta_disp[b] = (np.max(bw3) - np.min(bw3)) - (np.max(bw1) - np.min(bw1))
+    elif use_fast_bootstrap and HAS_NUMBA:
+        max_spk = max(s["n"] for s in stratum_data)
+        wc_2d = np.zeros((n_accents, max_spk), dtype=float)
+        err1_2d = np.zeros((n_accents, max_spk), dtype=float)
+        err3_2d = np.zeros((n_accents, max_spk), dtype=float)
+        n_spk_arr = np.array([s["n"] for s in stratum_data], dtype=np.int64)
+        for a_idx, s in enumerate(stratum_data):
+            n_g = s["n"]
+            wc_2d[a_idx, :n_g] = s["wc"]
+            err1_2d[a_idx, :n_g] = s["e1"]
+            err3_2d[a_idx, :n_g] = s["e3"]
+        boot_delta_disp = _numba_stratified_bootstrap_v15(
+            wc_2d, err1_2d, err3_2d, n_spk_arr, n_accents, num_bootstrap_replicates
+        )
     else:
         for b in range(num_bootstrap_replicates):
             bw1 = np.zeros(n_accents)

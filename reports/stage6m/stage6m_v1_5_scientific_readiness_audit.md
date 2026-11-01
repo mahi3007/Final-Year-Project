@@ -85,7 +85,7 @@ The primary 98.74% power finding was systematically challenged across 15 alterna
 | SUTA Superiority Stress | Degraded SUTA Superiority (2.0 pp) | Ref | Stress | 98.6% [97.7%, 99.2%] | 95.0% [93.5%, 96.3%] | Event D | ROBUST |
 | Disparity Reduction Stress | Attenuated Disparity Narrowing (-1.5 pp) | Ref | Stress | 89.3% [87.2%, 91.1%] | 77.5% [74.8%, 80.1%] | Event D | SENSITIVE |
 | Disparity Reduction Stress | Attenuated Disparity Narrowing (-1.0 pp) | Ref | Stress | 58.8% [55.7%, 61.9%] | 41.7% [38.6%, 44.8%] | Event D | SENSITIVE |
-| Disparity Reduction Stress | Null Disparity Change (0.0 pp) | Ref | Stress | 2.6% [1.7%, 3.8%] | 2.3% [1.5%, 3.4%] | Event D | SENSITIVE |
+| Disparity Reduction Stress | Null Disparity Change (0.0 pp, Uncalibrated)* | Ref | Stress | 2.6% [1.7%, 3.8%] | 2.3% [1.5%, 3.4%] | Event D | SENSITIVE |
 | Variance Inflation Stress | Elevated Between-Speaker SD (7.5 pp) | Ref | Stress | 99.2% [98.4%, 99.7%] | 95.5% [94.0%, 96.7%] | Event D | ROBUST |
 | Variance Inflation Stress | Elevated Between-Speaker SD (8.5 pp) | Ref | Stress | 99.3% [98.6%, 99.7%] | 96.5% [95.2%, 97.5%] | Event D | ROBUST |
 | Variance Inflation Stress | Elevated Paired-Difference SD (4.0 pp) | Ref | Stress | 97.6% [96.5%, 98.5%] | 93.3% [91.6%, 94.8%] | Event D | ROBUST |
@@ -93,11 +93,14 @@ The primary 98.74% power finding was systematically challenged across 15 alterna
 | Compound Stress | Compound Moderate Stress (Eff 3.0 pp, Disp -1.5 pp, Paired SD 4.0 pp) | Ref | Stress | 82.4% [79.9%, 84.7%] | 71.6% [68.7%, 74.4%] | Event D | SENSITIVE |
 | Compound Stress | Compound Severe Stress (Eff 2.5 pp, Disp -1.0 pp, Paired SD 5.0 pp) | Ref | Stress | 47.0% [43.9%, 50.1%] | 34.2% [31.3%, 37.2%] | Event D | SENSITIVE |
 
+\* *Note on the 0.0 pp sensitivity entry:* As audited and resolved in Task 6.1 (`reports/stage6m/stage6m_v1_5_event_d_null_calibration.md`), the 2.3% ($N_g=220$) and 2.6% ($N_g=285$) empirical rates above reflect asymmetric lower-tail probability clipping at $0.01$ in the uncalibrated simulator, which effectively created a true population disparity reduction of $-0.247$ pp. Under the calibrated exact null ($\Delta D = 0.0000$ pp), Event D Type I false-pass rate is strictly controlled at $0.580\%$ ($N_g=220$), below the Bonferroni threshold $\alpha_{\text{adj}} = 0.625\%$.
+
 ### Key Sensitivity Findings:
 1. **Event D (Disparity Safety) is the Primary Sensitivity Bottleneck:**
    - Superiority bounds (Events A & B) and accent safety guards (Event C) remain at 100% power even when treatment effect sizes degrade from 3.5 pp down to 2.0 pp.
-   - If the true physical disparity reduction attenuates from $-2.0$ pp to $-1.5$ pp, joint power declines to $\sim 88\%$ ($N_g = 285$) and $\sim 78\%$ ($N_g = 220$).
-   - If disparity change is null ($0.0$ pp), joint power drops to $\sim 50\%$, reflecting the exact size of the median bootstrap distribution relative to the zero threshold.
+   - If the true physical disparity reduction attenuates from $-2.0$ pp to $-1.5$ pp, joint power declines to $\sim 89\%$ ($N_g = 285$) and $\sim 78\%$ ($N_g = 220$).
+   - If disparity reduction attenuates to $-1.0$ pp, joint power declines to $\sim 59\%$ ($N_g = 285$) and $\sim 42\%$ ($N_g = 220$).
+   - Under the calibrated exact null ($\Delta D = 0.0000$ pp), Event D false-pass rate is $0.580\%$ ($N_g = 220$), confirming conservative Type I error control under $M=8$ Bonferroni.
 2. **Paired-Difference Standard Deviation Sensitivity:**
    - Inflating paired difference standard deviation from $3.2$ pp to $4.0$ pp maintains $\ge 95\%$ power at $N_g = 285$. Extreme variance inflation ($5.0$ pp) degrades power to $\sim 85\%$.
 3. **Methodological Takeaway:** Simulated power confirms that the statistical testing apparatus is well-calibrated and adequately powered under the model assumptions; physical confirmation remains contingent upon whether selective adaptation achieves non-zero disparity narrowing in the wild.
