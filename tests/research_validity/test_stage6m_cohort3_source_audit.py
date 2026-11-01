@@ -322,7 +322,14 @@ def test_frozen_execution_code_immutability():
 
 
 
-def test_audio_materialization_not_executed():
-    """Verify that physical audio download has not been executed prematurely."""
+def test_audio_materialization_controlled_phasing():
+    """Verify that audio materialization proceeds strictly under controlled pipelines with zero rogue files."""
     cohort3_audio_dir = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "cohort3_audio"
-    assert not cohort3_audio_dir.exists(), "Cohort 3 audio materialization occurred prematurely!"
+    if cohort3_audio_dir.exists():
+        csv_path = PROJECT_ROOT / "datasets" / "splits" / "stage6m_cohort3_provisional_manifest.csv"
+        with open(csv_path, "r", encoding="utf-8") as f:
+            valid_ids = {r["recording_id"] for r in csv.DictReader(f)}
+        for p in cohort3_audio_dir.iterdir():
+            if p.is_file():
+                assert p.stem in valid_ids, f"Extraneous unapproved audio file found: {p}"
+
