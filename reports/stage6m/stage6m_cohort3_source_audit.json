@@ -1,0 +1,162 @@
+{
+  "timestamp_utc": "2026-11-01T11:32:29.467918+00:00",
+  "protocol_version": "v1.5-five-stratum-parity",
+  "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
+  "governance_status": "AUTHORIZED_FOR_DATA_PREPARATION",
+  "selection_seed": 20261101,
+  "source_identity": {
+    "file_path": "datasets/external/common_voice_27/validated.tsv",
+    "rows_scanned": 1929267,
+    "bytes": 614927262,
+    "sha256": "733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a",
+    "verified": true
+  },
+  "historical_exposure": {
+    "total_unique_exposed": 558,
+    "partitions": {
+      "stage5_external_eval.csv": {
+        "file_name": "stage5_external_eval.csv",
+        "file_path": "datasets/splits/stage5_external_eval.csv",
+        "file_bytes": 451539,
+        "file_sha256": "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32",
+        "row_count": 900,
+        "unique_speakers": 60
+      },
+      "stage5_sentinel_panel.csv": {
+        "file_name": "stage5_sentinel_panel.csv",
+        "file_path": "datasets/splits/stage5_sentinel_panel.csv",
+        "file_bytes": 92340,
+        "file_sha256": "665009a00660f7e9bbdf8de8a53473fc1249362ca2a5bc0038518313d18f0543",
+        "row_count": 300,
+        "unique_speakers": 30
+      },
+      "stage6m_cohort2_audio.csv": {
+        "file_name": "stage6m_cohort2_audio.csv",
+        "file_path": "datasets/splits/stage6m_cohort2_audio.csv",
+        "file_bytes": 2591054,
+        "file_sha256": "dd837e249b15588cb15b7a3b234e820e08699722569cc24e57d119a868854f70",
+        "row_count": 7020,
+        "unique_speakers": 468
+      }
+    }
+  },
+  "speaker_capacity": {
+    "Australian English": {
+      "stratum": "Australian English",
+      "raw_declared_speakers": 804,
+      "strictly_qualified_speakers": 398,
+      "prior_exposed_speakers": 93,
+      "unexposed_available_speakers": 305,
+      "expected_unexposed_capacity": 305,
+      "capacity_verified": true
+    },
+    "Canadian English": {
+      "stratum": "Canadian English",
+      "raw_declared_speakers": 1031,
+      "strictly_qualified_speakers": 511,
+      "prior_exposed_speakers": 93,
+      "unexposed_available_speakers": 418,
+      "expected_unexposed_capacity": 418,
+      "capacity_verified": true
+    },
+    "England English": {
+      "stratum": "England English",
+      "raw_declared_speakers": 2733,
+      "strictly_qualified_speakers": 1213,
+      "prior_exposed_speakers": 93,
+      "unexposed_available_speakers": 1120,
+      "expected_unexposed_capacity": 1120,
+      "capacity_verified": true
+    },
+    "South Asian English": {
+      "stratum": "South Asian English",
+      "raw_declared_speakers": 2459,
+      "strictly_qualified_speakers": 746,
+      "prior_exposed_speakers": 93,
+      "unexposed_available_speakers": 653,
+      "expected_unexposed_capacity": 653,
+      "capacity_verified": true
+    },
+    "US English": {
+      "stratum": "US English",
+      "raw_declared_speakers": 9085,
+      "strictly_qualified_speakers": 3884,
+      "prior_exposed_speakers": 93,
+      "unexposed_available_speakers": 3791,
+      "expected_unexposed_capacity": 3791,
+      "capacity_verified": true
+    },
+    "Irish English": {
+      "stratum": "Irish English",
+      "raw_declared_speakers": 220,
+      "strictly_qualified_speakers": 92,
+      "prior_exposed_speakers": 92,
+      "unexposed_available_speakers": 0,
+      "expected_unexposed_capacity": 0,
+      "capacity_verified": true
+    }
+  },
+  "panel_selection": {
+    "evaluation_speakers_per_accent": 220,
+    "confirmatory_strata_count": 5,
+    "total_evaluation_speakers": 1100,
+    "gate_reference_speakers_per_accent": 20,
+    "total_gate_reference_speakers": 100,
+    "australian_replacement_reserve_speakers": 65,
+    "clips_per_speaker": 15,
+    "total_evaluation_clips": 16500,
+    "total_gate_clips": 1500,
+    "total_reserve_clips": 975,
+    "grand_total_clips": 18975
+  },
+  "validation": {
+    "validation_status": "PASS",
+    "total_unique_speakers": 1265,
+    "total_unique_clips": 18975,
+    "historical_exposure_overlap": 0,
+    "panel_disjointness_verified": true,
+    "clips_per_speaker_verified": true,
+    "speaker_counts": {
+      "evaluation_speakers": 1100,
+      "gate_reference_speakers": 100,
+      "australian_reserve_speakers": 65,
+      "total_selected": 1265
+    },
+    "clip_counts": {
+      "evaluation_clips": 16500,
+      "gate_reference_clips": 1500,
+      "australian_reserve_clips": 975,
+      "total_clips": 18975
+    },
+    "strata_counts": {
+      "Australian English": {
+        "evaluation": 220,
+        "gate_reference": 20,
+        "australian_reserve": 65
+      },
+      "Canadian English": {
+        "evaluation": 220,
+        "gate_reference": 20
+      },
+      "England English": {
+        "evaluation": 220,
+        "gate_reference": 20
+      },
+      "South Asian English": {
+        "evaluation": 220,
+        "gate_reference": 20
+      },
+      "US English": {
+        "evaluation": 220,
+        "gate_reference": 20
+      }
+    }
+  },
+  "provisional_manifest": {
+    "json_filename": "stage6m_cohort3_provisional_manifest.json",
+    "json_sha256": "d1c9a1d1bb9d111112e2217bd2fce64df2436bffca525bee545dae123e034be5",
+    "csv_filename": "stage6m_cohort3_provisional_manifest.csv",
+    "csv_sha256": "24013d3d63c1cadb978d68426e5ffaf490dbabb930a94788e2a9a7de70cf0a17",
+    "status": "UNLOCKED"
+  }
+}
