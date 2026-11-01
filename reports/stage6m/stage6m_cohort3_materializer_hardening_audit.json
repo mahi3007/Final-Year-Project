@@ -1,13 +1,13 @@
 {
-  "timestamp_utc": "2026-11-01T12:50:00.000000+00:00",
+  "timestamp_utc": "2026-11-01T14:15:30.000000+00:00",
   "document_id": "STAGE6M_COHORT3_MATERIALIZER_HARDENING_AUDIT",
-  "task_id": "TASK_7_4_1_1",
-  "task_title": "Full-File Audio Integrity & Complete Stream-Termination Validation",
+  "task_id": "TASK_7_4_2_1",
+  "task_title": "Pilot Artifact Isolation & Evidence Provenance Repair",
   "protocol_version": "v1.5-five-stratum-parity",
   "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
   "governance_status": "AUTHORIZED_FOR_DATA_PREPARATION",
   "manifest_status": "UNLOCKED (PROVISIONAL)",
-  "audit_disposition": "PASS_FULL_FILE_INTEGRITY_AND_STREAM_TERMINATION_VERIFIED",
+  "audit_disposition": "PASS_PILOT_ARTIFACT_ISOLATION_AND_EVIDENCE_PROVENANCE_REPAIRED",
   "execution_gating": {
     "audio_materialization_hardening": "VERIFIED_FULL_FILE_AND_TERMINATION",
     "controlled_pilot_download": "PENDING_SEPARATE_PILOT_AUTHORIZATION",
@@ -101,6 +101,22 @@
     "isolated_ledgers_created": true,
     "full_cohort_reports_protected": true
   },
+  "task_7_4_2_1_artifact_isolation": {
+    "status": "RESOLVED_AND_VERIFIED",
+    "description": "Fixed test-artifact isolation defect: mock tests and CLI validation now write strictly under tmp_path, preventing synthetic fixtures from contaminating committed repository reports.",
+    "generator_output_parameterization": true,
+    "cli_output_dir_flag": "--output-dir",
+    "byte_identical_sha256_immutability_verified": true,
+    "committed_pilot_zero_audio_evidence": {
+      "valid_clips_count": 0,
+      "remaining_clips_count": 75,
+      "complete_speakers_count": 0,
+      "incomplete_speakers_count": 5,
+      "total_duration_seconds": 0.0,
+      "materialization_disposition": "PILOT_ZERO_AUDIO_DRY_RUN",
+      "ledger_rows_count": 0
+    }
+  },
   "execution_engine_immutability": {
     "target_file": "src/dsg_ctta/evaluation/paired_cluster_inference.py",
     "git_blob_hash": "58d456fbcce43b5322d56df80e4077a32d7f4cca",
@@ -109,9 +125,9 @@
   },
   "test_execution_summary": {
     "materialization_test_suite": "tests/research_validity/test_stage6m_cohort3_audio_materialization.py",
-    "materialization_tests_passed": 11,
+    "materialization_tests_passed": 12,
     "materialization_tests_failed": 0,
-    "regression_suite_tests_passed": 51,
+    "regression_suite_tests_passed": 52,
     "regression_suite_tests_failed": 0
   }
 }

@@ -859,12 +859,30 @@ def generate_materialization_artifacts(
     valid_inv: Dict[str, Dict[str, Any]],
     failed_inv: Dict[str, Dict[str, Any]],
     audio_dir: Path,
+    report_json_path: Optional[Path] = None,
+    report_md_path: Optional[Path] = None,
+    ledger_csv_path: Optional[Path] = None,
+    speaker_report_path: Optional[Path] = None,
+    failed_report_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
     """
     Computes per-speaker completeness, writes SHA-256 ledger, failed clips ledger,
     and produces machine-readable JSON and Markdown audit reports.
+    Accepts explicit output paths for test and run isolation.
     """
     logger.info("Computing materialization completeness ledgers...")
+
+    target_report_json = report_json_path or MATERIALIZATION_JSON
+    target_report_md = report_md_path or MATERIALIZATION_MD
+    target_ledger_csv = ledger_csv_path or LEDGER_CSV
+    target_speaker_report = speaker_report_path or SPEAKER_REPORT_JSON
+    target_failed_report = failed_report_path or FAILED_REPORT_JSON
+
+    target_report_json.parent.mkdir(parents=True, exist_ok=True)
+    target_report_md.parent.mkdir(parents=True, exist_ok=True)
+    target_ledger_csv.parent.mkdir(parents=True, exist_ok=True)
+    target_speaker_report.parent.mkdir(parents=True, exist_ok=True)
+    target_failed_report.parent.mkdir(parents=True, exist_ok=True)
 
     # Speaker-level completeness: Initialize EVERY target speaker from the provisional manifest
     speaker_clips: Dict[str, List[Dict[str, Any]]] = {}
@@ -900,7 +918,7 @@ def generate_materialization_artifacts(
         }
 
     # Write speaker completeness report
-    with open(SPEAKER_REPORT_JSON, "w", encoding="utf-8") as f:
+    with open(target_speaker_report, "w", encoding="utf-8") as f:
         json.dump(
             {
                 "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -914,7 +932,7 @@ def generate_materialization_artifacts(
         )
 
     # Write failed clips report
-    with open(FAILED_REPORT_JSON, "w", encoding="utf-8") as f:
+    with open(target_failed_report, "w", encoding="utf-8") as f:
         json.dump(
             {
                 "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -943,15 +961,15 @@ def generate_materialization_artifacts(
         "word_count",
         "transcript",
     ]
-    with open(LEDGER_CSV, "w", encoding="utf-8", newline="") as f:
+    with open(target_ledger_csv, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=ledger_fieldnames)
         writer.writeheader()
         for item in inv_list:
             row_dict = {k: item.get(k, "") for k in ledger_fieldnames}
             writer.writerow(row_dict)
 
-    ledger_sha256 = compute_sha256(LEDGER_CSV)
-    logger.info(f"Wrote SHA-256 ledger CSV: {LEDGER_CSV} (SHA-256: {ledger_sha256})")
+    ledger_sha256 = compute_sha256(target_ledger_csv)
+    logger.info(f"Wrote SHA-256 ledger CSV: {target_ledger_csv} (SHA-256: {ledger_sha256})")
 
     # Aggregate metrics
     total_valid_clips = len(valid_inv)
@@ -989,7 +1007,7 @@ def generate_materialization_artifacts(
             "total_bytes": total_bytes,
         },
         "ledger": {
-            "ledger_csv": safe_rel_path(LEDGER_CSV),
+            "ledger_csv": safe_rel_path(target_ledger_csv),
             "ledger_sha256": ledger_sha256,
         },
         "execution_gating": {
@@ -1000,10 +1018,14 @@ def generate_materialization_artifacts(
     }
 
     # Write JSON report
-    with open(MATERIALIZATION_JSON, "w", encoding="utf-8") as f:
+    with open(target_report_json, "w", encoding="utf-8") as f:
         json.dump(materialization_data, f, indent=2)
 
     # Write Markdown report
+    ledger_url = f"file:///{target_ledger_csv.resolve().as_posix().lstrip('/')}"
+    failed_url = f"file:///{target_failed_report.resolve().as_posix().lstrip('/')}"
+    speaker_url = f"file:///{target_speaker_report.resolve().as_posix().lstrip('/')}"
+
     md_content = f"""# Stage 6M v1.5 — Cohort 3 Audio Materialization & Integrity Validation Report
 
 > **DOCUMENT ID:** `STAGE6M_COHORT3_AUDIO_MATERIALIZATION`  
@@ -1043,10 +1065,10 @@ This report documents the physical audio materialization and cryptographic integ
 
 ## 3. Cryptographic Provenance & Ledgers
 
-- **Per-Clip SHA-256 Ledger:** [`{materialization_data['ledger']['ledger_csv']}`](file:///{PROJECT_ROOT.as_posix()}/{materialization_data['ledger']['ledger_csv']})  
+- **Per-Clip SHA-256 Ledger:** [`{safe_rel_path(target_ledger_csv)}`]({ledger_url})  
   - Ledger File SHA-256: `{ledger_sha256}`
-- **Failed Clips Ledger:** [`datasets/splits/stage6m_cohort3_failed_clips_report.json`](file:///{PROJECT_ROOT.as_posix()}/datasets/splits/stage6m_cohort3_failed_clips_report.json)
-- **Speaker Completeness Report:** [`datasets/splits/stage6m_cohort3_speaker_completeness_report.json`](file:///{PROJECT_ROOT.as_posix()}/datasets/splits/stage6m_cohort3_speaker_completeness_report.json)
+- **Failed Clips Ledger:** [`{safe_rel_path(target_failed_report)}`]({failed_url})
+- **Speaker Completeness Report:** [`{safe_rel_path(target_speaker_report)}`]({speaker_url})
 
 ---
 
@@ -1064,11 +1086,11 @@ This report documents the physical audio materialization and cryptographic integ
 ```
 """
 
-    with open(MATERIALIZATION_MD, "w", encoding="utf-8") as f:
+    with open(target_report_md, "w", encoding="utf-8") as f:
         f.write(md_content)
 
-    logger.info(f"Wrote materialization report MD: {MATERIALIZATION_MD}")
-    logger.info(f"Wrote materialization report JSON: {MATERIALIZATION_JSON}")
+    logger.info(f"Wrote materialization report MD: {target_report_md}")
+    logger.info(f"Wrote materialization report JSON: {target_report_json}")
     return materialization_data
 
 
@@ -1134,13 +1156,31 @@ def generate_pilot_materialization_artifacts(
     valid_inv: Dict[str, Dict[str, Any]],
     failed_inv: Dict[str, Dict[str, Any]],
     audio_dir: Path,
+    report_json_path: Optional[Path] = None,
+    report_md_path: Optional[Path] = None,
+    ledger_csv_path: Optional[Path] = None,
+    speaker_report_path: Optional[Path] = None,
+    failed_report_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
     """
     Generates isolated pilot materialization artifacts, reports, and ledgers
     without overwriting full-cohort reports.
     Records parent provisional manifest SHA-256 for cryptographic traceability.
+    Accepts explicit output paths for test and run isolation.
     """
     logger.info("Computing pilot materialization completeness ledgers...")
+
+    target_report_json = report_json_path or PILOT_MATERIALIZATION_JSON
+    target_report_md = report_md_path or PILOT_MATERIALIZATION_MD
+    target_ledger_csv = ledger_csv_path or PILOT_LEDGER_CSV
+    target_speaker_report = speaker_report_path or PILOT_SPEAKER_REPORT_JSON
+    target_failed_report = failed_report_path or PILOT_FAILED_REPORT_JSON
+
+    target_report_json.parent.mkdir(parents=True, exist_ok=True)
+    target_report_md.parent.mkdir(parents=True, exist_ok=True)
+    target_ledger_csv.parent.mkdir(parents=True, exist_ok=True)
+    target_speaker_report.parent.mkdir(parents=True, exist_ok=True)
+    target_failed_report.parent.mkdir(parents=True, exist_ok=True)
 
     speaker_clips: Dict[str, List[Dict[str, Any]]] = {sid: [] for sid in pilot_speaker_ids}
     speaker_strata: Dict[str, str] = {}
@@ -1173,7 +1213,7 @@ def generate_pilot_materialization_artifacts(
         }
 
     # 1. Write pilot speaker completeness report
-    with open(PILOT_SPEAKER_REPORT_JSON, "w", encoding="utf-8") as f:
+    with open(target_speaker_report, "w", encoding="utf-8") as f:
         json.dump(
             {
                 "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -1188,7 +1228,7 @@ def generate_pilot_materialization_artifacts(
         )
 
     # 2. Write pilot failed clips report
-    with open(PILOT_FAILED_REPORT_JSON, "w", encoding="utf-8") as f:
+    with open(target_failed_report, "w", encoding="utf-8") as f:
         json.dump(
             {
                 "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -1218,15 +1258,15 @@ def generate_pilot_materialization_artifacts(
         "word_count",
         "transcript",
     ]
-    with open(PILOT_LEDGER_CSV, "w", encoding="utf-8", newline="") as f:
+    with open(target_ledger_csv, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=ledger_fieldnames)
         writer.writeheader()
         for item in inv_list:
             row_dict = {k: item.get(k, "") for k in ledger_fieldnames}
             writer.writerow(row_dict)
 
-    pilot_ledger_sha256 = compute_sha256(PILOT_LEDGER_CSV)
-    logger.info(f"Wrote Pilot SHA-256 ledger CSV: {PILOT_LEDGER_CSV} (SHA-256: {pilot_ledger_sha256})")
+    pilot_ledger_sha256 = compute_sha256(target_ledger_csv)
+    logger.info(f"Wrote Pilot SHA-256 ledger CSV: {target_ledger_csv} (SHA-256: {pilot_ledger_sha256})")
 
     # Aggregate metrics
     total_valid_clips = len(valid_inv)
@@ -1283,7 +1323,7 @@ def generate_pilot_materialization_artifacts(
             for sid in sorted(speaker_clips.keys())
         },
         "ledger": {
-            "ledger_csv": safe_rel_path(PILOT_LEDGER_CSV),
+            "ledger_csv": safe_rel_path(target_ledger_csv),
             "ledger_sha256": pilot_ledger_sha256,
         },
         "execution_gating": {
@@ -1295,7 +1335,7 @@ def generate_pilot_materialization_artifacts(
     }
 
     # 4. Write pilot JSON report
-    with open(PILOT_MATERIALIZATION_JSON, "w", encoding="utf-8") as f:
+    with open(target_report_json, "w", encoding="utf-8") as f:
         json.dump(pilot_data, f, indent=2)
 
     # 5. Write pilot Markdown report
@@ -1308,6 +1348,10 @@ def generate_pilot_materialization_artifacts(
             f"| **{strat}** | `{sid[:16]}...` | {PILOT_EXPECTED_CLIPS_PER_SPEAKER} | {n_mat} | **{is_c}** |"
         )
     speaker_table_str = "\n".join(speaker_table_rows)
+
+    ledger_url = f"file:///{target_ledger_csv.resolve().as_posix().lstrip('/')}"
+    failed_url = f"file:///{target_failed_report.resolve().as_posix().lstrip('/')}"
+    speaker_url = f"file:///{target_speaker_report.resolve().as_posix().lstrip('/')}"
 
     md_content = f"""# Stage 6M v1.5 — Cohort 3 Controlled Audio Materialization Pilot Report
 
@@ -1344,10 +1388,10 @@ This report documents the preparation and execution of the **Controlled Audio Ma
 
 ## 3. Cryptographic Provenance & Ledgers
 
-- **Pilot SHA-256 Ledger:** [`{pilot_data['ledger']['ledger_csv']}`](file:///{PROJECT_ROOT.as_posix()}/{pilot_data['ledger']['ledger_csv']})  
+- **Pilot SHA-256 Ledger:** [`{safe_rel_path(target_ledger_csv)}`]({ledger_url})  
   - Ledger File SHA-256: `{pilot_ledger_sha256}`
-- **Pilot Speaker Completeness Report:** [`datasets/splits/stage6m_cohort3_pilot_speaker_completeness_report.json`](file:///{PROJECT_ROOT.as_posix()}/datasets/splits/stage6m_cohort3_pilot_speaker_completeness_report.json)
-- **Pilot Failed Clips Report:** [`datasets/splits/stage6m_cohort3_pilot_failed_clips_report.json`](file:///{PROJECT_ROOT.as_posix()}/datasets/splits/stage6m_cohort3_pilot_failed_clips_report.json)
+- **Pilot Speaker Completeness Report:** [`{safe_rel_path(target_speaker_report)}`]({speaker_url})
+- **Pilot Failed Clips Report:** [`{safe_rel_path(target_failed_report)}`]({failed_url})
 - **Parent Provisional Manifest:** [`{pilot_data['parent_provisional_manifest']['path']}`](file:///{PROJECT_ROOT.as_posix()}/{pilot_data['parent_provisional_manifest']['path']}) (SHA-256: `{parent_manifest_sha256}`)
 
 ---
@@ -1366,11 +1410,11 @@ This report documents the preparation and execution of the **Controlled Audio Ma
 ```
 """
 
-    with open(PILOT_MATERIALIZATION_MD, "w", encoding="utf-8") as f:
+    with open(target_report_md, "w", encoding="utf-8") as f:
         f.write(md_content)
 
-    logger.info(f"Wrote pilot materialization report MD: {PILOT_MATERIALIZATION_MD}")
-    logger.info(f"Wrote pilot materialization report JSON: {PILOT_MATERIALIZATION_JSON}")
+    logger.info(f"Wrote pilot materialization report MD: {target_report_md}")
+    logger.info(f"Wrote pilot materialization report JSON: {target_report_json}")
     return pilot_data
 
 
@@ -1389,6 +1433,12 @@ def main():
         type=Path,
         default=COHORT3_AUDIO_DIR,
         help="Destination directory for materialized audio",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=None,
+        help="Optional destination directory for reports and ledgers (defaults to repository paths)",
     )
     parser.add_argument(
         "--pilot",
@@ -1455,6 +1505,18 @@ def main():
                 pilot_target_map, valid_inv, failed_inv, pilot_dest_dir, max_duration_seconds=args.max_stream_seconds
             )
 
+        output_kwargs = {}
+        if args.output_dir:
+            out = args.output_dir
+            out.mkdir(parents=True, exist_ok=True)
+            output_kwargs = {
+                "report_json_path": out / "stage6m_cohort3_pilot_materialization.json",
+                "report_md_path": out / "stage6m_cohort3_pilot_materialization.md",
+                "ledger_csv_path": out / "stage6m_cohort3_pilot_clip_sha256_ledger.csv",
+                "speaker_report_path": out / "stage6m_cohort3_pilot_speaker_completeness_report.json",
+                "failed_report_path": out / "stage6m_cohort3_pilot_failed_clips_report.json",
+            }
+
         generate_pilot_materialization_artifacts(
             meta,
             parent_manifest_sha256,
@@ -1464,6 +1526,7 @@ def main():
             valid_inv,
             failed_inv,
             pilot_dest_dir,
+            **output_kwargs,
         )
         return
 
@@ -1479,7 +1542,27 @@ def main():
             full_target_map, valid_inv, failed_inv, args.audio_dir, max_duration_seconds=args.max_stream_seconds
         )
 
-    generate_materialization_artifacts(meta, records, full_target_map, valid_inv, failed_inv, args.audio_dir)
+    output_kwargs = {}
+    if args.output_dir:
+        out = args.output_dir
+        out.mkdir(parents=True, exist_ok=True)
+        output_kwargs = {
+            "report_json_path": out / "stage6m_cohort3_audio_materialization.json",
+            "report_md_path": out / "stage6m_cohort3_audio_materialization.md",
+            "ledger_csv_path": out / "stage6m_cohort3_clip_sha256_ledger.csv",
+            "speaker_report_path": out / "stage6m_cohort3_speaker_completeness_report.json",
+            "failed_report_path": out / "stage6m_cohort3_failed_clips_report.json",
+        }
+
+    generate_materialization_artifacts(
+        meta,
+        records,
+        full_target_map,
+        valid_inv,
+        failed_inv,
+        args.audio_dir,
+        **output_kwargs,
+    )
 
 
 if __name__ == "__main__":

@@ -227,13 +227,32 @@ def test_speaker_completeness_accounting_zero_audio(tmp_path):
     """
     Verify Issue A: When 0 clips are materialized, all 1,265 target speakers
     must appear in the speaker completeness report as incomplete with 0 valid clips.
+    Uses tmp_path for all generated reports and ledgers to guarantee zero side effects
+    on committed repository artifacts.
     """
     meta, records, target_map = load_provisional_manifest(PROVISIONAL_MANIFEST_JSON)
     empty_valid: dict = {}
     empty_failed: dict = {}
 
+    test_out_dir = tmp_path / "zero_audio_out"
+    test_spk_rep = test_out_dir / "stage6m_cohort3_speaker_completeness_report.json"
+    test_failed_rep = test_out_dir / "stage6m_cohort3_failed_clips_report.json"
+    test_ledger = test_out_dir / "stage6m_cohort3_clip_sha256_ledger.csv"
+    test_json = test_out_dir / "stage6m_cohort3_audio_materialization.json"
+    test_md = test_out_dir / "stage6m_cohort3_audio_materialization.md"
+
     art = generate_materialization_artifacts(
-        meta, records, target_map, empty_valid, empty_failed, tmp_path
+        meta,
+        records,
+        target_map,
+        empty_valid,
+        empty_failed,
+        tmp_path,
+        report_json_path=test_json,
+        report_md_path=test_md,
+        ledger_csv_path=test_ledger,
+        speaker_report_path=test_spk_rep,
+        failed_report_path=test_failed_rep,
     )
 
     # 1. Returned artifacts metadata
@@ -244,8 +263,8 @@ def test_speaker_completeness_accounting_zero_audio(tmp_path):
     assert scale["complete_speakers_count"] == 0
     assert scale["incomplete_speakers_count"] == 1265
 
-    # 2. Check JSON report
-    with open(SPEAKER_REPORT_JSON, "r", encoding="utf-8") as f:
+    # 2. Check JSON report in isolated tmp_path
+    with open(test_spk_rep, "r", encoding="utf-8") as f:
         spk_data = json.load(f)
 
     assert spk_data["total_target_speakers"] == 1265
@@ -709,20 +728,43 @@ def test_pilot_speaker_and_clip_selection():
 
 def test_pilot_cli_execution_and_report_isolation(tmp_path):
     """
-    Verify that executing --pilot --validate-only creates isolated pilot ledgers
-    and preserves full-cohort reports without modification.
+    Verify Task 7.4.2 & 7.4.2.1:
+    Executing CLI with --pilot --validate-only --output-dir writes isolated pilot artifacts
+    to the designated output directory and preserves both full-cohort and committed pilot
+    repository artifacts with 100% byte-identical SHA-256 immutability.
     """
-    # 1. Snapshot full cohort report modified time and content
-    with open(MATERIALIZATION_JSON, "r", encoding="utf-8") as f:
-        full_data_before = json.load(f)
+    full_cohort_files = [
+        MATERIALIZATION_JSON,
+        MATERIALIZATION_MD,
+        LEDGER_CSV,
+        FAILED_REPORT_JSON,
+        SPEAKER_REPORT_JSON,
+    ]
+    pilot_repo_files = [
+        PILOT_MATERIALIZATION_JSON,
+        PILOT_MATERIALIZATION_MD,
+        PILOT_LEDGER_CSV,
+        PILOT_FAILED_REPORT_JSON,
+        PILOT_SPEAKER_REPORT_JSON,
+    ]
+    all_repo_artifacts = full_cohort_files + pilot_repo_files
 
-    # 2. Run CLI with --pilot --validate-only
+    # 1. Snapshot SHA-256 of all repository full-cohort and pilot artifacts before run
+    hashes_before = {f: compute_sha256(f) for f in all_repo_artifacts if f.exists()}
+
+    # 2. Run CLI with --pilot --validate-only pointing output-dir and pilot-audio-dir to tmp_path
+    cli_out_dir = tmp_path / "pilot_cli_isolated_out"
+    cli_audio_dir = tmp_path / "pilot_cli_isolated_audio"
     res = subprocess.run(
         [
             sys.executable,
             str(PROJECT_ROOT / "scripts" / "materialize_stage6m_cohort3_audio.py"),
             "--pilot",
             "--validate-only",
+            "--output-dir",
+            str(cli_out_dir),
+            "--pilot-audio-dir",
+            str(cli_audio_dir),
         ],
         capture_output=True,
         text=True,
@@ -730,19 +772,27 @@ def test_pilot_cli_execution_and_report_isolation(tmp_path):
     )
     assert res.returncode == 0
 
-    # 3. Verify pilot reports exist and match 75-clip scale
-    assert PILOT_MATERIALIZATION_JSON.exists()
-    assert PILOT_MATERIALIZATION_MD.exists()
-    assert PILOT_SPEAKER_REPORT_JSON.exists()
-    assert PILOT_FAILED_REPORT_JSON.exists()
-    assert PILOT_LEDGER_CSV.exists()
+    # 3. Verify pilot reports exist in tmp_path and match 75-clip scale
+    pilot_json = cli_out_dir / "stage6m_cohort3_pilot_materialization.json"
+    pilot_md = cli_out_dir / "stage6m_cohort3_pilot_materialization.md"
+    pilot_spk = cli_out_dir / "stage6m_cohort3_pilot_speaker_completeness_report.json"
+    pilot_failed = cli_out_dir / "stage6m_cohort3_pilot_failed_clips_report.json"
+    pilot_ledger = cli_out_dir / "stage6m_cohort3_pilot_clip_sha256_ledger.csv"
 
-    with open(PILOT_MATERIALIZATION_JSON, "r", encoding="utf-8") as f:
+    assert pilot_json.exists()
+    assert pilot_md.exists()
+    assert pilot_spk.exists()
+    assert pilot_failed.exists()
+    assert pilot_ledger.exists()
+
+    with open(pilot_json, "r", encoding="utf-8") as f:
         pilot_data = json.load(f)
 
     assert pilot_data["target_scale"]["total_target_clips"] == 75
     assert pilot_data["target_scale"]["total_target_speakers"] == 5
     assert pilot_data["materialized_scale"]["total_target_speakers"] == 5
+    assert pilot_data["materialized_scale"]["valid_clips_count"] == 0
+    assert pilot_data["materialized_scale"]["remaining_clips_count"] == 75
     assert pilot_data["governance_status"] == "PILOT_PREPARED_PENDING_SEPARATE_PILOT_AUTHORIZATION"
     assert pilot_data["materialization_disposition"] == "PILOT_ZERO_AUDIO_DRY_RUN"
     assert pilot_data["execution_gating"]["gpu_ctta_adaptation"] == "STRICTLY_BLOCKED"
@@ -752,18 +802,20 @@ def test_pilot_cli_execution_and_report_isolation(tmp_path):
     parent_sha256 = compute_sha256(PROVISIONAL_MANIFEST_JSON)
     assert pilot_data["parent_provisional_manifest"]["sha256"] == parent_sha256
 
-    # 4. Verify full-cohort reports are UNTOUCHED
-    with open(MATERIALIZATION_JSON, "r", encoding="utf-8") as f:
-        full_data_after = json.load(f)
-
-    assert full_data_before["target_scale"]["total_target_clips"] == full_data_after["target_scale"]["total_target_clips"] == 18975
-    assert full_data_before["target_scale"]["total_target_speakers"] == full_data_after["target_scale"]["total_target_speakers"] == 1265
+    # 4. Strict byte-level immutability: assert SHA-256 of all repository artifacts unchanged
+    hashes_after = {f: compute_sha256(f) for f in all_repo_artifacts if f.exists()}
+    for f in all_repo_artifacts:
+        if f in hashes_before:
+            assert (
+                hashes_before[f] == hashes_after[f]
+            ), f"Repository artifact byte mutated during isolated pilot CLI run: {f}"
 
 
 def test_pilot_mock_materialization_verification(tmp_path):
     """
     Verify complete pilot materialization verification with 75 valid synthetic MP3 clips.
     Asserts 75/75 valid clips, 5/5 complete speakers, 0 failures, and PILOT_COMPLETE_AND_VERIFIED disposition.
+    All artifacts are strictly written to tmp_path to prevent contaminating committed reports.
     """
     parent_manifest_sha256 = compute_sha256(PROVISIONAL_MANIFEST_JSON)
     meta, records, full_target_map = load_provisional_manifest(PROVISIONAL_MANIFEST_JSON)
@@ -772,7 +824,9 @@ def test_pilot_mock_materialization_verification(tmp_path):
     )
 
     pilot_audio_dir = tmp_path / "mock_pilot_audio"
+    mock_out_dir = tmp_path / "mock_pilot_out"
     pilot_audio_dir.mkdir(parents=True, exist_ok=True)
+    mock_out_dir.mkdir(parents=True, exist_ok=True)
 
     # Generate 75 valid MP3 files
     for r in pilot_records:
@@ -785,7 +839,13 @@ def test_pilot_mock_materialization_verification(tmp_path):
     assert len(valid_inv) == 75
     assert len(failed_inv) == 0
 
-    # Generate pilot artifacts
+    mock_json = mock_out_dir / "stage6m_cohort3_pilot_materialization.json"
+    mock_md = mock_out_dir / "stage6m_cohort3_pilot_materialization.md"
+    mock_ledger = mock_out_dir / "stage6m_cohort3_pilot_clip_sha256_ledger.csv"
+    mock_spk = mock_out_dir / "stage6m_cohort3_pilot_speaker_completeness_report.json"
+    mock_failed = mock_out_dir / "stage6m_cohort3_pilot_failed_clips_report.json"
+
+    # Generate pilot artifacts strictly inside mock_out_dir
     pilot_artifacts = generate_pilot_materialization_artifacts(
         meta,
         parent_manifest_sha256,
@@ -795,6 +855,11 @@ def test_pilot_mock_materialization_verification(tmp_path):
         valid_inv,
         failed_inv,
         pilot_audio_dir,
+        report_json_path=mock_json,
+        report_md_path=mock_md,
+        ledger_csv_path=mock_ledger,
+        speaker_report_path=mock_spk,
+        failed_report_path=mock_failed,
     )
 
     assert pilot_artifacts["materialization_disposition"] == "PILOT_COMPLETE_AND_VERIFIED"
@@ -803,3 +868,58 @@ def test_pilot_mock_materialization_verification(tmp_path):
     assert pilot_artifacts["materialized_scale"]["incomplete_speakers_count"] == 0
     assert pilot_artifacts["materialized_scale"]["failed_clips_count"] == 0
     assert pilot_artifacts["materialized_scale"]["completion_rate_pct"] == 100.0
+
+    # Verify mock output files were written under tmp_path
+    assert mock_json.exists()
+    assert mock_md.exists()
+    assert mock_ledger.exists()
+    assert mock_spk.exists()
+    assert mock_failed.exists()
+
+
+def test_committed_pilot_reports_exist_and_clean_zero_audio():
+    """
+    Verify Task 7.4.2.1:
+    Assert that committed repository pilot artifacts exist and strictly reflect
+    clean, un-contaminated zero-audio physical evidence (0 valid clips, disposition
+    PILOT_ZERO_AUDIO_DRY_RUN, 0 rows in ledger, 5 incomplete speakers).
+    """
+    assert PILOT_MATERIALIZATION_JSON.exists(), f"Missing {PILOT_MATERIALIZATION_JSON}"
+    assert PILOT_MATERIALIZATION_MD.exists(), f"Missing {PILOT_MATERIALIZATION_MD}"
+    assert PILOT_LEDGER_CSV.exists(), f"Missing {PILOT_LEDGER_CSV}"
+    assert PILOT_FAILED_REPORT_JSON.exists(), f"Missing {PILOT_FAILED_REPORT_JSON}"
+    assert PILOT_SPEAKER_REPORT_JSON.exists(), f"Missing {PILOT_SPEAKER_REPORT_JSON}"
+
+    with open(PILOT_MATERIALIZATION_JSON, "r", encoding="utf-8") as f:
+        pilot_data = json.load(f)
+
+    assert pilot_data["target_scale"]["total_target_clips"] == 75
+    assert pilot_data["target_scale"]["total_target_speakers"] == 5
+    assert pilot_data["materialized_scale"]["total_target_speakers"] == 5
+    assert pilot_data["materialized_scale"]["valid_clips_count"] == 0
+    assert pilot_data["materialized_scale"]["remaining_clips_count"] == 75
+    assert pilot_data["materialized_scale"]["complete_speakers_count"] == 0
+    assert pilot_data["materialized_scale"]["incomplete_speakers_count"] == 5
+    assert pilot_data["materialized_scale"]["failed_clips_count"] == 0
+    assert pilot_data["materialized_scale"]["total_duration_seconds"] == 0.0
+    assert pilot_data["materialization_disposition"] == "PILOT_ZERO_AUDIO_DRY_RUN"
+    assert pilot_data["governance_status"] == "PILOT_PREPARED_PENDING_SEPARATE_PILOT_AUTHORIZATION"
+    assert pilot_data["execution_gating"]["gpu_ctta_adaptation"] == "STRICTLY_BLOCKED"
+    assert pilot_data["execution_gating"]["confirmatory_inference"] == "STRICTLY_BLOCKED"
+    assert pilot_data["execution_gating"]["full_cohort_materialization"] == "HELD_PENDING_PILOT_VERIFICATION"
+
+    # Verify ledger CSV has header only and 0 data rows
+    with open(PILOT_LEDGER_CSV, "r", encoding="utf-8") as f:
+        reader = list(csv.reader(f))
+    assert len(reader) == 1, f"Expected header only in clean pilot ledger, found {len(reader)} lines"
+
+    # Verify speaker completeness report has 5 incomplete speakers
+    with open(PILOT_SPEAKER_REPORT_JSON, "r", encoding="utf-8") as f:
+        spk_data = json.load(f)
+    assert spk_data["total_target_speakers"] == 5
+    assert spk_data["complete_speakers"] == 0
+    assert spk_data["incomplete_speakers"] == 5
+    for sid, spk_entry in spk_data["speakers"].items():
+        assert spk_entry["materialized_clips_count"] == 0
+        assert spk_entry["required_clips_count"] == 15
+        assert spk_entry["is_complete"] is False

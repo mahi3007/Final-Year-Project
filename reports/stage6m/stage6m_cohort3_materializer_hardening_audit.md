@@ -78,10 +78,28 @@ Following the independent review of Task 7.4.1 (commit [`c499571`](https://githu
   - [`reports/stage6m/stage6m_cohort3_pilot_materialization.json`](file:///C:/Users/venka/Downloads/final year project main/reports/stage6m/stage6m_cohort3_pilot_materialization.json)
   - [`reports/stage6m/stage6m_cohort3_pilot_materialization.md`](file:///C:/Users/venka/Downloads/final year project main/reports/stage6m/stage6m_cohort3_pilot_materialization.md)
 
+### 2.5 Task 7.4.2.1 — Pilot Artifact Isolation & Evidence Provenance Repair
+- **Root Cause Remediation:** The mock verification test previously generated 75 synthetic MP3 fixtures in `tmp_path`, but invoked artifact generation without path overrides, inadvertently writing synthetic durations (0.2s) and hashes into tracked repository reports.
+- **Output Path Parameterization:**
+  - `generate_materialization_artifacts()` and `generate_pilot_materialization_artifacts()` now accept explicit optional output paths (`report_json_path`, `report_md_path`, `ledger_csv_path`, `speaker_report_path`, `failed_report_path`), ensuring directories are created on demand.
+  - Added CLI flag `--output-dir` to [`scripts/materialize_stage6m_cohort3_audio.py`](file:///C:/Users/venka/Downloads/final year project main/scripts/materialize_stage6m_cohort3_audio.py).
+- **Test Output Isolation:**
+  - Mock materialization tests write 100% of synthetic fixtures and generated reports under `tmp_path`.
+  - Zero-audio full-cohort testing writes completeness ledgers under `tmp_path`.
+  - Pilot CLI test runs with `--output-dir <tmp_path>` and explicitly asserts byte-level SHA-256 immutability of all repository files before and after CLI execution.
+- **Clean Provenance Dry Run Regeneration:**
+  - Re-executed `scripts/materialize_stage6m_cohort3_audio.py --pilot --validate-only` to purge mock data and restore clean zero-audio evidence:
+    - Target clips: $75$
+    - Valid clips: $0$
+    - Disposition: `PILOT_ZERO_AUDIO_DRY_RUN`
+    - Pilot Ledger: Header only ($0$ data rows)
+    - Pilot Speakers: 5 speakers with `is_complete: false`, $0$ clips materialized.
+
 ---
 
 ## 3. Quantitative Materialization Inventory & Ledgers
 
+### 3.1 Full-Cohort Materialization Inventory (18,975 Clips)
 Following Task 7.4.1.1 hardening, [`scripts/materialize_stage6m_cohort3_audio.py`](file:///C:/Users/venka/Downloads/final year project main/scripts/materialize_stage6m_cohort3_audio.py) was executed in dry-run / validate-only mode:
 
 | Metric | Target Requirement | Current Materialized | Status |
@@ -95,13 +113,24 @@ Following Task 7.4.1.1 hardening, [`scripts/materialize_stage6m_cohort3_audio.py
 | **Total Physical Audio Duration** | — | 0.00 s (0.00 h) | **NOMINAL** |
 | **Total Physical Audio Bytes** | — | 0 bytes (0.00 MB) | **NOMINAL** |
 
+### 3.2 Controlled Pilot Inventory (75 Clips — Zero-Audio Dry-Run Evidence)
+
+| Stratum | Speaker ID | Target Clips | Materialized | Status |
+| :--- | :--- | :---: | :---: | :---: |
+| **Canadian English** | `00143475c51f0cc4...` | 15 | 0 | **INCOMPLETE** |
+| **Australian English** | `008f1e5e50d2af13...` | 15 | 0 | **INCOMPLETE** |
+| **US English** | `010465487d57bc20...` | 15 | 0 | **INCOMPLETE** |
+| **England English** | `016e15e58e2d93cb...` | 15 | 0 | **INCOMPLETE** |
+| **South Asian English** | `01c9ba7d35336856...` | 15 | 0 | **INCOMPLETE** |
+| **Grand Total** | **5 Speakers** | **75** | **0** | **IN_PROGRESS** |
+
 ### Authoritative Ledgers
-- **Per-Clip SHA-256 Ledger:** [`datasets/splits/stage6m_cohort3_clip_sha256_ledger.csv`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_clip_sha256_ledger.csv)  
-  - SHA-256: `f18391abeebc6a08ca33c3a8a6ffbe0920ed8907863d14f419ffeda1e5384a8c`
-- **Speaker Completeness Report:** [`datasets/splits/stage6m_cohort3_speaker_completeness_report.json`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_speaker_completeness_report.json)
-- **Failed Clips Report:** [`datasets/splits/stage6m_cohort3_failed_clips_report.json`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_failed_clips_report.json)
-- **Materialization JSON Report:** [`reports/stage6m/stage6m_cohort3_audio_materialization.json`](file:///C:/Users/venka/Downloads/final year project main/reports/stage6m/stage6m_cohort3_audio_materialization.json)
-- **Materialization Markdown Report:** [`reports/stage6m/stage6m_cohort3_audio_materialization.md`](file:///C:/Users/venka/Downloads/final year project main/reports/stage6m/stage6m_cohort3_audio_materialization.md)
+- **Full-Cohort Per-Clip SHA-256 Ledger:** [`datasets/splits/stage6m_cohort3_clip_sha256_ledger.csv`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_clip_sha256_ledger.csv) (SHA-256: `f18391abeebc6a08ca33c3a8a6ffbe0920ed8907863d14f419ffeda1e5384a8c`)
+- **Pilot Per-Clip SHA-256 Ledger:** [`datasets/splits/stage6m_cohort3_pilot_clip_sha256_ledger.csv`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_pilot_clip_sha256_ledger.csv) (SHA-256: `f18391abeebc6a08ca33c3a8a6ffbe0920ed8907863d14f419ffeda1e5384a8c`)
+- **Pilot Materialization JSON Report:** [`reports/stage6m/stage6m_cohort3_pilot_materialization.json`](file:///C:/Users/venka/Downloads/final year project main/reports/stage6m/stage6m_cohort3_pilot_materialization.json)
+- **Pilot Materialization Markdown Report:** [`reports/stage6m/stage6m_cohort3_pilot_materialization.md`](file:///C:/Users/venka/Downloads/final year project main/reports/stage6m/stage6m_cohort3_pilot_materialization.md)
+- **Pilot Speaker Completeness Report:** [`datasets/splits/stage6m_cohort3_pilot_speaker_completeness_report.json`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_pilot_speaker_completeness_report.json)
+- **Pilot Failed Clips Report:** [`datasets/splits/stage6m_cohort3_pilot_failed_clips_report.json`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort3_pilot_failed_clips_report.json)
 
 ---
 
@@ -116,25 +145,29 @@ The frozen historical execution code at [`src/dsg_ctta/evaluation/paired_cluster
 
 ## 5. Verification Evidence
 
-### 5.1 Hardened Materializer Test Suite
-Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_materialization.py -v`
+### 5.1 Hardened Materializer Test Suite (12 Tests Passed)
+Command: `pytest tests/research_validity/test_stage6m_cohort3_audio_materialization.py -v`
 ```
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_target_manifest_scale_and_fields PASSED [ 12%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_validate_audio_file_genuine_mp3_and_boundaries PASSED [ 25%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_speaker_completeness_accounting_zero_audio PASSED [ 37%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_local_sourcing_and_completeness_tracking PASSED [ 50%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_streaming_resume_range_validation PASSED [ 62%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_downstream_acoustic_resampling_contract PASSED [ 75%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_materialization_reports_exist_and_consistent PASSED [ 87%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_historical_v1_4_0_execution_engine_immutability PASSED [100%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_target_manifest_scale_and_fields PASSED [  8%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_validate_audio_file_genuine_mp3_and_boundaries PASSED [ 16%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_speaker_completeness_accounting_zero_audio PASSED [ 25%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_local_sourcing_and_completeness_tracking PASSED [ 33%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_streaming_resume_range_validation PASSED [ 41%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_downstream_acoustic_resampling_contract PASSED [ 50%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_materialization_reports_exist_and_consistent PASSED [ 58%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_historical_v1_4_0_execution_engine_immutability PASSED [ 66%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_speaker_and_clip_selection PASSED [ 75%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_cli_execution_and_report_isolation PASSED [ 83%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_mock_materialization_verification PASSED [ 91%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_committed_pilot_reports_exist_and_clean_zero_audio PASSED [100%]
 
-============================== 8 passed in 3.54s ==============================
+============================= 12 passed in 8.44s ==============================
 ```
 
-### 5.2 Full Stage 6M Regression Suite
-Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_materialization.py tests/research_validity/test_stage6m_cohort3_source_audit.py tests/research_validity/test_stage6m_cohort3_curation.py tests/research_validity/test_stage6m_project_lead_authorization_package.py tests/research_validity/test_historical_immutability.py -v`
+### 5.2 Full Stage 6M Regression Suite (52 Tests Passed)
+Command: `pytest tests/research_validity/test_stage6m_cohort3_audio_materialization.py tests/research_validity/test_stage6m_cohort3_source_audit.py tests/research_validity/test_stage6m_cohort3_curation.py tests/research_validity/test_stage6m_project_lead_authorization_package.py tests/research_validity/test_historical_immutability.py -v`
 ```
-============================= 48 passed in 19.54s =============================
+============================= 52 passed in 33.03s =============================
 ```
 
 ---
@@ -146,19 +179,19 @@ Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_ma
 ║                   GOVERNANCE STATUS: AUTHORIZED (DATA PREPARATION)                   ║
 ║                                                                                      ║
 ║  1. Materializer full-file integrity and stream termination is VERIFIED (7.4.1.1).   ║
-║  2. Provisional manifest remains UNLOCKED (PROVISIONAL).                             ║
-║  3. Controlled pilot download (75 clips) is READY FOR SEPARATE PILOT AUTHORIZATION.  ║
-║  4. Full 18,975-clip download remains HELD pending pilot validation.                 ║
-║  5. Confirmatory GPU CTTA adaptation & inference remain STRICTLY BLOCKED.            ║
+║  2. Pilot test isolation & evidence provenance is REPAIRED & VERIFIED (7.4.2.1).     ║
+║  3. Committed pilot reports reflect clean zero-audio evidence (0 / 75 clips).        ║
+║  4. Provisional manifest remains UNLOCKED (PROVISIONAL).                             ║
+║  5. Controlled physical pilot download (75 clips) is READY FOR AUTHORIZATION.        ║
+║  6. Full 18,975-clip download remains HELD pending physical pilot verification.      ║
+║  7. Confirmatory GPU CTTA adaptation & inference remain STRICTLY BLOCKED.            ║
 ╚══════════════════════════════════════════════════════════════════════════════════════╝
 ```
 
-### Readiness for Task 7.4.2 — Controlled Materialization Pilot
-With the two residual reliability gaps now closed:
-- **Pilot Scope:** 75 clips across 5 speakers (1 speaker per stratum $\times 15$ clips), strictly drawn from the provisional manifest with zero substitutions.
-- **Pilot Verification:**
-  - Full-file bounded-memory MP3 decoding and frame completeness check.
-  - Exact SHA-256 computation from on-disk physical files.
-  - Accurate recording ID, speaker, accent stratum, transcript, and word-count matching.
-  - Downstream mono 16 kHz resampling verification.
-- **Governance Gate:** Subject to formal pilot download execution authorization before downloading begins.
+### Readiness for Physical Pilot Authorization
+With Task 7.4.2.1 complete and verified:
+- **Test Isolation:** Mock tests no longer mutate tracked repository files.
+- **Physical Pilot Scope:** Exactly 5 evaluation speakers, 1 speaker per confirmatory stratum, 15 original clips per speaker = 75 physical MP3 recordings total.
+- **Clean Baseline:** Repository reports correctly show $0 / 75$ clips until physical acquisition actually takes place.
+- **Recommendation:** Lift the HOLD on physical pilot authorization to allow the controlled 75-clip acquisition to proceed.
+
