@@ -104,3 +104,16 @@ In accordance with formal Project-Lead Academic Authorization executed under Pro
 ║     under a separate execution gate pending final manifest locking.                  ║
 ╚══════════════════════════════════════════════════════════════════════════════════════╝
 ```
+
+---
+
+## 8. Remote Tracking & Fixed Historical Baseline Reconciliation
+
+1. **Remote Repository Synchronization:**
+   - Commit `fe73fba548c25335fdb7bcb10a799c2162d6e82e` (Milestone 7.1–7.3 deliverable) is verified on remote GitHub `origin/main` with parent `06cf833` (Project-Lead Academic Authorization).
+   - Remote branch listing reflects `main` as authoritative.
+2. **Fixed Baseline Immutability:**
+   - The frozen execution code (`src/dsg_ctta/evaluation/paired_cluster_inference.py`) is verified against the historical frozen commit `a7a3b79`.
+   - Authoritative Git object blob hash: `58d456fbcce43b5322d56df80e4077a32d7f4cca`.
+   - Exact bitwise match verified (**0 diff against fixed commit `a7a3b79`**), independent of moving branch references.
+

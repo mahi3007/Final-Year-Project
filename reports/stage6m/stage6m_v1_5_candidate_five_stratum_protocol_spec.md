@@ -1,11 +1,11 @@
-# Stage 6M — Five-Stratum Candidate Protocol Specification (v1.5.0-Candidate)
+# Stage 6M — Five-Stratum Protocol Specification (v1.5.0-Approved)
 ================================================================================
 
 | Parameter | Specification |
 |:---|:---|
-| **Document State** | `CANDIDATE_PROTOCOL_SPECIFICATION` (Pre-Registration Draft) |
+| **Document State** | `APPROVED_FIVE_STRATUM_PROTOCOL_SPECIFICATION` (Post-Authorization) |
 | **Governance Standard** | ADR-005; Protocol Section 14.7 (`PROJECT_LEAD_ACADEMIC_AUTHORIZATION`) |
-| **Governance Status** | `DRAFT_HOLD` (Confirmatory Audio Materialization & Adaptation Strictly Blocked) |
+| **Governance Status** | `AUTHORIZED_FOR_DATA_PREPARATION` (GPU Adaptation & Confirmatory Inference Separately Gated) |
 | **Base Baseline** | Protocol v1.4.0 (Frozen 6-Stratum Protocol & Commit Identity Preserved) |
 | **Target Population** | 5 Confirmatory Strata + 1 Exploratory Out-of-Domain Stratum |
 | **Multiplicity Family** | $M = 8$ Simultaneous Hypotheses |
@@ -152,7 +152,9 @@ Before running final power evaluations or sample-size sweeps, the candidate powe
 2. **Sensitivity Profile:**
    - Primary design is robust ($\ge 90\%$ joint power) against superiority degradations down to $2.0$ pp and between-speaker variance inflation up to $8.5$ pp.
    - Event D (Disparity Safety) is the primary sensitivity bottleneck; power depends critically on achieving non-zero physical disparity narrowing ($\Delta_D \le -1.5$ pp).
-3. **Governance Authorization Standard:**
-   - Formal transition from `DRAFT_HOLD` to confirmatory execution requires explicit **Project-Lead Academic Authorization** under Protocol Section 14.7.
-   - Preserves `DRAFT_HOLD` until formal Project-Lead review and authorization.
+3. **Governance Authorization Standard & Operational Phasing:**
+   - Formal Project-Lead Academic Authorization under Protocol Section 14.7 was executed at commit `06cf833` approving Option 1 ($LCB_{95\%} = 90.0857\%$) and primary sample size $N_g = 220$ with a 65-speaker Australian reserve.
+   - **Data Preparation and Controlled Audio Materialization:** **AUTHORIZED** (Speaker selection, provisional manifest curation, clip downloading, and physical integrity/format validation are authorized to proceed).
+   - **Final Manifest Locking:** **CONDITIONAL** upon successful completion of physical audio downloading, format validation, duration checks, and reconciliation of any reserve replacements.
+   - **Confirmatory Inference and GPU Adaptation:** **SEPARATELY BLOCKED** under an independent execution gate pending final locked manifest verification and separate execution-readiness decision. Model adaptation and confirmatory inference remain frozen until that separate authorization is granted.
 

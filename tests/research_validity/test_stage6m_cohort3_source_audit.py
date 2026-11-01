@@ -276,16 +276,50 @@ def test_audit_reports_exist_and_consistent():
 # ==============================================================================
 
 def test_frozen_execution_code_immutability():
-    """Verify that frozen v1.4.0 execution code has 0 diff against origin/main."""
+    """
+    Verify that frozen v1.4.0 execution code has 0 diff against historical frozen commit a7a3b79
+    and matches authoritative git object blob hash 58d456fbcce43b5322d56df80e4077a32d7f4cca.
+    Prevents false passes caused by moving branch references.
+    """
     frozen_file = "src/dsg_ctta/evaluation/paired_cluster_inference.py"
-    res = subprocess.run(
-        ["git", "diff", "origin/main", "--", frozen_file],
+    expected_blob = "58d456fbcce43b5322d56df80e4077a32d7f4cca"
+    historical_commit = "a7a3b79"
+
+    # 1. Verify working copy git blob hash matches authoritative historical blob
+    res_hash = subprocess.run(
+        ["git", "hash-object", frozen_file],
         cwd=PROJECT_ROOT,
         capture_output=True,
         text=True,
+        check=True,
     )
-    assert res.returncode == 0
-    assert res.stdout.strip() == "", f"Frozen execution file {frozen_file} was modified:\n{res.stdout}"
+    actual_blob = res_hash.stdout.strip()
+    assert actual_blob == expected_blob, (
+        f"Frozen execution code blob mismatch: expected {expected_blob}, got {actual_blob}"
+    )
+
+    # 2. Verify git diff against fixed historical commit a7a3b79 is strictly empty (0 diff)
+    res_diff = subprocess.run(
+        ["git", "diff", historical_commit, "--", frozen_file],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert res_diff.stdout.strip() == "", (
+        f"Frozen execution code differs from historical commit {historical_commit}:\n{res_diff.stdout}"
+    )
+
+    # 3. Verify historical commit a7a3b79 blob equals working copy blob
+    res_rev = subprocess.run(
+        ["git", "rev-parse", f"{historical_commit}:{frozen_file}"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert res_rev.stdout.strip() == expected_blob
+
 
 
 def test_audio_materialization_not_executed():
