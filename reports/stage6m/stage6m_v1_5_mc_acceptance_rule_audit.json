@@ -1,0 +1,106 @@
+{
+  "audit_metadata": {
+    "task_id": "STAGE6M_TASK_6_4",
+    "audit_title": "Monte Carlo Acceptance-Rule Reconciliation Audit",
+    "protocol_candidate": "v1.5 Five-Stratum Confirmatory Protocol",
+    "git_branch": "stage6m-five-stratum-parity",
+    "git_head_commit": "8c636f9",
+    "governance_status": "DRAFT_HOLD",
+    "governance_disposition": "CONDITIONAL HOLD",
+    "timestamp_utc": "2026-11-01T10:11:22Z"
+  },
+  "task_a_protocol_inspection": {
+    "protocol_wording": "LCB_95(P_hat_joint) >= 0.90 where LCB_95 is the exact Clopper-Pearson 95% lower confidence bound",
+    "detected_ambiguity": {
+      "text_specification": "Explicitly names a '95% lower confidence bound' (statistically implying tail alpha = 0.05).",
+      "code_implementation": "scripts/stage6m_v1_5_sample_size_power_sweep.py called clopper_pearson_interval(..., alpha=0.05), extracting the lower endpoint of a two-sided 95% CI (tail alpha/2 = 0.025, which is mathematically a 97.5% one-sided LCB).",
+      "historical_reports": "Task 5 reports (stage6m_v1_5_sample_size_power_sweep.md) and Task 6 reports (stage6m_v1_5_scientific_readiness_audit.md) quoted the two-sided interval lower endpoint as the LCB."
+    },
+    "root_cause": "Nomenclature conflation between a one-sided (1 - alpha) lower confidence bound and the lower endpoint of a two-sided (1 - alpha) confidence interval."
+  },
+  "task_b_numerical_reproduction": {
+    "primary_candidate_n220": {
+      "k": 9058,
+      "n": 10000,
+      "point_estimate": 0.9058,
+      "point_estimate_pct": 90.58,
+      "two_sided_95_ci": {
+        "lower_endpoint": 0.8999060145748279,
+        "upper_endpoint": 0.911456408255161,
+        "lower_endpoint_pct": 89.990601,
+        "upper_endpoint_pct": 91.145641,
+        "tail_probability": 0.025,
+        "effective_confidence_pct": 97.5,
+        "distance_from_90_pp": -0.009399,
+        "satisfies_threshold": false
+      },
+      "one_sided_95_lcb": {
+        "lower_bound": 0.9008573923868326,
+        "lower_bound_pct": 90.085739,
+        "tail_probability": 0.05,
+        "effective_confidence_pct": 95.0,
+        "distance_from_90_pp": 0.085739,
+        "satisfies_threshold": true
+      }
+    },
+    "threshold_analysis_10k_trials": {
+      "n_trials": 10000,
+      "target_power": 0.9,
+      "two_sided_lower_endpoint_min_k": 9059,
+      "two_sided_lower_endpoint_min_rate_pct": 90.59,
+      "one_sided_lcb_min_k": 9050,
+      "one_sided_lcb_min_rate_pct": 90.5,
+      "trajectory_difference_k": 9
+    },
+    "unrounded_comparison": {
+      "observed_successes": 9058,
+      "total_trials": 10000,
+      "point_estimate": 0.9058,
+      "two_sided_95_ci_lower_endpoint": 0.8999060145748279,
+      "one_sided_95_lcb": 0.9008573923868326,
+      "discrepancy_pp": 0.095138,
+      "explanation": "The difference of 0.095138 pp between the two bounds arises entirely from the tail probability: Beta(0.05; 9058, 943) = 90.085739% vs Beta(0.025; 9058, 943) = 89.990601%. At 10,000 trials, the two-sided lower endpoint requires k >= 9059 (short by 1 trajectory), whereas the one-sided LCB requires k >= 9050 (cleared by 8 trajectories)."
+    }
+  },
+  "task_c_acceptance_decision": {
+    "governing_determination": "AMBIGUOUS (Pre-Registration Clarification Required)",
+    "under_one_sided_interpretation": {
+      "criterion": "One-Sided 95% Clopper-Pearson LCB >= 90.00%",
+      "lcb_pct": 90.085739,
+      "verdict": "PASS (+0.0857 pp margin)"
+    },
+    "under_two_sided_interpretation": {
+      "criterion": "Lower Endpoint of Two-Sided 95% Clopper-Pearson CI >= 90.00%",
+      "lcb_pct": 89.990601,
+      "verdict": "SHORTFALL (-0.0094 pp shortfall; 1 trial out of 10,000)"
+    },
+    "principled_recommendation": "Recommend that the Project Lead formally adopt Option 1 (One-Sided 95% LCB) prior to Cohort 3 authorization. In statistical methodology and regulatory guidelines (FDA, EMA), validation that power or efficacy exceeds a minimum required threshold is universally formulated as a one-sided hypothesis test (H1: Power >= 0.90 at alpha = 0.05). Requiring the two-sided lower endpoint inadvertently imposes an unstated 97.5% confidence standard (alpha = 0.025). Until formal Project-Lead sign-off is executed, CONDITIONAL HOLD must be strictly preserved."
+  },
+  "task_d_sample_size_reconciliation": {
+    "primary_candidate": {
+      "sample_size_ng": 220,
+      "total_speakers": 1100,
+      "australian_buffer_speakers": 65,
+      "buffer_margin_pct": 21.3,
+      "confirmed_joint_power_pct": 90.58,
+      "outer_trials": 10000,
+      "bootstrap_replicates": 20000,
+      "status": "RECOMMENDED PRIMARY DESIGN"
+    },
+    "benchmark_candidate": {
+      "sample_size_ng": 285,
+      "total_speakers": 1425,
+      "australian_buffer_speakers": 0,
+      "buffer_margin_pct": 0.0,
+      "confirmed_joint_power_pct": 96.96,
+      "outer_trials": 2500,
+      "bootstrap_replicates": 20000,
+      "status": "SUPPLEMENTAL BENCHMARK ONLY (Requires 10k confirmation if elevated to primary)"
+    },
+    "superseded_results": {
+      "original_task_5_power_pct": 95.35,
+      "supersession_reason": "The Task 5 95.35% power estimate was obtained under an uncalibrated generator where probability clipping produced an unintended -2.1733 pp disparity narrowing (a 0.1733 pp overshoot). The corrected 90.58% result reflects the genuine -2.0000 pp registered disparity target."
+    },
+    "scientific_limitation": "All simulated power estimates are conditional on the assumed -2.0 pp disparity narrowing. Under weaker disparity effects (-1.5 pp or -1.0 pp), power degrades to 77.5% and 41.7% respectively. These assumptions must be documented in the dissertation as design scenarios rather than physical guarantees."
+  }
+}

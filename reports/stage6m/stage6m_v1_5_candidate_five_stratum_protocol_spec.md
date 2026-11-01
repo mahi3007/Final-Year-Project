@@ -127,13 +127,19 @@ Before running final power evaluations or sample-size sweeps, the candidate powe
    To qualify for consideration under Project-Lead Academic Authorization, the candidate design must demonstrate:
    $$\widehat{P}_{\text{joint}} \ge 0.90 \quad \text{AND} \quad \text{LCB}_{95\%}(\widehat{P}_{\text{joint}}) \ge 0.90$$
    where $\text{LCB}_{95\%}$ is the exact Clopper-Pearson 95% lower confidence bound from at least $S = 10,000$ Monte Carlo trials with $B = 20,000$ bootstrap replicates.
-3. **Confirmed Candidate Sample-Size Architecture:**
+3. **Confirmed Candidate Sample-Size Architecture (Calibrated Model):**
    - **Primary Confirmatory Recommendation ($N_g = 220$, $N_{\text{total}} = 1,100$):**
-     - Joint Power: **$95.35\%$** (95% CI: $[94.92\%, 95.75\%]$, $\text{LCB} = 94.92\% \ge 90.00\%$).
-     - Preserves **65 strictly eligible unexposed Australian speakers** ($21.3\%$ buffer) as a replacement reserve against physical audio corruption or decoding dropouts.
+     - Confirmed Joint Power (Corrected Model): **$90.58\%$** ($9,058 / 10,000$ trials, $B = 20,000$).
+     - Exact Confidence Bounds:
+       - **One-Sided 95% Clopper-Pearson LCB:** **$90.09\%$** ($\ge 90.00\% \implies \text{PASS}$).
+       - **Two-Sided 95% CI Lower Endpoint:** **$89.99\%$** ($89.9906\%$, shortfall of $0.0094$ pp / 1 trial).
+     - Operational Reserve: Preserves **65 strictly eligible unexposed Australian speakers** ($21.3\%$ buffer) as a replacement reserve against physical audio corruption or decoding dropouts.
+     - *Historical Superseded Finding:* Task 5 initially reported $95.35\%$ ($95\%$ CI: $[94.92\%, 95.75\%]$) under an uncalibrated generator where clipping induced a $-2.1733$ pp disparity reduction; this is formally superseded by the exact $-2.0000$ pp calibrated estimate.
    - **Ceiling Capacity Benchmark ($N_g = 285$, $N_{\text{total}} = 1,425$):**
-     - Joint Power: **$98.74\%$** (95% CI: $[98.50\%, 98.95\%]$, $\text{LCB} = 98.50\% \ge 90.00\%$).
-     - Fully consumes the Australian unexposed capacity ($0$ reserve margin). Permitted as an optional scale-up if zero manifest attrition is verified.
+     - Benchmark Joint Power: **$96.96\%$** ($2,424 / 2,500$ trials, $B = 20,000$), One-Sided 95% LCB = **$96.33\%$**.
+     - Status: **Supplemental Capacity Benchmark Only** (consumes 100% of Australian capacity; leaves zero replacement reserve).
+     - *Historical Superseded Finding:* Task 5 reported $98.74\%$ ($95\%$ CI: $[98.50\%, 98.95\%]$).
+   - **Conditional Nature Caveat:** All simulated power estimates are conditional on realizing the hypothesized $-2.0$ pp disparity narrowing; if physical narrowing is $\le -1.0$ pp, power degrades below $50\%$. These assumptions represent development-stage design scenario targets rather than physical guarantees.
 
 ---
 
