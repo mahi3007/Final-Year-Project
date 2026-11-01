@@ -110,3 +110,23 @@ class TestProjectLeadAuthorizationPackage:
         res = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True)
         assert res.returncode == 0
         assert res.stdout.strip() == "", "Frozen v1.4.0 paired_cluster_inference.py has uncommitted changes against origin/main!"
+
+    def test_project_lead_approval_decision_execution(self):
+        json_path = REPO_ROOT / "reports" / "stage6m" / "stage6m_v1_5_project_lead_authorization_package.json"
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        assert data["authorization_metadata"]["governance_status"] == "AUTHORIZED_FOR_DATA_PREPARATION"
+        assert data["authorization_metadata"]["governance_action"] == "PROJECT_LEAD_ACADEMIC_AUTHORIZATION_EXECUTED"
+
+        dec = data["project_lead_decision_record"]
+        assert dec["project_lead_verdict"] == "APPROVED"
+        assert dec["sign_off_status"] == "EXECUTED"
+        assert "Option 1" in dec["decision_1_monte_carlo_acceptance_rule"]
+        assert "N_g = 220" in dec["decision_2_primary_sample_size"]
+        assert "AUTHORIZED" in dec["decision_3_governance_scope"]
+
+        caveat = data["power_assumptions_and_limitations"]["required_dissertation_caveat"]
+        assert "conditional on the specified treatment-effect and disparity-reduction assumptions" in caveat
+        assert "does not establish the physical performance of the DSG adaptation system" in caveat
+

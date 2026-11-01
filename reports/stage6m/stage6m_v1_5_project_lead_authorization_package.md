@@ -2,10 +2,10 @@
 
 > **DOCUMENT ID:** `STAGE6M_V1_5_PROJECT_LEAD_AUTHORIZATION_PACKAGE`  
 > **PROTOCOL VERSION:** v1.5 Candidate Five-Stratum Confirmatory Protocol  
-> **GOVERNANCE STATUS:** **`DRAFT_HOLD`** (Confirmatory Audio Materialization & Model Adaptation Strictly Blocked)  
+> **GOVERNANCE STATUS:** **`AUTHORIZED FOR DATA PREPARATION`** (Confirmatory Adaptation Separately Gated)  
 > **AUTHORIZATION STANDARD:** Protocol Section 14.7 (`PROJECT_LEAD_ACADEMIC_AUTHORIZATION`)  
-> **EVALUATION BRANCH:** `stage6m-five-stratum-parity`  
-> **HEAD COMMIT:** `6023369a6e29a18f79d35f7dea55c0413245e5bc`  
+> **EVALUATION BRANCH:** `main` (Merged from `stage6m-five-stratum-parity`)  
+> **HEAD COMMIT:** `96e1357b975909882421b09e7a77943fadf0b11e`  
 > **DATE:** 2026-11-01  
 
 ---
@@ -18,13 +18,16 @@ The purpose of this package is to present all statistical, empirical, architectu
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════╗
-║                   GOVERNANCE DISPOSITION: CONDITIONAL HOLD                           ║
+║                   GOVERNANCE DISPOSITION: AUTHORIZED (DATA PREPARATION)              ║
 ║                                                                                      ║
-║  DRAFT_HOLD remains strictly active. Zero Cohort 3 audio has been materialized,      ║
-║  zero manifests have been created or locked, zero GPU adaptation has been run,       ║
-║  and the frozen v1.4.0 execution code remains 100% immutable (0 lines diff).         ║
+║  Project-Lead Academic Authorization is EXECUTED under Protocol Section 14.7.        ║
+║  - Decision 1: Option 1 One-Sided 95% Clopper-Pearson LCB adopted (PASS: 90.0857%).  ║
+║  - Decision 2: Primary sample size N_g = 220 approved (65-speaker Australian reserve).║
+║  - Decision 3: Authorized to proceed with Cohort 3 data preparation & manifest       ║
+║                construction.                                                         ║
 ║                                                                                      ║
-║  Authorization requires explicit Project-Lead sign-off under Protocol Section 14.7.  ║
+║  SEPARATE GATED CONSTRAINT: Confirmatory GPU adaptation and model inference remain   ║
+║  STRICTLY BLOCKED pending physical dataset integrity and final manifest locking.     ║
 ╚══════════════════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -170,7 +173,8 @@ where $u_i \sim \mathcal{N}(0, \sigma_{\text{spk}}^2)$ ($\sigma_{\text{spk}} = 0
 - **Event D (Disparity Non-Increase) is the sole limiting condition:**
   - If physical disparity reduction attenuates to $-1.5$ pp, joint power declines to $77.5\%$.
   - If physical disparity reduction attenuates to $-1.0$ pp, joint power declines to $41.7\%$.
-- **Dissertation Caveat:** All simulated power figures reflect conditional power under the pre-registered development design scenario; they do not guarantee physical ASR performance in the wild.
+- **Required Dissertation Caveat:**  
+  > *"The five-stratum candidate achieved the registered Monte Carlo power requirements under the calibrated primary design scenario. This result is conditional on the specified treatment-effect and disparity-reduction assumptions and does not establish the physical performance of the DSG adaptation system."*
 
 ---
 
@@ -223,25 +227,40 @@ Under `DRAFT_HOLD`, the following physical operations remain strictly blocked un
 ║                  PROJECT-LEAD ACADEMIC AUTHORIZATION RECORD                          ║
 ║                                                                                      ║
 ║  Protocol Version: v1.5 Candidate Five-Stratum Confirmatory Protocol                 ║
-║  Governing Section: Protocol Section 14.7                                            ║
+║  Governing Standard: Protocol Section 14.7                                           ║
+║  Authority: Project Lead                                                             ║
+║  Decision Date: 2026-11-01                                                           ║
 ║                                                                                      ║
-║  1. Acceptance Rule Convention Decision:                                             ║
-║     [ X ] OPTION 1 ADOPTED: One-Sided 95% Clopper-Pearson LCB >= 90.00%              ║
-║           (Confirmed: LCB = 90.085739% >= 90.0000% -> PASS)                          ║
-║     [   ] OPTION 2 ADOPTED: Two-Sided 95% CI Lower Endpoint >= 90.00%                ║
-║           (Requires N_g = 225 expansion or additional trials)                        ║
+║  DECISION 1 — MONTE CARLO ACCEPTANCE CONVENTION:                                     ║
+║  [ X ] APPROVED: One-sided 95% exact Clopper–Pearson lower confidence bound          ║
+║        adopted for evaluation of the joint statistical power requirement under       ║
+║        Section 5.3 of the Stage 6M v1.5 candidate protocol.                          ║
+║        Acceptance calculation:                                                       ║
+║        LCB_95% = Beta^(-1)(0.05; k, n - k + 1)                                       ║
+║        The primary candidate's result is 90.085739%, exceeding the registered 90%    ║
+║        threshold by +0.085739 pp (+8 trajectories).                                  ║
+║        The historical two-sided interval lower endpoint (89.990601%) is retained in  ║
+║        the audit trail.                                                              ║
 ║                                                                                      ║
-║  2. Confirmatory Sample Size Decision:                                               ║
-║     [ X ] PRIMARY CANDIDATE N_g = 220 APPROVED (1,100 eval spk, 65 reserve spk)     ║
-║     [ X ] BENCHMARK CANDIDATE N_g = 285 CONFIRMED AS SUPPLEMENTAL ONLY               ║
+║  DECISION 2 — PRIMARY SAMPLE SIZE ARCHITECTURE:                                      ║
+║  [ X ] APPROVED: Primary candidate N_g = 220 speakers per confirmatory accent,       ║
+║        totalling 1,100 evaluation speakers across 5 confirmatory strata, with a      ║
+║        separate 20-speaker gate-reference panel per accent (100 gate speakers total). ║
+║        Preserves 65 strictly eligible unexposed Australian speakers (+21.3% buffer). ║
+║        N_g = 285 confirmed strictly as the supplemental maximum-capacity benchmark.  ║
 ║                                                                                      ║
-║  3. Exploratory Stratum Decision:                                                    ║
-║     [ X ] IRISH ENGLISH ISOLATION CONFIRMED (0 hypotheses in M=8 family)             ║
+║  DECISION 3 — GOVERNANCE & EXECUTION SCOPE:                                          ║
+║  [ X ] APPROVED: The five-stratum v1.5 candidate is formally AUTHORIZED to progress   ║
+║        to the specifically authorized next readiness phase: Cohort 3 data            ║
+║        preparation and manifest construction under Protocol Section 14.7.            ║
 ║                                                                                      ║
-║  4. Authorization Disposition:                                                       ║
-║     [   ] FULL AUTHORIZATION: Lift DRAFT_HOLD, Unfreeze Cohort 3 Materialization     ║
-║     [ X ] CONDITIONAL HOLD: Maintain DRAFT_HOLD until formal sign-off signature      ║
+║  SEPARATE GATED CONSTRAINTS (PRESERVED):                                             ║
+║  - Confirmatory inference and model adaptation remain STRICTLY BLOCKED subject to    ║
+║    successful physical dataset curation, audio checksum verification, partition      ║
+║    disjointness audit, and final manifest locking.                                   ║
+║  - Frozen v1.4.0 execution code remains strictly immutable (0 lines diff).           ║
 ║                                                                                      ║
-║  Project Lead Sign-off: ___________________________    Date: _____________________   ║
+║  PROJECT-LEAD FINAL VERDICT: APPROVED                                                ║
+║  Execution Date: 2026-11-01                                                          ║
 ╚══════════════════════════════════════════════════════════════════════════════════════╝
 ```

@@ -2,11 +2,11 @@
   "authorization_metadata": {
     "package_id": "STAGE6M_V1_5_PROJECT_LEAD_AUTHORIZATION_PACKAGE",
     "protocol_candidate": "v1.5 Five-Stratum Confirmatory Protocol",
-    "git_branch": "stage6m-five-stratum-parity",
-    "git_commit_sha": "6023369a6e29a18f79d35f7dea55c0413245e5bc",
-    "governance_status": "DRAFT_HOLD",
-    "governance_action": "PROJECT_LEAD_ACADEMIC_AUTHORIZATION_PENDING",
-    "timestamp_utc": "2026-11-01T10:45:00Z"
+    "git_branch": "main",
+    "git_commit_sha": "96e1357b975909882421b09e7a77943fadf0b11e",
+    "governance_status": "AUTHORIZED_FOR_DATA_PREPARATION",
+    "governance_action": "PROJECT_LEAD_ACADEMIC_AUTHORIZATION_EXECUTED",
+    "timestamp_utc": "2026-11-01T11:15:00Z"
   },
   "scientific_objectives": {
     "primary_objective": "Rigorous confirmatory evaluation of Continuous Test-Time Adaptation (CTTA) with Dynamic Selective Gating (DSG) across diverse English accents in streaming automatic speech recognition.",
@@ -149,7 +149,8 @@
       "dsg_improvement_vs_suta_pp": 3.5,
       "disparity_reduction_pp": -2.0
     },
-    "sensitivity_bottleneck": "Event D (Disparity Non-Increase) is the critical sensitivity bottleneck. If physical disparity reduction is only -1.5 pp or -1.0 pp, joint power degrades to 77.5% and 41.7% respectively. Simulated power is conditional on achieving the development target scenario."
+    "sensitivity_bottleneck": "Event D (Disparity Non-Increase) is the critical sensitivity bottleneck. If physical disparity reduction is only -1.5 pp or -1.0 pp, joint power degrades to 77.5% and 41.7% respectively. Simulated power is conditional on achieving the development target scenario.",
+    "required_dissertation_caveat": "The five-stratum candidate achieved the registered Monte Carlo power requirements under the calibrated primary design scenario. This result is conditional on the specified treatment-effect and disparity-reduction assumptions and does not establish the physical performance of the DSG adaptation system."
   },
   "data_capacity_and_provenance": {
     "source_corpus": "Mozilla Common Voice 27.0 (cv-corpus-27.0-2026-09-11)",
@@ -172,21 +173,18 @@
     "immutability_verified": true
   },
   "remaining_physical_data_requirements": {
-    "cohort_3_audio_materialization": "Blocked under DRAFT_HOLD. Requires unfreezing by Project Lead.",
-    "manifest_creation_and_locking": "Blocked under DRAFT_HOLD.",
-    "gpu_ctta_adaptation": "Blocked under DRAFT_HOLD.",
-    "prerequisites_before_unfreeze": [
-      "Project-Lead formal signature adopting Option 1 acceptance rule",
-      "Formal unfreeze authorization under Protocol Section 14.7",
-      "Checksum validation of downloaded audio partitions"
-    ]
+    "cohort_3_data_preparation_and_manifest_construction": "AUTHORIZED under Protocol Section 14.7.",
+    "cohort_3_audio_materialization": "AUTHORIZED under controlled download pipeline with bitwise checksum validation.",
+    "gpu_ctta_adaptation_and_confirmatory_inference": "GATED_BLOCKED pending manifest verification, audio disjointness, and final execution readiness review."
   },
   "project_lead_decision_record": {
     "governing_section": "Protocol Section 14.7",
-    "action_requested": "Formal Academic Authorization of v1.5 Five-Stratum Confirmatory Protocol",
-    "acceptance_rule_decision": "Option 1 (One-Sided 95% Clopper-Pearson LCB >= 90.00%)",
-    "primary_sample_size": "N_g = 220 (1,100 evaluation speakers, 100 gate speakers, 65 reserve speakers in Australia)",
-    "benchmark_status": "N_g = 285 confirmed as supplemental ceiling benchmark only",
-    "sign_off_status": "PENDING_PROJECT_LEAD_DECISION"
+    "authority": "Project Lead",
+    "decision_date": "2026-11-01",
+    "decision_1_monte_carlo_acceptance_rule": "APPROVED: Option 1 One-Sided 95% Clopper-Pearson LCB adopted (LCB = Beta^(-1)(0.05; k, n - k + 1) = 90.085739% >= 90.0000% -> PASS by +0.0857 pp / +8 trials).",
+    "decision_2_primary_sample_size": "APPROVED: N_g = 220 evaluation speakers per confirmatory accent (1,100 total), 20 separate gate speakers per accent (100 total), 65 Australian replacement reserve speakers (+21.3% buffer). N_g = 285 confirmed strictly as supplemental maximum-capacity benchmark.",
+    "decision_3_governance_scope": "APPROVED: The five-stratum v1.5 candidate protocol is formally AUTHORIZED to progress to Cohort 3 data preparation and manifest construction under Protocol Section 14.7. Confirmatory inference and model adaptation remain subject to successful physical dataset, manifest, disjointness, and readiness validation.",
+    "project_lead_verdict": "APPROVED",
+    "sign_off_status": "EXECUTED"
   }
 }
