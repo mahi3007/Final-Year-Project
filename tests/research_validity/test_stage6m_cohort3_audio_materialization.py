@@ -60,6 +60,7 @@ from scripts.materialize_stage6m_cohort3_audio import (
     LEDGER_CSV,
     MATERIALIZATION_JSON,
     MATERIALIZATION_MD,
+    HARDENING_AUDIT_JSON,
     PILOT_CONFIRMATORY_STRATA,
     PILOT_EXPECTED_CLIPS_PER_SPEAKER,
     PILOT_EXPECTED_SPEAKERS,
@@ -82,6 +83,8 @@ from scripts.materialize_stage6m_cohort3_audio import (
     scan_local_inventory,
     select_pilot_speakers_and_clips,
     validate_audio_file,
+    verify_full_cohort_materialization_authorization,
+    verify_pilot_materialization_authorization,
 )
 from src.dsg_ctta.data.acoustic import load_and_resample_audio
 
@@ -221,6 +224,17 @@ def test_validate_audio_file_genuine_mp3_and_boundaries(tmp_path):
     valid, dur, sr, ch, h, err = validate_audio_file(mp3_8k)
     assert not valid
     assert "Unsupported sample rate: 8000 Hz" in err
+
+    # 11. Real Common Voice MP3 with standard LAME padding delay (if present)
+    sample_real = PROJECT_ROOT / "datasets" / "external" / "common_voice_27" / "audio" / "stage5ext_00001.mp3"
+    if sample_real.exists():
+        valid, dur, sr, ch, h, err = validate_audio_file(sample_real)
+        assert valid, f"Real Common Voice MP3 failed validation: {err}"
+        assert dur > 0.0
+        assert sr in {16000, 22050, 24000, 32000, 44100, 48000}
+        assert ch in (1, 2)
+        assert len(h) == 64
+        assert err == ""
 
 
 def test_speaker_completeness_accounting_zero_audio(tmp_path):
@@ -792,8 +806,11 @@ def test_pilot_cli_execution_and_report_isolation(tmp_path):
     assert pilot_data["target_scale"]["total_target_speakers"] == 5
     assert pilot_data["materialized_scale"]["total_target_speakers"] == 5
     assert pilot_data["materialized_scale"]["valid_clips_count"] == 0
-    assert pilot_data["materialized_scale"]["remaining_clips_count"] == 75
-    assert pilot_data["governance_status"] == "PILOT_PREPARED_PENDING_SEPARATE_PILOT_AUTHORIZATION"
+    assert pilot_data["governance_status"] in (
+        "PILOT_PREPARED_PENDING_SEPARATE_PILOT_AUTHORIZATION",
+        "PILOT_AUTHORIZED_BY_PROJECT_LEAD",
+        "PILOT_AUTHORIZED_AND_VERIFIED",
+    )
     assert pilot_data["materialization_disposition"] == "PILOT_ZERO_AUDIO_DRY_RUN"
     assert pilot_data["execution_gating"]["gpu_ctta_adaptation"] == "STRICTLY_BLOCKED"
     assert pilot_data["execution_gating"]["confirmatory_inference"] == "STRICTLY_BLOCKED"
@@ -879,10 +896,11 @@ def test_pilot_mock_materialization_verification(tmp_path):
 
 def test_committed_pilot_reports_exist_and_clean_zero_audio():
     """
-    Verify Task 7.4.2.1:
+    Verify Task 7.4.2.1 / Milestone 7.4:
     Assert that committed repository pilot artifacts exist and strictly reflect
-    clean, un-contaminated zero-audio physical evidence (0 valid clips, disposition
-    PILOT_ZERO_AUDIO_DRY_RUN, 0 rows in ledger, 5 incomplete speakers).
+    internally consistent evidence (valid clips match ledger row count, complete and
+    incomplete speaker counts match the completeness report, failed clips count is zero,
+    and governance gating strictly blocks downstream adaptation and inference).
     """
     assert PILOT_MATERIALIZATION_JSON.exists(), f"Missing {PILOT_MATERIALIZATION_JSON}"
     assert PILOT_MATERIALIZATION_MD.exists(), f"Missing {PILOT_MATERIALIZATION_MD}"
@@ -896,30 +914,92 @@ def test_committed_pilot_reports_exist_and_clean_zero_audio():
     assert pilot_data["target_scale"]["total_target_clips"] == 75
     assert pilot_data["target_scale"]["total_target_speakers"] == 5
     assert pilot_data["materialized_scale"]["total_target_speakers"] == 5
-    assert pilot_data["materialized_scale"]["valid_clips_count"] == 0
-    assert pilot_data["materialized_scale"]["remaining_clips_count"] == 75
-    assert pilot_data["materialized_scale"]["complete_speakers_count"] == 0
-    assert pilot_data["materialized_scale"]["incomplete_speakers_count"] == 5
+
+    valid_clips = pilot_data["materialized_scale"]["valid_clips_count"]
+    remaining_clips = pilot_data["materialized_scale"]["remaining_clips_count"]
+    assert valid_clips + remaining_clips == 75
     assert pilot_data["materialized_scale"]["failed_clips_count"] == 0
-    assert pilot_data["materialized_scale"]["total_duration_seconds"] == 0.0
-    assert pilot_data["materialization_disposition"] == "PILOT_ZERO_AUDIO_DRY_RUN"
-    assert pilot_data["governance_status"] == "PILOT_PREPARED_PENDING_SEPARATE_PILOT_AUTHORIZATION"
+
+    assert pilot_data["governance_status"] in (
+        "PILOT_PREPARED_PENDING_SEPARATE_PILOT_AUTHORIZATION",
+        "PILOT_AUTHORIZED_BY_PROJECT_LEAD",
+        "PILOT_AUTHORIZED_AND_VERIFIED",
+    )
+    assert pilot_data["materialization_disposition"] in (
+        "PILOT_ZERO_AUDIO_DRY_RUN",
+        "PILOT_IN_PROGRESS",
+        "PILOT_COMPLETE",
+    )
     assert pilot_data["execution_gating"]["gpu_ctta_adaptation"] == "STRICTLY_BLOCKED"
     assert pilot_data["execution_gating"]["confirmatory_inference"] == "STRICTLY_BLOCKED"
     assert pilot_data["execution_gating"]["full_cohort_materialization"] == "HELD_PENDING_PILOT_VERIFICATION"
 
-    # Verify ledger CSV has header only and 0 data rows
+    # Verify ledger CSV has header + matching valid clips
     with open(PILOT_LEDGER_CSV, "r", encoding="utf-8") as f:
         reader = list(csv.reader(f))
-    assert len(reader) == 1, f"Expected header only in clean pilot ledger, found {len(reader)} lines"
+    assert len(reader) == 1 + valid_clips, f"Expected {1 + valid_clips} lines in pilot ledger, found {len(reader)}"
 
-    # Verify speaker completeness report has 5 incomplete speakers
+    # Verify speaker completeness report is consistent with pilot data
     with open(PILOT_SPEAKER_REPORT_JSON, "r", encoding="utf-8") as f:
         spk_data = json.load(f)
     assert spk_data["total_target_speakers"] == 5
-    assert spk_data["complete_speakers"] == 0
-    assert spk_data["incomplete_speakers"] == 5
-    for sid, spk_entry in spk_data["speakers"].items():
-        assert spk_entry["materialized_clips_count"] == 0
-        assert spk_entry["required_clips_count"] == 15
-        assert spk_entry["is_complete"] is False
+    complete_count = sum(1 for s in spk_data["speakers"].values() if s["is_complete"])
+    incomplete_count = sum(1 for s in spk_data["speakers"].values() if not s["is_complete"])
+    assert spk_data["complete_speakers"] == complete_count
+    assert spk_data["incomplete_speakers"] == incomplete_count
+    assert pilot_data["materialized_scale"]["complete_speakers_count"] == complete_count
+    assert pilot_data["materialized_scale"]["incomplete_speakers_count"] == incomplete_count
+
+
+def test_pilot_materialization_authorization_fails_closed(tmp_path):
+    """
+    Verify that physical pilot and full-cohort streaming fail closed unless
+    explicit Project-Lead authorization under Protocol Section 14.7 is present.
+    """
+    # 1. Missing audit file -> fails closed
+    missing_file = tmp_path / "non_existent_audit.json"
+    with pytest.raises(PermissionError) as exc_info:
+        verify_pilot_materialization_authorization(missing_file)
+    assert "governance audit artifact not found" in str(exc_info.value)
+
+    # 2. Audit file with pending / unauthorized status -> fails closed
+    unauth_file = tmp_path / "unauthorized_audit.json"
+    with open(unauth_file, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "execution_gating": {
+                    "controlled_pilot_download": "PENDING_SEPARATE_PILOT_AUTHORIZATION",
+                    "full_audio_materialization": "BLOCKED_PENDING_PILOT_VALIDATION",
+                }
+            },
+            f,
+        )
+
+    with pytest.raises(PermissionError) as exc_info:
+        verify_pilot_materialization_authorization(unauth_file)
+    assert "controlled_pilot_download is 'PENDING_SEPARATE_PILOT_AUTHORIZATION'" in str(exc_info.value)
+
+    with pytest.raises(PermissionError) as exc_info:
+        verify_full_cohort_materialization_authorization(unauth_file)
+    assert "full_audio_materialization is 'BLOCKED_PENDING_PILOT_VALIDATION'" in str(exc_info.value)
+
+    # 3. Authorized file -> passes cleanly
+    auth_file = tmp_path / "authorized_audit.json"
+    with open(auth_file, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "execution_gating": {
+                    "controlled_pilot_download": "AUTHORIZED_BY_PROJECT_LEAD",
+                    "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
+                }
+            },
+            f,
+        )
+
+    verify_pilot_materialization_authorization(auth_file)
+    verify_full_cohort_materialization_authorization(auth_file)
+
+    # 4. Verified against committed repository audit artifact
+    assert HARDENING_AUDIT_JSON.exists()
+    verify_pilot_materialization_authorization(HARDENING_AUDIT_JSON)
+

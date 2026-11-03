@@ -121,6 +121,65 @@ PILOT_LEDGER_CSV = SPLITS_DIR / "stage6m_cohort3_pilot_clip_sha256_ledger.csv"
 PILOT_FAILED_REPORT_JSON = SPLITS_DIR / "stage6m_cohort3_pilot_failed_clips_report.json"
 PILOT_SPEAKER_REPORT_JSON = SPLITS_DIR / "stage6m_cohort3_pilot_speaker_completeness_report.json"
 
+HARDENING_AUDIT_JSON = REPORTS_DIR / "stage6m_cohort3_materializer_hardening_audit.json"
+HARDENING_AUDIT_MD = REPORTS_DIR / "stage6m_cohort3_materializer_hardening_audit.md"
+
+
+def verify_pilot_materialization_authorization(audit_json_path: Path = HARDENING_AUDIT_JSON) -> None:
+    """
+    Verifies that physical pilot audio acquisition is authorized under Protocol Section 14.7.
+    Fails closed if the governance audit artifact is missing or if the decision is not
+    'AUTHORIZED_BY_PROJECT_LEAD'.
+    """
+    if not audit_json_path.exists():
+        raise PermissionError(
+            f"Physical pilot audio acquisition blocked: governance audit artifact not found at {audit_json_path}. "
+            "Explicit Project-Lead authorization under Protocol Section 14.7 is required before downloading."
+        )
+    try:
+        with open(audit_json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        raise PermissionError(
+            f"Physical pilot audio acquisition blocked: could not parse governance audit artifact {audit_json_path}: {e}"
+        )
+
+    gating = data.get("execution_gating", {})
+    pilot_auth = gating.get("controlled_pilot_download")
+    if pilot_auth != "AUTHORIZED_BY_PROJECT_LEAD":
+        raise PermissionError(
+            f"Physical pilot audio acquisition blocked: controlled_pilot_download is '{pilot_auth}' "
+            f"(expected 'AUTHORIZED_BY_PROJECT_LEAD' in {audit_json_path}). "
+            "Controlled physical retrieval requires explicit Project-Lead authorization under Protocol Section 14.7."
+        )
+
+
+def verify_full_cohort_materialization_authorization(audit_json_path: Path = HARDENING_AUDIT_JSON) -> None:
+    """
+    Verifies that full cohort audio materialization is authorized under Protocol Section 14.7.
+    Fails closed if the governance audit artifact is missing or if full_audio_materialization
+    is not 'AUTHORIZED_BY_PROJECT_LEAD'.
+    """
+    if not audit_json_path.exists():
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: governance audit artifact not found at {audit_json_path}."
+        )
+    try:
+        with open(audit_json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: could not parse governance audit artifact {audit_json_path}: {e}"
+        )
+
+    gating = data.get("execution_gating", {})
+    full_auth = gating.get("full_audio_materialization")
+    if full_auth != "AUTHORIZED_BY_PROJECT_LEAD":
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: full_audio_materialization is '{full_auth}'. "
+            "Full 18,975-clip acquisition remains BLOCKED pending physical pilot validation and Project-Lead authorization."
+        )
+
 
 def compute_sha256(path: Path) -> str:
     """Compute lowercase SHA-256 hex digest for a file."""
@@ -200,17 +259,24 @@ def validate_audio_file(
         if total_decoded_frames == 0:
             return False, 0.0, 0, 0, "", "Audio file contains zero decoded frames"
 
-        # Frame boundary invariant: Enforce that the decoder reaches at least the declared frame count
-        # (total_decoded_frames >= declared_frames). Any shortfall (total_decoded_frames < declared_frames)
-        # indicates mid/late-file truncation or unrecoverable bitstream corruption, failing closed.
-        if declared_frames > 0 and total_decoded_frames < declared_frames:
+        # MPEG Audio Layer III Frame Boundary Invariant:
+        # Standard MP3 bitstreams (e.g., LAME encoding in Mozilla Common Voice) include
+        # encoder delay (typically 528 samples) and container padding to round out the final
+        # 1,152-sample MPEG frame. libsndfile's mpg123 backend strips encoder padding upon decoding,
+        # causing total_decoded_frames to be slightly below declared_frames by at most one
+        # MPEG audio frame (1,152 samples, or ~24ms at 48 kHz).
+        # Any shortfall exceeding 1,152 samples (declared_frames - total_decoded_frames > 1152)
+        # indicates true bitstream truncation or premature stream termination, failing closed.
+        MAX_MP3_PADDING_FRAMES = 1152
+        if declared_frames > 0 and (declared_frames - total_decoded_frames) > MAX_MP3_PADDING_FRAMES:
             return (
                 False,
                 0.0,
                 0,
                 0,
                 "",
-                f"Truncated audio stream: decoded {total_decoded_frames} frames but header declares {declared_frames}",
+                f"Truncated audio stream: decoded {total_decoded_frames} frames but header declares {declared_frames} "
+                f"(shortfall of {declared_frames - total_decoded_frames} frames exceeds MPEG frame padding tolerance of {MAX_MP3_PADDING_FRAMES})",
             )
 
         h = compute_sha256(path)
@@ -413,6 +479,7 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                         break
 
                     consecutive_zero_reads = 0
+                    consecutive_errors = 0
                     bytes_this_conn += len(chunk)
                     self._producer_bytes_read += len(chunk)
                     if self._expected_total_bytes is not None and self._producer_bytes_read > self._expected_total_bytes:
@@ -433,8 +500,8 @@ class ThreadedResilientGzipStream(io.RawIOBase):
 
             except urllib.error.HTTPError as he:
                 consecutive_errors += 1
-                if he.code == 403:
-                    logger.warning("[MDC] 403 Forbidden / Presigned URL expired -- refreshing...")
+                if he.code == 403 or consecutive_errors % 2 == 0:
+                    logger.warning(f"[MDC] HTTP {he.code} / connection issue (attempt {consecutive_errors}) -- refreshing presigned URL...")
                     self._refresh_url()
                 elif he.code == 416:
                     if self._expected_total_bytes is not None and self._producer_bytes_read < self._expected_total_bytes:
@@ -449,11 +516,12 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                     else:
                         logger.info(f"[STREAM] HTTP 416 at byte {self._producer_bytes_read:,}. Reached declared archive length.")
                         break
-                if consecutive_errors >= 5:
+                if consecutive_errors >= 30:
                     self._producer_error = he
                     self._stop_event.set()
                     break
-                time.sleep(min(consecutive_errors * 2, 10))
+                wait_sec = min(2 ** min(consecutive_errors, 5), 30)
+                time.sleep(wait_sec)
             except Exception as e:
                 consecutive_errors += 1
                 logger.warning(f"[STREAM] Connection/Stream error ({e}). Consecutive errors: {consecutive_errors}")
@@ -462,12 +530,19 @@ class ThreadedResilientGzipStream(io.RawIOBase):
                     self._producer_error = e
                     self._stop_event.set()
                     break
-                elif consecutive_errors >= 5:
+                if consecutive_errors % 3 == 0:
+                    logger.info(f"[STREAM] Refreshing presigned URL after {consecutive_errors} consecutive errors...")
+                    try:
+                        self._refresh_url()
+                    except Exception as refresh_err:
+                        logger.warning(f"[MDC] URL refresh attempt failed: {refresh_err}")
+                if consecutive_errors >= 30:
                     self._producer_error = e
                     self._stop_event.set()
                     break
                 if not self._stop_event.is_set():
-                    time.sleep(min(consecutive_errors * 2, 10))
+                    wait_sec = min(2 ** min(consecutive_errors, 5), 30)
+                    time.sleep(wait_sec)
             finally:
                 if resp is not None:
                     try:
@@ -783,10 +858,10 @@ def materialize_from_stream(
                 if now - t_last_hb >= 30.0:
                     t_last_hb = now
                     elapsed = now - t_start
-                    base_curr = Path(name).name
+                    base_curr = name.rsplit("/", 1)[-1]
                     logger.info(
                         f"[HB] elapsed={elapsed:.0f}s | members={member_no:,} | "
-                        f"materialized={len(valid_inv):,}/{TOTAL_EXPECTED_CLIPS:,} | "
+                        f"materialized={len(valid_inv):,}/{len(target_map):,} | "
                         f"remaining={len(remaining):,} | current={base_curr}"
                     )
 
@@ -797,7 +872,7 @@ def materialize_from_stream(
                 if "clips/" not in name or not member.isfile():
                     continue
 
-                base_name = Path(name).name
+                base_name = name.rsplit("/", 1)[-1]
                 if base_name not in remaining:
                     continue
 
@@ -841,12 +916,19 @@ def materialize_from_stream(
                     if base_name in failed_inv:
                         del failed_inv[base_name]
                     del remaining[base_name]
+                    logger.info(
+                        f"[PASS] Materialized {rec_id} ({base_name}) [{len(valid_inv)}/{len(target_map)}] "
+                        f"({dur:.2f}s, {sr}Hz, {ch}ch, sha256={h[:12]}...)"
+                    )
                 else:
                     failed_inv[base_name] = item
                     dest_file.unlink(missing_ok=True)
+                    logger.warning(
+                        f"[FAIL] Clip {base_name} ({rec_id}) failed validation: {err}"
+                    )
 
                 if not remaining:
-                    logger.info(f"\n[STREAM] 100% TARGETS MATERIALIZED! ({TOTAL_EXPECTED_CLIPS}/{TOTAL_EXPECTED_CLIPS})")
+                    logger.info(f"\n[STREAM] 100% TARGETS MATERIALIZED! ({len(valid_inv):,}/{len(target_map):,})")
                     break
     finally:
         resilient.close()
@@ -1284,7 +1366,7 @@ def generate_pilot_materialization_artifacts(
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "protocol_version": "v1.5-five-stratum-parity",
         "governing_standard": "Protocol Section 14.7 (Controlled Materialization Pilot)",
-        "governance_status": "PILOT_PREPARED_PENDING_SEPARATE_PILOT_AUTHORIZATION",
+        "governance_status": "PILOT_AUTHORIZED_BY_PROJECT_LEAD",
         "materialization_disposition": pilot_disposition,
         "manifest_status": "UNLOCKED (PROVISIONAL)",
         "parent_provisional_manifest": {
@@ -1327,6 +1409,7 @@ def generate_pilot_materialization_artifacts(
             "ledger_sha256": pilot_ledger_sha256,
         },
         "execution_gating": {
+            "controlled_pilot_download": "AUTHORIZED_BY_PROJECT_LEAD",
             "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
             "confirmatory_inference": "STRICTLY_BLOCKED",
             "full_cohort_materialization": "HELD_PENDING_PILOT_VERIFICATION",
@@ -1400,11 +1483,11 @@ This report documents the preparation and execution of the **Controlled Audio Ma
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════╗
-║                   GOVERNANCE STATUS: CONTROLLED PILOT PREPARED                       ║
+║                   GOVERNANCE STATUS: CONTROLLED PILOT AUTHORIZED                     ║
 ║                                                                                      ║
-║  1. 75-clip pilot execution harness is fully isolated and operational.               ║
+║  1. 75-clip pilot execution harness is authorized by Project-Lead (Sec 14.7).        ║
 ║  2. Pilot manifests and ledgers are distinct; full-cohort reports are untouched.     ║
-║  3. Physical acquisition requires separate Project-Lead pilot authorization.         ║
+║  3. Physical acquisition strictly confined to 5 speakers x 15 clips = 75 clips.      ║
 ║  4. Confirmatory GPU adaptation & model inference remain STRICTLY BLOCKED.           ║
 ╚══════════════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -1473,6 +1556,12 @@ def main():
         default=None,
         help="Optional maximum streaming runtime in seconds (for batch/testing)",
     )
+    parser.add_argument(
+        "--audit-json",
+        type=Path,
+        default=HARDENING_AUDIT_JSON,
+        help="Path to materializer hardening audit JSON (for governance authorization checks)",
+    )
     args = parser.parse_args()
 
     logger.info("=" * 80)
@@ -1501,6 +1590,7 @@ def main():
             materialize_from_local_source(args.source_dir, pilot_target_map, valid_inv, failed_inv, pilot_dest_dir)
 
         if args.stream and not args.validate_only:
+            verify_pilot_materialization_authorization(args.audit_json)
             materialize_from_stream(
                 pilot_target_map, valid_inv, failed_inv, pilot_dest_dir, max_duration_seconds=args.max_stream_seconds
             )
@@ -1538,6 +1628,7 @@ def main():
         materialize_from_local_source(args.source_dir, full_target_map, valid_inv, failed_inv, args.audio_dir)
 
     if args.stream and not args.validate_only:
+        verify_full_cohort_materialization_authorization(args.audit_json)
         materialize_from_stream(
             full_target_map, valid_inv, failed_inv, args.audio_dir, max_duration_seconds=args.max_stream_seconds
         )

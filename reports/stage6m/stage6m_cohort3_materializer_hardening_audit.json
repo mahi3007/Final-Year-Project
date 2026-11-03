@@ -10,11 +10,28 @@
   "audit_disposition": "PASS_PILOT_ARTIFACT_ISOLATION_AND_EVIDENCE_PROVENANCE_REPAIRED",
   "execution_gating": {
     "audio_materialization_hardening": "VERIFIED_FULL_FILE_AND_TERMINATION",
-    "controlled_pilot_download": "PENDING_SEPARATE_PILOT_AUTHORIZATION",
+    "controlled_pilot_download": "AUTHORIZED_BY_PROJECT_LEAD",
     "full_audio_materialization": "BLOCKED_PENDING_PILOT_VALIDATION",
     "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
     "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
     "confirmatory_inference": "STRICTLY_BLOCKED"
+  },
+  "pilot_authorization_decision": {
+    "status": "AUTHORIZED_BY_PROJECT_LEAD",
+    "protocol_reference": "Protocol Section 14.7",
+    "verdict": "APPROVE — 75-clip physical pilot only",
+    "date": "2026-11-01",
+    "authorized_scope": {
+      "confirmatory_evaluation_strata": 5,
+      "speakers_per_stratum": 1,
+      "total_speakers": 5,
+      "clips_per_speaker": 15,
+      "total_physical_clips": 75,
+      "substitutions": 0
+    },
+    "destination_directory": "datasets/external/common_voice_27/cohort3_pilot_audio",
+    "safeguard_enforcement": "Execution path fails closed unless explicit Project-Lead authorization is recorded.",
+    "evaluation_constraints": "Pilot use remains strictly an acquisition and physical integrity check — not ASR performance evaluation, adaptation, threshold tuning or model selection."
   },
   "issue_a_speaker_completeness": {
     "status": "RESOLVED_AND_VERIFIED",
@@ -30,7 +47,7 @@
     "description": "Strict MP3 container validation, full-file bounded-memory chunk decoding, late truncation detection, and explicit sample-rate contract.",
     "container_format_check": "info.format.upper() == 'MP3'",
     "full_stream_chunk_decoding": "sf.SoundFile(str(path)).read(4096) decodes entire file in bounded-memory chunks without loading full audio into memory",
-    "frame_completeness_check": "total_decoded_frames >= declared_frames strictly enforced; detects and rejects truncation or corruption occurring after the first 1,000 frames",
+    "frame_completeness_check": "Full-stream decoding with MPEG Audio Layer III frame boundary tolerance: declared_frames - total_decoded_frames <= 1152 (1 MPEG frame) accommodates standard LAME encoder padding/delay stripped by libsndfile/mpg123 while rejecting genuine bitstream truncation or premature EOF",
     "sample_rate_policy": {
       "ingest_validation": "Positive rate in {16000, 22050, 24000, 32000, 44100, 48000}",
       "common_voice_native_rates": "32000, 44100, 48000 Hz",
@@ -127,7 +144,8 @@
     "materialization_test_suite": "tests/research_validity/test_stage6m_cohort3_audio_materialization.py",
     "materialization_tests_passed": 12,
     "materialization_tests_failed": 0,
-    "regression_suite_tests_passed": 52,
-    "regression_suite_tests_failed": 0
+    "suite_description": "52-test Stage 6M targeted regression suite across 5 specified modules (audio materialization, source audit, curation, authorization package, historical immutability)",
+    "targeted_regression_suite_tests_passed": 52,
+    "targeted_regression_suite_tests_failed": 0
   }
 }
