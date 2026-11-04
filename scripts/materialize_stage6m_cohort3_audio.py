@@ -121,12 +121,11 @@ PILOT_LEDGER_CSV = SPLITS_DIR / "stage6m_cohort3_pilot_clip_sha256_ledger.csv"
 PILOT_FAILED_REPORT_JSON = SPLITS_DIR / "stage6m_cohort3_pilot_failed_clips_report.json"
 PILOT_SPEAKER_REPORT_JSON = SPLITS_DIR / "stage6m_cohort3_pilot_speaker_completeness_report.json"
 
-_AUDIT_ENV = os.environ.get("STAGE6M_HARDENING_AUDIT_JSON")
-HARDENING_AUDIT_JSON = (
-    Path(_AUDIT_ENV)
-    if _AUDIT_ENV
-    else (REPORTS_DIR / "stage6m_cohort3_materializer_hardening_audit.json")
-)
+# Task 7.5.3: Pin canonical governance audit JSON unconditionally in production.
+# The environment variable override STAGE6M_HARDENING_AUDIT_JSON has been completely
+# removed to prevent adversarial authorization bypass via environment injection.
+# In-process test injection remains available via helper-function arguments or monkeypatch.
+HARDENING_AUDIT_JSON = REPORTS_DIR / "stage6m_cohort3_materializer_hardening_audit.json"
 HARDENING_AUDIT_MD = REPORTS_DIR / "stage6m_cohort3_materializer_hardening_audit.md"
 
 

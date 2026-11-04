@@ -1249,7 +1249,6 @@ def test_cli_integration_pilot_source_dir_unauthorized_rejected_before_copy(tmp_
 
     # 1. In-process CLI execution with monkeypatch
     monkeypatch.setattr("scripts.materialize_stage6m_cohort3_audio.HARDENING_AUDIT_JSON", blocked_audit)
-    monkeypatch.setenv("STAGE6M_HARDENING_AUDIT_JSON", str(blocked_audit))
     monkeypatch.setattr(
         sys,
         "argv",
@@ -1271,10 +1270,7 @@ def test_cli_integration_pilot_source_dir_unauthorized_rejected_before_copy(tmp_
     # Critical invariant: Zero files copied before rejection
     assert list(dest_dir.iterdir()) == [], "Files were copied to destination despite unauthorized status!"
 
-    # 2. Independent subprocess CLI execution with env override
-    import os
-    sub_env = os.environ.copy()
-    sub_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(blocked_audit)
+    # 2. Independent subprocess CLI execution (pinned canonical governance in production)
     sub_dest = tmp_path / "sub_dest"
     sub_dest.mkdir()
     res = subprocess.run(
@@ -1291,7 +1287,6 @@ def test_cli_integration_pilot_source_dir_unauthorized_rejected_before_copy(tmp_
         ],
         capture_output=True,
         text=True,
-        env=sub_env,
     )
     assert res.returncode != 0
     assert "PermissionError" in res.stderr or "Physical pilot audio acquisition blocked" in res.stderr
@@ -1326,7 +1321,6 @@ def test_cli_integration_full_cohort_source_dir_unauthorized_rejected_before_cop
 
     # 1. In-process CLI execution with monkeypatch
     monkeypatch.setattr("scripts.materialize_stage6m_cohort3_audio.HARDENING_AUDIT_JSON", blocked_audit)
-    monkeypatch.setenv("STAGE6M_HARDENING_AUDIT_JSON", str(blocked_audit))
     monkeypatch.setattr(
         sys,
         "argv",
@@ -1346,10 +1340,7 @@ def test_cli_integration_full_cohort_source_dir_unauthorized_rejected_before_cop
     assert "Full cohort audio acquisition blocked" in str(exc_info.value)
     assert list(dest_dir.iterdir()) == [], "Files were copied to destination despite unauthorized status!"
 
-    # 2. Independent subprocess CLI execution with env override
-    import os
-    sub_env = os.environ.copy()
-    sub_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(blocked_audit)
+    # 2. Independent subprocess CLI execution (pinned canonical governance in production)
     sub_dest = tmp_path / "sub_full_dest"
     sub_dest.mkdir()
     res = subprocess.run(
@@ -1365,7 +1356,6 @@ def test_cli_integration_full_cohort_source_dir_unauthorized_rejected_before_cop
         ],
         capture_output=True,
         text=True,
-        env=sub_env,
     )
     assert res.returncode != 0
     assert "PermissionError" in res.stderr or "Full cohort audio acquisition blocked" in res.stderr
@@ -1397,7 +1387,6 @@ def test_cli_integration_validate_only_succeeds_without_authorization(tmp_path, 
 
     # 1. In-process CLI execution with monkeypatch
     monkeypatch.setattr("scripts.materialize_stage6m_cohort3_audio.HARDENING_AUDIT_JSON", blocked_audit)
-    monkeypatch.setenv("STAGE6M_HARDENING_AUDIT_JSON", str(blocked_audit))
     monkeypatch.setattr(
         sys,
         "argv",
@@ -1427,9 +1416,6 @@ def test_cli_integration_validate_only_succeeds_without_authorization(tmp_path, 
     assert list(dest_dir.iterdir()) == []
 
     # 2. Independent subprocess CLI execution
-    import os
-    sub_env = os.environ.copy()
-    sub_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(blocked_audit)
     sub_out = tmp_path / "sub_val_out"
     sub_out.mkdir()
     res = subprocess.run(
@@ -1445,8 +1431,133 @@ def test_cli_integration_validate_only_succeeds_without_authorization(tmp_path, 
         ],
         capture_output=True,
         text=True,
-        env=sub_env,
     )
     assert res.returncode == 0
     assert (sub_out / "stage6m_cohort3_pilot_materialization.json").exists()
+
+
+def test_adversarial_cli_env_var_cannot_authorize_pilot(tmp_path):
+    """
+    T7.5.3-01 — Adversarial Integration Test: An operator/adversary fabricates an authorized
+    audit JSON and sets $env:STAGE6M_HARDENING_AUDIT_JSON pointing to it.
+    The production CLI must completely ignore the environment variable, evaluate the
+    canonical repository governance JSON (which remains blocked / unrepeated), fail closed
+    with PermissionError, and leave the destination directory strictly empty.
+    """
+    source_dir = tmp_path / "adv_pilot_source"
+    source_dir.mkdir()
+    dest_dir = tmp_path / "adv_pilot_dest"
+    dest_dir.mkdir()
+    out_dir = tmp_path / "adv_pilot_out"
+    out_dir.mkdir()
+
+    # Prepare candidate audio in source dir
+    meta, records, _ = load_provisional_manifest(PROVISIONAL_MANIFEST_JSON)
+    parent_sha256 = compute_sha256(PROVISIONAL_MANIFEST_JSON)
+    _, pilot_target_map, _ = select_pilot_speakers_and_clips(records, parent_sha256)
+    sample_clip = next(iter(pilot_target_map.keys()))
+    _generate_synthetic_mp3(source_dir / sample_clip)
+
+    # Adversarial audit file claiming pilot is AUTHORIZED_BY_PROJECT_LEAD
+    fake_authorized_audit = tmp_path / "fake_authorized_pilot_audit.json"
+    with open(fake_authorized_audit, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "execution_gating": {
+                    "controlled_pilot_download": "AUTHORIZED_BY_PROJECT_LEAD",
+                    "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
+                }
+            },
+            f,
+        )
+
+    # Subprocess execution with environment variable pointing to fake authorized file
+    import os
+    adv_env = os.environ.copy()
+    adv_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(fake_authorized_audit)
+
+    res = subprocess.run(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "scripts" / "materialize_stage6m_cohort3_audio.py"),
+            "--pilot",
+            "--source-dir",
+            str(source_dir),
+            "--audio-dir",
+            str(dest_dir),
+            "--output-dir",
+            str(out_dir),
+        ],
+        capture_output=True,
+        text=True,
+        env=adv_env,
+    )
+
+    # Production CLI must reject acquisition because canonical audit is PILOT_COMPLETE_AND_VERIFIED
+    assert res.returncode != 0
+    assert "PermissionError" in res.stderr or "Physical pilot audio acquisition blocked" in res.stderr
+    # Must NOT have copied any files
+    assert list(dest_dir.iterdir()) == [], "Adversarial env var bypassed authorization and copied files!"
+
+
+def test_adversarial_cli_env_var_cannot_authorize_full_cohort(tmp_path):
+    """
+    T7.5.3-02 — Adversarial Integration Test: An operator/adversary fabricates an authorized
+    audit JSON and sets $env:STAGE6M_HARDENING_AUDIT_JSON pointing to it.
+    The production CLI must completely ignore the environment variable, evaluate the
+    canonical repository governance JSON (which remains BLOCKED_PENDING_TASK_7_6_AUTHORIZATION),
+    fail closed with PermissionError, and leave the destination directory strictly empty.
+    """
+    source_dir = tmp_path / "adv_full_source"
+    source_dir.mkdir()
+    dest_dir = tmp_path / "adv_full_dest"
+    dest_dir.mkdir()
+    out_dir = tmp_path / "adv_full_out"
+    out_dir.mkdir()
+
+    # Prepare candidate audio in source dir
+    meta, records, full_target_map = load_provisional_manifest(PROVISIONAL_MANIFEST_JSON)
+    sample_clip = next(iter(full_target_map.keys()))
+    _generate_synthetic_mp3(source_dir / sample_clip)
+
+    # Adversarial audit file claiming full cohort is AUTHORIZED_BY_PROJECT_LEAD
+    fake_authorized_audit = tmp_path / "fake_authorized_full_audit.json"
+    with open(fake_authorized_audit, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "execution_gating": {
+                    "controlled_pilot_download": "AUTHORIZED_BY_PROJECT_LEAD",
+                    "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
+                }
+            },
+            f,
+        )
+
+    # Subprocess execution with environment variable pointing to fake authorized file
+    import os
+    adv_env = os.environ.copy()
+    adv_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(fake_authorized_audit)
+
+    res = subprocess.run(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "scripts" / "materialize_stage6m_cohort3_audio.py"),
+            "--source-dir",
+            str(source_dir),
+            "--audio-dir",
+            str(dest_dir),
+            "--output-dir",
+            str(out_dir),
+        ],
+        capture_output=True,
+        text=True,
+        env=adv_env,
+    )
+
+    # Production CLI must reject acquisition because canonical audit is BLOCKED_PENDING_TASK_7_6_AUTHORIZATION
+    assert res.returncode != 0
+    assert "PermissionError" in res.stderr or "Full cohort audio acquisition blocked" in res.stderr
+    # Must NOT have copied any files
+    assert list(dest_dir.iterdir()) == [], "Adversarial env var bypassed authorization and copied files!"
+
 

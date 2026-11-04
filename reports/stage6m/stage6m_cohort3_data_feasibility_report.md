@@ -5,8 +5,8 @@
 - **Decision Rule:** Decision Rule B
 - **Predicate Version:** V1.4.0-Strict
 - **Target Specification:** 6 Strata x 220 Speakers x 15 Clips = 19,800 Cohort 3 Clips + 120-Speaker Dedicated Gate-Reference Panel (Total = 1,440 Speakers)
-- **Audit Timestamp (UTC):** 2026-11-04T09:56:39.626335+00:00
-- **Curation Script Commit:** [`4453ca8`](https://github.com/mahi3007/Final-Year-Project/commit/4453ca8b0bc3e805aae6f1c3ae6c810b27cf8486)
+- **Audit Timestamp (UTC):** 2026-11-04T10:42:48.174745+00:00
+- **Curation Script Commit:** [`6ebb02c`](https://github.com/mahi3007/Final-Year-Project/commit/6ebb02c70d03c1278c0c5fc4bad3ed772e30fb08)
 - **Overall Feasibility Disposition:** **FAIL-CLOSED CAPACITY BOTTLENECK (COHORT 3 MATERIALIZATION FORBIDDEN)**
 
 ---
@@ -70,7 +70,7 @@ This audit evaluates the empirical capacity of **Mozilla Common Voice 27.0** (`v
   "source_file_bytes": 614927262,
   "source_file_sha256": "733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a",
   "source_rows_scanned": 1929267,
-  "curation_script_commit": "4453ca8b0bc3e805aae6f1c3ae6c810b27cf8486",
+  "curation_script_commit": "6ebb02c70d03c1278c0c5fc4bad3ed772e30fb08",
   "predicate_version": "V1.4.0-Strict",
   "historical_partition_hashes": {
     "stage5_external_eval.csv": "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32",

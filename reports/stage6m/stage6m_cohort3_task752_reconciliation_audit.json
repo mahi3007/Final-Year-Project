@@ -67,18 +67,19 @@
       "conservative_3sigma_envelope_gb": 1.87
     },
     "operational_headroom_budget_gb": {
-      "raw_audio_conservative": 1.80,
+      "raw_audio_conservative": 2.00,
       "ledgers_and_reports": 0.05,
       "streaming_decompression_buffers": 0.50,
       "validation_recovery_headroom": 0.50,
-      "total_budget_gb": 2.85
+      "total_budget_gb": 3.05
     },
     "host_filesystem_capacity": {
       "drive": "C:",
       "measurement_timestamp_utc": "2026-11-04T09:46:12.790237+00:00",
       "available_free_bytes": 23646322688,
       "available_free_gb": 22.02,
-      "capacity_margin_ratio": 7.72,
+      "capacity_margin_ratio": 7.22,
+      "historical_capacity_evidence_notice": "The recorded 22.02 GB measurement represents historical capacity evidence as of the measurement timestamp, not an operational guarantee of available free space when eventual materialization begins; host storage must be re-checked prior to physical download in Task 7.7.",
       "storage_capacity_verdict": "PASS"
     },
     "network_operational_parameters": {

@@ -1,0 +1,70 @@
+{
+  "timestamp_utc": "2026-11-04T10:45:00.000000+00:00",
+  "document_id": "STAGE6M_COHORT3_TASK753_PINNING_AUDIT",
+  "task_id": "TASK_7_5_3",
+  "task_title": "Canonical Authorization Source Pinning & Storage Budget Reconciliation",
+  "protocol_version": "v1.5-five-stratum-parity",
+  "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
+  "governance_status": "AUTHORIZED_FOR_DATA_PREPARATION",
+  "audit_disposition": "PINNING_AND_RECONCILIATION_COMPLETE_TASK76_PENDING",
+  "reconciled_execution_gating": {
+    "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
+    "full_audio_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+    "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
+    "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+    "confirmatory_inference": "STRICTLY_BLOCKED",
+    "readiness_disposition": "READY_PENDING_PROJECT_LEAD_ACQUISITION_AUTHORIZATION"
+  },
+  "issue_1_authorization_source_integrity": {
+    "vulnerability_analyzed": "STAGE6M_HARDENING_AUDIT_JSON environment variable override allowed arbitrary alternative audit JSON paths to be injected into the production CLI, reopening the file substitution risk eliminated in Task 7.5.1.",
+    "remediation_action": "Removed _AUDIT_ENV and os.environ.get('STAGE6M_HARDENING_AUDIT_JSON') entirely from scripts/materialize_stage6m_cohort3_audio.py. HARDENING_AUDIT_JSON now resolves unconditionally to the canonical repository governance JSON.",
+    "pinned_canonical_path": "reports/stage6m/stage6m_cohort3_materializer_hardening_audit.json",
+    "in_process_testing_support": "Preserved audit_json_path parameter on verify_*_authorization() helper functions and pytest monkeypatching for unit testing without environment variable or CLI leakage.",
+    "adversarial_tests_added": [
+      {
+        "test_name": "test_adversarial_cli_env_var_cannot_authorize_pilot",
+        "description": "Adversary sets STAGE6M_HARDENING_AUDIT_JSON to fake audit claiming controlled_pilot_download=AUTHORIZED_BY_PROJECT_LEAD. Subprocess CLI strictly rejects acquisition under canonical governance (PILOT_COMPLETE_AND_VERIFIED) with PermissionError; destination directory remains empty.",
+        "result": "PASS"
+      },
+      {
+        "test_name": "test_adversarial_cli_env_var_cannot_authorize_full_cohort",
+        "description": "Adversary sets STAGE6M_HARDENING_AUDIT_JSON to fake audit claiming full_audio_materialization=AUTHORIZED_BY_PROJECT_LEAD. Subprocess CLI strictly rejects acquisition under canonical governance (BLOCKED_PENDING_TASK_7_6_AUTHORIZATION) with PermissionError; destination directory remains empty.",
+        "result": "PASS"
+      }
+    ],
+    "verdict": "PASS — Fail-closed authorization strictly pinned to canonical governance record; environment variable substitution eliminated."
+  },
+  "issue_2_storage_budget_reconciliation": {
+    "reconciliation_rationale": "Reconciled the raw audio allocation from 1.80 GB to 2.00 GB to properly encompass the 1.87 GB conservative 3-sigma planning envelope (18,975 * [mean + 3*std_dev]). Total operational headroom budget updated to 3.05 GB.",
+    "three_sigma_planning_envelope_gb": 1.87,
+    "operational_headroom_budget_gb": {
+      "raw_audio_conservative": 2.00,
+      "ledgers_and_reports": 0.05,
+      "streaming_decompression_buffers": 0.50,
+      "validation_recovery_headroom": 0.50,
+      "total_budget_gb": 3.05
+    },
+    "host_filesystem_capacity": {
+      "drive": "C:",
+      "measurement_timestamp_utc": "2026-11-04T09:46:12.790237+00:00",
+      "available_free_bytes": 23646322688,
+      "available_free_gb": 22.02,
+      "capacity_margin_ratio": 7.22,
+      "historical_capacity_evidence_notice": "The recorded 22.02 GB measurement represents historical capacity evidence as of the measurement timestamp, not an operational guarantee of available free space when eventual materialization begins; host storage must be re-checked prior to physical download in Task 7.7.",
+      "storage_capacity_verdict": "PASS"
+    },
+    "verdict": "PASS — Storage budget reconciled to 3.05 GB with 7.22x operational headroom on recorded capacity."
+  },
+  "research_invariants_verified": {
+    "historical_exposed_speakers": 558,
+    "cohort3_provisional_speakers": 1265,
+    "historical_exposure_overlap": 0,
+    "provisional_manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "frozen_inference_engine_git_blob": "58d456fbcce43b5322d56df80e4077a32d7f4cca",
+    "pilot_early_termination_qualification_preserved": true,
+    "full_audio_materialization_gate": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+    "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
+    "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+    "confirmatory_inference": "STRICTLY_BLOCKED"
+  }
+}
