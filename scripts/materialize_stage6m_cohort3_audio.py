@@ -146,11 +146,15 @@ def verify_pilot_materialization_authorization(audit_json_path: Path = HARDENING
 
     gating = data.get("execution_gating", {})
     pilot_auth = gating.get("controlled_pilot_download")
-    if pilot_auth not in ("AUTHORIZED_BY_PROJECT_LEAD", "PILOT_COMPLETE_AND_VERIFIED"):
+    # Task 7.5.1: Only AUTHORIZED_BY_PROJECT_LEAD is accepted. A completed pilot
+    # (PILOT_COMPLETE_AND_VERIFIED) is evidence that an earlier authorization was
+    # fulfilled — it is NOT a new authorization to start another physical download.
+    if pilot_auth != "AUTHORIZED_BY_PROJECT_LEAD":
         raise PermissionError(
             f"Physical pilot audio acquisition blocked: controlled_pilot_download is '{pilot_auth}' "
-            f"(expected 'AUTHORIZED_BY_PROJECT_LEAD' or 'PILOT_COMPLETE_AND_VERIFIED' in {audit_json_path}). "
-            "Controlled physical retrieval requires explicit Project-Lead authorization under Protocol Section 14.7."
+            f"(expected exactly 'AUTHORIZED_BY_PROJECT_LEAD' in {audit_json_path}). "
+            "A completed pilot does not authorize a new download. "
+            "Explicit Project-Lead authorization under Protocol Section 14.7 is required."
         )
 
 
@@ -1556,12 +1560,10 @@ def main():
         default=None,
         help="Optional maximum streaming runtime in seconds (for batch/testing)",
     )
-    parser.add_argument(
-        "--audit-json",
-        type=Path,
-        default=HARDENING_AUDIT_JSON,
-        help="Path to materializer hardening audit JSON (for governance authorization checks)",
-    )
+    # NOTE (Task 7.5.1): --audit-json is intentionally NOT exposed as a CLI argument in
+    # production. Production always uses the canonical HARDENING_AUDIT_JSON. The
+    # verify_*_authorization() helper functions retain their audit_json_path parameter
+    # so that direct unit tests can inject a temporary path without touching the CLI.
     args = parser.parse_args()
 
     logger.info("=" * 80)
@@ -1586,11 +1588,14 @@ def main():
         valid_inv, failed_inv = scan_local_inventory(pilot_target_map, pilot_dest_dir)
         logger.info(f"[PILOT] Initial scan: {len(valid_inv)} / {len(pilot_target_map)} pilot clips validated on disk.")
 
-        if args.source_dir and args.source_dir.exists():
+        # Task 7.5.1: Authorization check is required before ANY physical acquisition path,
+        # including --source-dir. --validate-only is explicitly exempted (read-only).
+        if args.source_dir and args.source_dir.exists() and not args.validate_only:
+            verify_pilot_materialization_authorization(HARDENING_AUDIT_JSON)
             materialize_from_local_source(args.source_dir, pilot_target_map, valid_inv, failed_inv, pilot_dest_dir)
 
         if args.stream and not args.validate_only:
-            verify_pilot_materialization_authorization(args.audit_json)
+            verify_pilot_materialization_authorization(HARDENING_AUDIT_JSON)
             materialize_from_stream(
                 pilot_target_map, valid_inv, failed_inv, pilot_dest_dir, max_duration_seconds=args.max_stream_seconds
             )
@@ -1624,11 +1629,14 @@ def main():
     valid_inv, failed_inv = scan_local_inventory(full_target_map, args.audio_dir)
     logger.info(f"Initial scan: {len(valid_inv):,} / {len(full_target_map):,} clips already validated on disk.")
 
-    if args.source_dir and args.source_dir.exists():
+    # Task 7.5.1: Authorization check is required before ANY physical acquisition path,
+    # including --source-dir. --validate-only is explicitly exempted (read-only).
+    if args.source_dir and args.source_dir.exists() and not args.validate_only:
+        verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
         materialize_from_local_source(args.source_dir, full_target_map, valid_inv, failed_inv, args.audio_dir)
 
     if args.stream and not args.validate_only:
-        verify_full_cohort_materialization_authorization(args.audit_json)
+        verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
         materialize_from_stream(
             full_target_map, valid_inv, failed_inv, args.audio_dir, max_duration_seconds=args.max_stream_seconds
         )

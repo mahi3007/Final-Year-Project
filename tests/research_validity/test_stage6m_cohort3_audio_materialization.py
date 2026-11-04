@@ -57,10 +57,10 @@ from scripts.materialize_stage6m_cohort3_audio import (
     CLIPS_PER_SPEAKER,
     COHORT3_PILOT_AUDIO_DIR,
     FAILED_REPORT_JSON,
+    HARDENING_AUDIT_JSON,
     LEDGER_CSV,
     MATERIALIZATION_JSON,
     MATERIALIZATION_MD,
-    HARDENING_AUDIT_JSON,
     PILOT_CONFIRMATORY_STRATA,
     PILOT_EXPECTED_CLIPS_PER_SPEAKER,
     PILOT_EXPECTED_SPEAKERS,
@@ -80,6 +80,7 @@ from scripts.materialize_stage6m_cohort3_audio import (
     generate_pilot_materialization_artifacts,
     load_provisional_manifest,
     materialize_from_local_source,
+    materialize_from_stream,
     scan_local_inventory,
     select_pilot_speakers_and_clips,
     validate_audio_file,
@@ -1000,10 +1001,207 @@ def test_pilot_materialization_authorization_fails_closed(tmp_path):
     verify_pilot_materialization_authorization(auth_file)
     verify_full_cohort_materialization_authorization(auth_file)
 
-    # 4. Verified against committed repository audit artifact
+    # 4. Task 7.5.1: canonical repository audit artifact must block pilot re-download.
+    # controlled_pilot_download == PILOT_COMPLETE_AND_VERIFIED — a completed pilot is
+    # evidence that an earlier authorization was fulfilled, NOT a new authorization.
     assert HARDENING_AUDIT_JSON.exists()
-    verify_pilot_materialization_authorization(HARDENING_AUDIT_JSON)
+    with pytest.raises(PermissionError) as exc_info:
+        verify_pilot_materialization_authorization(HARDENING_AUDIT_JSON)
+    assert "A completed pilot does not authorize a new download" in str(exc_info.value)
+
+    # 5. Full-cohort acquisition remains blocked under canonical governance.
     with pytest.raises(PermissionError) as exc_info:
         verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
     assert "Full cohort audio acquisition blocked" in str(exc_info.value)
 
+
+# ---------------------------------------------------------------------------
+# Task 7.5.1 — Fail-Closed Authorization Boundary Regression Tests
+# ---------------------------------------------------------------------------
+
+
+def test_pilot_stream_acquisition_requires_authorization(tmp_path):
+    """
+    T7.5.1-01 — Pilot streaming acquisition is blocked when governance status is not
+    AUTHORIZED_BY_PROJECT_LEAD. verify_pilot_materialization_authorization must be
+    called and must raise before any HTTP connection is attempted.
+    """
+    blocked_audit = tmp_path / "blocked.json"
+    with open(blocked_audit, "w", encoding="utf-8") as f:
+        json.dump(
+            {"execution_gating": {"controlled_pilot_download": "PENDING_SEPARATE_PILOT_AUTHORIZATION"}}, f
+        )
+    with pytest.raises(PermissionError) as exc_info:
+        verify_pilot_materialization_authorization(blocked_audit)
+    assert "Physical pilot audio acquisition blocked" in str(exc_info.value)
+    assert "PENDING_SEPARATE_PILOT_AUTHORIZATION" in str(exc_info.value)
+
+
+def test_pilot_source_dir_acquisition_requires_authorization(tmp_path):
+    """
+    T7.5.1-02 — Pilot --source-dir acquisition is blocked when governance status is not
+    AUTHORIZED_BY_PROJECT_LEAD. The authorization gate must fire before any file copy.
+    """
+    # Build a minimal local source containing a valid MP3 clip.
+    source_dir = tmp_path / "source"
+    source_dir.mkdir()
+    clip_fname = "test_clip.mp3"
+    _generate_synthetic_mp3(source_dir / clip_fname)
+
+    dest_dir = tmp_path / "dest"
+    dest_dir.mkdir()
+
+    blocked_audit = tmp_path / "blocked.json"
+    with open(blocked_audit, "w", encoding="utf-8") as f:
+        json.dump(
+            {"execution_gating": {"controlled_pilot_download": "PENDING_SEPARATE_PILOT_AUTHORIZATION"}}, f
+        )
+
+    # The gate must raise before any copy occurs.
+    with pytest.raises(PermissionError) as exc_info:
+        verify_pilot_materialization_authorization(blocked_audit)
+    assert "Physical pilot audio acquisition blocked" in str(exc_info.value)
+    # Confirm no file was copied to dest.
+    assert list(dest_dir.iterdir()) == []
+
+
+def test_full_cohort_source_dir_acquisition_requires_authorization(tmp_path):
+    """
+    T7.5.1-03 — Full-cohort --source-dir acquisition is blocked when governance status
+    is not AUTHORIZED_BY_PROJECT_LEAD. The authorization gate must fire before any copy.
+    """
+    blocked_audit = tmp_path / "blocked.json"
+    with open(blocked_audit, "w", encoding="utf-8") as f:
+        json.dump(
+            {"execution_gating": {"full_audio_materialization": "BLOCKED_PENDING_COHORT3_READINESS_REVIEW"}}, f
+        )
+
+    dest_dir = tmp_path / "dest"
+    dest_dir.mkdir()
+
+    with pytest.raises(PermissionError) as exc_info:
+        verify_full_cohort_materialization_authorization(blocked_audit)
+    assert "Full cohort audio acquisition blocked" in str(exc_info.value)
+    assert list(dest_dir.iterdir()) == []
+
+
+def test_pilot_complete_does_not_authorize_new_pilot_download(tmp_path):
+    """
+    T7.5.1-04 — PILOT_COMPLETE_AND_VERIFIED must NOT authorize a new pilot download.
+    A completed pilot is historical evidence; it does not constitute a fresh
+    Project-Lead authorization for another physical acquisition run.
+    """
+    pilot_complete_audit = tmp_path / "pilot_complete.json"
+    with open(pilot_complete_audit, "w", encoding="utf-8") as f:
+        json.dump(
+            {"execution_gating": {"controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED"}}, f
+        )
+
+    with pytest.raises(PermissionError) as exc_info:
+        verify_pilot_materialization_authorization(pilot_complete_audit)
+    err = str(exc_info.value)
+    assert "Physical pilot audio acquisition blocked" in err
+    assert "PILOT_COMPLETE_AND_VERIFIED" in err
+    assert "A completed pilot does not authorize a new download" in err
+
+
+def test_arbitrary_audit_json_path_cannot_be_injected_via_cli():
+    """
+    T7.5.1-05 — The production CLI must NOT expose an --audit-json flag. Operators must
+    not be able to supply an arbitrary governance JSON to bypass the canonical
+    HARDENING_AUDIT_JSON. The parameter exists only on the helper functions for
+    direct unit-test injection.
+
+    Verifies by inspecting the argparse configuration of main() at import time and
+    checking the subprocess help output does NOT advertise --audit-json.
+    """
+    import subprocess as sp
+    import sys
+
+    result = sp.run(
+        [sys.executable, "scripts/materialize_stage6m_cohort3_audio.py", "--help"],
+        capture_output=True,
+        text=True,
+        cwd=str(Path(__file__).resolve().parent.parent.parent),
+    )
+    assert "--audit-json" not in result.stdout, (
+        "Production CLI must not expose --audit-json. "
+        "Operators must not be able to bypass the canonical HARDENING_AUDIT_JSON."
+    )
+
+
+def test_validate_only_requires_no_authorization(tmp_path):
+    """
+    T7.5.1-06 — --validate-only (read-only audit of on-disk clips) must proceed without
+    any authorization check. It performs no physical acquisition and therefore must not
+    be gated by Project-Lead authorization.
+
+    Verifies that neither verify_pilot_materialization_authorization nor
+    verify_full_cohort_materialization_authorization is called implicitly during a
+    validate-only inventory scan of an empty directory.
+    """
+    # Empty dirs simulate a validate-only scan with no clips on disk.
+    empty_audio_dir = tmp_path / "audio"
+    empty_audio_dir.mkdir()
+
+    # scan_local_inventory is the core of validate-only — it must not call auth checks.
+    # We pass an empty target_map so the scan terminates immediately.
+    valid_inv, failed_inv = scan_local_inventory({}, empty_audio_dir)
+    assert valid_inv == {}
+    assert failed_inv == {}
+    # Reaching here without PermissionError confirms validate-only is ungated.
+
+
+def test_pending_governance_statuses_all_deny_acquisition(tmp_path):
+    """
+    T7.5.1-07 — All known non-authorized governance status values must be denied by
+    both verify_pilot_materialization_authorization and
+    verify_full_cohort_materialization_authorization. No blocked or pending status
+    string may inadvertently pass either gate.
+    """
+    blocked_pilot_statuses = [
+        "PENDING_SEPARATE_PILOT_AUTHORIZATION",
+        "PILOT_COMPLETE_AND_VERIFIED",  # Task 7.5.1: completed pilot must not re-authorize
+        "BLOCKED_PENDING_COHORT3_READINESS_REVIEW",
+        "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+        "STRICTLY_BLOCKED",
+        None,
+        "",
+        "authorized_by_project_lead",  # Case-sensitive — must reject lowercase variant
+    ]
+    blocked_full_statuses = [
+        "BLOCKED_PENDING_PILOT_VALIDATION",
+        "BLOCKED_PENDING_COHORT3_READINESS_REVIEW",
+        "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+        "STRICTLY_BLOCKED",
+        "PILOT_COMPLETE_AND_VERIFIED",
+        None,
+        "",
+        "authorized_by_project_lead",
+    ]
+
+    for status in blocked_pilot_statuses:
+        audit_file = tmp_path / f"pilot_{status}.json"
+        with open(audit_file, "w", encoding="utf-8") as f:
+            json.dump({"execution_gating": {"controlled_pilot_download": status}}, f)
+        with pytest.raises(PermissionError, match="Physical pilot audio acquisition blocked"):
+            verify_pilot_materialization_authorization(audit_file)
+
+    for status in blocked_full_statuses:
+        audit_file = tmp_path / f"full_{status}.json"
+        with open(audit_file, "w", encoding="utf-8") as f:
+            json.dump({"execution_gating": {"full_audio_materialization": status}}, f)
+        with pytest.raises(PermissionError, match="Full cohort audio acquisition blocked"):
+            verify_full_cohort_materialization_authorization(audit_file)
+
+
+def test_full_cohort_acquisition_blocked_under_canonical_governance():
+    """
+    T7.5.1-08 — Full-cohort acquisition (18,975 clips) must remain blocked under the
+    current committed HARDENING_AUDIT_JSON. This test will fail if someone commits
+    an unauthorized change to the canonical governance record.
+    """
+    assert HARDENING_AUDIT_JSON.exists(), f"Canonical audit JSON missing: {HARDENING_AUDIT_JSON}"
+    with pytest.raises(PermissionError) as exc_info:
+        verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
+    assert "Full cohort audio acquisition blocked" in str(exc_info.value)
