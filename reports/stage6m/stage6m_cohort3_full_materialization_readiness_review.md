@@ -10,7 +10,7 @@
 > **PROVISIONAL MANIFEST STATUS:** **UNLOCKED (PROVISIONAL)**  
 > **EXECUTION GATING:**  
 > - **75-Clip Pilot:** `PILOT_COMPLETE_AND_VERIFIED`  
-> - **Full 18,975-Clip Acquisition:** `BLOCKED_PENDING_COHORT3_READINESS_REVIEW` (HELD)  
+> - **Full 18,975-Clip Acquisition:** `BLOCKED_PENDING_TASK_7_6_AUTHORIZATION` (HELD)  
 > - **Final Manifest Lock:** `BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION`  
 > - **GPU CTTA Adaptation:** `STRICTLY_BLOCKED`  
 > - **Confirmatory Model Inference:** `STRICTLY_BLOCKED`  
@@ -81,11 +81,16 @@ All $18,975$ target clips were audited against the official Common Voice 27.0 re
 - **Clip-to-Speaker 1:1 Identity:** **100% Verified** — Every clip in the provisional manifest maps to the identical `client_id` in `validated.tsv` ($0$ speaker mismatches).
 - **Substitutions / Silent Replacements:** **0** — Strict identity preservation; no surrogate recordings introduced.
 
-### 3.2 Historical Exposure Isolation
-- **Historical Partition Audited:** Stage 5 external evaluation set ([`datasets/splits/stage5_external_eval.csv`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage5_external_eval.csv), SHA-256 `41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32`).
-- **Exposed Historical Speakers:** 60 unique speakers.
-- **Overlap with Cohort 3 Provisional Manifest:** **Exactly 0 speakers (0.00%)**.
-- **Isolation Disposition:** **PASS — Complete disjointness confirmed.** No speaker previously evaluated or utilized in model selection appears in Cohort 3.
+### 3.2 Historical Exposure Isolation (Complete 558-Speaker Audit)
+To strictly prevent data leakage and evaluate whether any candidate speaker was previously exposed during prior model training, tuning, or evaluation, all historical partitions were cross-referenced:
+- **Historical Partitions Audited:**
+  1. **Cohort 1 External Evaluation:** [`datasets/splits/stage5_external_eval.csv`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage5_external_eval.csv) — $60$ unique speakers, SHA-256 `41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32`.
+  2. **Stage 5 Sentinel Panel:** [`datasets/splits/stage5_sentinel_panel.csv`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage5_sentinel_panel.csv) — $30$ unique speakers, SHA-256 `665009a00660f7e9bbdf8de8a53473fc1249362ca2a5bc0038518313d18f0543`.
+  3. **Cohort 2 Evaluation Partition:** [`datasets/splits/stage6m_cohort2_audio.csv`](file:///C:/Users/venka/Downloads/final year project main/datasets/splits/stage6m_cohort2_audio.csv) — $468$ unique speakers, SHA-256 `dd837e249b15588cb15b7a3b234e820e08699722569cc24e57d119a868854f70`.
+- **Historical Partition Pairwise Disjointness:** **100% Verified** ($0$ overlap across all three historical subsets).
+- **Historical Exposed Pool (Union of Unique Speaker IDs):** **Exactly 558 unique speakers** ($60 + 30 + 468 = 558$).
+- **Overlap with Cohort 3 Provisional Manifest (1,265 Speakers):** **Exactly 0 speakers (0.00%)**.
+- **Isolation Disposition:** **PASS — 100% strict isolation confirmed across all historical evaluation and sentinel partitions.** No speaker previously utilized in any model evaluation, tuning, or development appears in Cohort 3.
 
 ---
 
@@ -117,8 +122,9 @@ The Task 7.4.4 physical pilot demonstrated production-grade materialization beha
    - `--output-dir` parameterization prevents test fixtures from mutating tracked repository reports.
 
 ### 4.2 Archive Termination Qualification Boundary
-- **Empirical Boundary:** The 75-clip pilot materializer retrieved and verified all target recordings upon encountering target members in the tar stream up to member #1,188,858, at which point target acquisition reached 100% and the reader terminated cleanly.
-- **Qualification Scope:** This confirms that the pilot acquisition successfully retrieved and validated the specified recordings, but it does not represent consumption of the entire 95 GB compressed archive through its final gzip EOF marker. For full-cohort acquisition, streaming continues until all $18,975$ target clips are acquired or the complete tar archive is traversed.
+- **Engineering Decompression & Termination Validation:** Automated unit testing (`test_streaming_resume_range_validation`) validated complete gzip decompression and verified that `decompressor.eof == True` is strictly enforced before EOF is returned to the caller.
+- **Empirical Pilot Boundary:** The 75-clip physical pilot materializer retrieved and verified all target recordings upon encountering target members in the tar stream up to member #1,188,858, at which point target acquisition reached 100% (75/75 clips) and the process exited cleanly.
+- **Qualification Scope:** This confirms that the pilot acquisition successfully retrieved and validated the specified recordings, but it does **not** represent consumption of the entire ~95 GB compressed archive through its final gzip EOF marker. For full-cohort acquisition, streaming continues until all $18,975$ target clips are acquired or the complete tar archive is traversed. Full-archive traversal remains documented as an operational boundary for Task 7.6 full-cohort planning.
 
 ---
 
@@ -136,28 +142,33 @@ To prevent mid-acquisition disk exhaustion, storage requirements were modeled em
 - **95th Percentile ($P_{95}$):** $78,573$ bytes ($76.73$ KiB / $78.57$ KB).
 - **Total Audio Duration:** $424.72$ seconds ($7.08$ minutes; mean $5.66$ s/clip).
 
-### 5.2 Full-Cohort Storage Projections ($18,975$ Clips)
-| Projection Model | Calculation Basis | Projected Raw Audio Bytes | Projected Raw Audio MB | Projected Raw Audio GB |
+### 5.2 Full-Cohort Storage Operational Planning Estimates ($18,975$ Clips)
+> **PLANNING ESTIMATE QUALIFICATION:**  
+> The figures below are derived from an empirical sample of $N=75$ physical recordings from $5$ speakers. Multiplying the sample's $P_{95}$ file size by $18,975$ does **not** establish a formal 95% upper confidence bound for total cohort size. Similarly, the mean plus three standard deviations scenario is a conservative planning envelope rather than a guaranteed maximum. They serve as operational planning estimates to size host storage headroom.
+
+| Projection Scenario | Calculation Basis | Projected Raw Audio Bytes | Projected Raw Audio MB | Projected Raw Audio GB |
 | :--- | :--- | :---: | :---: | :---: |
-| **Mean Projection** | $18,975 \times \mu$ | $859,628,979$ | $819.81$ MiB | **$0.86$ GB** |
-| **95th Percentile Projection** | $18,975 \times P_{95}$ | $1,490,922,675$ | $1,421.85$ MiB | **$1.49$ GB** |
-| **Conservative Upper Envelope ($3\sigma$)** | $18,975 \times (\mu + 3\sigma)$ | $1,867,823,803$ | $1,781.29$ MiB | **$1.87$ GB** |
+| **Mean Planning Estimate** | $18,975 \times \mu$ | $859,628,979$ | $819.81$ MiB | **$0.86$ GB** |
+| **95th Percentile Planning Estimate** | $18,975 \times P_{95}$ | $1,490,922,675$ | $1,421.85$ MiB | **$1.49$ GB** |
+| **Conservative 3σ Planning Envelope** | $18,975 \times (\mu + 3\sigma)$ | $1,867,823,803$ | $1,781.29$ MiB | **$1.87$ GB** |
 
 ### 5.3 Operational Headroom Budget
 | Component | Budget Allocation | Rationale |
 | :--- | :---: | :--- |
-| **Conservative Raw Audio Storage** | $1.80$ GB | Accommodates full cohort audio up to $3\sigma$ upper bound |
+| **Conservative Raw Audio Storage** | $1.80$ GB | Accommodates full cohort audio planning envelope ($1.87$ GB upper scenario) |
 | **Materialization Ledgers & Reports** | $0.05$ GB | $18,975$-row SHA-256 CSV, speaker reports, audit JSON/MD |
 | **Streaming / Decompression Buffers** | $0.50$ GB | Ring buffers, tar extraction chunk buffers, curl temp pipes |
 | **Validation & Recovery Headroom** | $0.50$ GB | Temporary soundfile decodes, checksum logs, retry caches |
 | **Total Recommended Operational Reserve** | **$2.85$ GB** | **Minimum recommended host disk headroom** |
 
-### 5.4 Filesystem Capacity Audit
+### 5.4 Filesystem Capacity & Network Audit
 - **Host System Drive:** `C:`
-- **Available Free Space:** **$24,734,228,480$ bytes ($23.04$ GiB / $24.73$ GB)**.
+- **Measurement Timestamp (UTC):** `2026-11-04T09:46:12Z`
+- **Available Free Space:** **$23,646,322,688$ bytes ($22.02$ GiB / $23.65$ GB)**.
 - **Operational Reserve Requirement:** $2.85$ GB.
-- **Safety Margin Ratio:** **$\frac{23.04\text{ GB}}{2.85\text{ GB}} \approx 8.08\times$** ($> 800\%$ of required headroom).
+- **Safety Margin Ratio:** **$\frac{22.02\text{ GB}}{2.85\text{ GB}} \approx 7.72\times$** ($> 770\%$ of required headroom).
 - **Storage Capacity Verdict:** **PASS — Substantial operational headroom confirmed.**
+- **Network Operational Parameters:** Full acquisition traverses an archive up to ~95 GB (gzip compressed). Estimated streaming duration is 3.5 to 8.0 hours depending on network throughput, MDC server response latency, and HTTP Range resume overhead. The materializer's resume and socket recovery mechanisms have been proven during pilot execution.
 
 ---
 
@@ -195,7 +206,7 @@ Despite full technical readiness, **physical acquisition of the full cohort rema
 ║  1. Technical readiness is established by Task 7.5 Readiness Review.                 ║
 ║  2. Full 18,975-clip physical materialization is NOT authorized by pilot pass.       ║
 ║  3. Materializer fails closed: full_audio_materialization remains                    ║
-║     BLOCKED_PENDING_COHORT3_READINESS_REVIEW until Task 7.6 approval.                ║
+║     BLOCKED_PENDING_TASK_7_6_AUTHORIZATION until Task 7.6 approval.                  ║
 ║  4. Final manifest lock remains BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION.     ║
 ║  5. Confirmatory GPU CTTA adaptation & inference remain STRICTLY BLOCKED.            ║
 ╚══════════════════════════════════════════════════════════════════════════════════════╝

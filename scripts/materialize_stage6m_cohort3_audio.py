@@ -121,7 +121,12 @@ PILOT_LEDGER_CSV = SPLITS_DIR / "stage6m_cohort3_pilot_clip_sha256_ledger.csv"
 PILOT_FAILED_REPORT_JSON = SPLITS_DIR / "stage6m_cohort3_pilot_failed_clips_report.json"
 PILOT_SPEAKER_REPORT_JSON = SPLITS_DIR / "stage6m_cohort3_pilot_speaker_completeness_report.json"
 
-HARDENING_AUDIT_JSON = REPORTS_DIR / "stage6m_cohort3_materializer_hardening_audit.json"
+_AUDIT_ENV = os.environ.get("STAGE6M_HARDENING_AUDIT_JSON")
+HARDENING_AUDIT_JSON = (
+    Path(_AUDIT_ENV)
+    if _AUDIT_ENV
+    else (REPORTS_DIR / "stage6m_cohort3_materializer_hardening_audit.json")
+)
 HARDENING_AUDIT_MD = REPORTS_DIR / "stage6m_cohort3_materializer_hardening_audit.md"
 
 
@@ -181,7 +186,7 @@ def verify_full_cohort_materialization_authorization(audit_json_path: Path = HAR
     if full_auth != "AUTHORIZED_BY_PROJECT_LEAD":
         raise PermissionError(
             f"Full cohort audio acquisition blocked: full_audio_materialization is '{full_auth}'. "
-            "Full 18,975-clip acquisition remains BLOCKED pending physical pilot validation and Project-Lead authorization."
+            "Full 18,975-clip acquisition remains BLOCKED pending Project-Lead authorization under Protocol Section 14.7 (Task 7.6)."
         )
 
 
@@ -1413,10 +1418,10 @@ def generate_pilot_materialization_artifacts(
             "ledger_sha256": pilot_ledger_sha256,
         },
         "execution_gating": {
-            "controlled_pilot_download": "AUTHORIZED_BY_PROJECT_LEAD",
+            "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
             "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
             "confirmatory_inference": "STRICTLY_BLOCKED",
-            "full_cohort_materialization": "HELD_PENDING_PILOT_VERIFICATION",
+            "full_cohort_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
             "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
         },
     }

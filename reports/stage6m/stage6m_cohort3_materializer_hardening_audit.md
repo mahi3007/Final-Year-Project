@@ -10,7 +10,7 @@
 > **SELECTION MANIFEST STATUS:** **UNLOCKED (PROVISIONAL)**  
 > **EXECUTION GATING:**  
 > - **75-Clip Pilot:** `PILOT_COMPLETE_AND_VERIFIED`  
-> - **Full 18,975-Clip Acquisition:** `BLOCKED_PENDING_COHORT3_READINESS_REVIEW`  
+> - **Full 18,975-Clip Acquisition:** `BLOCKED_PENDING_TASK_7_6_AUTHORIZATION`  
 > - **Final Manifest Lock:** `BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION`  
 > - **GPU CTTA Adaptation:** `STRICTLY_BLOCKED`  
 > - **Confirmatory Inference:** `STRICTLY_BLOCKED`  
@@ -208,7 +208,7 @@ Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_ma
 ║                                                                                      ║
 ║  1. Materializer hardening & stream termination: VERIFIED FULL-FILE & TERMINATION    ║
 ║  2. 75-Clip Controlled Physical Pilot: PILOT_COMPLETE_AND_VERIFIED (75/75, 5/5 spk) ║
-║  3. Full 18,975-Clip Acquisition: BLOCKED_PENDING_COHORT3_READINESS_REVIEW          ║
+║  3. Full 18,975-Clip Acquisition: BLOCKED_PENDING_TASK_7_6_AUTHORIZATION          ║
 ║  4. Final Manifest Lock: BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION             ║
 ║  5. GPU CTTA Adaptation: STRICTLY_BLOCKED                                            ║
 ║  6. Confirmatory Model Inference: STRICTLY_BLOCKED                                   ║
@@ -219,7 +219,7 @@ Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_ma
 | Execution Stage | Required Governance Status | Current Status | Gate Rationale |
 | :--- | :---: | :---: | :--- |
 | **75-Clip Controlled Pilot** | `PILOT_COMPLETE_AND_VERIFIED` | **`PILOT_COMPLETE_AND_VERIFIED`** | All 75 clips acquired, decoded, and hash-verified across 5 strata |
-| **Full 18,975-Clip Acquisition** | `BLOCKED_PENDING_COHORT3_READINESS_REVIEW` | **`BLOCKED_PENDING_COHORT3_READINESS_REVIEW`** | HELD until Task 7.5 readiness review and separate Task 7.6 authorization |
+| **Full 18,975-Clip Acquisition** | `BLOCKED_PENDING_TASK_7_6_AUTHORIZATION` | **`BLOCKED_PENDING_TASK_7_6_AUTHORIZATION`** | HELD until formal Project-Lead authorization under Protocol Section 14.7 (Task 7.6) |
 | **Final Manifest Lock** | `BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION` | **`BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION`** | Unlocked provisional manifest cannot be locked prior to 100% materialization |
 | **GPU CTTA Adaptation** | `STRICTLY_BLOCKED` | **`STRICTLY_BLOCKED`** | No GPU adaptation permitted during data preparation |
 | **Confirmatory Inference** | `STRICTLY_BLOCKED` | **`STRICTLY_BLOCKED`** | No inference permitted prior to full confirmatory protocol execution authorization |

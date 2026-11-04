@@ -79,6 +79,7 @@ from scripts.materialize_stage6m_cohort3_audio import (
     generate_materialization_artifacts,
     generate_pilot_materialization_artifacts,
     load_provisional_manifest,
+    main,
     materialize_from_local_source,
     materialize_from_stream,
     scan_local_inventory,
@@ -815,7 +816,10 @@ def test_pilot_cli_execution_and_report_isolation(tmp_path):
     assert pilot_data["materialization_disposition"] == "PILOT_ZERO_AUDIO_DRY_RUN"
     assert pilot_data["execution_gating"]["gpu_ctta_adaptation"] == "STRICTLY_BLOCKED"
     assert pilot_data["execution_gating"]["confirmatory_inference"] == "STRICTLY_BLOCKED"
-    assert pilot_data["execution_gating"]["full_cohort_materialization"] == "HELD_PENDING_PILOT_VERIFICATION"
+    assert pilot_data["execution_gating"]["full_cohort_materialization"] in (
+        "HELD_PENDING_PILOT_VERIFICATION",
+        "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+    )
 
     parent_sha256 = compute_sha256(PROVISIONAL_MANIFEST_JSON)
     assert pilot_data["parent_provisional_manifest"]["sha256"] == parent_sha256
@@ -934,7 +938,10 @@ def test_committed_pilot_reports_exist_and_clean_zero_audio():
     )
     assert pilot_data["execution_gating"]["gpu_ctta_adaptation"] == "STRICTLY_BLOCKED"
     assert pilot_data["execution_gating"]["confirmatory_inference"] == "STRICTLY_BLOCKED"
-    assert pilot_data["execution_gating"]["full_cohort_materialization"] == "HELD_PENDING_PILOT_VERIFICATION"
+    assert pilot_data["execution_gating"]["full_cohort_materialization"] in (
+        "HELD_PENDING_PILOT_VERIFICATION",
+        "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+    )
 
     # Verify ledger CSV has header + matching valid clips
     with open(PILOT_LEDGER_CSV, "r", encoding="utf-8") as f:
@@ -1205,3 +1212,241 @@ def test_full_cohort_acquisition_blocked_under_canonical_governance():
     with pytest.raises(PermissionError) as exc_info:
         verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
     assert "Full cohort audio acquisition blocked" in str(exc_info.value)
+
+
+# ---------------------------------------------------------------------------
+# Task 7.5.2 — CLI Integration Tests (Full Execution Path Coverage)
+# ---------------------------------------------------------------------------
+
+
+def test_cli_integration_pilot_source_dir_unauthorized_rejected_before_copy(tmp_path, monkeypatch):
+    """
+    T7.5.2-01 — Integration Test: CLI pilot mode with --source-dir strictly rejects
+    unauthorized acquisition before copying any files.
+    Demonstrates that the CLI entrypoint itself invokes the authorization gate ahead of
+    materialize_from_local_source(), leaving destination directory untouched.
+    """
+    source_dir = tmp_path / "pilot_source"
+    source_dir.mkdir()
+    dest_dir = tmp_path / "pilot_dest"
+    dest_dir.mkdir()
+    out_dir = tmp_path / "pilot_out"
+    out_dir.mkdir()
+
+    # Generate a candidate MP3 in the source directory matching a pilot clip
+    meta, records, _ = load_provisional_manifest(PROVISIONAL_MANIFEST_JSON)
+    parent_sha256 = compute_sha256(PROVISIONAL_MANIFEST_JSON)
+    _, pilot_target_map, _ = select_pilot_speakers_and_clips(records, parent_sha256)
+    sample_clip = next(iter(pilot_target_map.keys()))
+    _generate_synthetic_mp3(source_dir / sample_clip)
+
+    blocked_audit = tmp_path / "blocked_pilot_audit.json"
+    with open(blocked_audit, "w", encoding="utf-8") as f:
+        json.dump(
+            {"execution_gating": {"controlled_pilot_download": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION"}},
+            f,
+        )
+
+    # 1. In-process CLI execution with monkeypatch
+    monkeypatch.setattr("scripts.materialize_stage6m_cohort3_audio.HARDENING_AUDIT_JSON", blocked_audit)
+    monkeypatch.setenv("STAGE6M_HARDENING_AUDIT_JSON", str(blocked_audit))
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "materialize_stage6m_cohort3_audio.py",
+            "--pilot",
+            "--source-dir",
+            str(source_dir),
+            "--audio-dir",
+            str(dest_dir),
+            "--output-dir",
+            str(out_dir),
+        ],
+    )
+
+    with pytest.raises(PermissionError) as exc_info:
+        main()
+    assert "Physical pilot audio acquisition blocked" in str(exc_info.value)
+    # Critical invariant: Zero files copied before rejection
+    assert list(dest_dir.iterdir()) == [], "Files were copied to destination despite unauthorized status!"
+
+    # 2. Independent subprocess CLI execution with env override
+    import os
+    sub_env = os.environ.copy()
+    sub_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(blocked_audit)
+    sub_dest = tmp_path / "sub_dest"
+    sub_dest.mkdir()
+    res = subprocess.run(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "scripts" / "materialize_stage6m_cohort3_audio.py"),
+            "--pilot",
+            "--source-dir",
+            str(source_dir),
+            "--audio-dir",
+            str(sub_dest),
+            "--output-dir",
+            str(out_dir),
+        ],
+        capture_output=True,
+        text=True,
+        env=sub_env,
+    )
+    assert res.returncode != 0
+    assert "PermissionError" in res.stderr or "Physical pilot audio acquisition blocked" in res.stderr
+    assert list(sub_dest.iterdir()) == [], "Subprocess copied files to destination despite unauthorized status!"
+
+
+def test_cli_integration_full_cohort_source_dir_unauthorized_rejected_before_copy(tmp_path, monkeypatch):
+    """
+    T7.5.2-02 — Integration Test: CLI full-cohort mode with --source-dir strictly rejects
+    unauthorized acquisition before copying any files.
+    Demonstrates that full-cohort acquisition cannot be triggered via local source without
+    explicit Project-Lead authorization under Protocol Section 14.7.
+    """
+    source_dir = tmp_path / "full_source"
+    source_dir.mkdir()
+    dest_dir = tmp_path / "full_dest"
+    dest_dir.mkdir()
+    out_dir = tmp_path / "full_out"
+    out_dir.mkdir()
+
+    # Generate a candidate MP3 in the source directory matching a manifest clip
+    meta, records, full_target_map = load_provisional_manifest(PROVISIONAL_MANIFEST_JSON)
+    sample_clip = next(iter(full_target_map.keys()))
+    _generate_synthetic_mp3(source_dir / sample_clip)
+
+    blocked_audit = tmp_path / "blocked_full_audit.json"
+    with open(blocked_audit, "w", encoding="utf-8") as f:
+        json.dump(
+            {"execution_gating": {"full_audio_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION"}},
+            f,
+        )
+
+    # 1. In-process CLI execution with monkeypatch
+    monkeypatch.setattr("scripts.materialize_stage6m_cohort3_audio.HARDENING_AUDIT_JSON", blocked_audit)
+    monkeypatch.setenv("STAGE6M_HARDENING_AUDIT_JSON", str(blocked_audit))
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "materialize_stage6m_cohort3_audio.py",
+            "--source-dir",
+            str(source_dir),
+            "--audio-dir",
+            str(dest_dir),
+            "--output-dir",
+            str(out_dir),
+        ],
+    )
+
+    with pytest.raises(PermissionError) as exc_info:
+        main()
+    assert "Full cohort audio acquisition blocked" in str(exc_info.value)
+    assert list(dest_dir.iterdir()) == [], "Files were copied to destination despite unauthorized status!"
+
+    # 2. Independent subprocess CLI execution with env override
+    import os
+    sub_env = os.environ.copy()
+    sub_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(blocked_audit)
+    sub_dest = tmp_path / "sub_full_dest"
+    sub_dest.mkdir()
+    res = subprocess.run(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "scripts" / "materialize_stage6m_cohort3_audio.py"),
+            "--source-dir",
+            str(source_dir),
+            "--audio-dir",
+            str(sub_dest),
+            "--output-dir",
+            str(out_dir),
+        ],
+        capture_output=True,
+        text=True,
+        env=sub_env,
+    )
+    assert res.returncode != 0
+    assert "PermissionError" in res.stderr or "Full cohort audio acquisition blocked" in res.stderr
+    assert list(sub_dest.iterdir()) == [], "Subprocess copied files to destination despite unauthorized status!"
+
+
+def test_cli_integration_validate_only_succeeds_without_authorization(tmp_path, monkeypatch):
+    """
+    T7.5.2-03 — Integration Test: CLI --validate-only succeeds cleanly without acquisition
+    authorization, even when governance gating records BLOCKED_PENDING_TASK_7_6_AUTHORIZATION.
+    Demonstrates that read-only auditing requires no download authorization.
+    """
+    dest_dir = tmp_path / "val_dest"
+    dest_dir.mkdir()
+    out_dir = tmp_path / "val_out"
+    out_dir.mkdir()
+
+    blocked_audit = tmp_path / "blocked_all_audit.json"
+    with open(blocked_audit, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "execution_gating": {
+                    "controlled_pilot_download": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+                    "full_audio_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+                }
+            },
+            f,
+        )
+
+    # 1. In-process CLI execution with monkeypatch
+    monkeypatch.setattr("scripts.materialize_stage6m_cohort3_audio.HARDENING_AUDIT_JSON", blocked_audit)
+    monkeypatch.setenv("STAGE6M_HARDENING_AUDIT_JSON", str(blocked_audit))
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "materialize_stage6m_cohort3_audio.py",
+            "--pilot",
+            "--validate-only",
+            "--audio-dir",
+            str(dest_dir),
+            "--output-dir",
+            str(out_dir),
+        ],
+    )
+
+    # Must complete cleanly without raising PermissionError
+    main()
+
+    # Verify reports were produced in isolated out_dir
+    report_json = out_dir / "stage6m_cohort3_pilot_materialization.json"
+    assert report_json.exists(), "Pilot report JSON not created in validate-only mode!"
+    with open(report_json, "r", encoding="utf-8") as f:
+        rep_data = json.load(f)
+    assert rep_data["target_scale"]["total_target_clips"] == 75
+    assert rep_data["materialized_scale"]["valid_clips_count"] == 0
+
+    # Verify no audio was downloaded or copied
+    assert list(dest_dir.iterdir()) == []
+
+    # 2. Independent subprocess CLI execution
+    import os
+    sub_env = os.environ.copy()
+    sub_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(blocked_audit)
+    sub_out = tmp_path / "sub_val_out"
+    sub_out.mkdir()
+    res = subprocess.run(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "scripts" / "materialize_stage6m_cohort3_audio.py"),
+            "--pilot",
+            "--validate-only",
+            "--audio-dir",
+            str(dest_dir),
+            "--output-dir",
+            str(sub_out),
+        ],
+        capture_output=True,
+        text=True,
+        env=sub_env,
+    )
+    assert res.returncode == 0
+    assert (sub_out / "stage6m_cohort3_pilot_materialization.json").exists()
+

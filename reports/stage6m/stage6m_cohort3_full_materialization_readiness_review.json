@@ -71,7 +71,23 @@
     "missing_target_recordings_count": 0,
     "substitutions_or_silent_replacements": 0,
     "historical_exposure_isolation": {
-      "stage5_external_eval_speakers_checked": 60,
+      "partitions_audited": {
+        "stage5_external_eval.csv": {
+          "unique_speakers": 60,
+          "sha256": "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32"
+        },
+        "stage5_sentinel_panel.csv": {
+          "unique_speakers": 30,
+          "sha256": "665009a00660f7e9bbdf8de8a53473fc1249362ca2a5bc0038518313d18f0543"
+        },
+        "stage6m_cohort2_audio.csv": {
+          "unique_speakers": 468,
+          "sha256": "dd837e249b15588cb15b7a3b234e820e08699722569cc24e57d119a868854f70"
+        }
+      },
+      "historical_partitions_pairwise_overlap": 0,
+      "total_unique_historical_exposed_speakers": 558,
+      "cohort3_provisional_speakers": 1265,
       "overlapping_speakers_found": 0,
       "exposure_isolation_verified": true
     }
@@ -96,11 +112,13 @@
       "pilot_vs_full_isolation": "PASS (--output-dir parameterized, full-cohort ledgers completely protected)"
     },
     "archive_termination_qualification": {
-      "pilot_scope": "Retrieval confirmed for all 75 target clips upon encountering target archive members up to member #1,188,858.",
-      "boundary_definition": "Physical pilot does not claim consumption of the full 95 GB archive through its final gzip EOF marker. Full-archive stream consumption remains a qualification boundary documented for full-cohort planning."
+      "engineering_tests_status": "PASS (gzip EOF integrity verified in automated unit test suite test_streaming_resume_range_validation)",
+      "pilot_physical_scope": "Retrieval confirmed for all 75 target clips upon encountering target archive members up to member #1,188,858.",
+      "boundary_definition": "Physical pilot terminated early upon 100% target acquisition (75/75 clips) and did not consume the full 95 GB archive through its final gzip EOF marker. Full-archive traversal remains documented as an operational boundary for Task 7.6 full-cohort planning."
     }
   },
   "storage_and_operational_capacity": {
+    "qualification_notice": "File-size projections are operational planning estimates derived from N=75 recordings across 5 speakers. They do not constitute formal statistical confidence bounds or guaranteed maximums.",
     "pilot_sample_size": 75,
     "pilot_file_size_distribution": {
       "total_bytes": 3397743,
@@ -111,12 +129,15 @@
       "max_bytes": 83373,
       "p95_bytes": 78573
     },
-    "full_cohort_projections": {
+    "full_cohort_planning_estimates": {
       "target_clips_count": 18975,
-      "projected_raw_audio_mean_bytes": 859628979,
-      "projected_raw_audio_mean_mb": 819.81,
-      "projected_raw_audio_p95_mb": 1421.85,
-      "projected_raw_audio_3sigma_envelope_mb": 1781.29
+      "planning_estimate_mean_bytes": 859628979,
+      "planning_estimate_mean_mb": 819.81,
+      "planning_estimate_mean_gb": 0.86,
+      "planning_estimate_p95_mb": 1421.85,
+      "planning_estimate_p95_gb": 1.49,
+      "planning_estimate_3sigma_envelope_mb": 1781.29,
+      "planning_estimate_3sigma_envelope_gb": 1.87
     },
     "operational_headroom_budget_gb": {
       "raw_audio_storage_conservative": 1.8,
@@ -127,10 +148,16 @@
     },
     "host_filesystem_capacity": {
       "drive": "C:",
-      "available_free_bytes": 24734228480,
-      "available_free_gb": 23.04,
-      "capacity_margin_ratio": 8.08,
+      "measurement_timestamp_utc": "2026-11-04T09:46:12.790237+00:00",
+      "available_free_bytes": 23646322688,
+      "available_free_gb": 22.02,
+      "capacity_margin_ratio": 7.72,
       "storage_capacity_verdict": "PASS"
+    },
+    "network_operational_parameters": {
+      "estimated_archive_traversal_compressed_gb": "Up to ~95 GB (depending on target member distribution in archive)",
+      "estimated_acquisition_duration_hours": "3.5 to 8.0 hours depending on network throughput and Range request latency",
+      "resume_recovery_tested": true
     }
   },
   "historical_engine_immutability": {
@@ -145,7 +172,7 @@
     "administrative_readiness_verdict": "READY_FOR_SEPARATE_PROJECT_LEAD_DECISION",
     "execution_gating": {
       "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
-      "full_audio_materialization": "BLOCKED_PENDING_COHORT3_READINESS_REVIEW",
+      "full_audio_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
       "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
       "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
       "confirmatory_inference": "STRICTLY_BLOCKED"

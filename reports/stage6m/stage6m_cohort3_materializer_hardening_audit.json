@@ -11,7 +11,7 @@
   "execution_gating": {
     "audio_materialization_hardening": "VERIFIED_FULL_FILE_AND_TERMINATION",
     "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
-    "full_audio_materialization": "BLOCKED_PENDING_COHORT3_READINESS_REVIEW",
+    "full_audio_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
     "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
     "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
     "confirmatory_inference": "STRICTLY_BLOCKED"

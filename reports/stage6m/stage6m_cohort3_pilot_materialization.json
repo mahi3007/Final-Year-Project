@@ -78,10 +78,10 @@
     "ledger_sha256": "3afd649c41fa617a64f475a80781d00ffb17511b109b26c5a05c3062ee6e6359"
   },
   "execution_gating": {
-    "controlled_pilot_download": "AUTHORIZED_BY_PROJECT_LEAD",
+    "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
     "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
     "confirmatory_inference": "STRICTLY_BLOCKED",
-    "full_cohort_materialization": "HELD_PENDING_PILOT_VERIFICATION",
+    "full_cohort_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
     "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION"
   }
 }

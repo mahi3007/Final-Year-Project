@@ -1,0 +1,128 @@
+{
+  "timestamp_utc": "2026-11-04T09:55:00.000000+00:00",
+  "document_id": "STAGE6M_COHORT3_TASK752_RECONCILIATION_AUDIT",
+  "task_id": "TASK_7_5_2",
+  "task_title": "Governance Reconciliation & Full Materialization Readiness Evidence Audit",
+  "protocol_version": "v1.5-five-stratum-parity",
+  "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
+  "governance_status": "AUTHORIZED_FOR_DATA_PREPARATION",
+  "audit_disposition": "RECONCILIATION_COMPLETE_READINESS_CONFIRMED_TASK76_PENDING",
+  "reconciled_execution_gating": {
+    "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
+    "full_audio_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+    "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
+    "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+    "confirmatory_inference": "STRICTLY_BLOCKED",
+    "readiness_disposition": "READY_PENDING_PROJECT_LEAD_ACQUISITION_AUTHORIZATION"
+  },
+  "historical_exposure_isolation_audit": {
+    "audit_methodology": "Normalized speaker ID extraction across all historical evaluation and sentinel partitions, pairwise disjointness validation, unique union calculation, and set difference against Cohort 3 provisional manifest.",
+    "historical_partitions": {
+      "stage5_external_eval.csv": {
+        "panel_role": "Cohort 1 External Evaluation Panel",
+        "unique_speakers": 60,
+        "file_bytes": 451539,
+        "sha256": "41cec79d913a96aae40d8c275340b28be4dee1d4be959940a80cde2c9128fd32"
+      },
+      "stage5_sentinel_panel.csv": {
+        "panel_role": "Stage 5 Sentinel Adaptation Panel",
+        "unique_speakers": 30,
+        "file_bytes": 92340,
+        "sha256": "665009a00660f7e9bbdf8de8a53473fc1249362ca2a5bc0038518313d18f0543"
+      },
+      "stage6m_cohort2_audio.csv": {
+        "panel_role": "Cohort 2 Evaluation Partition",
+        "unique_speakers": 468,
+        "file_bytes": 2591054,
+        "sha256": "dd837e249b15588cb15b7a3b234e820e08699722569cc24e57d119a868854f70"
+      }
+    },
+    "pairwise_disjointness_results": {
+      "stage5_external_eval_vs_stage5_sentinel": 0,
+      "stage5_external_eval_vs_stage6m_cohort2": 0,
+      "stage5_sentinel_vs_stage6m_cohort2": 0,
+      "all_historical_partitions_mutually_disjoint": true
+    },
+    "historical_union_unique_speakers": 558,
+    "cohort3_provisional_speakers": 1265,
+    "cohort3_provisional_manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "overlap_cohort3_vs_historical_union": 0,
+    "exposure_isolation_verdict": "PASS — 100% strict isolation confirmed across all 558 historical exposed speakers (0.00% overlap with Cohort 3)"
+  },
+  "storage_operational_planning_qualification": {
+    "qualification_notice": "File-size projections are operational planning estimates derived from N=75 recordings across 5 speakers. Multiplying the sample P95 by 18,975 does not establish a formal 95% upper confidence bound for total cohort size, and the 3-sigma scenario is a conservative planning envelope rather than a guaranteed maximum.",
+    "pilot_sample_parameters": {
+      "sample_size_clips": 75,
+      "sample_size_speakers": 5,
+      "mean_bytes": 45303.2,
+      "median_bytes": 44397.0,
+      "std_dev_bytes": 17710.9,
+      "min_bytes": 14637,
+      "max_bytes": 83373,
+      "p95_bytes": 78573
+    },
+    "planning_estimates_for_18975_clips": {
+      "mean_planning_estimate_gb": 0.86,
+      "p95_planning_estimate_gb": 1.49,
+      "conservative_3sigma_envelope_gb": 1.87
+    },
+    "operational_headroom_budget_gb": {
+      "raw_audio_conservative": 1.80,
+      "ledgers_and_reports": 0.05,
+      "streaming_decompression_buffers": 0.50,
+      "validation_recovery_headroom": 0.50,
+      "total_budget_gb": 2.85
+    },
+    "host_filesystem_capacity": {
+      "drive": "C:",
+      "measurement_timestamp_utc": "2026-11-04T09:46:12.790237+00:00",
+      "available_free_bytes": 23646322688,
+      "available_free_gb": 22.02,
+      "capacity_margin_ratio": 7.72,
+      "storage_capacity_verdict": "PASS"
+    },
+    "network_operational_parameters": {
+      "archive_traversal_compressed_gb": "Up to ~95 GB",
+      "estimated_acquisition_duration_hours": "3.5 to 8.0 hours",
+      "resume_and_socket_recovery_tested": true
+    }
+  },
+  "archive_termination_qualification": {
+    "engineering_unit_tests": "VERIFIED (ThreadedResilientGzipStream strictly enforces self._decompressor.eof == True before returning EOF in test_streaming_resume_range_validation)",
+    "physical_pilot_boundary": "Terminated cleanly upon 100% target acquisition (75/75 clips encountered up to archive member #1,188,858) without traversing the entire 95 GB archive to EOF",
+    "qualification_scope": "Full physical archive traversal remains an operational planning boundary documented for Task 7.6 full-cohort execution."
+  },
+  "integration_test_verification": {
+    "test_module": "tests/research_validity/test_stage6m_cohort3_audio_materialization.py",
+    "tests_executed": 24,
+    "tests_passed": 24,
+    "tests_failed": 0,
+    "new_integration_tests": [
+      {
+        "test_name": "test_cli_integration_pilot_source_dir_unauthorized_rejected_before_copy",
+        "id": "T7.5.2-01",
+        "description": "Verifies that the CLI in --pilot --source-dir mode invokes the authorization gate before copying any file, leaving destination directory empty."
+      },
+      {
+        "test_name": "test_cli_integration_full_cohort_source_dir_unauthorized_rejected_before_copy",
+        "id": "T7.5.2-02",
+        "description": "Verifies that the CLI in full-cohort --source-dir mode invokes the authorization gate before copying any file, leaving destination directory empty."
+      },
+      {
+        "test_name": "test_cli_integration_validate_only_succeeds_without_authorization",
+        "id": "T7.5.2-03",
+        "description": "Verifies that the CLI in --pilot --validate-only mode completes cleanly without download authorization, generating isolated audit reports."
+      }
+    ]
+  },
+  "immutable_invariants": {
+    "paired_cluster_inference_hash": "58d456fbcce43b5322d56df80e4077a32d7f4cca",
+    "paired_cluster_inference_diff_vs_a7a3b79": 0,
+    "provisional_manifest_rows": 18975,
+    "provisional_manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "manifest_lock_status": "UNLOCKED (PROVISIONAL)",
+    "gpu_adaptation_status": "STRICTLY_BLOCKED",
+    "confirmatory_inference_status": "STRICTLY_BLOCKED",
+    "task_7_6_full_acquisition_decision": "PENDING_SEPARATE_PROJECT_LEAD_REVIEW"
+  }
+}
