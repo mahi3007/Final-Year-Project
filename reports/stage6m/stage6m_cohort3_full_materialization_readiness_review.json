@@ -150,9 +150,11 @@
       "drive": "C:",
       "measurement_timestamp_utc": "2026-11-04T09:46:12.790237+00:00",
       "available_free_bytes": 23646322688,
-      "available_free_gb": 22.02,
-      "capacity_margin_ratio": 7.22,
-      "historical_capacity_evidence_notice": "The recorded 22.02 GB measurement represents historical capacity evidence as of the measurement timestamp, not an operational guarantee of available free space when eventual materialization begins; host storage must be re-checked prior to physical download in Task 7.7.",
+      "available_free_gib": 22.02,
+      "available_free_gb": 23.65,
+      "total_operational_budget_gb": 3.05,
+      "capacity_margin_ratio": 7.75,
+      "historical_capacity_evidence_notice": "The recorded 23,646,322,688 bytes (22.02 GiB / 23.65 decimal GB) measurement represents historical capacity evidence as of the measurement timestamp, not an operational guarantee of available free space when eventual materialization begins; host storage must be re-checked prior to physical download in Task 7.7.",
       "storage_capacity_verdict": "PASS"
     },
     "network_operational_parameters": {

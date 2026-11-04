@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-11-04T10:42:48.174745+00:00",
+  "timestamp_utc": "2026-11-04T10:58:05.255173+00:00",
   "protocol_version": "v1.4.0",
   "governing_standard": "ADR-005",
   "decision_rule": "Decision Rule B",
@@ -26,7 +26,7 @@
       "locale",
       "segment"
     ],
-    "curation_script_commit": "6ebb02c70d03c1278c0c5fc4bad3ed772e30fb08",
+    "curation_script_commit": "c2a36ff9d1536c552712289d6e34a822f9102b51",
     "historical_partition_hashes": {
       "stage5_external_eval.csv": {
         "file_name": "stage5_external_eval.csv",

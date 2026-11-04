@@ -1,0 +1,138 @@
+{
+  "timestamp_utc": "2026-11-04T10:55:00.000000+00:00",
+  "document_id": "STAGE6M_COHORT3_TASK76_PROJECT_LEAD_AUTHORIZATION_DECISION",
+  "task_id": "TASK_7_6",
+  "task_title": "Project-Lead Academic Authorization Decision for Full Cohort 3 Audio Acquisition",
+  "protocol_version": "v1.5-five-stratum-parity",
+  "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
+  "governance_status": "DECISION_PENDING_PROJECT_LEAD_SIGN_OFF",
+  "decision_status": "PENDING_FORMAL_PROJECT_LEAD_DECISION",
+  "target_manifest": {
+    "manifest_file": "datasets/splits/stage6m_cohort3_provisional_manifest.json",
+    "authoritative_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "manifest_status": "PROVISIONAL_UNLOCKED",
+    "total_speakers": 1265,
+    "clips_per_speaker": 15,
+    "total_target_clips": 18975,
+    "confirmatory_strata": [
+      {
+        "stratum": "Australian English",
+        "speakers": 253,
+        "clips": 3795
+      },
+      {
+        "stratum": "Canadian English",
+        "speakers": 253,
+        "clips": 3795
+      },
+      {
+        "stratum": "England English",
+        "speakers": 253,
+        "clips": 3795
+      },
+      {
+        "stratum": "South Asian English",
+        "speakers": 253,
+        "clips": 3795
+      },
+      {
+        "stratum": "US English",
+        "speakers": 253,
+        "clips": 3795
+      }
+    ],
+    "substitutions_permitted": 0
+  },
+  "technical_readiness_audit": {
+    "source_archive": {
+      "corpus": "Mozilla Common Voice 27.0 (en)",
+      "release_file": "cv-corpus-27.0-2026-03-08-en.tar.gz",
+      "validated_tsv_sha256": "733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a",
+      "matched_clips_count": 18975,
+      "matched_clips_pct": 100.0,
+      "missing_source_clips": 0
+    },
+    "historical_exposure_isolation": {
+      "historical_partitions_audited": [
+        "stage5_external_eval.csv (60 speakers)",
+        "stage5_sentinel_panel.csv (30 speakers)",
+        "stage6m_cohort2_audio.csv (468 speakers)"
+      ],
+      "unique_historical_exposed_speakers": 558,
+      "pairwise_disjointness_confirmed": true,
+      "overlap_with_cohort3": 0,
+      "exposure_isolation_verdict": "PASS (0.00% overlap)"
+    },
+    "physical_pilot_verification": {
+      "task_completed": "TASK_7_4_4",
+      "physical_clips_acquired": 75,
+      "physical_speakers_completed": 5,
+      "failed_recordings": 0,
+      "sha256_mismatches": 0,
+      "audio_validation_rate_pct": 100.0,
+      "pilot_verdict": "PASS_PILOT_ACQUISITION_AND_PHYSICAL_INTEGRITY_VERIFIED"
+    },
+    "storage_and_operational_budget": {
+      "three_sigma_planning_envelope_gb": 1.87,
+      "operational_headroom_budget_gb": {
+        "raw_audio_conservative": 2.00,
+        "ledgers_and_reports": 0.05,
+        "streaming_decompression_buffers": 0.50,
+        "validation_recovery_headroom": 0.50,
+        "total_budget_gb": 3.05
+      },
+      "host_filesystem_capacity": {
+        "drive": "C:",
+        "measurement_timestamp_utc": "2026-11-04T09:46:12.790237+00:00",
+        "available_free_bytes": 23646322688,
+        "available_free_gib": 22.02,
+        "available_free_gb": 23.65,
+        "total_operational_budget_gb": 3.05,
+        "capacity_margin_ratio": 7.75,
+        "historical_capacity_evidence_notice": "The recorded 23,646,322,688 bytes (22.02 GiB / 23.65 decimal GB) measurement represents historical capacity evidence as of the measurement timestamp, not an operational guarantee of available free space when eventual materialization begins; host storage must be re-checked prior to physical download in Task 7.7.",
+        "storage_capacity_verdict": "PASS"
+      }
+    },
+    "stream_and_network_resilience": {
+      "http_range_resume_tested": true,
+      "socket_auto_recovery_tested": true,
+      "estimated_archive_traversal_compressed_gb": "Up to ~95 GB",
+      "estimated_duration_hours": "3.5 to 8.0 hours"
+    },
+    "authorization_security": {
+      "canonical_path_pinning": "HARDENING_AUDIT_JSON unconditionally pinned to reports/stage6m/stage6m_cohort3_materializer_hardening_audit.json",
+      "environment_override_status": "REMOVED_AND_VERIFIED",
+      "adversarial_tests_passed": [
+        "test_adversarial_cli_env_var_cannot_authorize_pilot",
+        "test_adversarial_cli_env_var_cannot_authorize_full_cohort"
+      ]
+    },
+    "remaining_qualifications": {
+      "pilot_archive_termination": "Physical pilot terminated early upon obtaining 75 target clips without reaching end of 95 GB archive; full archive traversal will occur during full materialization.",
+      "pre_download_host_check": "Host free space must be re-checked immediately before physical acquisition in Task 7.7."
+    }
+  },
+  "execution_gating": {
+    "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
+    "full_audio_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+    "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
+    "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+    "confirmatory_inference": "STRICTLY_BLOCKED"
+  },
+  "decision_record": {
+    "authorizing_role": "Project Lead",
+    "governing_section": "Protocol Section 14.7",
+    "decision_options": [
+      "AUTHORIZE_FULL_ACQUISITION",
+      "EXTEND_HOLD_PENDING_FURTHER_AUDIT",
+      "REJECT_FULL_ACQUISITION"
+    ],
+    "current_status": "PENDING_FORMAL_PROJECT_LEAD_DECISION",
+    "instructions_upon_authorization": [
+      "1. Update execution_gating.full_audio_materialization to AUTHORIZED_BY_PROJECT_LEAD in reports/stage6m/stage6m_cohort3_materializer_hardening_audit.json.",
+      "2. Verify actual host free disk space on target drive immediately before download.",
+      "3. Execute Task 7.7: materialize all 18,975 recordings via scripts/materialize_stage6m_cohort3_audio.py --source-dir or --stream.",
+      "4. Final manifest lock, GPU adaptation, and confirmatory inference remain strictly blocked until Task 7.8 validation."
+    ]
+  }
+}

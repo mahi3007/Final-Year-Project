@@ -20,8 +20,8 @@ Task 7.5.3 implements two critical corrections identified during the Project-Lea
 2. **Storage Budget Arithmetic Reconciliation:**
    - Reconciled the raw audio storage allocation from $1.80$ GB to $2.00$ GB to properly encompass the $1.87$ GB conservative 3-sigma planning envelope ($18,975 \times [\mu + 3\sigma]$).
    - Updated the total operational headroom budget from $2.85$ GB to $3.05$ GB ($2.00 + 0.05 + 0.50 + 0.50 = 3.05$ GB).
-   - Updated the safety margin ratio against recorded free space ($22.02$ GB) to $\mathbf{7.22\times}$.
-   - Qualified the $22.02$ GB disk measurement as historical capacity evidence captured at `2026-11-04T09:46:12Z`, rather than a perpetual operational guarantee; host free disk space must be independently re-verified prior to physical acquisition in Task 7.7.
+   - Updated the safety margin ratio against recorded free space ($23.65$ decimal GB / $22.02$ GiB) to $\mathbf{7.75\times}$ ($\frac{23.65}{3.05} \approx 7.75$).
+   - Qualified the $23,646,322,688$ bytes ($22.02$ GiB / $23.65$ decimal GB) disk measurement as historical capacity evidence captured at `2026-11-04T09:46:12Z`, rather than a perpetual operational guarantee; host free disk space must be independently re-verified prior to physical acquisition in Task 7.7.
 
 All core scientific and cryptographic invariants remain strictly preserved. Full audio materialization remains **`BLOCKED_PENDING_TASK_7_6_AUTHORIZATION`**.
 
@@ -81,11 +81,11 @@ To ensure the raw audio allocation strictly encompasses the $1.87$ GB planning e
 | **Total Operational Headroom Budget** | **$2.85$ GB** | **$3.05$ GB** | **Total host disk headroom required ($2.00 + 0.05 + 0.50 + 0.50$)** |
 
 ### 3.3 Safety Margin & Historical Evidence Qualification
-- **Recorded Host Free Space (`C:`):** **$23,646,322,688$ bytes ($22.02$ GiB / $23.65$ GB)** at `2026-11-04T09:46:12Z`.
+- **Recorded Host Free Space (`C:`):** **$23,646,322,688$ bytes ($22.02$ GiB / $23.65$ decimal GB)** at `2026-11-04T09:46:12Z`.
 - **Reconciled Margin Ratio:**
-  $$\text{Safety Margin Ratio} = \frac{22.02\text{ GB}}{3.05\text{ GB}} \approx \mathbf{7.22\times\text{ headroom margin}}$$
+  $$\text{Safety Margin Ratio} = \frac{23.65\text{ GB}}{3.05\text{ GB}} \approx \mathbf{7.75\times\text{ headroom margin}}$$
 - **Historical Capacity Evidence Notice:**
-  > The recorded $22.02$ GB free space represents historical capacity evidence captured at timestamp `2026-11-04T09:46:12Z`. It does not constitute a guaranteed maximum or perpetual reservation; available host disk space must be independently re-verified before full physical acquisition begins in Task 7.7.
+  > The recorded $23,646,322,688$ bytes ($22.02$ GiB / $23.65$ decimal GB) free space represents historical capacity evidence captured at timestamp `2026-11-04T09:46:12Z`. It does not constitute a guaranteed maximum or perpetual reservation; available host disk space must be independently re-verified before full physical acquisition begins in Task 7.7.
 
 ---
 
@@ -119,6 +119,6 @@ The complete 5-module Stage 6M targeted regression suite was executed:
 
 ## 6. Final Recommendation
 
-With canonical authorization source pinning strictly enforced, adversarial environment bypass tests passing, and storage budget arithmetic reconciled to $3.05$ GB ($7.22\times$ headroom on historical evidence), Task 7.5.3 is complete.
+With canonical authorization source pinning strictly enforced, adversarial environment bypass tests passing, and storage budget arithmetic reconciled to $3.05$ GB ($7.75\times$ headroom on historical evidence), Task 7.5.3 is complete.
 
 **Next Milestone:** **Task 7.6 — Project-Lead Acquisition Decision** under Protocol Section 14.7.

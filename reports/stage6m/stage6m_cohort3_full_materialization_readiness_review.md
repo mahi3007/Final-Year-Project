@@ -164,10 +164,10 @@ To prevent mid-acquisition disk exhaustion, storage requirements were modeled em
 ### 5.4 Filesystem Capacity & Network Audit
 - **Host System Drive:** `C:`
 - **Measurement Timestamp (UTC):** `2026-11-04T09:46:12Z`
-- **Available Free Space (Historical Evidence):** **$23,646,322,688$ bytes ($22.02$ GiB / $23.65$ GB)** recorded at audit timestamp.
-- **Operational Reserve Requirement:** $3.05$ GB.
-- **Safety Margin Ratio:** **$\frac{22.02\text{ GB}}{3.05\text{ GB}} \approx 7.22\times$** ($> 720\%$ of required headroom).
-- **Historical Evidence Qualification:** The $22.02$ GB free space represents historical capacity evidence captured at timestamp `2026-11-04T09:46:12Z`. It does not constitute a guaranteed maximum or perpetual reservation; available host disk space must be independently re-verified before full physical acquisition begins in Task 7.7.
+- **Available Free Space (Historical Evidence):** **$23,646,322,688$ bytes ($22.02$ GiB / $23.65$ decimal GB)** recorded at audit timestamp.
+- **Operational Reserve Requirement:** $3.05$ decimal GB ($2.84$ GiB).
+- **Safety Margin Ratio:** **$\frac{23.65\text{ GB}}{3.05\text{ GB}} \approx \mathbf{7.75\times}$** ($> 770\%$ of required headroom).
+- **Historical Evidence Qualification:** The $23,646,322,688$ bytes ($22.02$ GiB / $23.65$ decimal GB) free space represents historical capacity evidence captured at timestamp `2026-11-04T09:46:12Z`. It does not constitute a guaranteed maximum or perpetual reservation; available host disk space must be independently re-verified before full physical acquisition begins in Task 7.7.
 - **Storage Capacity Verdict:** **PASS — Substantial operational headroom confirmed on recorded evidence.**
 - **Network Operational Parameters:** Full acquisition traverses an archive up to ~95 GB (gzip compressed). Estimated streaming duration is 3.5 to 8.0 hours depending on network throughput, MDC server response latency, and HTTP Range resume overhead. The materializer's resume and socket recovery mechanisms have been proven during pilot execution.
 

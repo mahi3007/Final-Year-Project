@@ -115,11 +115,11 @@ for name in ['stage5_external_eval.csv', 'stage5_sentinel_panel.csv', 'stage6m_c
 ### 4.4 Fresh Filesystem Capacity Audit
 - **Host Drive Audited:** `C:`
 - **Audit Timestamp (UTC):** `2026-11-04T09:46:12.790237+00:00`
-- **Available Free Disk Space (Historical Evidence):** **$23,646,322,688$ bytes ($22.02$ GiB / $23.65$ GB)** recorded at audit timestamp.
-- **Operational Headroom Budget:** **$3.05$ GB** (reconciled conservative audio $2.00$ GB + ledgers $0.05$ GB + streaming buffers $0.50$ GB + recovery headroom $0.50$ GB).
+- **Available Free Disk Space (Historical Evidence):** **$23,646,322,688$ bytes ($22.02$ GiB / $23.65$ decimal GB)** recorded at audit timestamp.
+- **Operational Headroom Budget:** **$3.05$ decimal GB** (reconciled conservative audio $2.00$ GB + ledgers $0.05$ GB + streaming buffers $0.50$ GB + recovery headroom $0.50$ GB).
 - **Safety Margin Ratio:**
-  $$\frac{22.02\text{ GB}}{3.05\text{ GB}} \approx \mathbf{7.22\times\text{ headroom margin}}$$
-- **Historical Evidence Qualification:** The $22.02$ GB free space represents historical capacity evidence captured at timestamp `2026-11-04T09:46:12Z`. It does not constitute an operational guarantee of free space when eventual materialization begins; host storage must be re-checked prior to physical download in Task 7.7.
+  $$\frac{23.65\text{ GB}}{3.05\text{ GB}} \approx \mathbf{7.75\times\text{ headroom margin}}$$
+- **Historical Evidence Qualification:** The $23,646,322,688$ bytes ($22.02$ GiB / $23.65$ decimal GB) free space represents historical capacity evidence captured at timestamp `2026-11-04T09:46:12Z`. It does not constitute an operational guarantee of free space when eventual materialization begins; host storage must be re-checked prior to physical download in Task 7.7.
 - **Verdict:** **PASS — Substantial operational capacity confirmed on recorded evidence.**
 
 ### 4.5 Network Operational Parameters
