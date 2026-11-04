@@ -6,15 +6,15 @@
 > **PROTOCOL VERSION:** v1.5 Five-Stratum Confirmatory Protocol (`v1.5-five-stratum-parity`)  
 > **GOVERNING STANDARD:** Protocol Section 14.7 (Project-Lead Academic Authorization)  
 > **AUDIT DISPOSITION:** **PASS — PILOT ACQUISITION & PHYSICAL INTEGRITY VERIFIED**  
-> **GOVERNANCE STATUS:** **AUTHORIZED FOR DATA PREPARATION**  
+> **GOVERNANCE STATUS:** **AUTHORIZED_FOR_FULL_COHORT_ACQUISITION**  
 > **SELECTION MANIFEST STATUS:** **UNLOCKED (PROVISIONAL)**  
 > **EXECUTION GATING:**  
 > - **75-Clip Pilot:** `PILOT_COMPLETE_AND_VERIFIED`  
-> - **Full 18,975-Clip Acquisition:** `BLOCKED_PENDING_TASK_7_6_AUTHORIZATION`  
+> - **Full 18,975-Clip Acquisition:** `AUTHORIZED_BY_PROJECT_LEAD`  
 > - **Final Manifest Lock:** `BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION`  
 > - **GPU CTTA Adaptation:** `STRICTLY_BLOCKED`  
 > - **Confirmatory Inference:** `STRICTLY_BLOCKED`  
-> **TIMESTAMP (UTC):** `2026-11-04T08:15:00Z`  
+> **TIMESTAMP (UTC):** `2026-11-04T11:45:00Z`  
 
 ---
 
@@ -204,11 +204,11 @@ Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_ma
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════╗
-║               RECONCILED GOVERNANCE STATUS (TASK 7.4.4 / PROTOCOL SEC 14.7)          ║
+║               RECONCILED GOVERNANCE STATUS (TASK 7.6 / PROTOCOL SEC 14.7)            ║
 ║                                                                                      ║
 ║  1. Materializer hardening & stream termination: VERIFIED FULL-FILE & TERMINATION    ║
 ║  2. 75-Clip Controlled Physical Pilot: PILOT_COMPLETE_AND_VERIFIED (75/75, 5/5 spk) ║
-║  3. Full 18,975-Clip Acquisition: BLOCKED_PENDING_TASK_7_6_AUTHORIZATION          ║
+║  3. Full 18,975-Clip Acquisition: AUTHORIZED_BY_PROJECT_LEAD                         ║
 ║  4. Final Manifest Lock: BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION             ║
 ║  5. GPU CTTA Adaptation: STRICTLY_BLOCKED                                            ║
 ║  6. Confirmatory Model Inference: STRICTLY_BLOCKED                                   ║
@@ -219,7 +219,7 @@ Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_ma
 | Execution Stage | Required Governance Status | Current Status | Gate Rationale |
 | :--- | :---: | :---: | :--- |
 | **75-Clip Controlled Pilot** | `PILOT_COMPLETE_AND_VERIFIED` | **`PILOT_COMPLETE_AND_VERIFIED`** | All 75 clips acquired, decoded, and hash-verified across 5 strata |
-| **Full 18,975-Clip Acquisition** | `BLOCKED_PENDING_TASK_7_6_AUTHORIZATION` | **`BLOCKED_PENDING_TASK_7_6_AUTHORIZATION`** | HELD until formal Project-Lead authorization under Protocol Section 14.7 (Task 7.6) |
+| **Full 18,975-Clip Acquisition** | `AUTHORIZED_BY_PROJECT_LEAD` | **`AUTHORIZED_BY_PROJECT_LEAD`** | Formally authorized by Project Lead under Protocol Section 14.7 (Task 7.6) |
 | **Final Manifest Lock** | `BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION` | **`BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION`** | Unlocked provisional manifest cannot be locked prior to 100% materialization |
 | **GPU CTTA Adaptation** | `STRICTLY_BLOCKED` | **`STRICTLY_BLOCKED`** | No GPU adaptation permitted during data preparation |
 | **Confirmatory Inference** | `STRICTLY_BLOCKED` | **`STRICTLY_BLOCKED`** | No inference permitted prior to full confirmatory protocol execution authorization |
@@ -231,10 +231,22 @@ Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_ma
 - **Substitutions:** 0
 - **Audio Verification:** 100% of clips decoded cleanly within MPEG Audio Layer III padding bounds ($\le 1,152$ frames).
 - **Cryptographic Accounting:** 0 failed clips, 0 SHA-256 mismatches between disk files and the locally generated physical-file integrity ledger.
-### 6.3 Evaluation Constraints & Execution Safeguards
-- **Strict Ingest Check Only:** These five speakers belong to the confirmatory evaluation panel. Their pilot acquisition must remain strictly an acquisition and physical decodability integrity check.
+
+### 6.3 Task 7.6 Full-Cohort Authorization Findings
+- **Formal Decision Disposition:** **`AUTHORIZED_FULL_ACQUISITION`**
+- **Authorizing Role:** Project Lead
+- **Governing Standard:** Protocol Section 14.7 (*Project-Lead Academic Authorization*)
+- **Target Scale Authorized:** Exactly 18,975 recordings across 1,265 speakers (5 strata).
+- **Substitutions Policy:** 0 substitutions permitted.
+- **Provisional Manifest SHA-256:** `b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547`.
+- **Target Destination:** `datasets/external/common_voice_27/cohort3_audio`.
+- **Targeted Stream Termination:** Materializer terminates cleanly upon capturing 100% of target clips (empty remaining set); full archive gzip EOF is not required or claimed.
+
+### 6.4 Evaluation Constraints & Downstream Boundaries
+- **Strict Ingest Check Only:** Physical audio materialization under Task 7.7 represents an acquisition and integrity validation pipeline only.
 - **Strictly Blocked:** ASR performance evaluation, adaptation, threshold tuning, and model selection on these clips remain strictly prohibited.
-- **Full Cohort Blocked:** Full 18,975-clip retrieval remains BLOCKED pending Task 7.5 Cohort 3 Full Materialization Readiness Review and separate Task 7.6 Project-Lead authorization under Protocol Section 14.7.
+- **Manifest Lock Blocked:** Manifest locking (Task 7.8) remains strictly blocked pending 100% physical validation of all 18,975 clips.
 - **Execution Engine:** Confirmatory GPU CTTA adaptation and inference remain STRICTLY BLOCKED.
+
 
 

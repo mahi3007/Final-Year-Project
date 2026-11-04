@@ -1016,10 +1016,8 @@ def test_pilot_materialization_authorization_fails_closed(tmp_path):
         verify_pilot_materialization_authorization(HARDENING_AUDIT_JSON)
     assert "A completed pilot does not authorize a new download" in str(exc_info.value)
 
-    # 5. Full-cohort acquisition remains blocked under canonical governance.
-    with pytest.raises(PermissionError) as exc_info:
-        verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
-    assert "Full cohort audio acquisition blocked" in str(exc_info.value)
+    # 5. Full-cohort acquisition is formally authorized under canonical governance (Task 7.6).
+    verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
 
 
 # ---------------------------------------------------------------------------
@@ -1202,16 +1200,26 @@ def test_pending_governance_statuses_all_deny_acquisition(tmp_path):
             verify_full_cohort_materialization_authorization(audit_file)
 
 
-def test_full_cohort_acquisition_blocked_under_canonical_governance():
+def test_full_cohort_acquisition_authorized_under_canonical_governance():
     """
-    T7.5.1-08 — Full-cohort acquisition (18,975 clips) must remain blocked under the
-    current committed HARDENING_AUDIT_JSON. This test will fail if someone commits
-    an unauthorized change to the canonical governance record.
+    T7.6-01 — Post-decision governance: Full-cohort acquisition (18,975 clips) is formally
+    authorized under the committed HARDENING_AUDIT_JSON following Task 7.6 Project-Lead
+    decision under Protocol Section 14.7.
+    Gating must record AUTHORIZED_BY_PROJECT_LEAD, while downstream manifest lock, GPU
+    adaptation, and confirmatory inference remain strictly blocked.
     """
     assert HARDENING_AUDIT_JSON.exists(), f"Canonical audit JSON missing: {HARDENING_AUDIT_JSON}"
-    with pytest.raises(PermissionError) as exc_info:
-        verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
-    assert "Full cohort audio acquisition blocked" in str(exc_info.value)
+    # Verification function must pass cleanly without raising PermissionError
+    verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
+
+    with open(HARDENING_AUDIT_JSON, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    gating = data.get("execution_gating", {})
+    assert gating.get("full_audio_materialization") == "AUTHORIZED_BY_PROJECT_LEAD"
+    assert gating.get("controlled_pilot_download") == "PILOT_COMPLETE_AND_VERIFIED"
+    assert gating.get("final_manifest_lock") == "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION"
+    assert gating.get("gpu_ctta_adaptation") == "STRICTLY_BLOCKED"
+    assert gating.get("confirmatory_inference") == "STRICTLY_BLOCKED"
 
 
 # ---------------------------------------------------------------------------
@@ -1340,22 +1348,25 @@ def test_cli_integration_full_cohort_source_dir_unauthorized_rejected_before_cop
     assert "Full cohort audio acquisition blocked" in str(exc_info.value)
     assert list(dest_dir.iterdir()) == [], "Files were copied to destination despite unauthorized status!"
 
-    # 2. Independent subprocess CLI execution (pinned canonical governance in production)
+    # 2. Independent subprocess CLI execution under blocked governance
     sub_dest = tmp_path / "sub_full_dest"
     sub_dest.mkdir()
+    blocked_script = (
+        "import sys, pathlib; "
+        "import scripts.materialize_stage6m_cohort3_audio as m; "
+        f"m.HARDENING_AUDIT_JSON = pathlib.Path(r'{blocked_audit}'); "
+        f"sys.argv = ['materialize_stage6m_cohort3_audio.py', '--source-dir', r'{source_dir}', '--audio-dir', r'{sub_dest}', '--output-dir', r'{out_dir}']; "
+        "m.main()"
+    )
     res = subprocess.run(
         [
             sys.executable,
-            str(PROJECT_ROOT / "scripts" / "materialize_stage6m_cohort3_audio.py"),
-            "--source-dir",
-            str(source_dir),
-            "--audio-dir",
-            str(sub_dest),
-            "--output-dir",
-            str(out_dir),
+            "-c",
+            blocked_script,
         ],
         capture_output=True,
         text=True,
+        cwd=str(PROJECT_ROOT),
     )
     assert res.returncode != 0
     assert "PermissionError" in res.stderr or "Full cohort audio acquisition blocked" in res.stderr
@@ -1502,11 +1513,14 @@ def test_adversarial_cli_env_var_cannot_authorize_pilot(tmp_path):
 
 def test_adversarial_cli_env_var_cannot_authorize_full_cohort(tmp_path):
     """
-    T7.5.3-02 — Adversarial Integration Test: An operator/adversary fabricates an authorized
-    audit JSON and sets $env:STAGE6M_HARDENING_AUDIT_JSON pointing to it.
-    The production CLI must completely ignore the environment variable, evaluate the
-    canonical repository governance JSON (which remains BLOCKED_PENDING_TASK_7_6_AUTHORIZATION),
-    fail closed with PermissionError, and leave the destination directory strictly empty.
+    T7.5.3-02 — Adversarial Integration Test: The production CLI unconditionally evaluates
+    canonical repository governance and completely ignores $env:STAGE6M_HARDENING_AUDIT_JSON.
+    1. An adversary sets $env:STAGE6M_HARDENING_AUDIT_JSON to a fake BLOCKED audit JSON
+       in an attempt to deny authorized execution. The CLI ignores the env var, evaluates
+       the canonical AUTHORIZED_BY_PROJECT_LEAD governance, and proceeds without PermissionError.
+    2. An adversary sets $env:STAGE6M_HARDENING_AUDIT_JSON to a fake authorized file when
+       canonical governance is blocked. The CLI ignores the env var, fails closed with
+       PermissionError, and copies zero files.
     """
     source_dir = tmp_path / "adv_full_source"
     source_dir.mkdir()
@@ -1520,23 +1534,23 @@ def test_adversarial_cli_env_var_cannot_authorize_full_cohort(tmp_path):
     sample_clip = next(iter(full_target_map.keys()))
     _generate_synthetic_mp3(source_dir / sample_clip)
 
-    # Adversarial audit file claiming full cohort is AUTHORIZED_BY_PROJECT_LEAD
-    fake_authorized_audit = tmp_path / "fake_authorized_full_audit.json"
-    with open(fake_authorized_audit, "w", encoding="utf-8") as f:
+    # 1. Adversary injects a fake BLOCKED audit JSON into the environment.
+    # Production CLI must ignore the env var, evaluate canonical (AUTHORIZED_BY_PROJECT_LEAD),
+    # and execute without raising PermissionError.
+    fake_blocked_audit = tmp_path / "fake_blocked_full_audit.json"
+    with open(fake_blocked_audit, "w", encoding="utf-8") as f:
         json.dump(
             {
                 "execution_gating": {
-                    "controlled_pilot_download": "AUTHORIZED_BY_PROJECT_LEAD",
-                    "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
+                    "full_audio_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
                 }
             },
             f,
         )
 
-    # Subprocess execution with environment variable pointing to fake authorized file
     import os
     adv_env = os.environ.copy()
-    adv_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(fake_authorized_audit)
+    adv_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(fake_blocked_audit)
 
     res = subprocess.run(
         [
@@ -1553,11 +1567,46 @@ def test_adversarial_cli_env_var_cannot_authorize_full_cohort(tmp_path):
         text=True,
         env=adv_env,
     )
+    assert res.returncode == 0
+    assert "PermissionError" not in res.stderr
+    assert sample_clip in [p.name for p in dest_dir.iterdir()], "Production CLI failed to copy under canonical authorization!"
 
-    # Production CLI must reject acquisition because canonical audit is BLOCKED_PENDING_TASK_7_6_AUTHORIZATION
-    assert res.returncode != 0
-    assert "PermissionError" in res.stderr or "Full cohort audio acquisition blocked" in res.stderr
-    # Must NOT have copied any files
-    assert list(dest_dir.iterdir()) == [], "Adversarial env var bypassed authorization and copied files!"
+    # 2. When canonical is blocked, an adversary injecting a fake AUTHORIZED audit cannot bypass the block.
+    fake_auth_audit = tmp_path / "fake_auth_audit.json"
+    with open(fake_auth_audit, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "execution_gating": {
+                    "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
+                }
+            },
+            f,
+        )
+    adv_bypass_env = os.environ.copy()
+    adv_bypass_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(fake_auth_audit)
+    blocked_dest = tmp_path / "blocked_dest"
+    blocked_dest.mkdir()
+
+    blocked_script = (
+        "import sys, pathlib; "
+        "import scripts.materialize_stage6m_cohort3_audio as m; "
+        f"m.HARDENING_AUDIT_JSON = pathlib.Path(r'{fake_blocked_audit}'); "
+        f"sys.argv = ['materialize_stage6m_cohort3_audio.py', '--source-dir', r'{source_dir}', '--audio-dir', r'{blocked_dest}', '--output-dir', r'{out_dir}']; "
+        "m.main()"
+    )
+    res_blocked = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            blocked_script,
+        ],
+        capture_output=True,
+        text=True,
+        env=adv_bypass_env,
+        cwd=str(PROJECT_ROOT),
+    )
+    assert res_blocked.returncode != 0
+    assert "PermissionError" in res_blocked.stderr or "Full cohort audio acquisition blocked" in res_blocked.stderr
+    assert list(blocked_dest.iterdir()) == [], "Subprocess copied files despite blocked governance!"
 
 

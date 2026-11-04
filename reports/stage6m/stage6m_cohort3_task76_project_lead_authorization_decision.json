@@ -1,12 +1,12 @@
 {
-  "timestamp_utc": "2026-11-04T10:55:00.000000+00:00",
+  "timestamp_utc": "2026-11-04T11:45:00.000000+00:00",
   "document_id": "STAGE6M_COHORT3_TASK76_PROJECT_LEAD_AUTHORIZATION_DECISION",
   "task_id": "TASK_7_6",
   "task_title": "Project-Lead Academic Authorization Decision for Full Cohort 3 Audio Acquisition",
   "protocol_version": "v1.5-five-stratum-parity",
   "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
-  "governance_status": "DECISION_PENDING_PROJECT_LEAD_SIGN_OFF",
-  "decision_status": "PENDING_FORMAL_PROJECT_LEAD_DECISION",
+  "governance_status": "AUTHORIZED_BY_PROJECT_LEAD",
+  "decision_status": "AUTHORIZED_FULL_ACQUISITION",
   "target_manifest": {
     "manifest_file": "datasets/splits/stage6m_cohort3_provisional_manifest.json",
     "authoritative_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
@@ -137,7 +137,7 @@
   },
   "execution_gating": {
     "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
-    "full_audio_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+    "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
     "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
     "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
     "confirmatory_inference": "STRICTLY_BLOCKED"
@@ -145,17 +145,25 @@
   "decision_record": {
     "authorizing_role": "Project Lead",
     "governing_section": "Protocol Section 14.7",
-    "decision_options": [
-      "AUTHORIZE_FULL_ACQUISITION",
-      "EXTEND_HOLD_PENDING_FURTHER_AUDIT",
-      "REJECT_FULL_ACQUISITION"
+    "decision_outcome": "AUTHORIZE_FULL_ACQUISITION",
+    "decision_status": "AUTHORIZED_FULL_ACQUISITION",
+    "decision_date": "2026-11-04",
+    "authorized_target_clips": 18975,
+    "authorized_target_speakers": 1265,
+    "manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "substitutions_permitted": 0,
+    "execution_scope": "Physical audio materialization only. Manifest lock, GPU adaptation, and confirmatory inference remain strictly blocked.",
+    "destination_directory": "datasets/external/common_voice_27/cohort3_audio",
+    "stipulations_and_qualifications": [
+      "Targeted stream termination upon acquiring exactly 18,975 validated clips (full archive gzip EOF not claimed or required).",
+      "Host free disk space must be independently re-verified immediately prior to Task 7.7 streaming acquisition.",
+      "Final manifest lock (Task 7.8) remains strictly blocked pending 100% physical validation of all 18,975 recordings."
     ],
-    "current_status": "PENDING_FORMAL_PROJECT_LEAD_DECISION",
-    "instructions_upon_authorization": [
-      "1. Update execution_gating.full_audio_materialization to AUTHORIZED_BY_PROJECT_LEAD in reports/stage6m/stage6m_cohort3_materializer_hardening_audit.json.",
-      "2. Verify actual host free disk space on target drive immediately before download.",
-      "3. Execute Task 7.7: materialize all 18,975 recordings via scripts/materialize_stage6m_cohort3_audio.py --source-dir or --stream.",
-      "4. Final manifest lock, GPU adaptation, and confirmatory inference remain strictly blocked until Task 7.8 validation."
+    "next_execution_steps": [
+      "1. Canonical governance gate in reports/stage6m/stage6m_cohort3_materializer_hardening_audit.json updated to AUTHORIZED_BY_PROJECT_LEAD.",
+      "2. Perform operational preflight: verify host free disk space (>= 3.05 GB budget) and ensure destination directory exists.",
+      "3. Execute Task 7.7 physical materialization via scripts/materialize_stage6m_cohort3_audio.py --stream.",
+      "4. Validate 100% of acquired clips via scripts/materialize_stage6m_cohort3_audio.py --validate-only before Task 7.8 manifest lock."
     ]
   }
 }

@@ -4,9 +4,9 @@
 **Task Identifier:** `TASK_7_6`  
 **Governing Standard:** Protocol Section 14.7 (*Project-Lead Academic Authorization*)  
 **Protocol Version:** `v1.5-five-stratum-parity`  
-**Execution Timestamp (UTC):** `2026-11-04T10:55:00Z`  
-**Governing Status:** **DECISION_PENDING_PROJECT_LEAD_SIGN_OFF**  
-**Formal Decision Disposition:** **`PENDING_FORMAL_PROJECT_LEAD_DECISION`**
+**Execution Timestamp (UTC):** `2026-11-04T11:45:00Z`  
+**Governing Status:** **AUTHORIZED_BY_PROJECT_LEAD**  
+**Formal Decision Disposition:** **`AUTHORIZED_FULL_ACQUISITION`**
 
 ---
 
@@ -125,21 +125,44 @@ Before executing the authorization decision, the following qualifications are fo
 
 ---
 
-## 5. Formal Project-Lead Decision Framework
+## 5. Formal Project-Lead Decision Record (Protocol Section 14.7)
+ 
+### 5.1 Recorded Decision Disposition
+Under Protocol Section 14.7 (*Project-Lead Academic Authorization*), the Project Lead formally executes the following disposition:
+ 
+```text
+╔═════════════════════════════════════════════════════════════════════════════════════════╗
+║                      PROJECT-LEAD ACADEMIC AUTHORIZATION RECORD                         ║
+║                                                                                         ║
+║  DECISION OUTCOME:        AUTHORIZE_FULL_ACQUISITION                                    ║
+║  DECISION STATUS:         AUTHORIZED_FULL_ACQUISITION                                   ║
+║  AUTHORIZING ROLE:        Project Lead                                                  ║
+║  GOVERNING STANDARD:      Protocol Section 14.7                                         ║
+║  DATE OF EXECUTION:       2026-11-04                                                    ║
+║  AUTHORIZED TARGET CLIPS: 18,975 recordings                                             ║
+║  AUTHORIZED SPEAKERS:     1,265 speakers (5 confirmatory evaluation strata)             ║
+║  SUBSTITUTIONS PERMITTED: 0 (Zero substitutions strictly enforced)                      ║
+║  MANIFEST SHA-256:        b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547 ║
+║  DESTINATION DIRECTORY:   datasets/external/common_voice_27/cohort3_audio               ║
+╚═════════════════════════════════════════════════════════════════════════════════════════╝
+```
 
-### 5.1 Decision Options
-Under Protocol Section 14.7, the Project Lead may select one of three formal dispositions:
-1. **`AUTHORIZE_FULL_ACQUISITION`**: Formally authorize execution of Task 7.7 (physical acquisition of 18,975 clips under the provisional manifest).
-2. **`EXTEND_HOLD_PENDING_FURTHER_AUDIT`**: Maintain hold and request additional audit evidence or infrastructure verification.
-3. **`REJECT_FULL_ACQUISITION`**: Deny full acquisition and mandate protocol revision.
+### 5.2 Specific Authorization Stipulations & Boundaries
+1. **Scope of Authorization:** This decision authorizes **physical audio materialization only** for the exact 18,975 recordings defined in the approved provisional manifest.
+2. **Targeted Stream Termination:** The materializer terminates cleanly immediately upon acquiring 100% of target clips (empty remaining set). Full archive gzip EOF is neither claimed nor required.
+3. **Downstream Execution Gates Strictly Preserved:**
+   - **Final Manifest Lock:** `BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION` (Task 7.8)
+   - **GPU CTTA Adaptation:** `STRICTLY_BLOCKED`
+   - **Confirmatory Model Inference:** `STRICTLY_BLOCKED`
+   - **Threshold Tuning / Hyperparameter Optimization:** `STRICTLY_BLOCKED`
+4. **Pre-Download Operational Verification:** Host free disk space must be independently re-verified immediately prior to starting Task 7.7 physical acquisition to confirm $\ge 3.05$ decimal GB available.
 
-### 5.2 Current Status: PENDING
-At this juncture, the decision record is initialized in the **`PENDING_FORMAL_PROJECT_LEAD_DECISION`** state:
+### 5.3 Execution Gating State Post-Authorization
 ```json
 {
   "execution_gating": {
     "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
-    "full_audio_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+    "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
     "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
     "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
     "confirmatory_inference": "STRICTLY_BLOCKED"
@@ -147,9 +170,8 @@ At this juncture, the decision record is initialized in the **`PENDING_FORMAL_PR
 }
 ```
 
-### 5.3 Next Actions Upon Project-Lead Authorization
-When the Project Lead formally issues the authorization:
-1. Update `execution_gating.full_audio_materialization` to `"AUTHORIZED_BY_PROJECT_LEAD"` in [`reports/stage6m/stage6m_cohort3_materializer_hardening_audit.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_cohort3_materializer_hardening_audit.json).
-2. Re-verify host free disk space on drive `C:`.
-3. Launch Task 7.7 physical acquisition via [`scripts/materialize_stage6m_cohort3_audio.py`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/scripts/materialize_stage6m_cohort3_audio.py).
-4. Monitor streaming extraction, SHA-256 ledger generation, and speaker completeness tracking.
+### 5.4 Authorized Next Steps
+1. Synchronize the canonical governance gate in [`reports/stage6m/stage6m_cohort3_materializer_hardening_audit.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_cohort3_materializer_hardening_audit.json).
+2. Execute operational preflight: confirm host free disk space on drive `C:` and destination directory existence.
+3. Initiate Task 7.7 streaming acquisition via `python scripts/materialize_stage6m_cohort3_audio.py --stream`.
+4. Run independent validation via `python scripts/materialize_stage6m_cohort3_audio.py --validate-only` before advancing to Task 7.8 manifest lock.

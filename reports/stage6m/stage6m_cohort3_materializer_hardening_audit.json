@@ -1,17 +1,17 @@
 {
-  "timestamp_utc": "2026-11-04T08:15:00.000000+00:00",
+  "timestamp_utc": "2026-11-04T11:45:00.000000+00:00",
   "document_id": "STAGE6M_COHORT3_MATERIALIZER_HARDENING_AUDIT",
-  "task_id": "TASK_7_4_4",
-  "task_title": "Controlled Audio Materialization Pilot Completion & Integrity Verification",
+  "task_id": "TASK_7_6",
+  "task_title": "Project-Lead Academic Authorization for Full Cohort 3 Audio Acquisition",
   "protocol_version": "v1.5-five-stratum-parity",
   "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
-  "governance_status": "AUTHORIZED_FOR_DATA_PREPARATION",
+  "governance_status": "AUTHORIZED_FOR_FULL_COHORT_ACQUISITION",
   "manifest_status": "UNLOCKED (PROVISIONAL)",
   "audit_disposition": "PASS_PILOT_ACQUISITION_AND_PHYSICAL_INTEGRITY_VERIFIED",
   "execution_gating": {
     "audio_materialization_hardening": "VERIFIED_FULL_FILE_AND_TERMINATION",
     "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
-    "full_audio_materialization": "BLOCKED_PENDING_TASK_7_6_AUTHORIZATION",
+    "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
     "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
     "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
     "confirmatory_inference": "STRICTLY_BLOCKED"
@@ -32,6 +32,21 @@
     "destination_directory": "datasets/external/common_voice_27/cohort3_pilot_audio",
     "safeguard_enforcement": "Execution path fails closed unless explicit Project-Lead authorization is recorded.",
     "evaluation_constraints": "Pilot use remains strictly an acquisition and physical integrity check — not ASR performance evaluation, adaptation, threshold tuning or model selection."
+  },
+  "full_cohort_authorization_decision": {
+    "status": "AUTHORIZED_BY_PROJECT_LEAD",
+    "protocol_reference": "Protocol Section 14.7",
+    "verdict": "AUTHORIZE_FULL_ACQUISITION — 18,975 recordings across 1,265 speakers authorized for physical acquisition",
+    "date": "2026-11-04",
+    "authorizing_role": "Project Lead",
+    "governing_section": "Protocol Section 14.7",
+    "authorized_target_clips": 18975,
+    "authorized_target_speakers": 1265,
+    "manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "substitutions_permitted": 0,
+    "destination_directory": "datasets/external/common_voice_27/cohort3_audio",
+    "safeguard_enforcement": "Execution path fails closed unless explicit Project-Lead authorization is recorded.",
+    "evaluation_constraints": "Physical audio materialization only. Final manifest lock, GPU CTTA adaptation, and confirmatory model inference remain strictly blocked."
   },
   "issue_a_speaker_completeness": {
     "status": "RESOLVED_AND_VERIFIED",
