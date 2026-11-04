@@ -1,0 +1,158 @@
+{
+  "timestamp_utc": "2026-11-04T08:35:00.000000+00:00",
+  "document_id": "STAGE6M_COHORT3_FULL_MATERIALIZATION_READINESS_REVIEW",
+  "task_id": "TASK_7_5",
+  "task_title": "Stage 6M Cohort 3 Full Materialization Readiness Review",
+  "protocol_version": "v1.5-five-stratum-parity",
+  "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
+  "governance_status": "AUTHORIZED_FOR_DATA_PREPARATION",
+  "readiness_disposition": "READY_PENDING_PROJECT_LEAD_ACQUISITION_AUTHORIZATION",
+  "provisional_manifest_verification": {
+    "manifest_path": "datasets/splits/stage6m_cohort3_provisional_manifest.json",
+    "manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "manifest_status": "UNLOCKED (PROVISIONAL)",
+    "total_target_speakers": 1265,
+    "clips_per_speaker": 15,
+    "total_target_clips": 18975,
+    "panel_breakdown": {
+      "evaluation_speakers": 1100,
+      "evaluation_clips": 16500,
+      "gate_reference_speakers": 100,
+      "gate_reference_clips": 1500,
+      "australian_reserve_speakers": 65,
+      "australian_reserve_clips": 975
+    },
+    "strata_representation": {
+      "Australian English": {
+        "evaluation_speakers": 220,
+        "gate_reference_speakers": 20,
+        "australian_reserve_speakers": 65,
+        "total_speakers": 305,
+        "total_clips": 4575
+      },
+      "Canadian English": {
+        "evaluation_speakers": 220,
+        "gate_reference_speakers": 20,
+        "total_speakers": 240,
+        "total_clips": 3600
+      },
+      "England English": {
+        "evaluation_speakers": 220,
+        "gate_reference_speakers": 20,
+        "total_speakers": 240,
+        "total_clips": 3600
+      },
+      "South Asian English": {
+        "evaluation_speakers": 220,
+        "gate_reference_speakers": 20,
+        "total_speakers": 240,
+        "total_clips": 3600
+      },
+      "US English": {
+        "evaluation_speakers": 220,
+        "gate_reference_speakers": 20,
+        "total_speakers": 240,
+        "total_clips": 3600
+      }
+    },
+    "duplicate_clips_count": 0,
+    "manifest_mutated_during_review": false
+  },
+  "source_availability_and_provenance": {
+    "source_archive_version": "cv-corpus-27.0-2026-09-11",
+    "source_index_path": "datasets/external/common_voice_27/validated.tsv",
+    "source_index_bytes": 614927262,
+    "source_index_sha256": "733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a",
+    "manifest_clips_matched_in_source": 18975,
+    "manifest_clips_total": 18975,
+    "manifest_coverage_pct": 100.0,
+    "clip_to_speaker_1_to_1_integrity": true,
+    "speaker_id_mismatches_vs_source": 0,
+    "missing_target_recordings_count": 0,
+    "substitutions_or_silent_replacements": 0,
+    "historical_exposure_isolation": {
+      "stage5_external_eval_speakers_checked": 60,
+      "overlapping_speakers_found": 0,
+      "exposure_isolation_verified": true
+    }
+  },
+  "acquisition_engineering_readiness": {
+    "pilot_task_id": "TASK_7_4_4",
+    "pilot_audio_dir": "datasets/external/common_voice_27/cohort3_pilot_audio",
+    "pilot_clips_verified": 75,
+    "pilot_speakers_complete": 5,
+    "pilot_failed_clips": 0,
+    "pilot_sha256_mismatches": 0,
+    "pilot_total_duration_seconds": 424.72,
+    "pilot_total_bytes": 3397743,
+    "provenance_mechanisms_tested": {
+      "mp3_container_and_stream_decoding": "PASS (bounded chunk decoding via soundfile/libsndfile mpg123 backend)",
+      "lame_padding_shortfall_tolerance": "PASS (empirical shortfall strictly <= 1152 frames / MAX_MP3_PADDING_FRAMES)",
+      "http_range_resume": "PASS (RFC 9110 Range: bytes={offset}- resumption confirmed)",
+      "presigned_url_refresh": "PASS (token expiration refresh and uninterrupted resume confirmed)",
+      "network_recovery": "PASS (survived socket interruption at byte offset 4,731,764,736 B)",
+      "per_clip_sha256_ledger": "PASS (75/75 bitwise match on disk vs locally generated physical integrity ledger)",
+      "speaker_completeness_accounting": "PASS (all 1265 target speakers tracked, fail-closed completeness gating)",
+      "pilot_vs_full_isolation": "PASS (--output-dir parameterized, full-cohort ledgers completely protected)"
+    },
+    "archive_termination_qualification": {
+      "pilot_scope": "Retrieval confirmed for all 75 target clips upon encountering target archive members up to member #1,188,858.",
+      "boundary_definition": "Physical pilot does not claim consumption of the full 95 GB archive through its final gzip EOF marker. Full-archive stream consumption remains a qualification boundary documented for full-cohort planning."
+    }
+  },
+  "storage_and_operational_capacity": {
+    "pilot_sample_size": 75,
+    "pilot_file_size_distribution": {
+      "total_bytes": 3397743,
+      "mean_bytes": 45303.2,
+      "median_bytes": 44397.0,
+      "std_dev_bytes": 17710.9,
+      "min_bytes": 14637,
+      "max_bytes": 83373,
+      "p95_bytes": 78573
+    },
+    "full_cohort_projections": {
+      "target_clips_count": 18975,
+      "projected_raw_audio_mean_bytes": 859628979,
+      "projected_raw_audio_mean_mb": 819.81,
+      "projected_raw_audio_p95_mb": 1421.85,
+      "projected_raw_audio_3sigma_envelope_mb": 1781.29
+    },
+    "operational_headroom_budget_gb": {
+      "raw_audio_storage_conservative": 1.8,
+      "ledgers_and_reports": 0.05,
+      "temporary_download_and_decompression_stream_buffers": 0.5,
+      "recovery_and_validation_headroom": 0.5,
+      "total_recommended_operational_capacity_gb": 2.85
+    },
+    "host_filesystem_capacity": {
+      "drive": "C:",
+      "available_free_bytes": 24734228480,
+      "available_free_gb": 23.04,
+      "capacity_margin_ratio": 8.08,
+      "storage_capacity_verdict": "PASS"
+    }
+  },
+  "historical_engine_immutability": {
+    "engine_file": "src/dsg_ctta/evaluation/paired_cluster_inference.py",
+    "expected_git_blob_hash": "58d456fbcce43b5322d56df80e4077a32d7f4cca",
+    "actual_git_blob_hash": "58d456fbcce43b5322d56df80e4077a32d7f4cca",
+    "diff_lines_vs_historical_v1_4_0": 0,
+    "immutability_verified": true
+  },
+  "governance_decision": {
+    "technical_readiness_verdict": "READY",
+    "administrative_readiness_verdict": "READY_FOR_SEPARATE_PROJECT_LEAD_DECISION",
+    "execution_gating": {
+      "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
+      "full_audio_materialization": "BLOCKED_PENDING_COHORT3_READINESS_REVIEW",
+      "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
+      "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+      "confirmatory_inference": "STRICTLY_BLOCKED"
+    },
+    "policy_enforcement": {
+      "protocol_reference": "Protocol Section 14.7",
+      "statement": "Passing the 75-clip pilot establishes technical feasibility, but does NOT constitute authorization to acquire the full 18,975-clip dataset. Full-cohort physical download remains STRICTLY HELD until a separate Project-Lead authorization decision is formally recorded in Task 7.6."
+    }
+  }
+}
