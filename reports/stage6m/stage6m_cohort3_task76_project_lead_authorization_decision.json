@@ -14,43 +14,65 @@
     "total_speakers": 1265,
     "clips_per_speaker": 15,
     "total_target_clips": 18975,
-    "confirmatory_strata": [
-      {
-        "stratum": "Australian English",
-        "speakers": 253,
-        "clips": 3795
+    "panel_role_breakdown": {
+      "evaluation_speakers": 1100,
+      "evaluation_clips": 16500,
+      "gate_reference_speakers": 100,
+      "gate_reference_clips": 1500,
+      "australian_reserve_speakers": 65,
+      "australian_reserve_clips": 975
+    },
+    "strata_representation": {
+      "Australian English": {
+        "evaluation_speakers": 220,
+        "gate_reference_speakers": 20,
+        "australian_reserve_speakers": 65,
+        "total_speakers": 305,
+        "total_clips": 4575
       },
-      {
-        "stratum": "Canadian English",
-        "speakers": 253,
-        "clips": 3795
+      "Canadian English": {
+        "evaluation_speakers": 220,
+        "gate_reference_speakers": 20,
+        "australian_reserve_speakers": 0,
+        "total_speakers": 240,
+        "total_clips": 3600
       },
-      {
-        "stratum": "England English",
-        "speakers": 253,
-        "clips": 3795
+      "England English": {
+        "evaluation_speakers": 220,
+        "gate_reference_speakers": 20,
+        "australian_reserve_speakers": 0,
+        "total_speakers": 240,
+        "total_clips": 3600
       },
-      {
-        "stratum": "South Asian English",
-        "speakers": 253,
-        "clips": 3795
+      "South Asian English": {
+        "evaluation_speakers": 220,
+        "gate_reference_speakers": 20,
+        "australian_reserve_speakers": 0,
+        "total_speakers": 240,
+        "total_clips": 3600
       },
-      {
-        "stratum": "US English",
-        "speakers": 253,
-        "clips": 3795
+      "US English": {
+        "evaluation_speakers": 220,
+        "gate_reference_speakers": 20,
+        "australian_reserve_speakers": 0,
+        "total_speakers": 240,
+        "total_clips": 3600
       }
-    ],
+    },
     "substitutions_permitted": 0
   },
   "technical_readiness_audit": {
     "source_archive": {
       "corpus": "Mozilla Common Voice 27.0 (en)",
-      "release_file": "cv-corpus-27.0-2026-03-08-en.tar.gz",
-      "validated_tsv_sha256": "733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a",
+      "source_archive_version": "cv-corpus-27.0-2026-09-11",
+      "dataset_mdc_id": "cmu5jplf300nwmh07iqvk9leo",
+      "source_index_path": "datasets/external/common_voice_27/validated.tsv",
+      "source_index_bytes": 614927262,
+      "source_index_sha256": "733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a",
       "matched_clips_count": 18975,
       "matched_clips_pct": 100.0,
-      "missing_source_clips": 0
+      "missing_source_clips": 0,
+      "remote_archive_compressed_bytes": 94956262763
     },
     "historical_exposure_isolation": {
       "historical_partitions_audited": [
@@ -108,7 +130,8 @@
       ]
     },
     "remaining_qualifications": {
-      "pilot_archive_termination": "Physical pilot terminated early upon obtaining 75 target clips without reaching end of 95 GB archive; full archive traversal will occur during full materialization.",
+      "targeted_stream_termination": "In accordance with scripts/materialize_stage6m_cohort3_audio.py (materialize_from_stream), streaming terminates immediately upon acquiring 100% of target clips (remaining is empty), rather than draining the ~95 GB archive to full EOF. Every acquired clip undergoes strict standalone validation (container format, soundfile chunk decoding, sample rate, SHA-256). Full archive gzip EOF is not required or claimed.",
+      "pilot_archive_termination": "Physical pilot terminated early upon obtaining its 75 target clips; full cohort acquisition will similarly terminate upon obtaining its 18,975 target clips.",
       "pre_download_host_check": "Host free space must be re-checked immediately before physical acquisition in Task 7.7."
     }
   },

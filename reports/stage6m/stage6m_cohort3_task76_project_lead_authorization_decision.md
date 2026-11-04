@@ -31,16 +31,16 @@ Under the v1.5 Five-Stratum Parity protocol, physical acquisition is restricted 
   b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547
   ```
 - **Manifest Status:** `UNLOCKED (PROVISIONAL)` — formal locking is strictly deferred to Task 7.8 pending 100% physical validation of all downloaded audio recordings.
-- **Evaluation Strata Allocation (Five-Stratum Parity):**
+- **Evaluation Strata Allocation & Panel Role Breakdown (Five-Stratum Parity):**
 
-| Stratum Label | Target Speakers | Clips per Speaker | Total Target Clips | Target Audio Directory |
-| :--- | :---: | :---: | :---: | :--- |
-| **Australian English** | 253 | 15 | 3,795 | `datasets/external/common_voice_27/cohort3_audio` |
-| **Canadian English** | 253 | 15 | 3,795 | `datasets/external/common_voice_27/cohort3_audio` |
-| **England English** | 253 | 15 | 3,795 | `datasets/external/common_voice_27/cohort3_audio` |
-| **South Asian English** | 253 | 15 | 3,795 | `datasets/external/common_voice_27/cohort3_audio` |
-| **US English** | 253 | 15 | 3,795 | `datasets/external/common_voice_27/cohort3_audio` |
-| **Total Cohort 3 Scale** | **1,265** | **15** | **18,975** | `datasets/external/common_voice_27/cohort3_audio` |
+| Stratum Label | Evaluation Panel (Speakers / Clips) | Gate-Reference Panel (Speakers / Clips) | Australian Reserve (Speakers / Clips) | Total Speakers | Total Target Clips | Target Audio Directory |
+| :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **Australian English** | 220 spk / 3,300 clips | 20 spk / 300 clips | 65 spk / 975 clips | **305** | **4,575** | `datasets/external/common_voice_27/cohort3_audio` |
+| **Canadian English** | 220 spk / 3,300 clips | 20 spk / 300 clips | 0 spk / 0 clips | **240** | **3,600** | `datasets/external/common_voice_27/cohort3_audio` |
+| **England English** | 220 spk / 3,300 clips | 20 spk / 300 clips | 0 spk / 0 clips | **240** | **3,600** | `datasets/external/common_voice_27/cohort3_audio` |
+| **South Asian English** | 220 spk / 3,300 clips | 20 spk / 300 clips | 0 spk / 0 clips | **240** | **3,600** | `datasets/external/common_voice_27/cohort3_audio` |
+| **US English** | 220 spk / 3,300 clips | 20 spk / 300 clips | 0 spk / 0 clips | **240** | **3,600** | `datasets/external/common_voice_27/cohort3_audio` |
+| **Total Cohort 3 Scale** | **1,100 spk / 16,500 clips** | **100 spk / 1,500 clips** | **65 spk / 975 clips** | **1,265** | **18,975** | `datasets/external/common_voice_27/cohort3_audio` |
 
 - **Substitutions Policy:** **Zero substitutions permitted.** Every one of the 18,975 recordings must match its manifest clip path, client ID, and recorded sentence text.
 
@@ -51,9 +51,11 @@ Under the v1.5 Five-Stratum Parity protocol, physical acquisition is restricted 
 Prior to this decision point, eight sequential verification milestones were completed and audited:
 
 ### 3.1 Source Corpus Availability (100.0% Match)
-- **Source Release:** Mozilla Common Voice 27.0 English release (`cv-corpus-27.0-2026-03-08-en.tar.gz`).
-- **Release Index:** `validated.tsv` (SHA-256: `733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a`, $1,929,267$ rows).
+- **Source Release:** Mozilla Common Voice 27.0 English release (`cv-corpus-27.0-2026-09-11`).
+- **MDC Dataset Identifier:** `cmu5jplf300nwmh07iqvk9leo`.
+- **Release Index:** `validated.tsv` (SHA-256: `733c2fa79e727f0b69074765c8ba0f30c61c2a132a440a0ba5af86cba75b3f2a`, $1,929,267$ rows, $614,927,262$ bytes).
 - **Match Rate:** Exactly $18,975$ of $18,975$ provisional clips matched ($100.0\%$). Zero missing clips.
+- **Archive Compressed Footprint:** $94,956,262,763$ bytes (~95 GB).
 
 ### 3.2 Historical Exposure Isolation ($0.00\%$ Overlap)
 - **Historical Exposed Partitions Audited:**
@@ -110,8 +112,8 @@ Prior to this decision point, eight sequential verification milestones were comp
 
 Before executing the authorization decision, the following qualifications are formally documented:
 
-1. **Archive Decompression Boundary:**  
-   The physical pilot acquired 75 targets and terminated early without decompressing the full 95 GB archive. Full archive traversal will occur during full materialization (Task 7.7).
+1. **Targeted Acquisition Stream Termination:**  
+   In accordance with `scripts/materialize_stage6m_cohort3_audio.py` (`materialize_from_stream()`), streaming acquisition terminates immediately upon capturing 100% of target clips (`remaining` inventory empty), at which point the stream and connection are cleanly closed. The pipeline validates each individual recording (MP3 container format, complete chunk decoding, frame completeness, sample rate, and SHA-256) rather than requiring full gzip EOF consumption across the entire 95 GB archive. The physical pilot similarly terminated early upon acquiring its 75 targets.
 2. **Historical Capacity Evidence Qualification:**  
    The $23.65$ GB measurement represents historical capacity evidence captured at `2026-11-04T09:46:12Z`. Available host free disk space must be independently re-verified immediately prior to starting full download in Task 7.7.
 3. **Execution Gating Boundary:**  

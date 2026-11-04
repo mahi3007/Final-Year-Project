@@ -110,8 +110,8 @@ The complete 5-module Stage 6M targeted regression suite was executed:
 1. `tests/research_validity/test_stage6m_cohort3_audio_materialization.py` (26 tests, including 2 new adversarial tests)
 2. `tests/research_validity/test_stage6m_cohort3_source_audit.py` (10 tests)
 3. `tests/research_validity/test_stage6m_cohort3_curation.py` (16 tests)
-4. `tests/research_validity/test_stage6m_project_lead_authorization_package.py` (13 tests)
-5. `tests/research_validity/test_historical_immutability.py` (1 test)
+4. `tests/research_validity/test_stage6m_project_lead_authorization_package.py` (7 tests)
+5. `tests/research_validity/test_historical_immutability.py` (7 tests)
 
 **Suite Result:** **66 / 66 passed (100%)**
 
