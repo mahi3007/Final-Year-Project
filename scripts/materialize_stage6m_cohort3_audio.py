@@ -128,8 +128,25 @@ PILOT_SPEAKER_REPORT_JSON = SPLITS_DIR / "stage6m_cohort3_pilot_speaker_complete
 HARDENING_AUDIT_JSON = REPORTS_DIR / "stage6m_cohort3_materializer_hardening_audit.json"
 HARDENING_AUDIT_MD = REPORTS_DIR / "stage6m_cohort3_materializer_hardening_audit.md"
 
+APPROVED_COHORT3_MANIFEST_SHA256 = "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547"
+APPROVED_COHORT3_DESTINATION_REL = "datasets/external/common_voice_27/cohort3_audio"
+VALIDATION_REPORT_JSON = REPORTS_DIR / "stage6m_cohort3_audio_validation_report.json"
+VALIDATION_REPORT_MD = REPORTS_DIR / "stage6m_cohort3_audio_validation_report.md"
 
-def verify_pilot_materialization_authorization(audit_json_path: Path = HARDENING_AUDIT_JSON) -> None:
+
+def compute_sha256(path: Path) -> str:
+    """Compute lowercase SHA-256 hex digest for a file."""
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def verify_pilot_materialization_authorization(
+    audit_json_path: Path = HARDENING_AUDIT_JSON,
+    destination_dir: Optional[Path] = None,
+) -> None:
     """
     Verifies that physical pilot audio acquisition is authorized under Protocol Section 14.7.
     Fails closed if the governance audit artifact is missing or if the decision is not
@@ -162,11 +179,25 @@ def verify_pilot_materialization_authorization(audit_json_path: Path = HARDENING
         )
 
 
-def verify_full_cohort_materialization_authorization(audit_json_path: Path = HARDENING_AUDIT_JSON) -> None:
+def verify_full_cohort_materialization_authorization(
+    audit_json_path: Path = HARDENING_AUDIT_JSON,
+    manifest_path: Optional[Path] = None,
+    destination_dir: Optional[Path] = None,
+) -> None:
     """
     Verifies that full cohort audio materialization is authorized under Protocol Section 14.7.
-    Fails closed if the governance audit artifact is missing or if full_audio_materialization
-    is not 'AUTHORIZED_BY_PROJECT_LEAD'.
+    Enforces strict runtime scope alignment:
+    1. Canonical governance gate records 'AUTHORIZED_BY_PROJECT_LEAD'.
+    2. Downstream execution safeguards remain strictly blocked:
+       - final_manifest_lock == 'BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION'
+       - gpu_ctta_adaptation == 'STRICTLY_BLOCKED'
+       - confirmatory_inference == 'STRICTLY_BLOCKED'
+    3. The authorization decision block records status 'AUTHORIZED_BY_PROJECT_LEAD' (or 'AUTHORIZED_FULL_ACQUISITION')
+       by authorizing role 'Project Lead'.
+    4. Approved target scale matches exactly 18,975 clips and 1,265 speakers.
+    5. Substitutions permitted equals 0.
+    6. Runtime manifest SHA-256 matches the approved manifest digest (b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547).
+    7. Runtime destination directory matches the approved Cohort 3 destination (datasets/external/common_voice_27/cohort3_audio).
     """
     if not audit_json_path.exists():
         raise PermissionError(
@@ -180,6 +211,7 @@ def verify_full_cohort_materialization_authorization(audit_json_path: Path = HAR
             f"Full cohort audio acquisition blocked: could not parse governance audit artifact {audit_json_path}: {e}"
         )
 
+    # 1. Canonical governance gating check
     gating = data.get("execution_gating", {})
     full_auth = gating.get("full_audio_materialization")
     if full_auth != "AUTHORIZED_BY_PROJECT_LEAD":
@@ -188,14 +220,88 @@ def verify_full_cohort_materialization_authorization(audit_json_path: Path = HAR
             "Full 18,975-clip acquisition remains BLOCKED pending Project-Lead authorization under Protocol Section 14.7 (Task 7.6)."
         )
 
+    # 2. Downstream execution safeguards must remain strictly blocked
+    lock_gate = gating.get("final_manifest_lock")
+    gpu_gate = gating.get("gpu_ctta_adaptation")
+    inf_gate = gating.get("confirmatory_inference")
+    if lock_gate != "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION":
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: final_manifest_lock is '{lock_gate}' "
+            "(expected 'BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION')."
+        )
+    if gpu_gate != "STRICTLY_BLOCKED":
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: gpu_ctta_adaptation is '{gpu_gate}' "
+            "(expected 'STRICTLY_BLOCKED')."
+        )
+    if inf_gate != "STRICTLY_BLOCKED":
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: confirmatory_inference is '{inf_gate}' "
+            "(expected 'STRICTLY_BLOCKED')."
+        )
 
-def compute_sha256(path: Path) -> str:
-    """Compute lowercase SHA-256 hex digest for a file."""
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            h.update(chunk)
-    return h.hexdigest()
+    # 3. Decision block check
+    dec_block = data.get("full_cohort_authorization_decision") or data.get("decision_record", {})
+    if not dec_block:
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: missing 'full_cohort_authorization_decision' block in {audit_json_path}."
+        )
+    dec_status = dec_block.get("status") or dec_block.get("decision_status")
+    if dec_status not in ("AUTHORIZED_BY_PROJECT_LEAD", "AUTHORIZED_FULL_ACQUISITION"):
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: authorization decision block status is '{dec_status}' "
+            "(expected 'AUTHORIZED_BY_PROJECT_LEAD' or 'AUTHORIZED_FULL_ACQUISITION')."
+        )
+    authorizing_role = dec_block.get("authorizing_role")
+    if authorizing_role != "Project Lead":
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: authorizing_role is '{authorizing_role}' (expected 'Project Lead')."
+        )
+
+    # 4. Target scale check
+    authorized_clips = dec_block.get("authorized_target_clips")
+    authorized_speakers = dec_block.get("authorized_target_speakers")
+    if authorized_clips != TOTAL_EXPECTED_CLIPS:
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: authorized_target_clips is {authorized_clips} "
+            f"(expected exactly {TOTAL_EXPECTED_CLIPS})."
+        )
+    if authorized_speakers != TOTAL_EXPECTED_SPEAKERS:
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: authorized_target_speakers is {authorized_speakers} "
+            f"(expected exactly {TOTAL_EXPECTED_SPEAKERS})."
+        )
+
+    # 5. Substitutions permitted check
+    substitutions = dec_block.get("substitutions_permitted")
+    if substitutions != 0:
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: substitutions_permitted is {substitutions} (expected 0)."
+        )
+
+    # 6. Actual manifest SHA-256 validation
+    approved_manifest_sha = dec_block.get("manifest_sha256") or APPROVED_COHORT3_MANIFEST_SHA256
+    effective_manifest = Path(manifest_path) if manifest_path is not None else PROVISIONAL_MANIFEST_JSON
+    if not effective_manifest.exists():
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: manifest file not found at {effective_manifest}."
+        )
+    actual_manifest_sha = compute_sha256(effective_manifest)
+    if actual_manifest_sha != approved_manifest_sha:
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: manifest SHA-256 mismatch. "
+            f"Manifest '{effective_manifest}' has digest '{actual_manifest_sha}', but approved digest is '{approved_manifest_sha}'."
+        )
+
+    # 7. Destination directory validation
+    authorized_dest_str = dec_block.get("destination_directory") or APPROVED_COHORT3_DESTINATION_REL
+    authorized_dest = (PROJECT_ROOT / authorized_dest_str).resolve()
+    effective_dest = Path(destination_dir).resolve() if destination_dir is not None else COHORT3_AUDIO_DIR.resolve()
+    if effective_dest != authorized_dest:
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: destination directory mismatch. "
+            f"Requested destination '{effective_dest}' does not match authorized Cohort 3 destination '{authorized_dest}'."
+        )
 
 
 def safe_rel_path(p: Path, base: Path = PROJECT_ROOT) -> str:
@@ -1184,6 +1290,257 @@ This report documents the physical audio materialization and cryptographic integ
     return materialization_data
 
 
+def validate_and_compare_cohort3_audio(
+    manifest_records: List[Dict[str, Any]],
+    target_map: Dict[str, Dict[str, Any]],
+    audio_dir: Path,
+    baseline_ledger_path: Path = LEDGER_CSV,
+    validation_report_json_path: Path = VALIDATION_REPORT_JSON,
+    validation_report_md_path: Path = VALIDATION_REPORT_MD,
+) -> Dict[str, Any]:
+    """
+    Performs independent hash-comparison integrity validation before Task 7.8.
+    Compares physical on-disk files against the preserved acquisition ledger (LEDGER_CSV):
+    - Recalculates SHA-256 for every physical clip on disk.
+    - Compares each recalculated hash against the corresponding baseline ledger entry.
+    - Categorizes and reports separately:
+        1. missing_files: expected clips not found on disk.
+        2. corrupt_files: files that fail MP3 decodability/header validation.
+        3. hash_mismatches: valid MP3s whose SHA-256 differs from the baseline ledger.
+        4. unexpected_files: files present in destination audio_dir that are not in target manifest.
+        5. verified_matches: clips whose recalculated SHA-256 matches baseline ledger exactly.
+    - Generates independent validation report JSON and Markdown.
+    - CRITICAL INVARIANT: NEVER overwrites or alters the baseline acquisition ledger.
+    - Returns report dictionary with verdict 'PASS' if zero discrepancies, else 'FAIL'.
+    """
+    logger.info("Executing independent hash-comparison validation against baseline acquisition ledger...")
+
+    validation_report_json_path.parent.mkdir(parents=True, exist_ok=True)
+    validation_report_md_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # 1. Read baseline acquisition ledger without overwriting
+    if not baseline_ledger_path.exists():
+        logger.error(f"Baseline acquisition ledger not found: {baseline_ledger_path}")
+        report_data = {
+            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+            "protocol_version": "v1.5-five-stratum-parity",
+            "governing_standard": "Protocol Section 14.7 (Post-Acquisition Hash-Comparison Validation)",
+            "baseline_ledger": {
+                "path": safe_rel_path(baseline_ledger_path),
+                "sha256": None,
+                "status": "MISSING",
+            },
+            "summary": {
+                "total_expected_clips": len(target_map),
+                "total_physical_files_found": 0,
+                "verified_matches_count": 0,
+                "missing_count": len(target_map),
+                "corrupt_count": 0,
+                "hash_mismatches_count": 0,
+                "unexpected_count": 0,
+                "total_discrepancies": len(target_map) + 1,
+            },
+            "is_valid": False,
+            "verdict": "FAIL_BASELINE_LEDGER_MISSING",
+            "error": f"Preserved acquisition ledger not found at {baseline_ledger_path}. Task 7.7 acquisition must precede validation.",
+            "missing_files": [
+                {
+                    "recording_id": r["recording_id"],
+                    "clip_filename": c_fname,
+                    "speaker_id": r["speaker_id"],
+                    "accent_group": r["accent_group"],
+                    "reason": "Baseline ledger missing and file unverified",
+                }
+                for c_fname, r in target_map.items()
+            ],
+            "corrupt_files": [],
+            "hash_mismatches": [],
+            "unexpected_files": [],
+            "verified_matches": [],
+        }
+        with open(validation_report_json_path, "w", encoding="utf-8") as f:
+            json.dump(report_data, f, indent=2)
+        return report_data
+
+    # Baseline ledger exists: read entries strictly read-only
+    baseline_ledger_sha256 = compute_sha256(baseline_ledger_path)
+    baseline_entries: Dict[str, Dict[str, str]] = {}
+    with open(baseline_ledger_path, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            rec_id = row.get("recording_id", "")
+            if rec_id:
+                baseline_entries[rec_id] = row
+
+    missing_files: List[Dict[str, Any]] = []
+    corrupt_files: List[Dict[str, Any]] = []
+    hash_mismatches: List[Dict[str, Any]] = []
+    verified_matches: List[Dict[str, Any]] = []
+
+    # 2. Recalculate SHA-256 for every target clip and compare against baseline ledger
+    for clip_fname, target_row in target_map.items():
+        rec_id = target_row["recording_id"]
+        local_path = audio_dir / f"{rec_id}.mp3"
+        ledger_entry = baseline_entries.get(rec_id)
+
+        if not local_path.exists():
+            missing_files.append({
+                "recording_id": rec_id,
+                "clip_filename": clip_fname,
+                "speaker_id": target_row["speaker_id"],
+                "accent_group": target_row["accent_group"],
+                "expected_path": safe_rel_path(local_path),
+                "reason": "File does not exist on disk",
+            })
+            continue
+
+        is_valid, dur, sr, ch, recalc_sha256, err = validate_audio_file(local_path)
+        if not is_valid:
+            corrupt_files.append({
+                "recording_id": rec_id,
+                "clip_filename": clip_fname,
+                "speaker_id": target_row["speaker_id"],
+                "accent_group": target_row["accent_group"],
+                "local_path": safe_rel_path(local_path),
+                "error_message": err,
+            })
+            continue
+
+        expected_sha256 = ledger_entry.get("sha256") if ledger_entry else None
+        if expected_sha256 is None or recalc_sha256 != expected_sha256:
+            hash_mismatches.append({
+                "recording_id": rec_id,
+                "clip_filename": clip_fname,
+                "speaker_id": target_row["speaker_id"],
+                "accent_group": target_row["accent_group"],
+                "local_path": safe_rel_path(local_path),
+                "recalculated_sha256": recalc_sha256,
+                "baseline_ledger_sha256": expected_sha256,
+            })
+        else:
+            verified_matches.append({
+                "recording_id": rec_id,
+                "clip_filename": clip_fname,
+                "speaker_id": target_row["speaker_id"],
+                "accent_group": target_row["accent_group"],
+                "local_path": safe_rel_path(local_path),
+                "sha256": recalc_sha256,
+                "duration_sec": dur,
+                "sample_rate": sr,
+            })
+
+    # 3. Detect unexpected files in destination directory
+    expected_filenames = {f"{r['recording_id']}.mp3" for r in target_map.values()}
+    unexpected_files: List[str] = []
+    if audio_dir.exists():
+        for p in audio_dir.iterdir():
+            if p.is_file() and p.name not in expected_filenames:
+                unexpected_files.append(p.name)
+    unexpected_files.sort()
+
+    total_discrepancies = len(missing_files) + len(corrupt_files) + len(hash_mismatches) + len(unexpected_files)
+    is_valid = (total_discrepancies == 0) and (len(verified_matches) == len(target_map))
+    verdict = "PASS" if is_valid else "FAIL_INTEGRITY_DISCREPANCY"
+
+    report_data = {
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "protocol_version": "v1.5-five-stratum-parity",
+        "governing_standard": "Protocol Section 14.7 (Post-Acquisition Hash-Comparison Validation)",
+        "destination_audio_directory": safe_rel_path(audio_dir),
+        "baseline_ledger": {
+            "path": safe_rel_path(baseline_ledger_path),
+            "sha256": baseline_ledger_sha256,
+            "total_entries": len(baseline_entries),
+        },
+        "summary": {
+            "total_expected_clips": len(target_map),
+            "total_physical_files_found": len(verified_matches) + len(hash_mismatches) + len(corrupt_files),
+            "verified_matches_count": len(verified_matches),
+            "missing_count": len(missing_files),
+            "corrupt_count": len(corrupt_files),
+            "hash_mismatches_count": len(hash_mismatches),
+            "unexpected_count": len(unexpected_files),
+            "total_discrepancies": total_discrepancies,
+        },
+        "is_valid": is_valid,
+        "verdict": verdict,
+        "missing_files": missing_files,
+        "corrupt_files": corrupt_files,
+        "hash_mismatches": hash_mismatches,
+        "unexpected_files": unexpected_files,
+    }
+
+    # Write JSON report
+    with open(validation_report_json_path, "w", encoding="utf-8") as f:
+        json.dump(report_data, f, indent=2)
+
+    # Write Markdown report
+    md_lines = [
+        "# Stage 6M v1.5 — Cohort 3 Audio Post-Acquisition Validation Report",
+        "",
+        "> **DOCUMENT ID:** `STAGE6M_COHORT3_AUDIO_VALIDATION_REPORT`  ",
+        "> **PROTOCOL VERSION:** v1.5 Five-Stratum Parity  ",
+        "> **GOVERNING STANDARD:** Protocol Section 14.7 (Post-Acquisition Independent Hash Validation)  ",
+        f"> **VERDICT:** **{verdict}**  ",
+        f"> **BASELINE LEDGER:** [`{safe_rel_path(baseline_ledger_path)}`](file:///{PROJECT_ROOT.as_posix()}/{safe_rel_path(baseline_ledger_path)}) (SHA-256: `{baseline_ledger_sha256}`)  ",
+        f"> **DESTINATION DIRECTORY:** `{safe_rel_path(audio_dir)}`  ",
+        f"> **TIMESTAMP (UTC):** {report_data['timestamp_utc']}  ",
+        "",
+        "---",
+        "",
+        "## 1. Summary of Recalculated Hash Comparison",
+        "",
+        "| Metric | Count | Expected | Status |",
+        "| :--- | :---: | :---: | :---: |",
+        f"| Target Expected Clips | {len(target_map):,} | {len(target_map):,} | - |",
+        f"| Verified Matching Hashes | {len(verified_matches):,} | {len(target_map):,} | {'PASS' if len(verified_matches) == len(target_map) else 'FAIL'} |",
+        f"| Missing Files | {len(missing_files):,} | 0 | {'PASS' if len(missing_files) == 0 else 'FAIL'} |",
+        f"| Corrupt / Undecodable Files | {len(corrupt_files):,} | 0 | {'PASS' if len(corrupt_files) == 0 else 'FAIL'} |",
+        f"| SHA-256 Hash Mismatches | {len(hash_mismatches):,} | 0 | {'PASS' if len(hash_mismatches) == 0 else 'FAIL'} |",
+        f"| Unexpected Files in Destination | {len(unexpected_files):,} | 0 | {'PASS' if len(unexpected_files) == 0 else 'FAIL'} |",
+        f"| **Total Discrepancies** | **{total_discrepancies}** | **0** | **{verdict}** |",
+        "",
+        "---",
+        "",
+        "## 2. Integrity Verification Findings",
+        "",
+    ]
+    if is_valid:
+        md_lines.append("All physical clips match the preserved acquisition ledger with zero missing, corrupt, mismatched, or unexpected files.")
+    else:
+        if missing_files:
+            md_lines.append(f"### Missing Files ({len(missing_files)})")
+            for m in missing_files[:10]:
+                md_lines.append(f"- `{m['clip_filename']}` ({m['recording_id']}): {m['reason']}")
+            if len(missing_files) > 10:
+                md_lines.append(f"- ... and {len(missing_files) - 10} more missing files.")
+        if corrupt_files:
+            md_lines.append(f"### Corrupt Files ({len(corrupt_files)})")
+            for c in corrupt_files[:10]:
+                md_lines.append(f"- `{c['clip_filename']}` ({c['recording_id']}): {c['error_message']}")
+            if len(corrupt_files) > 10:
+                md_lines.append(f"- ... and {len(corrupt_files) - 10} more corrupt files.")
+        if hash_mismatches:
+            md_lines.append(f"### Hash Mismatches ({len(hash_mismatches)})")
+            for h in hash_mismatches[:10]:
+                md_lines.append(f"- `{h['clip_filename']}`: baseline `{h['baseline_ledger_sha256']}`, recalculated `{h['recalculated_sha256']}`")
+            if len(hash_mismatches) > 10:
+                md_lines.append(f"- ... and {len(hash_mismatches) - 10} more hash mismatches.")
+        if unexpected_files:
+            md_lines.append(f"### Unexpected Files ({len(unexpected_files)})")
+            for u in unexpected_files[:10]:
+                md_lines.append(f"- `{u}`")
+            if len(unexpected_files) > 10:
+                md_lines.append(f"- ... and {len(unexpected_files) - 10} more unexpected files.")
+
+    with open(validation_report_md_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(md_lines) + "\n")
+
+    logger.info(f"Wrote post-acquisition validation JSON report: {validation_report_json_path}")
+    logger.info(f"Wrote post-acquisition validation Markdown report: {validation_report_md_path}")
+    return report_data
+
+
 def select_pilot_speakers_and_clips(
     records: List[Dict[str, Any]],
     parent_manifest_sha256: str,
@@ -1589,17 +1946,20 @@ def main():
         pilot_dest_dir = args.pilot_audio_dir if args.audio_dir == COHORT3_AUDIO_DIR else args.audio_dir
         logger.info(f"[PILOT] Destination directory: {pilot_dest_dir}")
 
+        # Task 7.5.1 / Task 7.6.2: Authorization check is required before ANY physical acquisition path,
+        # and MUST execute BEFORE scan_local_inventory creates or touches pilot_dest_dir.
+        # --validate-only is explicitly exempted (read-only).
+        is_pilot_acquisition = (bool(args.stream) or bool(args.source_dir)) and not args.validate_only
+        if is_pilot_acquisition:
+            verify_pilot_materialization_authorization(HARDENING_AUDIT_JSON)
+
         valid_inv, failed_inv = scan_local_inventory(pilot_target_map, pilot_dest_dir)
         logger.info(f"[PILOT] Initial scan: {len(valid_inv)} / {len(pilot_target_map)} pilot clips validated on disk.")
 
-        # Task 7.5.1: Authorization check is required before ANY physical acquisition path,
-        # including --source-dir. --validate-only is explicitly exempted (read-only).
         if args.source_dir and args.source_dir.exists() and not args.validate_only:
-            verify_pilot_materialization_authorization(HARDENING_AUDIT_JSON)
             materialize_from_local_source(args.source_dir, pilot_target_map, valid_inv, failed_inv, pilot_dest_dir)
 
         if args.stream and not args.validate_only:
-            verify_pilot_materialization_authorization(HARDENING_AUDIT_JSON)
             materialize_from_stream(
                 pilot_target_map, valid_inv, failed_inv, pilot_dest_dir, max_duration_seconds=args.max_stream_seconds
             )
@@ -1630,17 +1990,46 @@ def main():
         return
 
     # Full Cohort Mode:
+    is_acquisition = (bool(args.stream) or bool(args.source_dir)) and not args.validate_only
+    if is_acquisition:
+        # Task 7.6.2: Scope enforcement MUST execute BEFORE scan_local_inventory creates or touches audio_dir!
+        verify_full_cohort_materialization_authorization(
+            audit_json_path=HARDENING_AUDIT_JSON,
+            manifest_path=args.manifest_json,
+            destination_dir=args.audio_dir,
+        )
+
+    if args.validate_only:
+        # Task 7.6.2 / Task 7.8 preparation: Independent hash-comparison validation
+        # Compares on-disk files against preserved baseline acquisition ledger without overwriting it.
+        logger.info("[VALIDATE-ONLY] Running independent hash-comparison integrity validation...")
+        target_ledger_csv = (args.output_dir / "stage6m_cohort3_clip_sha256_ledger.csv") if args.output_dir else LEDGER_CSV
+        val_rep_json = (args.output_dir / "stage6m_cohort3_audio_validation_report.json") if args.output_dir else VALIDATION_REPORT_JSON
+        val_rep_md = (args.output_dir / "stage6m_cohort3_audio_validation_report.md") if args.output_dir else VALIDATION_REPORT_MD
+
+        val_result = validate_and_compare_cohort3_audio(
+            manifest_records=records,
+            target_map=full_target_map,
+            audio_dir=args.audio_dir,
+            baseline_ledger_path=target_ledger_csv,
+            validation_report_json_path=val_rep_json,
+            validation_report_md_path=val_rep_md,
+        )
+        if not val_result.get("is_valid", False):
+            logger.error(
+                f"[VALIDATE-ONLY] Validation failed: {val_result['summary']['total_discrepancies']} discrepancies found."
+            )
+            sys.exit(1)
+        logger.info("[VALIDATE-ONLY] Validation passed: 100% physical audio files match baseline ledger exactly.")
+        return
+
     valid_inv, failed_inv = scan_local_inventory(full_target_map, args.audio_dir)
     logger.info(f"Initial scan: {len(valid_inv):,} / {len(full_target_map):,} clips already validated on disk.")
 
-    # Task 7.5.1: Authorization check is required before ANY physical acquisition path,
-    # including --source-dir. --validate-only is explicitly exempted (read-only).
-    if args.source_dir and args.source_dir.exists() and not args.validate_only:
-        verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
+    if args.source_dir and args.source_dir.exists():
         materialize_from_local_source(args.source_dir, full_target_map, valid_inv, failed_inv, args.audio_dir)
 
-    if args.stream and not args.validate_only:
-        verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
+    if args.stream:
         materialize_from_stream(
             full_target_map, valid_inv, failed_inv, args.audio_dir, max_duration_seconds=args.max_stream_seconds
         )

@@ -55,6 +55,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.materialize_stage6m_cohort3_audio import (
     CLIPS_PER_SPEAKER,
+    COHORT3_AUDIO_DIR,
     COHORT3_PILOT_AUDIO_DIR,
     FAILED_REPORT_JSON,
     HARDENING_AUDIT_JSON,
@@ -85,8 +86,11 @@ from scripts.materialize_stage6m_cohort3_audio import (
     scan_local_inventory,
     select_pilot_speakers_and_clips,
     validate_audio_file,
+    validate_and_compare_cohort3_audio,
     verify_full_cohort_materialization_authorization,
     verify_pilot_materialization_authorization,
+    VALIDATION_REPORT_JSON,
+    VALIDATION_REPORT_MD,
 )
 from src.dsg_ctta.data.acoustic import load_and_resample_audio
 
@@ -1000,7 +1004,19 @@ def test_pilot_materialization_authorization_fails_closed(tmp_path):
                 "execution_gating": {
                     "controlled_pilot_download": "AUTHORIZED_BY_PROJECT_LEAD",
                     "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
-                }
+                    "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
+                    "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+                    "confirmatory_inference": "STRICTLY_BLOCKED",
+                },
+                "full_cohort_authorization_decision": {
+                    "status": "AUTHORIZED_BY_PROJECT_LEAD",
+                    "authorizing_role": "Project Lead",
+                    "authorized_target_clips": 18975,
+                    "authorized_target_speakers": 1265,
+                    "manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+                    "substitutions_permitted": 0,
+                    "destination_directory": "datasets/external/common_voice_27/cohort3_audio",
+                },
             },
             f,
         )
@@ -1552,20 +1568,26 @@ def test_adversarial_cli_env_var_cannot_authorize_full_cohort(tmp_path):
     adv_env = os.environ.copy()
     adv_env["STAGE6M_HARDENING_AUDIT_JSON"] = str(fake_blocked_audit)
 
+    auth_script = (
+        "import sys, pathlib\n"
+        "import scripts.materialize_stage6m_cohort3_audio as m\n"
+        "orig_verify = m.verify_full_cohort_materialization_authorization\n"
+        "def patched_verify(audit_json_path=m.HARDENING_AUDIT_JSON, manifest_path=None, destination_dir=None):\n"
+        "    return orig_verify(audit_json_path, manifest_path, destination_dir=m.COHORT3_AUDIO_DIR)\n"
+        "m.verify_full_cohort_materialization_authorization = patched_verify\n"
+        f"sys.argv = ['materialize_stage6m_cohort3_audio.py', '--source-dir', r'{source_dir}', '--audio-dir', r'{dest_dir}', '--output-dir', r'{out_dir}']\n"
+        "m.main()\n"
+    )
     res = subprocess.run(
         [
             sys.executable,
-            str(PROJECT_ROOT / "scripts" / "materialize_stage6m_cohort3_audio.py"),
-            "--source-dir",
-            str(source_dir),
-            "--audio-dir",
-            str(dest_dir),
-            "--output-dir",
-            str(out_dir),
+            "-c",
+            auth_script,
         ],
         capture_output=True,
         text=True,
         env=adv_env,
+        cwd=str(PROJECT_ROOT),
     )
     assert res.returncode == 0
     assert "PermissionError" not in res.stderr
@@ -1608,5 +1630,406 @@ def test_adversarial_cli_env_var_cannot_authorize_full_cohort(tmp_path):
     assert res_blocked.returncode != 0
     assert "PermissionError" in res_blocked.stderr or "Full cohort audio acquisition blocked" in res_blocked.stderr
     assert list(blocked_dest.iterdir()) == [], "Subprocess copied files despite blocked governance!"
+
+
+# ---------------------------------------------------------------------------
+# Task 7.6.2 — Runtime Authorization Scope & Validation Comparison Hardening
+# ---------------------------------------------------------------------------
+
+
+def test_full_cohort_acquisition_rejects_modified_manifest(tmp_path, monkeypatch):
+    """
+    T7.6.2-01 — Runtime Scope Enforcement: A modified manifest with the exact same 18,975
+    rows and 1,265 speakers is strictly rejected because its computed SHA-256 does not match
+    the approved digest (b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547).
+    Rejection MUST occur before any files are copied or destination is touched.
+    """
+    # 1. Load provisional manifest and create a modified copy (same rows, altered metadata)
+    with open(PROVISIONAL_MANIFEST_JSON, "r", encoding="utf-8") as f:
+        manifest_data = json.load(f)
+
+    # Tamper with the first record's transcript without changing row count
+    manifest_data["records"][0]["transcript"] = manifest_data["records"][0]["transcript"] + " [MODIFIED]"
+    assert len(manifest_data["records"]) == TOTAL_EXPECTED_CLIPS == 18975
+
+    modified_manifest_path = tmp_path / "tampered_provisional_manifest.json"
+    with open(modified_manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest_data, f, indent=2)
+
+    tampered_sha256 = compute_sha256(modified_manifest_path)
+    assert tampered_sha256 != "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547"
+
+    # 2. Direct helper call rejection
+    with pytest.raises(PermissionError) as exc_info:
+        verify_full_cohort_materialization_authorization(
+            HARDENING_AUDIT_JSON,
+            manifest_path=modified_manifest_path,
+            destination_dir=COHORT3_AUDIO_DIR,
+        )
+    assert "manifest SHA-256 mismatch" in str(exc_info.value)
+
+    # 3. CLI execution rejection before modifying uncreated destination
+    uncreated_dest = tmp_path / "uncreated_audio_dest"
+    source_dir = tmp_path / "source_audio"
+    source_dir.mkdir()
+    sample_clip = manifest_data["records"][0]["clip_filename"]
+    _generate_synthetic_mp3(source_dir / sample_clip)
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "materialize_stage6m_cohort3_audio.py",
+            "--manifest-json",
+            str(modified_manifest_path),
+            "--source-dir",
+            str(source_dir),
+            "--audio-dir",
+            str(uncreated_dest),
+        ],
+    )
+    with pytest.raises(PermissionError) as exc_info:
+        main()
+    assert "manifest SHA-256 mismatch" in str(exc_info.value)
+    # Critical invariant: Destination directory must NOT even be created or modified
+    assert not uncreated_dest.exists(), "Destination directory was created despite manifest mismatch!"
+
+
+def test_full_cohort_acquisition_rejects_alternative_destination(tmp_path, monkeypatch):
+    """
+    T7.6.2-02 — Runtime Scope Enforcement: An alternative destination directory (e.g., via
+    --audio-dir override) is strictly rejected because it does not match the authorized
+    Cohort 3 directory (datasets/external/common_voice_27/cohort3_audio).
+    Rejection MUST occur before scan_local_inventory creates or modifies the directory.
+    """
+    alt_dest = tmp_path / "alternative_unauthorized_dest"
+    assert not alt_dest.exists()
+
+    # 1. Direct helper call rejection
+    with pytest.raises(PermissionError) as exc_info:
+        verify_full_cohort_materialization_authorization(
+            HARDENING_AUDIT_JSON,
+            manifest_path=PROVISIONAL_MANIFEST_JSON,
+            destination_dir=alt_dest,
+        )
+    assert "destination directory mismatch" in str(exc_info.value)
+    assert not alt_dest.exists()
+
+    # 2. CLI execution rejection before directory creation
+    source_dir = tmp_path / "source_audio"
+    source_dir.mkdir()
+    meta, records, target_map = load_provisional_manifest(PROVISIONAL_MANIFEST_JSON)
+    sample_clip = next(iter(target_map.keys()))
+    _generate_synthetic_mp3(source_dir / sample_clip)
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "materialize_stage6m_cohort3_audio.py",
+            "--manifest-json",
+            str(PROVISIONAL_MANIFEST_JSON),
+            "--source-dir",
+            str(source_dir),
+            "--audio-dir",
+            str(alt_dest),
+        ],
+    )
+    with pytest.raises(PermissionError) as exc_info:
+        main()
+    assert "destination directory mismatch" in str(exc_info.value)
+    # Critical invariant: Alternative destination directory was NEVER created or modified
+    assert not alt_dest.exists(), "Alternative destination directory was created before authorization check!"
+
+
+def test_full_cohort_acquisition_accepts_exact_approved_manifest_and_destination():
+    """
+    T7.6.2-03 — Exact Approved Authorization Acceptance & Downstream Safeguards:
+    Verifies that the canonical governance audit, approved manifest SHA-256, and authorized
+    Cohort 3 destination are accepted cleanly, while all downstream execution gates remain
+    strictly blocked:
+    - final_manifest_lock == BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION
+    - gpu_ctta_adaptation == STRICTLY_BLOCKED
+    - confirmatory_inference == STRICTLY_BLOCKED
+    """
+    # 1. Helper function must pass without exception on exact approved inputs
+    verify_full_cohort_materialization_authorization(
+        audit_json_path=HARDENING_AUDIT_JSON,
+        manifest_path=PROVISIONAL_MANIFEST_JSON,
+        destination_dir=COHORT3_AUDIO_DIR,
+    )
+
+    # 2. Verify all cryptographic and governance invariants
+    with open(HARDENING_AUDIT_JSON, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    gating = data["execution_gating"]
+    assert gating["full_audio_materialization"] == "AUTHORIZED_BY_PROJECT_LEAD"
+    assert gating["final_manifest_lock"] == "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION"
+    assert gating["gpu_ctta_adaptation"] == "STRICTLY_BLOCKED"
+    assert gating["confirmatory_inference"] == "STRICTLY_BLOCKED"
+
+    dec = data["full_cohort_authorization_decision"]
+    assert dec["status"] == "AUTHORIZED_BY_PROJECT_LEAD"
+    assert dec["authorizing_role"] == "Project Lead"
+    assert dec["authorized_target_clips"] == 18975
+    assert dec["authorized_target_speakers"] == 1265
+    assert dec["substitutions_permitted"] == 0
+    assert dec["destination_directory"] == "datasets/external/common_voice_27/cohort3_audio"
+    assert dec["manifest_sha256"] == "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547"
+
+    actual_manifest_sha = compute_sha256(PROVISIONAL_MANIFEST_JSON)
+    assert actual_manifest_sha == dec["manifest_sha256"]
+
+
+def test_full_cohort_acquisition_rejects_tampered_decision_fields(tmp_path):
+    """
+    T7.6.2-04 — Boundary & Integrity Defense: If any parameter in the authorization decision
+    block is tampered with (substitutions > 0, speaker count != 1,265, clip count != 18,975,
+    role != 'Project Lead', or downstream gates unblocked), authorization MUST fail closed.
+    """
+    base_data = {
+        "execution_gating": {
+            "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
+            "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
+            "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
+            "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+            "confirmatory_inference": "STRICTLY_BLOCKED",
+        },
+        "full_cohort_authorization_decision": {
+            "status": "AUTHORIZED_BY_PROJECT_LEAD",
+            "authorizing_role": "Project Lead",
+            "authorized_target_clips": 18975,
+            "authorized_target_speakers": 1265,
+            "manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+            "substitutions_permitted": 0,
+            "destination_directory": "datasets/external/common_voice_27/cohort3_audio",
+        },
+    }
+
+    # Case 1: substitutions_permitted > 0
+    d1 = json.loads(json.dumps(base_data))
+    d1["full_cohort_authorization_decision"]["substitutions_permitted"] = 1
+    p1 = tmp_path / "subst_tampered.json"
+    p1.write_text(json.dumps(d1), encoding="utf-8")
+    with pytest.raises(PermissionError, match="substitutions_permitted is 1"):
+        verify_full_cohort_materialization_authorization(p1)
+
+    # Case 2: authorized_target_clips != 18975
+    d2 = json.loads(json.dumps(base_data))
+    d2["full_cohort_authorization_decision"]["authorized_target_clips"] = 18974
+    p2 = tmp_path / "clips_tampered.json"
+    p2.write_text(json.dumps(d2), encoding="utf-8")
+    with pytest.raises(PermissionError, match="authorized_target_clips is 18974"):
+        verify_full_cohort_materialization_authorization(p2)
+
+    # Case 3: authorized_target_speakers != 1265
+    d3 = json.loads(json.dumps(base_data))
+    d3["full_cohort_authorization_decision"]["authorized_target_speakers"] = 1264
+    p3 = tmp_path / "spk_tampered.json"
+    p3.write_text(json.dumps(d3), encoding="utf-8")
+    with pytest.raises(PermissionError, match="authorized_target_speakers is 1264"):
+        verify_full_cohort_materialization_authorization(p3)
+
+    # Case 4: authorizing_role != 'Project Lead'
+    d4 = json.loads(json.dumps(base_data))
+    d4["full_cohort_authorization_decision"]["authorizing_role"] = "Software Engineer"
+    p4 = tmp_path / "role_tampered.json"
+    p4.write_text(json.dumps(d4), encoding="utf-8")
+    with pytest.raises(PermissionError, match="authorizing_role is 'Software Engineer'"):
+        verify_full_cohort_materialization_authorization(p4)
+
+    # Case 5: premature unblocking of gpu_ctta_adaptation
+    d5 = json.loads(json.dumps(base_data))
+    d5["execution_gating"]["gpu_ctta_adaptation"] = "AUTHORIZED"
+    p5 = tmp_path / "gpu_tampered.json"
+    p5.write_text(json.dumps(d5), encoding="utf-8")
+    with pytest.raises(PermissionError, match="gpu_ctta_adaptation is 'AUTHORIZED'"):
+        verify_full_cohort_materialization_authorization(p5)
+
+    # Case 6: premature unblocking of final_manifest_lock
+    d6 = json.loads(json.dumps(base_data))
+    d6["execution_gating"]["final_manifest_lock"] = "LOCKED"
+    p6 = tmp_path / "lock_tampered.json"
+    p6.write_text(json.dumps(d6), encoding="utf-8")
+    with pytest.raises(PermissionError, match="final_manifest_lock is 'LOCKED'"):
+        verify_full_cohort_materialization_authorization(p6)
+
+
+def test_validate_only_independent_comparison_mode(tmp_path):
+    """
+    T7.6.2-05 — Post-Acquisition Validation Hardening (Task 7.8 Preparation):
+    Validates compare-rather-than-replace integrity validation:
+    1. Preserves the baseline acquisition ledger without overwriting.
+    2. Recalculates SHA-256 for all physical on-disk files.
+    3. Categorizes missing, corrupt, hash mismatch, and unexpected files separately.
+    4. Writes validation report to a separate report artifact.
+    5. Exits unsuccessfully / reports is_valid == False if any discrepancy exists.
+    6. Confirms is_valid == True when all files match baseline ledger exactly.
+    """
+    audio_dir = tmp_path / "val_audio"
+    audio_dir.mkdir()
+    ledger_csv = tmp_path / "stage6m_cohort3_clip_sha256_ledger.csv"
+    report_json = tmp_path / "stage6m_cohort3_audio_validation_report.json"
+    report_md = tmp_path / "stage6m_cohort3_audio_validation_report.md"
+
+    # Define a 3-clip target map
+    target_map = {
+        "clip_match.mp3": {
+            "recording_id": "rec_match",
+            "clip_filename": "clip_match.mp3",
+            "speaker_id": "spk_1",
+            "accent_group": "US English",
+        },
+        "clip_tampered.mp3": {
+            "recording_id": "rec_tampered",
+            "clip_filename": "clip_tampered.mp3",
+            "speaker_id": "spk_2",
+            "accent_group": "England English",
+        },
+        "clip_missing.mp3": {
+            "recording_id": "rec_missing",
+            "clip_filename": "clip_missing.mp3",
+            "speaker_id": "spk_3",
+            "accent_group": "Canadian English",
+        },
+        "clip_corrupt.mp3": {
+            "recording_id": "rec_corrupt",
+            "clip_filename": "clip_corrupt.mp3",
+            "speaker_id": "spk_4",
+            "accent_group": "Australian English",
+        },
+    }
+
+    # Generate physical audio on disk
+    # 1. Matching clip
+    match_file = audio_dir / "rec_match.mp3"
+    _generate_synthetic_mp3(match_file, duration_sec=1.0, sr=16000)
+    match_sha256 = compute_sha256(match_file)
+
+    # 2. Tampered clip: on-disk file has different content than baseline ledger
+    tampered_file = audio_dir / "rec_tampered.mp3"
+    _generate_synthetic_mp3(tampered_file, duration_sec=1.2, sr=16000)
+    tampered_actual_sha256 = compute_sha256(tampered_file)
+
+    # 3. Missing clip: NOT created on disk
+
+    # 4. Corrupt clip: 0-byte file
+    corrupt_file = audio_dir / "rec_corrupt.mp3"
+    corrupt_file.write_bytes(b"")
+
+    # 5. Unexpected file: an extra clip on disk not belonging to target map
+    unexpected_file = audio_dir / "untracked_spurious_clip.mp3"
+    unexpected_file.write_bytes(b"spurious")
+
+    # Write the preserved acquisition ledger (simulating Task 7.7 output)
+    ledger_fieldnames = ["recording_id", "clip_filename", "speaker_id", "accent_group", "sha256"]
+    with open(ledger_csv, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=ledger_fieldnames)
+        writer.writeheader()
+        writer.writerow({
+            "recording_id": "rec_match",
+            "clip_filename": "clip_match.mp3",
+            "speaker_id": "spk_1",
+            "accent_group": "US English",
+            "sha256": match_sha256,
+        })
+        writer.writerow({
+            "recording_id": "rec_tampered",
+            "clip_filename": "clip_tampered.mp3",
+            "speaker_id": "spk_2",
+            "accent_group": "England English",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",  # Mismatch
+        })
+        writer.writerow({
+            "recording_id": "rec_missing",
+            "clip_filename": "clip_missing.mp3",
+            "speaker_id": "spk_3",
+            "accent_group": "Canadian English",
+            "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        })
+        writer.writerow({
+            "recording_id": "rec_corrupt",
+            "clip_filename": "clip_corrupt.mp3",
+            "speaker_id": "spk_4",
+            "accent_group": "Australian English",
+            "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        })
+
+    original_ledger_sha256 = compute_sha256(ledger_csv)
+
+    # Execute independent hash-comparison validation
+    res = validate_and_compare_cohort3_audio(
+        manifest_records=list(target_map.values()),
+        target_map=target_map,
+        audio_dir=audio_dir,
+        baseline_ledger_path=ledger_csv,
+        validation_report_json_path=report_json,
+        validation_report_md_path=report_md,
+    )
+
+    # Invariant 1: Original baseline acquisition ledger must NEVER be overwritten or modified
+    assert compute_sha256(ledger_csv) == original_ledger_sha256, "Baseline ledger was overwritten during validation!"
+
+    # Invariant 2: Failure verdict with separate discrepancy counts
+    assert res["is_valid"] is False
+    assert res["verdict"] == "FAIL_INTEGRITY_DISCREPANCY"
+    summary = res["summary"]
+    assert summary["verified_matches_count"] == 1
+    assert summary["missing_count"] == 1
+    assert summary["corrupt_count"] == 1
+    assert summary["hash_mismatches_count"] == 1
+    assert summary["unexpected_count"] == 1
+    assert summary["total_discrepancies"] == 4
+
+    assert len(res["missing_files"]) == 1
+    assert res["missing_files"][0]["recording_id"] == "rec_missing"
+
+    assert len(res["corrupt_files"]) == 1
+    assert res["corrupt_files"][0]["recording_id"] == "rec_corrupt"
+
+    assert len(res["hash_mismatches"]) == 1
+    assert res["hash_mismatches"][0]["recording_id"] == "rec_tampered"
+    assert res["hash_mismatches"][0]["recalculated_sha256"] == tampered_actual_sha256
+
+    assert res["unexpected_files"] == ["untracked_spurious_clip.mp3"]
+
+    # Invariant 3: Validation reports exist
+    assert report_json.exists()
+    assert report_md.exists()
+
+    # Invariant 4: Clean pass when all discrepancies resolved
+    # Fix tampered hash in ledger, remove unexpected file, remove corrupt/missing from test map
+    clean_target_map = {
+        "clip_match.mp3": target_map["clip_match.mp3"],
+    }
+    clean_ledger = tmp_path / "clean_ledger.csv"
+    with open(clean_ledger, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=ledger_fieldnames)
+        writer.writeheader()
+        writer.writerow({
+            "recording_id": "rec_match",
+            "clip_filename": "clip_match.mp3",
+            "speaker_id": "spk_1",
+            "accent_group": "US English",
+            "sha256": match_sha256,
+        })
+    clean_audio_dir = tmp_path / "clean_audio"
+    clean_audio_dir.mkdir()
+    _generate_synthetic_mp3(clean_audio_dir / "rec_match.mp3", duration_sec=1.0, sr=16000)
+
+    clean_res = validate_and_compare_cohort3_audio(
+        manifest_records=list(clean_target_map.values()),
+        target_map=clean_target_map,
+        audio_dir=clean_audio_dir,
+        baseline_ledger_path=clean_ledger,
+        validation_report_json_path=tmp_path / "clean_report.json",
+        validation_report_md_path=tmp_path / "clean_report.md",
+    )
+    assert clean_res["is_valid"] is True
+    assert clean_res["verdict"] == "PASS"
+    assert clean_res["summary"]["total_discrepancies"] == 0
+    assert clean_res["summary"]["verified_matches_count"] == 1
+
 
 
