@@ -89,6 +89,8 @@ from scripts.materialize_stage6m_cohort3_audio import (
     validate_and_compare_cohort3_audio,
     verify_full_cohort_materialization_authorization,
     verify_pilot_materialization_authorization,
+    APPROVED_COHORT3_MANIFEST_SHA256,
+    APPROVED_COHORT3_DESTINATION_REL,
     VALIDATION_REPORT_JSON,
     VALIDATION_REPORT_MD,
 )
@@ -1855,6 +1857,22 @@ def test_full_cohort_acquisition_rejects_tampered_decision_fields(tmp_path):
     with pytest.raises(PermissionError, match="final_manifest_lock is 'LOCKED'"):
         verify_full_cohort_materialization_authorization(p6)
 
+    # Case 7: decision block manifest_sha256 tampered
+    d7 = json.loads(json.dumps(base_data))
+    d7["full_cohort_authorization_decision"]["manifest_sha256"] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    p7 = tmp_path / "dec_manifest_tampered.json"
+    p7.write_text(json.dumps(d7), encoding="utf-8")
+    with pytest.raises(PermissionError, match="decision block manifest_sha256 is"):
+        verify_full_cohort_materialization_authorization(p7)
+
+    # Case 8: decision block destination_directory tampered
+    d8 = json.loads(json.dumps(base_data))
+    d8["full_cohort_authorization_decision"]["destination_directory"] = "datasets/external/common_voice_27/unauthorized_cohort3_audio"
+    p8 = tmp_path / "dec_dest_tampered.json"
+    p8.write_text(json.dumps(d8), encoding="utf-8")
+    with pytest.raises(PermissionError, match="decision block destination_directory is"):
+        verify_full_cohort_materialization_authorization(p8)
+
 
 def test_validate_only_independent_comparison_mode(tmp_path):
     """
@@ -2032,4 +2050,277 @@ def test_validate_only_independent_comparison_mode(tmp_path):
     assert clean_res["summary"]["verified_matches_count"] == 1
 
 
+def test_adversarial_decision_manifest_override_rejected(tmp_path):
+    """
+    T7.6.2-06 — Adversarial Authorization Invariant:
+    Proves that an adversarial modification to the governance decision block's manifest_sha256
+    is strictly rejected against the hard-coded APPROVED_COHORT3_MANIFEST_SHA256, even if
+    the manifest file on disk matches the forged decision hash.
+    """
+    base_data = {
+        "execution_gating": {
+            "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
+            "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
+            "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
+            "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+            "confirmatory_inference": "STRICTLY_BLOCKED",
+        },
+        "full_cohort_authorization_decision": {
+            "status": "AUTHORIZED_BY_PROJECT_LEAD",
+            "authorizing_role": "Project Lead",
+            "authorized_target_clips": 18975,
+            "authorized_target_speakers": 1265,
+            "manifest_sha256": "9" * 64,
+            "substitutions_permitted": 0,
+            "destination_directory": APPROVED_COHORT3_DESTINATION_REL,
+        },
+    }
+    audit_json = tmp_path / "adversarial_manifest_decision.json"
+    audit_json.write_text(json.dumps(base_data), encoding="utf-8")
 
+    # Create dummy manifest on disk whose content matches the forged hash
+    forged_manifest = tmp_path / "forged_manifest.json"
+    forged_manifest.write_text("evil manifest payload", encoding="utf-8")
+
+    with pytest.raises(PermissionError, match="decision block manifest_sha256 is"):
+        verify_full_cohort_materialization_authorization(
+            audit_json_path=audit_json,
+            manifest_path=forged_manifest,
+            destination_dir=None,
+        )
+
+
+def test_adversarial_decision_destination_override_rejected(tmp_path):
+    """
+    T7.6.2-07 — Adversarial Authorization Invariant:
+    Proves that an adversarial modification to the governance decision block's destination_directory
+    is strictly rejected against the hard-coded APPROVED_COHORT3_DESTINATION_REL, even if
+    the requested runtime destination matches the forged decision path.
+    """
+    base_data = {
+        "execution_gating": {
+            "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
+            "full_audio_materialization": "AUTHORIZED_BY_PROJECT_LEAD",
+            "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
+            "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+            "confirmatory_inference": "STRICTLY_BLOCKED",
+        },
+        "full_cohort_authorization_decision": {
+            "status": "AUTHORIZED_BY_PROJECT_LEAD",
+            "authorizing_role": "Project Lead",
+            "authorized_target_clips": 18975,
+            "authorized_target_speakers": 1265,
+            "manifest_sha256": APPROVED_COHORT3_MANIFEST_SHA256,
+            "substitutions_permitted": 0,
+            "destination_directory": "datasets/external/common_voice_27/malicious_cohort3_audio",
+        },
+    }
+    audit_json = tmp_path / "adversarial_dest_decision.json"
+    audit_json.write_text(json.dumps(base_data), encoding="utf-8")
+
+    malicious_audio_dir = (PROJECT_ROOT / "datasets/external/common_voice_27/malicious_cohort3_audio").resolve()
+    with pytest.raises(PermissionError, match="decision block destination_directory is"):
+        verify_full_cohort_materialization_authorization(
+            audit_json_path=audit_json,
+            manifest_path=None,
+            destination_dir=malicious_audio_dir,
+        )
+
+
+def test_validate_only_rejects_corrupted_or_duplicated_baseline_ledger(tmp_path):
+    """
+    T7.6.2-08 — Structural Ledger Validation (Task 7.8 Preparation):
+    Proves that validate_and_compare_cohort3_audio() strictly verifies the baseline
+    ledger itself before comparing audio hashes:
+    1. Rejects duplicate recording IDs in ledger.
+    2. Rejects row count mismatch (fewer or more rows than expected target map).
+    3. Rejects unexpected recording IDs not in provisional manifest.
+    4. Rejects manifest metadata mismatches (clip_filename or speaker_id).
+    5. Rejects malformed / non-hex SHA-256 digests.
+    A corrupted or duplicated baseline ledger receives FAIL_BASELINE_LEDGER_INVALID
+    and is_valid == False.
+    """
+    audio_dir = tmp_path / "ledger_check_audio"
+    audio_dir.mkdir()
+    target_map = {
+        "clip_001.mp3": {
+            "recording_id": "rec_001",
+            "clip_filename": "clip_001.mp3",
+            "speaker_id": "spk_001",
+            "accent_group": "US English",
+        },
+        "clip_002.mp3": {
+            "recording_id": "rec_002",
+            "clip_filename": "clip_002.mp3",
+            "speaker_id": "spk_002",
+            "accent_group": "England English",
+        },
+    }
+    # Create valid synthetic audio for both clips
+    f1 = audio_dir / "rec_001.mp3"
+    f2 = audio_dir / "rec_002.mp3"
+    _generate_synthetic_mp3(f1, duration_sec=1.0, sr=16000)
+    _generate_synthetic_mp3(f2, duration_sec=1.0, sr=16000)
+    sha1 = compute_sha256(f1)
+    sha2 = compute_sha256(f2)
+    ledger_fieldnames = ["recording_id", "clip_filename", "speaker_id", "accent_group", "sha256"]
+
+    # Sub-case 1: Duplicate recording ID in ledger
+    dup_ledger = tmp_path / "dup_ledger.csv"
+    with open(dup_ledger, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=ledger_fieldnames)
+        w.writeheader()
+        w.writerow({"recording_id": "rec_001", "clip_filename": "clip_001.mp3", "speaker_id": "spk_001", "accent_group": "US English", "sha256": sha1})
+        w.writerow({"recording_id": "rec_001", "clip_filename": "clip_001.mp3", "speaker_id": "spk_001", "accent_group": "US English", "sha256": sha1})
+    res_dup = validate_and_compare_cohort3_audio(
+        manifest_records=list(target_map.values()),
+        target_map=target_map,
+        audio_dir=audio_dir,
+        baseline_ledger_path=dup_ledger,
+        validation_report_json_path=tmp_path / "dup_report.json",
+        validation_report_md_path=tmp_path / "dup_report.md",
+    )
+    assert res_dup["is_valid"] is False
+    assert res_dup["verdict"] == "FAIL_BASELINE_LEDGER_INVALID"
+    assert res_dup["summary"]["ledger_structural_discrepancies_count"] > 0
+
+    # Sub-case 2: Row count shortfall (missing one row in ledger)
+    short_ledger = tmp_path / "short_ledger.csv"
+    with open(short_ledger, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=ledger_fieldnames)
+        w.writeheader()
+        w.writerow({"recording_id": "rec_001", "clip_filename": "clip_001.mp3", "speaker_id": "spk_001", "accent_group": "US English", "sha256": sha1})
+    res_short = validate_and_compare_cohort3_audio(
+        manifest_records=list(target_map.values()),
+        target_map=target_map,
+        audio_dir=audio_dir,
+        baseline_ledger_path=short_ledger,
+        validation_report_json_path=tmp_path / "short_report.json",
+        validation_report_md_path=tmp_path / "short_report.md",
+    )
+    assert res_short["is_valid"] is False
+    assert res_short["verdict"] == "FAIL_BASELINE_LEDGER_INVALID"
+
+    # Sub-case 3: Unexpected recording ID in ledger
+    unexp_ledger = tmp_path / "unexp_ledger.csv"
+    with open(unexp_ledger, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=ledger_fieldnames)
+        w.writeheader()
+        w.writerow({"recording_id": "rec_001", "clip_filename": "clip_001.mp3", "speaker_id": "spk_001", "accent_group": "US English", "sha256": sha1})
+        w.writerow({"recording_id": "rec_spurious", "clip_filename": "clip_spurious.mp3", "speaker_id": "spk_999", "accent_group": "US English", "sha256": sha2})
+    res_unexp = validate_and_compare_cohort3_audio(
+        manifest_records=list(target_map.values()),
+        target_map=target_map,
+        audio_dir=audio_dir,
+        baseline_ledger_path=unexp_ledger,
+        validation_report_json_path=tmp_path / "unexp_report.json",
+        validation_report_md_path=tmp_path / "unexp_report.md",
+    )
+    assert res_unexp["is_valid"] is False
+    assert res_unexp["verdict"] == "FAIL_BASELINE_LEDGER_INVALID"
+
+    # Sub-case 4: Metadata mismatch (speaker_id altered)
+    mismatch_ledger = tmp_path / "mismatch_ledger.csv"
+    with open(mismatch_ledger, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=ledger_fieldnames)
+        w.writeheader()
+        w.writerow({"recording_id": "rec_001", "clip_filename": "clip_001.mp3", "speaker_id": "spk_WRONG", "accent_group": "US English", "sha256": sha1})
+        w.writerow({"recording_id": "rec_002", "clip_filename": "clip_002.mp3", "speaker_id": "spk_002", "accent_group": "England English", "sha256": sha2})
+    res_mismatch = validate_and_compare_cohort3_audio(
+        manifest_records=list(target_map.values()),
+        target_map=target_map,
+        audio_dir=audio_dir,
+        baseline_ledger_path=mismatch_ledger,
+        validation_report_json_path=tmp_path / "mismatch_report.json",
+        validation_report_md_path=tmp_path / "mismatch_report.md",
+    )
+    assert res_mismatch["is_valid"] is False
+    assert res_mismatch["verdict"] == "FAIL_BASELINE_LEDGER_INVALID"
+
+    # Sub-case 5: Malformed SHA-256 (not 64 hex characters)
+    malformed_ledger = tmp_path / "malformed_ledger.csv"
+    with open(malformed_ledger, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=ledger_fieldnames)
+        w.writeheader()
+        w.writerow({"recording_id": "rec_001", "clip_filename": "clip_001.mp3", "speaker_id": "spk_001", "accent_group": "US English", "sha256": "tooshortsha"})
+        w.writerow({"recording_id": "rec_002", "clip_filename": "clip_002.mp3", "speaker_id": "spk_002", "accent_group": "England English", "sha256": sha2})
+    res_malformed = validate_and_compare_cohort3_audio(
+        manifest_records=list(target_map.values()),
+        target_map=target_map,
+        audio_dir=audio_dir,
+        baseline_ledger_path=malformed_ledger,
+        validation_report_json_path=tmp_path / "malformed_report.json",
+        validation_report_md_path=tmp_path / "malformed_report.md",
+    )
+    assert res_malformed["is_valid"] is False
+    assert res_malformed["verdict"] == "FAIL_BASELINE_LEDGER_INVALID"
+
+
+def test_validate_only_cli_baseline_ledger_and_output_dir_decoupled(tmp_path, monkeypatch):
+    """
+    T7.6.2-09 — CLI Decoupling Invariant:
+    Proves that supplying --output-dir controls only the destination for validation reports
+    and does NOT alter the baseline ledger lookup path. Also proves that --baseline-ledger
+    allows explicitly supplying the baseline acquisition ledger.
+    """
+    custom_out = tmp_path / "custom_val_reports"
+    custom_out.mkdir()
+    custom_ledger = tmp_path / "explicit_baseline_ledger.csv"
+
+    # Prepare custom ledger
+    ledger_fieldnames = ["recording_id", "clip_filename", "speaker_id", "accent_group", "sha256"]
+    with open(custom_ledger, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=ledger_fieldnames)
+        w.writeheader()
+
+    captured_args = {}
+
+    def mock_validate(manifest_records, target_map, audio_dir, baseline_ledger_path,
+                      validation_report_json_path, validation_report_md_path):
+        captured_args["baseline_ledger_path"] = baseline_ledger_path
+        captured_args["validation_report_json_path"] = validation_report_json_path
+        captured_args["validation_report_md_path"] = validation_report_md_path
+        return {
+            "is_valid": True,
+            "verdict": "PASS",
+            "summary": {"total_discrepancies": 0, "verified_matches_count": 0},
+            "missing_files": [],
+            "corrupt_files": [],
+            "hash_mismatches": [],
+            "unexpected_files": [],
+        }
+
+    monkeypatch.setattr("scripts.materialize_stage6m_cohort3_audio.validate_and_compare_cohort3_audio", mock_validate)
+    from scripts.materialize_stage6m_cohort3_audio import main, LEDGER_CSV
+
+    # Sub-case 1: Only --output-dir is specified. Baseline ledger must remain default LEDGER_CSV.
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "materialize_stage6m_cohort3_audio.py",
+            "--validate-only",
+            "--output-dir",
+            str(custom_out),
+        ],
+    )
+    main()
+    assert captured_args["baseline_ledger_path"] == LEDGER_CSV
+    assert captured_args["validation_report_json_path"] == custom_out / "stage6m_cohort3_audio_validation_report.json"
+    assert captured_args["validation_report_md_path"] == custom_out / "stage6m_cohort3_audio_validation_report.md"
+
+    # Sub-case 2: Both --output-dir and --baseline-ledger are specified.
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "materialize_stage6m_cohort3_audio.py",
+            "--validate-only",
+            "--output-dir",
+            str(custom_out),
+            "--baseline-ledger",
+            str(custom_ledger),
+        ],
+    )
+    main()
+    assert captured_args["baseline_ledger_path"] == custom_ledger
+    assert captured_args["validation_report_json_path"] == custom_out / "stage6m_cohort3_audio_validation_report.json"
+    assert captured_args["validation_report_md_path"] == custom_out / "stage6m_cohort3_audio_validation_report.md"

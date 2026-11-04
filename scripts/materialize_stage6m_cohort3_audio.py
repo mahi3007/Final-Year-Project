@@ -279,23 +279,33 @@ def verify_full_cohort_materialization_authorization(
             f"Full cohort audio acquisition blocked: substitutions_permitted is {substitutions} (expected 0)."
         )
 
-    # 6. Actual manifest SHA-256 validation
-    approved_manifest_sha = dec_block.get("manifest_sha256") or APPROVED_COHORT3_MANIFEST_SHA256
+    # 6. Decision block manifest SHA-256 pinning & actual manifest validation
+    decision_manifest_sha = dec_block.get("manifest_sha256")
+    if decision_manifest_sha != APPROVED_COHORT3_MANIFEST_SHA256:
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: decision block manifest_sha256 is '{decision_manifest_sha}' "
+            f"(expected approved constant '{APPROVED_COHORT3_MANIFEST_SHA256}')."
+        )
     effective_manifest = Path(manifest_path) if manifest_path is not None else PROVISIONAL_MANIFEST_JSON
     if not effective_manifest.exists():
         raise PermissionError(
             f"Full cohort audio acquisition blocked: manifest file not found at {effective_manifest}."
         )
     actual_manifest_sha = compute_sha256(effective_manifest)
-    if actual_manifest_sha != approved_manifest_sha:
+    if actual_manifest_sha != APPROVED_COHORT3_MANIFEST_SHA256:
         raise PermissionError(
             f"Full cohort audio acquisition blocked: manifest SHA-256 mismatch. "
-            f"Manifest '{effective_manifest}' has digest '{actual_manifest_sha}', but approved digest is '{approved_manifest_sha}'."
+            f"Manifest '{effective_manifest}' has digest '{actual_manifest_sha}', but approved digest is '{APPROVED_COHORT3_MANIFEST_SHA256}'."
         )
 
-    # 7. Destination directory validation
-    authorized_dest_str = dec_block.get("destination_directory") or APPROVED_COHORT3_DESTINATION_REL
-    authorized_dest = (PROJECT_ROOT / authorized_dest_str).resolve()
+    # 7. Decision block destination directory pinning & actual destination validation
+    decision_dest_rel = dec_block.get("destination_directory")
+    if decision_dest_rel != APPROVED_COHORT3_DESTINATION_REL:
+        raise PermissionError(
+            f"Full cohort audio acquisition blocked: decision block destination_directory is '{decision_dest_rel}' "
+            f"(expected approved constant '{APPROVED_COHORT3_DESTINATION_REL}')."
+        )
+    authorized_dest = (PROJECT_ROOT / APPROVED_COHORT3_DESTINATION_REL).resolve()
     effective_dest = Path(destination_dir).resolve() if destination_dir is not None else COHORT3_AUDIO_DIR.resolve()
     if effective_dest != authorized_dest:
         raise PermissionError(
@@ -1362,15 +1372,107 @@ def validate_and_compare_cohort3_audio(
             json.dump(report_data, f, indent=2)
         return report_data
 
-    # Baseline ledger exists: read entries strictly read-only
+    # Baseline ledger exists: read entries strictly read-only and verify structural integrity
     baseline_ledger_sha256 = compute_sha256(baseline_ledger_path)
     baseline_entries: Dict[str, Dict[str, str]] = {}
+    ledger_rows_count = 0
+    duplicate_ledger_entries: List[str] = []
+    unexpected_ledger_entries: List[str] = []
+    manifest_mismatch_entries: List[Dict[str, Any]] = []
+    malformed_hash_entries: List[Dict[str, Any]] = []
+    seen_ledger_rec_ids: Set[str] = set()
+    HEX_CHARS = set("0123456789abcdefABCDEF")
+
+    # Map provisional manifest targets by recording_id
+    manifest_by_rec_id = {r["recording_id"]: r for r in target_map.values()}
+
     with open(baseline_ledger_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        for row in reader:
-            rec_id = row.get("recording_id", "")
-            if rec_id:
-                baseline_entries[rec_id] = row
+        for row_idx, row in enumerate(reader, start=1):
+            ledger_rows_count += 1
+            rec_id = (row.get("recording_id") or "").strip()
+            c_fname = (row.get("clip_filename") or "").strip()
+            spk_id = (row.get("speaker_id") or "").strip()
+            sha = (row.get("sha256") or "").strip()
+
+            if not rec_id:
+                manifest_mismatch_entries.append({
+                    "row_index": row_idx,
+                    "error": "Empty or missing recording_id in ledger row",
+                })
+                continue
+
+            if rec_id in seen_ledger_rec_ids:
+                duplicate_ledger_entries.append(rec_id)
+            seen_ledger_rec_ids.add(rec_id)
+
+            if rec_id not in manifest_by_rec_id:
+                unexpected_ledger_entries.append(rec_id)
+            else:
+                m_row = manifest_by_rec_id[rec_id]
+                if m_row["clip_filename"] != c_fname or m_row["speaker_id"] != spk_id:
+                    manifest_mismatch_entries.append({
+                        "recording_id": rec_id,
+                        "row_index": row_idx,
+                        "ledger_clip_filename": c_fname,
+                        "manifest_clip_filename": m_row["clip_filename"],
+                        "ledger_speaker_id": spk_id,
+                        "manifest_speaker_id": m_row["speaker_id"],
+                    })
+
+            if len(sha) != 64 or not all(c in HEX_CHARS for c in sha):
+                malformed_hash_entries.append({
+                    "recording_id": rec_id,
+                    "row_index": row_idx,
+                    "invalid_sha256": sha,
+                })
+
+            baseline_entries[rec_id] = row
+
+    ledger_structural_discrepancies: List[Dict[str, Any]] = []
+    if ledger_rows_count != len(target_map):
+        ledger_structural_discrepancies.append({
+            "check": "total_ledger_rows",
+            "error": f"Baseline ledger row count {ledger_rows_count} does not match expected {len(target_map)}",
+        })
+    if len(seen_ledger_rec_ids) != len(target_map):
+        ledger_structural_discrepancies.append({
+            "check": "unique_recording_ids",
+            "error": f"Baseline ledger contains {len(seen_ledger_rec_ids)} unique recording IDs (expected {len(target_map)})",
+        })
+    if duplicate_ledger_entries:
+        ledger_structural_discrepancies.append({
+            "check": "duplicate_recording_ids",
+            "count": len(duplicate_ledger_entries),
+            "duplicates": duplicate_ledger_entries[:10],
+        })
+    if unexpected_ledger_entries:
+        ledger_structural_discrepancies.append({
+            "check": "unexpected_ledger_entries",
+            "count": len(unexpected_ledger_entries),
+            "unexpected": unexpected_ledger_entries[:10],
+        })
+    if manifest_mismatch_entries:
+        ledger_structural_discrepancies.append({
+            "check": "manifest_alignment",
+            "count": len(manifest_mismatch_entries),
+            "mismatches": manifest_mismatch_entries[:10],
+        })
+    if malformed_hash_entries:
+        ledger_structural_discrepancies.append({
+            "check": "sha256_hex_format",
+            "count": len(malformed_hash_entries),
+            "malformed": malformed_hash_entries[:10],
+        })
+
+    structural_discrepancy_count = (
+        len(duplicate_ledger_entries)
+        + len(unexpected_ledger_entries)
+        + len(manifest_mismatch_entries)
+        + len(malformed_hash_entries)
+        + (1 if ledger_rows_count != len(target_map) else 0)
+        + (1 if len(seen_ledger_rec_ids) != len(target_map) else 0)
+    )
 
     missing_files: List[Dict[str, Any]] = []
     corrupt_files: List[Dict[str, Any]] = []
@@ -1438,9 +1540,15 @@ def validate_and_compare_cohort3_audio(
                 unexpected_files.append(p.name)
     unexpected_files.sort()
 
-    total_discrepancies = len(missing_files) + len(corrupt_files) + len(hash_mismatches) + len(unexpected_files)
+    total_discrepancies = (
+        len(missing_files)
+        + len(corrupt_files)
+        + len(hash_mismatches)
+        + len(unexpected_files)
+        + structural_discrepancy_count
+    )
     is_valid = (total_discrepancies == 0) and (len(verified_matches) == len(target_map))
-    verdict = "PASS" if is_valid else "FAIL_INTEGRITY_DISCREPANCY"
+    verdict = "PASS" if is_valid else ("FAIL_BASELINE_LEDGER_INVALID" if structural_discrepancy_count > 0 else "FAIL_INTEGRITY_DISCREPANCY")
 
     report_data = {
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -1450,7 +1558,9 @@ def validate_and_compare_cohort3_audio(
         "baseline_ledger": {
             "path": safe_rel_path(baseline_ledger_path),
             "sha256": baseline_ledger_sha256,
-            "total_entries": len(baseline_entries),
+            "total_rows": ledger_rows_count,
+            "unique_recording_ids": len(seen_ledger_rec_ids),
+            "structural_discrepancies_count": structural_discrepancy_count,
         },
         "summary": {
             "total_expected_clips": len(target_map),
@@ -1460,6 +1570,7 @@ def validate_and_compare_cohort3_audio(
             "corrupt_count": len(corrupt_files),
             "hash_mismatches_count": len(hash_mismatches),
             "unexpected_count": len(unexpected_files),
+            "ledger_structural_discrepancies_count": structural_discrepancy_count,
             "total_discrepancies": total_discrepancies,
         },
         "is_valid": is_valid,
@@ -1468,6 +1579,7 @@ def validate_and_compare_cohort3_audio(
         "corrupt_files": corrupt_files,
         "hash_mismatches": hash_mismatches,
         "unexpected_files": unexpected_files,
+        "ledger_structural_discrepancies": ledger_structural_discrepancies,
     }
 
     # Write JSON report
@@ -1493,6 +1605,7 @@ def validate_and_compare_cohort3_audio(
         "| Metric | Count | Expected | Status |",
         "| :--- | :---: | :---: | :---: |",
         f"| Target Expected Clips | {len(target_map):,} | {len(target_map):,} | - |",
+        f"| Ledger Structural Discrepancies | {structural_discrepancy_count:,} | 0 | {'PASS' if structural_discrepancy_count == 0 else 'FAIL'} |",
         f"| Verified Matching Hashes | {len(verified_matches):,} | {len(target_map):,} | {'PASS' if len(verified_matches) == len(target_map) else 'FAIL'} |",
         f"| Missing Files | {len(missing_files):,} | 0 | {'PASS' if len(missing_files) == 0 else 'FAIL'} |",
         f"| Corrupt / Undecodable Files | {len(corrupt_files):,} | 0 | {'PASS' if len(corrupt_files) == 0 else 'FAIL'} |",
@@ -1506,8 +1619,12 @@ def validate_and_compare_cohort3_audio(
         "",
     ]
     if is_valid:
-        md_lines.append("All physical clips match the preserved acquisition ledger with zero missing, corrupt, mismatched, or unexpected files.")
+        md_lines.append("All physical clips match the preserved acquisition ledger with zero missing, corrupt, mismatched, unexpected, or structural discrepancies.")
     else:
+        if ledger_structural_discrepancies:
+            md_lines.append(f"### Ledger Structural Discrepancies ({len(ledger_structural_discrepancies)})")
+            for s in ledger_structural_discrepancies:
+                md_lines.append(f"- **[{s.get('check')}]**: {s.get('error', s.get('count'))}")
         if missing_files:
             md_lines.append(f"### Missing Files ({len(missing_files)})")
             for m in missing_files[:10]:
@@ -1921,6 +2038,12 @@ def main():
         default=None,
         help="Optional maximum streaming runtime in seconds (for batch/testing)",
     )
+    parser.add_argument(
+        "--baseline-ledger",
+        type=Path,
+        default=None,
+        help="Path to preserved acquisition-time SHA-256 ledger CSV to validate against (default: datasets/splits/stage6m_cohort3_clip_sha256_ledger.csv)",
+    )
     # NOTE (Task 7.5.1): --audit-json is intentionally NOT exposed as a CLI argument in
     # production. Production always uses the canonical HARDENING_AUDIT_JSON. The
     # verify_*_authorization() helper functions retain their audit_json_path parameter
@@ -2003,7 +2126,7 @@ def main():
         # Task 7.6.2 / Task 7.8 preparation: Independent hash-comparison validation
         # Compares on-disk files against preserved baseline acquisition ledger without overwriting it.
         logger.info("[VALIDATE-ONLY] Running independent hash-comparison integrity validation...")
-        target_ledger_csv = (args.output_dir / "stage6m_cohort3_clip_sha256_ledger.csv") if args.output_dir else LEDGER_CSV
+        target_ledger_csv = args.baseline_ledger if args.baseline_ledger is not None else LEDGER_CSV
         val_rep_json = (args.output_dir / "stage6m_cohort3_audio_validation_report.json") if args.output_dir else VALIDATION_REPORT_JSON
         val_rep_md = (args.output_dir / "stage6m_cohort3_audio_validation_report.md") if args.output_dir else VALIDATION_REPORT_MD
 

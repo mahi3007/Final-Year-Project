@@ -157,10 +157,10 @@
   },
   "test_execution_summary": {
     "materialization_test_suite": "tests/research_validity/test_stage6m_cohort3_audio_materialization.py",
-    "materialization_tests_passed": 13,
+    "materialization_tests_passed": 35,
     "materialization_tests_failed": 0,
-    "suite_description": "53-test Stage 6M targeted regression suite across 5 specified modules (audio materialization, source audit, curation, authorization package, historical immutability)",
-    "targeted_regression_suite_tests_passed": 53,
+    "suite_description": "75-test Stage 6M targeted regression suite across 5 specified modules (audio materialization, source audit, curation, authorization package, historical immutability)",
+    "targeted_regression_suite_tests_passed": 75,
     "targeted_regression_suite_tests_failed": 0
   }
 }

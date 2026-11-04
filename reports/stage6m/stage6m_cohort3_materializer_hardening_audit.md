@@ -170,32 +170,54 @@ The frozen historical execution code at [`src/dsg_ctta/evaluation/paired_cluster
 
 ## 5. Verification Evidence
 
-### 5.1 Hardened Materializer Test Suite (13 Tests Passed)
+### 5.1 Hardened Materializer Test Suite (35 Tests Passed)
 Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_materialization.py -v`
 ```
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_target_manifest_scale_and_fields PASSED [  7%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_validate_audio_file_genuine_mp3_and_boundaries PASSED [ 15%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_speaker_completeness_accounting_zero_audio PASSED [ 23%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_local_sourcing_and_completeness_tracking PASSED [ 30%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_streaming_resume_range_validation PASSED [ 38%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_downstream_acoustic_resampling_contract PASSED [ 46%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_materialization_reports_exist_and_consistent PASSED [ 53%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_historical_v1_4_0_execution_engine_immutability PASSED [ 61%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_speaker_and_clip_selection PASSED [ 69%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_cli_execution_and_report_isolation PASSED [ 76%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_mock_materialization_verification PASSED [ 84%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_committed_pilot_reports_exist_and_clean_zero_audio PASSED [ 92%]
-tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_materialization_authorization_fails_closed PASSED [100%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_target_manifest_scale_and_fields PASSED [  2%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_validate_audio_file_genuine_mp3_and_boundaries PASSED [  5%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_speaker_completeness_accounting_zero_audio PASSED [  8%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_local_sourcing_and_completeness_tracking PASSED [ 11%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_streaming_resume_range_validation PASSED [ 14%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_downstream_acoustic_resampling_contract PASSED [ 17%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_materialization_reports_exist_and_consistent PASSED [ 20%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_historical_v1_4_0_execution_engine_immutability PASSED [ 22%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_speaker_and_clip_selection PASSED [ 25%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_cli_execution_and_report_isolation PASSED [ 28%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_mock_materialization_verification PASSED [ 31%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_committed_pilot_reports_exist_and_clean_zero_audio PASSED [ 34%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_materialization_authorization_fails_closed PASSED [ 37%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_stream_acquisition_requires_authorization PASSED [ 40%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_source_dir_acquisition_requires_authorization PASSED [ 42%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_full_cohort_source_dir_acquisition_requires_authorization PASSED [ 45%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pilot_complete_does_not_authorize_new_pilot_download PASSED [ 48%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_arbitrary_audit_json_path_cannot_be_injected_via_cli PASSED [ 51%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_validate_only_requires_no_authorization PASSED [ 54%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_pending_governance_statuses_all_deny_acquisition PASSED [ 57%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_full_cohort_acquisition_authorized_under_canonical_governance PASSED [ 60%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_cli_integration_pilot_source_dir_unauthorized_rejected_before_copy PASSED [ 62%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_cli_integration_full_cohort_source_dir_unauthorized_rejected_before_copy PASSED [ 65%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_cli_integration_validate_only_succeeds_without_authorization PASSED [ 68%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_adversarial_cli_env_var_cannot_authorize_pilot PASSED [ 71%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_adversarial_cli_env_var_cannot_authorize_full_cohort PASSED [ 74%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_full_cohort_acquisition_rejects_modified_manifest PASSED [ 77%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_full_cohort_acquisition_rejects_alternative_destination PASSED [ 80%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_full_cohort_acquisition_accepts_exact_approved_manifest_and_destination PASSED [ 82%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_full_cohort_acquisition_rejects_tampered_decision_fields PASSED [ 85%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_validate_only_independent_comparison_mode PASSED [ 88%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_adversarial_decision_manifest_override_rejected PASSED [ 91%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_adversarial_decision_destination_override_rejected PASSED [ 94%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_validate_only_rejects_corrupted_or_duplicated_baseline_ledger PASSED [ 97%]
+tests/research_validity/test_stage6m_cohort3_audio_materialization.py::test_validate_only_cli_baseline_ledger_and_output_dir_decoupled PASSED [100%]
 
-============================= 13 passed in 5.40s ==============================
+============================= 35 passed in 15.04s =============================
 ```
 
-### 5.2 Stage 6M Targeted Regression Suite (53 Tests Passed)
-> **Reporting Qualification:** This suite executes five selected modules specifically targeting Stage 6M confirmatory preparation (Cohort 3 audio materialization, source audit, curation, Project-Lead authorization package, and historical engine immutability). Rather than claiming the entire repository test directory was executed, these results are accurately designated as the **53-test Stage 6M targeted regression suite**.
+### 5.2 Stage 6M Targeted Regression Suite (75 Tests Passed)
+> **Reporting Qualification:** This suite executes five selected modules specifically targeting Stage 6M confirmatory preparation (Cohort 3 audio materialization, source audit, curation, Project-Lead authorization package, and historical engine immutability). Rather than claiming the entire repository test directory was executed, these results are accurately designated as the **75-test Stage 6M targeted regression suite**.
 
 Command: `python -m pytest tests/research_validity/test_stage6m_cohort3_audio_materialization.py tests/research_validity/test_stage6m_cohort3_source_audit.py tests/research_validity/test_stage6m_cohort3_curation.py tests/research_validity/test_stage6m_project_lead_authorization_package.py tests/research_validity/test_historical_immutability.py -v`
 ```
-============================= 53 passed in 18.47s =============================
+============================= 75 passed in 27.94s =============================
 ```
 
 ---
