@@ -146,10 +146,10 @@ def verify_pilot_materialization_authorization(audit_json_path: Path = HARDENING
 
     gating = data.get("execution_gating", {})
     pilot_auth = gating.get("controlled_pilot_download")
-    if pilot_auth != "AUTHORIZED_BY_PROJECT_LEAD":
+    if pilot_auth not in ("AUTHORIZED_BY_PROJECT_LEAD", "PILOT_COMPLETE_AND_VERIFIED"):
         raise PermissionError(
             f"Physical pilot audio acquisition blocked: controlled_pilot_download is '{pilot_auth}' "
-            f"(expected 'AUTHORIZED_BY_PROJECT_LEAD' in {audit_json_path}). "
+            f"(expected 'AUTHORIZED_BY_PROJECT_LEAD' or 'PILOT_COMPLETE_AND_VERIFIED' in {audit_json_path}). "
             "Controlled physical retrieval requires explicit Project-Lead authorization under Protocol Section 14.7."
         )
 

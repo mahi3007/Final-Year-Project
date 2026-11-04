@@ -929,6 +929,7 @@ def test_committed_pilot_reports_exist_and_clean_zero_audio():
         "PILOT_ZERO_AUDIO_DRY_RUN",
         "PILOT_IN_PROGRESS",
         "PILOT_COMPLETE",
+        "PILOT_COMPLETE_AND_VERIFIED",
     )
     assert pilot_data["execution_gating"]["gpu_ctta_adaptation"] == "STRICTLY_BLOCKED"
     assert pilot_data["execution_gating"]["confirmatory_inference"] == "STRICTLY_BLOCKED"
@@ -1002,4 +1003,7 @@ def test_pilot_materialization_authorization_fails_closed(tmp_path):
     # 4. Verified against committed repository audit artifact
     assert HARDENING_AUDIT_JSON.exists()
     verify_pilot_materialization_authorization(HARDENING_AUDIT_JSON)
+    with pytest.raises(PermissionError) as exc_info:
+        verify_full_cohort_materialization_authorization(HARDENING_AUDIT_JSON)
+    assert "Full cohort audio acquisition blocked" in str(exc_info.value)
 

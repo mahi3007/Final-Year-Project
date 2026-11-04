@@ -1,26 +1,26 @@
 {
-  "timestamp_utc": "2026-11-01T14:15:30.000000+00:00",
+  "timestamp_utc": "2026-11-04T08:15:00.000000+00:00",
   "document_id": "STAGE6M_COHORT3_MATERIALIZER_HARDENING_AUDIT",
-  "task_id": "TASK_7_4_2_1",
-  "task_title": "Pilot Artifact Isolation & Evidence Provenance Repair",
+  "task_id": "TASK_7_4_4",
+  "task_title": "Controlled Audio Materialization Pilot Completion & Integrity Verification",
   "protocol_version": "v1.5-five-stratum-parity",
   "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
   "governance_status": "AUTHORIZED_FOR_DATA_PREPARATION",
   "manifest_status": "UNLOCKED (PROVISIONAL)",
-  "audit_disposition": "PASS_PILOT_ARTIFACT_ISOLATION_AND_EVIDENCE_PROVENANCE_REPAIRED",
+  "audit_disposition": "PASS_PILOT_ACQUISITION_AND_PHYSICAL_INTEGRITY_VERIFIED",
   "execution_gating": {
     "audio_materialization_hardening": "VERIFIED_FULL_FILE_AND_TERMINATION",
-    "controlled_pilot_download": "AUTHORIZED_BY_PROJECT_LEAD",
-    "full_audio_materialization": "BLOCKED_PENDING_PILOT_VALIDATION",
+    "controlled_pilot_download": "PILOT_COMPLETE_AND_VERIFIED",
+    "full_audio_materialization": "BLOCKED_PENDING_COHORT3_READINESS_REVIEW",
     "final_manifest_lock": "BLOCKED_PENDING_100_PERCENT_PHYSICAL_VALIDATION",
     "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
     "confirmatory_inference": "STRICTLY_BLOCKED"
   },
   "pilot_authorization_decision": {
-    "status": "AUTHORIZED_BY_PROJECT_LEAD",
+    "status": "PILOT_COMPLETE_AND_VERIFIED",
     "protocol_reference": "Protocol Section 14.7",
-    "verdict": "APPROVE — 75-clip physical pilot only",
-    "date": "2026-11-01",
+    "verdict": "APPROVE — 75-clip physical pilot completed and verified",
+    "date": "2026-11-04",
     "authorized_scope": {
       "confirmatory_evaluation_strata": 5,
       "speakers_per_stratum": 1,
@@ -142,10 +142,10 @@
   },
   "test_execution_summary": {
     "materialization_test_suite": "tests/research_validity/test_stage6m_cohort3_audio_materialization.py",
-    "materialization_tests_passed": 12,
+    "materialization_tests_passed": 13,
     "materialization_tests_failed": 0,
-    "suite_description": "52-test Stage 6M targeted regression suite across 5 specified modules (audio materialization, source audit, curation, authorization package, historical immutability)",
-    "targeted_regression_suite_tests_passed": 52,
+    "suite_description": "53-test Stage 6M targeted regression suite across 5 specified modules (audio materialization, source audit, curation, authorization package, historical immutability)",
+    "targeted_regression_suite_tests_passed": 53,
     "targeted_regression_suite_tests_failed": 0
   }
 }
