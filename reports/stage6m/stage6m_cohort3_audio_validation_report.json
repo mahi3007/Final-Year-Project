@@ -1,0 +1,1081 @@
+{
+  "timestamp_utc": "2026-11-05T06:22:48.677260+00:00",
+  "protocol_version": "v1.5-five-stratum-parity",
+  "governing_standard": "Protocol Section 14.7 (Post-Acquisition Hash-Comparison Validation)",
+  "destination_audio_directory": "datasets/external/common_voice_27/cohort3_audio",
+  "baseline_ledger": {
+    "path": "datasets/splits/stage6m_cohort3_clip_sha256_ledger.csv",
+    "sha256": "eda8bbe236bac0360d055a7616d5ee5d666119317c4c95a271e994d793fde08c",
+    "total_rows": 18845,
+    "unique_recording_ids": 18845,
+    "structural_discrepancies_count": 2
+  },
+  "summary": {
+    "total_expected_clips": 18975,
+    "total_physical_files_found": 18845,
+    "verified_matches_count": 18845,
+    "missing_count": 130,
+    "corrupt_count": 0,
+    "hash_mismatches_count": 0,
+    "unexpected_count": 0,
+    "ledger_structural_discrepancies_count": 2,
+    "total_discrepancies": 132
+  },
+  "is_valid": false,
+  "verdict": "FAIL_BASELINE_LEDGER_INVALID",
+  "missing_files": [
+    {
+      "recording_id": "common_voice_en_25321355",
+      "clip_filename": "common_voice_en_25321355.mp3",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25321355.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21637126",
+      "clip_filename": "common_voice_en_21637126.mp3",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21637126.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25321376",
+      "clip_filename": "common_voice_en_25321376.mp3",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25321376.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21636368",
+      "clip_filename": "common_voice_en_21636368.mp3",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21636368.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21636374",
+      "clip_filename": "common_voice_en_21636374.mp3",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21636374.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21638164",
+      "clip_filename": "common_voice_en_21638164.mp3",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21638164.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25074415",
+      "clip_filename": "common_voice_en_25074415.mp3",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25074415.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25757742",
+      "clip_filename": "common_voice_en_25757742.mp3",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25757742.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25381658",
+      "clip_filename": "common_voice_en_25381658.mp3",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25381658.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25526479",
+      "clip_filename": "common_voice_en_25526479.mp3",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25526479.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_24735728",
+      "clip_filename": "common_voice_en_24735728.mp3",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_24735728.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25141272",
+      "clip_filename": "common_voice_en_25141272.mp3",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25141272.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25108571",
+      "clip_filename": "common_voice_en_25108571.mp3",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25108571.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25961826",
+      "clip_filename": "common_voice_en_25961826.mp3",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25961826.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25555670",
+      "clip_filename": "common_voice_en_25555670.mp3",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25555670.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25097588",
+      "clip_filename": "common_voice_en_25097588.mp3",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25097588.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22545992",
+      "clip_filename": "common_voice_en_22545992.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22545992.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22546018",
+      "clip_filename": "common_voice_en_22546018.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22546018.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22545846",
+      "clip_filename": "common_voice_en_22545846.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22545846.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22546100",
+      "clip_filename": "common_voice_en_22546100.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22546100.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22545710",
+      "clip_filename": "common_voice_en_22545710.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22545710.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22545709",
+      "clip_filename": "common_voice_en_22545709.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22545709.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22545384",
+      "clip_filename": "common_voice_en_22545384.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22545384.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22545382",
+      "clip_filename": "common_voice_en_22545382.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22545382.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23391167",
+      "clip_filename": "common_voice_en_23391167.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23391167.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23391197",
+      "clip_filename": "common_voice_en_23391197.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23391197.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22545891",
+      "clip_filename": "common_voice_en_22545891.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22545891.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22546187",
+      "clip_filename": "common_voice_en_22546187.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22546187.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23391204",
+      "clip_filename": "common_voice_en_23391204.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23391204.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22545928",
+      "clip_filename": "common_voice_en_22545928.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22545928.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22545741",
+      "clip_filename": "common_voice_en_22545741.mp3",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22545741.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778819",
+      "clip_filename": "common_voice_en_23778819.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778819.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778799",
+      "clip_filename": "common_voice_en_23778799.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778799.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778805",
+      "clip_filename": "common_voice_en_23778805.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778805.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778813",
+      "clip_filename": "common_voice_en_23778813.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778813.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778803",
+      "clip_filename": "common_voice_en_23778803.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778803.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778808",
+      "clip_filename": "common_voice_en_23778808.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778808.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778802",
+      "clip_filename": "common_voice_en_23778802.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778802.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778814",
+      "clip_filename": "common_voice_en_23778814.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778814.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778807",
+      "clip_filename": "common_voice_en_23778807.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778807.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778817",
+      "clip_filename": "common_voice_en_23778817.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778817.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778801",
+      "clip_filename": "common_voice_en_23778801.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778801.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778806",
+      "clip_filename": "common_voice_en_23778806.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778806.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778804",
+      "clip_filename": "common_voice_en_23778804.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778804.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23778812",
+      "clip_filename": "common_voice_en_23778812.mp3",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23778812.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36313939",
+      "clip_filename": "common_voice_en_36313939.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36313939.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36313908",
+      "clip_filename": "common_voice_en_36313908.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36313908.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36305367",
+      "clip_filename": "common_voice_en_36305367.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36305367.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36313921",
+      "clip_filename": "common_voice_en_36313921.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36313921.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36305579",
+      "clip_filename": "common_voice_en_36305579.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36305579.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36313934",
+      "clip_filename": "common_voice_en_36313934.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36313934.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36305527",
+      "clip_filename": "common_voice_en_36305527.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36305527.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36305462",
+      "clip_filename": "common_voice_en_36305462.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36305462.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36313909",
+      "clip_filename": "common_voice_en_36313909.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36313909.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36305366",
+      "clip_filename": "common_voice_en_36305366.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36305366.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36314183",
+      "clip_filename": "common_voice_en_36314183.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36314183.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36313875",
+      "clip_filename": "common_voice_en_36313875.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36313875.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36313887",
+      "clip_filename": "common_voice_en_36313887.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36313887.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36305697",
+      "clip_filename": "common_voice_en_36305697.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36305697.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_36305686",
+      "clip_filename": "common_voice_en_36305686.mp3",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_36305686.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155318",
+      "clip_filename": "common_voice_en_28155318.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155318.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155164",
+      "clip_filename": "common_voice_en_28155164.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155164.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155266",
+      "clip_filename": "common_voice_en_28155266.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155266.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155481",
+      "clip_filename": "common_voice_en_28155481.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155481.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155174",
+      "clip_filename": "common_voice_en_28155174.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155174.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155312",
+      "clip_filename": "common_voice_en_28155312.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155312.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155290",
+      "clip_filename": "common_voice_en_28155290.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155290.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155364",
+      "clip_filename": "common_voice_en_28155364.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155364.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155341",
+      "clip_filename": "common_voice_en_28155341.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155341.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155259",
+      "clip_filename": "common_voice_en_28155259.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155259.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155375",
+      "clip_filename": "common_voice_en_28155375.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155375.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155208",
+      "clip_filename": "common_voice_en_28155208.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155208.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155301",
+      "clip_filename": "common_voice_en_28155301.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155301.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155260",
+      "clip_filename": "common_voice_en_28155260.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155260.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_28155408",
+      "clip_filename": "common_voice_en_28155408.mp3",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_28155408.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22471468",
+      "clip_filename": "common_voice_en_22471468.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22471468.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21552955",
+      "clip_filename": "common_voice_en_21552955.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21552955.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21552934",
+      "clip_filename": "common_voice_en_21552934.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21552934.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21937395",
+      "clip_filename": "common_voice_en_21937395.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21937395.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21907677",
+      "clip_filename": "common_voice_en_21907677.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21907677.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21937397",
+      "clip_filename": "common_voice_en_21937397.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21937397.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21555318",
+      "clip_filename": "common_voice_en_21555318.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21555318.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21907679",
+      "clip_filename": "common_voice_en_21907679.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21907679.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21552237",
+      "clip_filename": "common_voice_en_21552237.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21552237.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21766238",
+      "clip_filename": "common_voice_en_21766238.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21766238.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21552119",
+      "clip_filename": "common_voice_en_21552119.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21552119.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21937398",
+      "clip_filename": "common_voice_en_21937398.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21937398.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21552848",
+      "clip_filename": "common_voice_en_21552848.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21552848.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21907694",
+      "clip_filename": "common_voice_en_21907694.mp3",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21907694.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21618933",
+      "clip_filename": "common_voice_en_21618933.mp3",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21618933.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21619086",
+      "clip_filename": "common_voice_en_21619086.mp3",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21619086.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21618939",
+      "clip_filename": "common_voice_en_21618939.mp3",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21618939.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21619221",
+      "clip_filename": "common_voice_en_21619221.mp3",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21619221.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21618908",
+      "clip_filename": "common_voice_en_21618908.mp3",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21618908.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21619008",
+      "clip_filename": "common_voice_en_21619008.mp3",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21619008.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21619095",
+      "clip_filename": "common_voice_en_21619095.mp3",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21619095.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21618917",
+      "clip_filename": "common_voice_en_21618917.mp3",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21618917.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22219005",
+      "clip_filename": "common_voice_en_22219005.mp3",
+      "speaker_id": "ce27be4356e370790325f2cdae755fcdbb0f030fcccd4b44ed5f7fe9eacde02682336c6e1c77ab0495348d39e66777bf27a1be3238ce5eb3d5cc3bd3bc9de9b2",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22219005.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25726108",
+      "clip_filename": "common_voice_en_25726108.mp3",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25726108.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25926012",
+      "clip_filename": "common_voice_en_25926012.mp3",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25926012.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25725571",
+      "clip_filename": "common_voice_en_25725571.mp3",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25725571.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25725578",
+      "clip_filename": "common_voice_en_25725578.mp3",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25725578.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25726721",
+      "clip_filename": "common_voice_en_25726721.mp3",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25726721.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25726622",
+      "clip_filename": "common_voice_en_25726622.mp3",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25726622.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25725537",
+      "clip_filename": "common_voice_en_25725537.mp3",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25725537.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25725870",
+      "clip_filename": "common_voice_en_25725870.mp3",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25725870.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25726709",
+      "clip_filename": "common_voice_en_25726709.mp3",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25726709.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_25726644",
+      "clip_filename": "common_voice_en_25726644.mp3",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_25726644.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23790132",
+      "clip_filename": "common_voice_en_23790132.mp3",
+      "speaker_id": "cde3a54cd80691eb0f10b60784fefe661d8702fb781c2fbf01acbb068ba67c197124c1a2d7ffa2b4e98c92a06cf5802398288a004ff61ad199e5203f27625087",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23790132.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_23790125",
+      "clip_filename": "common_voice_en_23790125.mp3",
+      "speaker_id": "cde3a54cd80691eb0f10b60784fefe661d8702fb781c2fbf01acbb068ba67c197124c1a2d7ffa2b4e98c92a06cf5802398288a004ff61ad199e5203f27625087",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_23790125.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22764448",
+      "clip_filename": "common_voice_en_22764448.mp3",
+      "speaker_id": "7456ec8b40142e1863ac5d241bfa1d7687fb9aa96941da3128bf4c4d81cdf2f9ab0e693f768047a1b87268a4612f4c5ecb52f23920e0fe146b04542d2c292148",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22764448.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22955751",
+      "clip_filename": "common_voice_en_22955751.mp3",
+      "speaker_id": "7456ec8b40142e1863ac5d241bfa1d7687fb9aa96941da3128bf4c4d81cdf2f9ab0e693f768047a1b87268a4612f4c5ecb52f23920e0fe146b04542d2c292148",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22955751.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_21853971",
+      "clip_filename": "common_voice_en_21853971.mp3",
+      "speaker_id": "7456ec8b40142e1863ac5d241bfa1d7687fb9aa96941da3128bf4c4d81cdf2f9ab0e693f768047a1b87268a4612f4c5ecb52f23920e0fe146b04542d2c292148",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_21853971.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22710648",
+      "clip_filename": "common_voice_en_22710648.mp3",
+      "speaker_id": "7456ec8b40142e1863ac5d241bfa1d7687fb9aa96941da3128bf4c4d81cdf2f9ab0e693f768047a1b87268a4612f4c5ecb52f23920e0fe146b04542d2c292148",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22710648.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22800999",
+      "clip_filename": "common_voice_en_22800999.mp3",
+      "speaker_id": "7456ec8b40142e1863ac5d241bfa1d7687fb9aa96941da3128bf4c4d81cdf2f9ab0e693f768047a1b87268a4612f4c5ecb52f23920e0fe146b04542d2c292148",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22800999.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480597",
+      "clip_filename": "common_voice_en_22480597.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480597.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480736",
+      "clip_filename": "common_voice_en_22480736.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480736.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480726",
+      "clip_filename": "common_voice_en_22480726.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480726.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480752",
+      "clip_filename": "common_voice_en_22480752.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480752.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480706",
+      "clip_filename": "common_voice_en_22480706.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480706.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480560",
+      "clip_filename": "common_voice_en_22480560.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480560.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480725",
+      "clip_filename": "common_voice_en_22480725.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480725.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480595",
+      "clip_filename": "common_voice_en_22480595.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480595.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480645",
+      "clip_filename": "common_voice_en_22480645.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480645.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480783",
+      "clip_filename": "common_voice_en_22480783.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480783.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480655",
+      "clip_filename": "common_voice_en_22480655.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480655.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480757",
+      "clip_filename": "common_voice_en_22480757.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480757.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480644",
+      "clip_filename": "common_voice_en_22480644.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480644.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480743",
+      "clip_filename": "common_voice_en_22480743.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480743.mp3",
+      "reason": "File does not exist on disk"
+    },
+    {
+      "recording_id": "common_voice_en_22480618",
+      "clip_filename": "common_voice_en_22480618.mp3",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "expected_path": "datasets/external/common_voice_27/cohort3_audio/common_voice_en_22480618.mp3",
+      "reason": "File does not exist on disk"
+    }
+  ],
+  "corrupt_files": [],
+  "hash_mismatches": [],
+  "unexpected_files": [],
+  "ledger_structural_discrepancies": [
+    {
+      "check": "total_ledger_rows",
+      "error": "Baseline ledger row count 18845 does not match expected 18975"
+    },
+    {
+      "check": "unique_recording_ids",
+      "error": "Baseline ledger contains 18845 unique recording IDs (expected 18975)"
+    }
+  ]
+}

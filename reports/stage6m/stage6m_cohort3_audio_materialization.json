@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-11-01T13:25:26.874833+00:00",
+  "timestamp_utc": "2026-11-05T06:12:19.410472+00:00",
   "protocol_version": "v1.5-five-stratum-parity",
   "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
   "governance_status": "AUTHORIZED_FOR_DATA_PREPARATION",
@@ -14,20 +14,20 @@
     "australian_replacement_reserve_speakers": 65
   },
   "materialized_scale": {
-    "valid_clips_count": 0,
-    "remaining_clips_count": 18975,
-    "failed_clips_count": 0,
+    "valid_clips_count": 18845,
+    "remaining_clips_count": 130,
+    "failed_clips_count": 130,
     "total_target_speakers": 1265,
-    "complete_speakers_count": 0,
-    "incomplete_speakers_count": 1265,
-    "completion_rate_pct": 0.0,
-    "total_duration_seconds": 0,
-    "total_duration_hours": 0.0,
-    "total_bytes": 0
+    "complete_speakers_count": 1252,
+    "incomplete_speakers_count": 13,
+    "completion_rate_pct": 99.3149,
+    "total_duration_seconds": 94150.68,
+    "total_duration_hours": 26.153,
+    "total_bytes": 704970734
   },
   "ledger": {
     "ledger_csv": "datasets/splits/stage6m_cohort3_clip_sha256_ledger.csv",
-    "ledger_sha256": "f18391abeebc6a08ca33c3a8a6ffbe0920ed8907863d14f419ffeda1e5384a8c"
+    "ledger_sha256": "eda8bbe236bac0360d055a7616d5ee5d666119317c4c95a271e994d793fde08c"
   },
   "execution_gating": {
     "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
