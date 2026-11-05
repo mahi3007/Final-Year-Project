@@ -1,0 +1,56 @@
+{
+  "timestamp_utc": "2026-11-05T06:55:00.000000+00:00",
+  "document_id": "STAGE6M_COHORT3_TASK771_FORENSIC_AUTHORIZATION_DECISION",
+  "task_id": "TASK_7_7_1",
+  "task_title": "Project-Lead Academic Authorization for Task 7.7.1 MP3 Forensic Triage Quarantine Retrieval",
+  "protocol_version": "v1.5-five-stratum-parity",
+  "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
+  "governance_status": "AUTHORIZED_FOR_DIAGNOSTIC_QUARANTINE_ONLY",
+  "parent_provisional_manifest": {
+    "path": "datasets/splits/stage6m_cohort3_provisional_manifest.json",
+    "sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "status": "UNLOCKED (PROVISIONAL) — MODIFICATION PROHIBITED"
+  },
+  "quarantine_target_list": {
+    "path": "datasets/splits/stage6m_cohort3_task771_quarantine_targets.json",
+    "sha256": "a530fb8b60fc302e536ce14efb620cda936ad91783f7d1f482a430dd154696ae",
+    "target_recordings_count": 130,
+    "target_speakers_count": 13,
+    "panel_roles": [
+      "evaluation"
+    ],
+    "strata_breakdown": {
+      "Canadian English": 73,
+      "US English": 33,
+      "Australian English": 16,
+      "England English": 8,
+      "South Asian English": 0
+    }
+  },
+  "source_dataset": {
+    "platform": "Mozilla Data Collective (MDC)",
+    "dataset_id": "cmu5jplf300nwmh07iqvk9leo",
+    "dataset_name": "Mozilla Common Voice 27.0 - English"
+  },
+  "quarantine_destination": {
+    "directory_rel": "datasets/external/common_voice_27/cohort3_rejected_quarantine",
+    "cohort_promotion_policy": "STRICTLY_PROHIBITED — Quarantined files must never be placed in cohort3_audio or counted as accepted Cohort 3 recordings without forensic resolution and formal governance amendment"
+  },
+  "authorization_boundaries": {
+    "authorizing_role": "Project Lead",
+    "decision_status": "AUTHORIZED_BY_PROJECT_LEAD",
+    "purpose": "MP3 forensic investigation only (MPEG frame scan, Xing/LAME metadata inspection, sample-count reconciliation, multi-decoder verification)",
+    "substitutions_permitted": 0,
+    "manifest_modification": "PROHIBITED",
+    "cohort_promotion": "PROHIBITED",
+    "preservation_requirement": "Extract original bytes without deletion or alteration; preserve 18,845 valid cohort files and original acquisition ledger",
+    "execution_gating": {
+      "quarantine_retrieval": "AUTHORIZED_BY_PROJECT_LEAD",
+      "forensic_triage": "AUTHORIZED_BY_PROJECT_LEAD",
+      "cohort_promotion": "STRICTLY_PROHIBITED",
+      "final_manifest_lock": "STRICTLY_BLOCKED",
+      "gpu_ctta_adaptation": "STRICTLY_BLOCKED",
+      "confirmatory_inference": "STRICTLY_BLOCKED"
+    }
+  }
+}

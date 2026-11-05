@@ -1,0 +1,1930 @@
+{
+  "task_id": "TASK_7_7_1",
+  "document_id": "STAGE6M_COHORT3_TASK771_MP3_FORENSIC_TRIAGE",
+  "protocol_version": "v1.5-five-stratum-parity",
+  "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
+  "generated_at": "2026-11-05T07:14:06.177962+00:00",
+  "governance_provenance": {
+    "parent_manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "quarantine_targets_sha256": "a530fb8b60fc302e536ce14efb620cda936ad91783f7d1f482a430dd154696ae",
+    "forensic_authorization_sha256": "23b8e6073556dccc475b3d35df2a669d732625617c002582736bbf64a672fee2",
+    "quarantine_ledger_sha256": "4a7b24340a535a59ab59420096e070c24e62715fda31220d584e18ece7393fc9"
+  },
+  "inventory_summary": {
+    "total_target_recordings": 130,
+    "recovered_recordings": 0,
+    "triaged_recordings": 130,
+    "unresolved_recordings": 130
+  },
+  "classification_summary": {
+    "VALID_GAPLESS_PADDING": 0,
+    "TRUNCATED_BITSTREAM": 0,
+    "INCONCLUSIVE": 0,
+    "UNRESOLVED_MISSING_FILE": 130
+  },
+  "strata_breakdown": {
+    "canada": {
+      "UNRESOLVED_MISSING_FILE": 73
+    },
+    "england": {
+      "UNRESOLVED_MISSING_FILE": 8
+    },
+    "australia": {
+      "UNRESOLVED_MISSING_FILE": 16
+    },
+    "us": {
+      "UNRESOLVED_MISSING_FILE": 33
+    }
+  },
+  "speaker_breakdown": {
+    "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde": {
+      "UNRESOLVED_MISSING_FILE": 14
+    },
+    "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34": {
+      "UNRESOLVED_MISSING_FILE": 8
+    },
+    "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe": {
+      "UNRESOLVED_MISSING_FILE": 6
+    },
+    "7456ec8b40142e1863ac5d241bfa1d7687fb9aa96941da3128bf4c4d81cdf2f9ab0e693f768047a1b87268a4612f4c5ecb52f23920e0fe146b04542d2c292148": {
+      "UNRESOLVED_MISSING_FILE": 5
+    },
+    "ce27be4356e370790325f2cdae755fcdbb0f030fcccd4b44ed5f7fe9eacde02682336c6e1c77ab0495348d39e66777bf27a1be3238ce5eb3d5cc3bd3bc9de9b2": {
+      "UNRESOLVED_MISSING_FILE": 1
+    },
+    "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f": {
+      "UNRESOLVED_MISSING_FILE": 15
+    },
+    "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276": {
+      "UNRESOLVED_MISSING_FILE": 15
+    },
+    "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157": {
+      "UNRESOLVED_MISSING_FILE": 14
+    },
+    "cde3a54cd80691eb0f10b60784fefe661d8702fb781c2fbf01acbb068ba67c197124c1a2d7ffa2b4e98c92a06cf5802398288a004ff61ad199e5203f27625087": {
+      "UNRESOLVED_MISSING_FILE": 2
+    },
+    "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4": {
+      "UNRESOLVED_MISSING_FILE": 10
+    },
+    "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e": {
+      "UNRESOLVED_MISSING_FILE": 10
+    },
+    "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b": {
+      "UNRESOLVED_MISSING_FILE": 15
+    },
+    "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033": {
+      "UNRESOLVED_MISSING_FILE": 15
+    }
+  },
+  "role_breakdown": {
+    "evaluation": {
+      "UNRESOLVED_MISSING_FILE": 130
+    }
+  },
+  "decoder_environments": {
+    "soundfile": {
+      "version": "0.14.0",
+      "libsndfile": "1.2.2"
+    },
+    "pyav": {
+      "version": "18.1.0",
+      "ffmpeg": "bundled-7.x"
+    },
+    "miniaudio": {
+      "version": "1.71",
+      "engine": "dr_mp3 1.71"
+    },
+    "custom_bitstream_parser": {
+      "version": "v1.5-frame-boundary-walker"
+    }
+  },
+  "shortfall_statistics": {
+    "min_shortfall_pcm_frames": null,
+    "median_shortfall_pcm_frames": null,
+    "max_shortfall_pcm_frames": null,
+    "samples_per_mpeg_frame": 1152
+  },
+  "per_clip_forensic_results": [
+    {
+      "clip_filename": "common_voice_en_21552119.mp3",
+      "recording_id": "common_voice_en_21552119",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21552237.mp3",
+      "recording_id": "common_voice_en_21552237",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21552848.mp3",
+      "recording_id": "common_voice_en_21552848",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21552934.mp3",
+      "recording_id": "common_voice_en_21552934",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21552955.mp3",
+      "recording_id": "common_voice_en_21552955",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21555318.mp3",
+      "recording_id": "common_voice_en_21555318",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21618908.mp3",
+      "recording_id": "common_voice_en_21618908",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "stratum_code": "england",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21618917.mp3",
+      "recording_id": "common_voice_en_21618917",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "stratum_code": "england",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21618933.mp3",
+      "recording_id": "common_voice_en_21618933",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "stratum_code": "england",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21618939.mp3",
+      "recording_id": "common_voice_en_21618939",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "stratum_code": "england",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21619008.mp3",
+      "recording_id": "common_voice_en_21619008",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "stratum_code": "england",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21619086.mp3",
+      "recording_id": "common_voice_en_21619086",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "stratum_code": "england",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21619095.mp3",
+      "recording_id": "common_voice_en_21619095",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "stratum_code": "england",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21619221.mp3",
+      "recording_id": "common_voice_en_21619221",
+      "speaker_id": "6bd1ea9a0ee8b95f14fa040dd1c3606b9743b2d18ee1e945511a46c9fa27d8647a30522a2f4a3da140a4a8949aee9936792dff9d37dbaf936f09210e291bfc34",
+      "accent_group": "England English",
+      "stratum_code": "england",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21636368.mp3",
+      "recording_id": "common_voice_en_21636368",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21636374.mp3",
+      "recording_id": "common_voice_en_21636374",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21637126.mp3",
+      "recording_id": "common_voice_en_21637126",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21638164.mp3",
+      "recording_id": "common_voice_en_21638164",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21766238.mp3",
+      "recording_id": "common_voice_en_21766238",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21853971.mp3",
+      "recording_id": "common_voice_en_21853971",
+      "speaker_id": "7456ec8b40142e1863ac5d241bfa1d7687fb9aa96941da3128bf4c4d81cdf2f9ab0e693f768047a1b87268a4612f4c5ecb52f23920e0fe146b04542d2c292148",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21907677.mp3",
+      "recording_id": "common_voice_en_21907677",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21907679.mp3",
+      "recording_id": "common_voice_en_21907679",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21907694.mp3",
+      "recording_id": "common_voice_en_21907694",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21937395.mp3",
+      "recording_id": "common_voice_en_21937395",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21937397.mp3",
+      "recording_id": "common_voice_en_21937397",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_21937398.mp3",
+      "recording_id": "common_voice_en_21937398",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22219005.mp3",
+      "recording_id": "common_voice_en_22219005",
+      "speaker_id": "ce27be4356e370790325f2cdae755fcdbb0f030fcccd4b44ed5f7fe9eacde02682336c6e1c77ab0495348d39e66777bf27a1be3238ce5eb3d5cc3bd3bc9de9b2",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22471468.mp3",
+      "recording_id": "common_voice_en_22471468",
+      "speaker_id": "40a73cb8df3dabffa294dace18c8b259fa645b15c697ca4d219b7358af0972c0778d36afe4e83e9599bb2dcb4d2808bffc7957e82a5388fc91cb30f3f753ddde",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480560.mp3",
+      "recording_id": "common_voice_en_22480560",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480595.mp3",
+      "recording_id": "common_voice_en_22480595",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480597.mp3",
+      "recording_id": "common_voice_en_22480597",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480618.mp3",
+      "recording_id": "common_voice_en_22480618",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480644.mp3",
+      "recording_id": "common_voice_en_22480644",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480645.mp3",
+      "recording_id": "common_voice_en_22480645",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480655.mp3",
+      "recording_id": "common_voice_en_22480655",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480706.mp3",
+      "recording_id": "common_voice_en_22480706",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480725.mp3",
+      "recording_id": "common_voice_en_22480725",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480726.mp3",
+      "recording_id": "common_voice_en_22480726",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480736.mp3",
+      "recording_id": "common_voice_en_22480736",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480743.mp3",
+      "recording_id": "common_voice_en_22480743",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480752.mp3",
+      "recording_id": "common_voice_en_22480752",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480757.mp3",
+      "recording_id": "common_voice_en_22480757",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22480783.mp3",
+      "recording_id": "common_voice_en_22480783",
+      "speaker_id": "803cfc546de755d2533c84bf4ecc40f9a0e1bb41cebb1ba0303656c5a0a3e252b093a29950a8a23963895192f50b8702f5daea58d2bbcc1cd8fabf74e775ee7f",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22545382.mp3",
+      "recording_id": "common_voice_en_22545382",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22545384.mp3",
+      "recording_id": "common_voice_en_22545384",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22545709.mp3",
+      "recording_id": "common_voice_en_22545709",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22545710.mp3",
+      "recording_id": "common_voice_en_22545710",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22545741.mp3",
+      "recording_id": "common_voice_en_22545741",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22545846.mp3",
+      "recording_id": "common_voice_en_22545846",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22545891.mp3",
+      "recording_id": "common_voice_en_22545891",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22545928.mp3",
+      "recording_id": "common_voice_en_22545928",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22545992.mp3",
+      "recording_id": "common_voice_en_22545992",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22546018.mp3",
+      "recording_id": "common_voice_en_22546018",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22546100.mp3",
+      "recording_id": "common_voice_en_22546100",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22546187.mp3",
+      "recording_id": "common_voice_en_22546187",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22710648.mp3",
+      "recording_id": "common_voice_en_22710648",
+      "speaker_id": "7456ec8b40142e1863ac5d241bfa1d7687fb9aa96941da3128bf4c4d81cdf2f9ab0e693f768047a1b87268a4612f4c5ecb52f23920e0fe146b04542d2c292148",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22764448.mp3",
+      "recording_id": "common_voice_en_22764448",
+      "speaker_id": "7456ec8b40142e1863ac5d241bfa1d7687fb9aa96941da3128bf4c4d81cdf2f9ab0e693f768047a1b87268a4612f4c5ecb52f23920e0fe146b04542d2c292148",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22800999.mp3",
+      "recording_id": "common_voice_en_22800999",
+      "speaker_id": "7456ec8b40142e1863ac5d241bfa1d7687fb9aa96941da3128bf4c4d81cdf2f9ab0e693f768047a1b87268a4612f4c5ecb52f23920e0fe146b04542d2c292148",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_22955751.mp3",
+      "recording_id": "common_voice_en_22955751",
+      "speaker_id": "7456ec8b40142e1863ac5d241bfa1d7687fb9aa96941da3128bf4c4d81cdf2f9ab0e693f768047a1b87268a4612f4c5ecb52f23920e0fe146b04542d2c292148",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23391167.mp3",
+      "recording_id": "common_voice_en_23391167",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23391197.mp3",
+      "recording_id": "common_voice_en_23391197",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23391204.mp3",
+      "recording_id": "common_voice_en_23391204",
+      "speaker_id": "fe778162f7b16b5dfc1177485eff2cde1ce2ce7f165c1eef9607fdc5457eeca369b8586bc02ad8224c38d3b132e52b0ba239ed0931d69bafa6b5cac9a7938276",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778799.mp3",
+      "recording_id": "common_voice_en_23778799",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778801.mp3",
+      "recording_id": "common_voice_en_23778801",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778802.mp3",
+      "recording_id": "common_voice_en_23778802",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778803.mp3",
+      "recording_id": "common_voice_en_23778803",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778804.mp3",
+      "recording_id": "common_voice_en_23778804",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778805.mp3",
+      "recording_id": "common_voice_en_23778805",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778806.mp3",
+      "recording_id": "common_voice_en_23778806",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778807.mp3",
+      "recording_id": "common_voice_en_23778807",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778808.mp3",
+      "recording_id": "common_voice_en_23778808",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778812.mp3",
+      "recording_id": "common_voice_en_23778812",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778813.mp3",
+      "recording_id": "common_voice_en_23778813",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778814.mp3",
+      "recording_id": "common_voice_en_23778814",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778817.mp3",
+      "recording_id": "common_voice_en_23778817",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23778819.mp3",
+      "recording_id": "common_voice_en_23778819",
+      "speaker_id": "f1229ca95b19472dd0b3891ddd0d3bdc6cd07c1d3c76be5415dd19d295421d0057b18e435d555ae875372010e94e8c411850d7d07f164cbe87362deb941ee157",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23790125.mp3",
+      "recording_id": "common_voice_en_23790125",
+      "speaker_id": "cde3a54cd80691eb0f10b60784fefe661d8702fb781c2fbf01acbb068ba67c197124c1a2d7ffa2b4e98c92a06cf5802398288a004ff61ad199e5203f27625087",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_23790132.mp3",
+      "recording_id": "common_voice_en_23790132",
+      "speaker_id": "cde3a54cd80691eb0f10b60784fefe661d8702fb781c2fbf01acbb068ba67c197124c1a2d7ffa2b4e98c92a06cf5802398288a004ff61ad199e5203f27625087",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_24735728.mp3",
+      "recording_id": "common_voice_en_24735728",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25074415.mp3",
+      "recording_id": "common_voice_en_25074415",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25097588.mp3",
+      "recording_id": "common_voice_en_25097588",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25108571.mp3",
+      "recording_id": "common_voice_en_25108571",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25141272.mp3",
+      "recording_id": "common_voice_en_25141272",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25321355.mp3",
+      "recording_id": "common_voice_en_25321355",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25321376.mp3",
+      "recording_id": "common_voice_en_25321376",
+      "speaker_id": "cbbf0b4896d532ed8bfad4d3a82e356c699d62cc1f88faaaae8cfeca06bb2376e81af1802e342dfedc6673c08b59d030e0892299d0d516938fc4b40c0b9396fe",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25381658.mp3",
+      "recording_id": "common_voice_en_25381658",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25526479.mp3",
+      "recording_id": "common_voice_en_25526479",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25555670.mp3",
+      "recording_id": "common_voice_en_25555670",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25725537.mp3",
+      "recording_id": "common_voice_en_25725537",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25725571.mp3",
+      "recording_id": "common_voice_en_25725571",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25725578.mp3",
+      "recording_id": "common_voice_en_25725578",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25725870.mp3",
+      "recording_id": "common_voice_en_25725870",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25726108.mp3",
+      "recording_id": "common_voice_en_25726108",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25726622.mp3",
+      "recording_id": "common_voice_en_25726622",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25726644.mp3",
+      "recording_id": "common_voice_en_25726644",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25726709.mp3",
+      "recording_id": "common_voice_en_25726709",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25726721.mp3",
+      "recording_id": "common_voice_en_25726721",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25757742.mp3",
+      "recording_id": "common_voice_en_25757742",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25926012.mp3",
+      "recording_id": "common_voice_en_25926012",
+      "speaker_id": "c93527a999538f482302e872dd967514d7ea61d7c225e5a251397aa6fc44662368f6edb0462d0b9b20aeb8bbeda5d43d3790ef0d41d9137937f5cdb6775e2d6e",
+      "accent_group": "US English",
+      "stratum_code": "us",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_25961826.mp3",
+      "recording_id": "common_voice_en_25961826",
+      "speaker_id": "444f2724cb023cafdcf5d2fb7ce6dc54356b23baaa77046030b534c8fae75f1fdbcd02c8a59953b0f43ba1f34b4aebf91132c9248cb9caf32abc58430ae377a4",
+      "accent_group": "Australian English",
+      "stratum_code": "australia",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155164.mp3",
+      "recording_id": "common_voice_en_28155164",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155174.mp3",
+      "recording_id": "common_voice_en_28155174",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155208.mp3",
+      "recording_id": "common_voice_en_28155208",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155259.mp3",
+      "recording_id": "common_voice_en_28155259",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155260.mp3",
+      "recording_id": "common_voice_en_28155260",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155266.mp3",
+      "recording_id": "common_voice_en_28155266",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155290.mp3",
+      "recording_id": "common_voice_en_28155290",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155301.mp3",
+      "recording_id": "common_voice_en_28155301",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155312.mp3",
+      "recording_id": "common_voice_en_28155312",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155318.mp3",
+      "recording_id": "common_voice_en_28155318",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155341.mp3",
+      "recording_id": "common_voice_en_28155341",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155364.mp3",
+      "recording_id": "common_voice_en_28155364",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155375.mp3",
+      "recording_id": "common_voice_en_28155375",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155408.mp3",
+      "recording_id": "common_voice_en_28155408",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_28155481.mp3",
+      "recording_id": "common_voice_en_28155481",
+      "speaker_id": "6083a85845fdb3aa937269d7193ae6c943edca3847c66e403e776e84a986fd1aae0796a6c33eb5970d1376e922b025cb22f53c30c164f97377dc72b44482fc9b",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36305366.mp3",
+      "recording_id": "common_voice_en_36305366",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36305367.mp3",
+      "recording_id": "common_voice_en_36305367",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36305462.mp3",
+      "recording_id": "common_voice_en_36305462",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36305527.mp3",
+      "recording_id": "common_voice_en_36305527",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36305579.mp3",
+      "recording_id": "common_voice_en_36305579",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36305686.mp3",
+      "recording_id": "common_voice_en_36305686",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36305697.mp3",
+      "recording_id": "common_voice_en_36305697",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36313875.mp3",
+      "recording_id": "common_voice_en_36313875",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36313887.mp3",
+      "recording_id": "common_voice_en_36313887",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36313908.mp3",
+      "recording_id": "common_voice_en_36313908",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36313909.mp3",
+      "recording_id": "common_voice_en_36313909",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36313921.mp3",
+      "recording_id": "common_voice_en_36313921",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36313934.mp3",
+      "recording_id": "common_voice_en_36313934",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36313939.mp3",
+      "recording_id": "common_voice_en_36313939",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    },
+    {
+      "clip_filename": "common_voice_en_36314183.mp3",
+      "recording_id": "common_voice_en_36314183",
+      "speaker_id": "7688224a9aabbb31664f901255c27981f24e5ef557fc3d1d530e95ba9a1bac367ed73b6ab5f3b21a5b92238c52bfc1bf9ee5b5276d2094093504a9974245f033",
+      "accent_group": "Canadian English",
+      "stratum_code": "canada",
+      "panel_role": "evaluation",
+      "raw_file_size_bytes": null,
+      "raw_sha256": null,
+      "forensic_classification": "UNRESOLVED_MISSING_FILE",
+      "classification_reasons": [
+        "Quarantine audio file not yet recovered from archive stream."
+      ]
+    }
+  ]
+}

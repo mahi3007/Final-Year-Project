@@ -1,0 +1,59 @@
+12:34:05 [INFO] ================================================================================
+12:34:05 [INFO] Stage 6M v1.5 — Task 7.7.1 Diagnostic MP3 Quarantine Retrieval
+12:34:05 [INFO] Governing Standard: Protocol Section 14.7 (Project-Lead Academic Authorization)
+12:34:05 [INFO] ================================================================================
+12:34:05 [INFO] [GOVERNANCE] Project-Lead authorization for diagnostic quarantine retrieval verified.
+12:34:05 [INFO] Loaded 130 quarantine targets across 13 speakers.
+12:34:05 [INFO] Initial scan: 0 / 130 files already recovered.
+12:34:05 [INFO] Wrote quarantine ledger CSV: C:\Users\venka\Downloads\final year project main\datasets\splits\stage6m_cohort3_quarantine_ledger.csv (SHA-256: 4a7b24340a535a59ab59420096e070c24e62715fda31220d584e18ece7393fc9)
+12:34:05 [INFO] Wrote quarantine report JSON: C:\Users\venka\Downloads\final year project main\reports\stage6m\stage6m_cohort3_task771_quarantine_retrieval.json
+12:34:05 [INFO] Wrote quarantine report MD: C:\Users\venka\Downloads\final year project main\reports\stage6m\stage6m_cohort3_task771_quarantine_retrieval.md
+12:34:05 [WARNING] [PARTIAL] Quarantine recovery incomplete: 0/130 files recovered.
+12:36:46 [INFO] ================================================================================
+12:36:46 [INFO] Stage 6M v1.5 — Task 7.7.1 Diagnostic MP3 Quarantine Retrieval
+12:36:46 [INFO] Governing Standard: Protocol Section 14.7 (Project-Lead Academic Authorization)
+12:36:46 [INFO] ================================================================================
+12:36:46 [INFO] [GOVERNANCE] Project-Lead authorization for diagnostic quarantine retrieval verified.
+12:36:46 [INFO] Loaded 130 quarantine targets across 13 speakers.
+12:36:46 [INFO] Initial scan: 0 / 130 files already recovered.
+12:36:54 [INFO] [QUARANTINE] Need to recover 130 / 130 rejected recordings from stream.
+12:37:45 [INFO] [QUARANTINE HB] elapsed=51s | members=6 | compressed_gb=0.05 GB | recovered=0/130 | remaining=130 | current=other.tsv
+12:39:33 [INFO] [QUARANTINE HB] elapsed=159s | members=10 | compressed_gb=0.17 GB | recovered=0/130 | remaining=130 | current=unvalidated_sentences.tsv
+12:41:14 [INFO] [QUARANTINE HB] elapsed=260s | members=12 | compressed_gb=0.32 GB | recovered=0/130 | remaining=130 | current=validated_sentences.tsv
+12:42:43 [INFO] [QUARANTINE HB] elapsed=349s | members=13 | compressed_gb=0.43 GB | recovered=0/130 | remaining=130 | current=common_voice_en_1.mp3
+12:43:14 [INFO] [QUARANTINE HB] elapsed=380s | members=1,110 | compressed_gb=0.47 GB | recovered=0/130 | remaining=130 | current=common_voice_en_100940.mp3
+12:43:45 [INFO] [QUARANTINE HB] elapsed=411s | members=2,189 | compressed_gb=0.51 GB | recovered=0/130 | remaining=130 | current=common_voice_en_101808.mp3
+12:44:16 [INFO] [QUARANTINE HB] elapsed=442s | members=3,513 | compressed_gb=0.55 GB | recovered=0/130 | remaining=130 | current=common_voice_en_102613.mp3
+12:44:48 [INFO] [QUARANTINE HB] elapsed=474s | members=4,752 | compressed_gb=0.59 GB | recovered=0/130 | remaining=130 | current=common_voice_en_103540.mp3
+12:45:18 [INFO] [QUARANTINE HB] elapsed=504s | members=6,112 | compressed_gb=0.63 GB | recovered=0/130 | remaining=130 | current=common_voice_en_1046.mp3
+12:45:49 [INFO] [QUARANTINE HB] elapsed=535s | members=7,491 | compressed_gb=0.68 GB | recovered=0/130 | remaining=130 | current=common_voice_en_105808.mp3
+12:46:19 [INFO] [QUARANTINE HB] elapsed=565s | members=9,192 | compressed_gb=0.73 GB | recovered=0/130 | remaining=130 | current=common_voice_en_107091.mp3
+12:46:50 [INFO] [QUARANTINE HB] elapsed=596s | members=10,579 | compressed_gb=0.78 GB | recovered=0/130 | remaining=130 | current=common_voice_en_108185.mp3
+12:47:20 [INFO] [QUARANTINE HB] elapsed=626s | members=11,568 | compressed_gb=0.81 GB | recovered=0/130 | remaining=130 | current=common_voice_en_108910.mp3
+12:47:51 [INFO] [QUARANTINE HB] elapsed=657s | members=12,978 | compressed_gb=0.85 GB | recovered=0/130 | remaining=130 | current=common_voice_en_110059.mp3
+12:48:22 [INFO] [QUARANTINE HB] elapsed=688s | members=14,283 | compressed_gb=0.90 GB | recovered=0/130 | remaining=130 | current=common_voice_en_111169.mp3
+12:48:53 [INFO] [QUARANTINE HB] elapsed=719s | members=15,874 | compressed_gb=0.94 GB | recovered=0/130 | remaining=130 | current=common_voice_en_112383.mp3
+12:49:24 [INFO] [QUARANTINE HB] elapsed=750s | members=17,322 | compressed_gb=0.99 GB | recovered=0/130 | remaining=130 | current=common_voice_en_11351635.mp3
+12:49:55 [INFO] [QUARANTINE HB] elapsed=781s | members=18,712 | compressed_gb=1.03 GB | recovered=0/130 | remaining=130 | current=common_voice_en_114377.mp3
+12:50:25 [INFO] [QUARANTINE HB] elapsed=811s | members=19,817 | compressed_gb=1.07 GB | recovered=0/130 | remaining=130 | current=common_voice_en_115341.mp3
+12:50:56 [INFO] [QUARANTINE HB] elapsed=842s | members=20,996 | compressed_gb=1.11 GB | recovered=0/130 | remaining=130 | current=common_voice_en_116346.mp3
+12:51:27 [INFO] [QUARANTINE HB] elapsed=873s | members=22,518 | compressed_gb=1.15 GB | recovered=0/130 | remaining=130 | current=common_voice_en_117511.mp3
+12:51:58 [INFO] [QUARANTINE HB] elapsed=904s | members=23,863 | compressed_gb=1.20 GB | recovered=0/130 | remaining=130 | current=common_voice_en_118330.mp3
+12:52:28 [INFO] [QUARANTINE HB] elapsed=934s | members=25,379 | compressed_gb=1.24 GB | recovered=0/130 | remaining=130 | current=common_voice_en_119572.mp3
+12:52:59 [INFO] [QUARANTINE HB] elapsed=965s | members=26,788 | compressed_gb=1.29 GB | recovered=0/130 | remaining=130 | current=common_voice_en_120790.mp3
+12:53:29 [INFO] [QUARANTINE HB] elapsed=995s | members=28,441 | compressed_gb=1.34 GB | recovered=0/130 | remaining=130 | current=common_voice_en_122120.mp3
+12:54:01 [INFO] [QUARANTINE HB] elapsed=1027s | members=29,907 | compressed_gb=1.38 GB | recovered=0/130 | remaining=130 | current=common_voice_en_123345.mp3
+12:54:32 [INFO] [QUARANTINE HB] elapsed=1058s | members=31,211 | compressed_gb=1.42 GB | recovered=0/130 | remaining=130 | current=common_voice_en_124483.mp3
+12:55:03 [INFO] [QUARANTINE HB] elapsed=1089s | members=32,755 | compressed_gb=1.47 GB | recovered=0/130 | remaining=130 | current=common_voice_en_125659.mp3
+12:55:34 [INFO] [QUARANTINE HB] elapsed=1120s | members=34,359 | compressed_gb=1.52 GB | recovered=0/130 | remaining=130 | current=common_voice_en_126752.mp3
+12:56:05 [INFO] [QUARANTINE HB] elapsed=1151s | members=35,941 | compressed_gb=1.57 GB | recovered=0/130 | remaining=130 | current=common_voice_en_128090.mp3
+12:56:36 [INFO] [QUARANTINE HB] elapsed=1182s | members=37,760 | compressed_gb=1.62 GB | recovered=0/130 | remaining=130 | current=common_voice_en_129601.mp3
+12:57:06 [INFO] [QUARANTINE HB] elapsed=1212s | members=39,248 | compressed_gb=1.67 GB | recovered=0/130 | remaining=130 | current=common_voice_en_130909.mp3
+12:57:37 [INFO] [QUARANTINE HB] elapsed=1243s | members=40,737 | compressed_gb=1.72 GB | recovered=0/130 | remaining=130 | current=common_voice_en_132188.mp3
+12:58:08 [INFO] [QUARANTINE HB] elapsed=1274s | members=42,478 | compressed_gb=1.77 GB | recovered=0/130 | remaining=130 | current=common_voice_en_1337046.mp3
+12:58:38 [INFO] [QUARANTINE HB] elapsed=1304s | members=44,001 | compressed_gb=1.82 GB | recovered=0/130 | remaining=130 | current=common_voice_en_134731.mp3
+12:59:09 [INFO] [QUARANTINE HB] elapsed=1335s | members=45,808 | compressed_gb=1.88 GB | recovered=0/130 | remaining=130 | current=common_voice_en_136187.mp3
+12:59:39 [INFO] [QUARANTINE HB] elapsed=1365s | members=47,484 | compressed_gb=1.93 GB | recovered=0/130 | remaining=130 | current=common_voice_en_137587.mp3
+13:00:10 [INFO] [QUARANTINE HB] elapsed=1396s | members=49,216 | compressed_gb=1.98 GB | recovered=0/130 | remaining=130 | current=common_voice_en_138818.mp3
+13:00:41 [INFO] [QUARANTINE HB] elapsed=1427s | members=50,739 | compressed_gb=2.03 GB | recovered=0/130 | remaining=130 | current=common_voice_en_140139.mp3
+13:01:12 [INFO] [QUARANTINE HB] elapsed=1458s | members=52,106 | compressed_gb=2.07 GB | recovered=0/130 | remaining=130 | current=common_voice_en_141274.mp3
