@@ -3,9 +3,9 @@
 > **DOCUMENT ID:** `STAGE6M_COHORT3_TASK771_QUARANTINE_RETRIEVAL`  
 > **TASK ID:** `TASK_7_7_1`  
 > **GOVERNING STANDARD:** Protocol Section 14.7 (*Project-Lead Academic Authorization*)  
-> **STATUS:** **QUARANTINE_RETRIEVAL_PARTIAL**  
-> **QUARANTINE LEDGER:** [`datasets/splits/stage6m_cohort3_quarantine_ledger.csv`](file:///C:\Users\venka\Downloads\final year project main\datasets\splits\stage6m_cohort3_quarantine_ledger.csv) (SHA-256: `4a7b24340a535a59ab59420096e070c24e62715fda31220d584e18ece7393fc9`)  
-> **TIMESTAMP (UTC):** 2026-11-05T07:04:05.825232+00:00  
+> **STATUS:** **QUARANTINE_RETRIEVAL_COMPLETE**  
+> **QUARANTINE LEDGER:** [`datasets/splits/stage6m_cohort3_quarantine_ledger.csv`](file:///C:\Users\venka\Downloads\final year project main\datasets\splits\stage6m_cohort3_quarantine_ledger.csv) (SHA-256: `4cdf48e008d0cd74e280d587d60e4021bea2c9e48b914b81e486cb16fb2314ce`)  
+> **TIMESTAMP (UTC):** 2026-11-05T20:24:17.828717+00:00  
 
 ---
 
@@ -14,16 +14,20 @@
 | Metric | Value | Required Target | Status |
 | :--- | :---: | :---: | :---: |
 | Quarantine Targets | 130 | 130 | - |
-| Recovered Original Recordings | 0 | 130 | INCOMPLETE |
-| Unique Incomplete Speakers | 0 | 13 | INCOMPLETE |
-| Missing Targets | 130 | 0 | FAIL |
-| Compressed Bytes Consumed | 0 B | - | - |
-| Tar Members Scanned | 0 | - | - |
-| Early Stream Termination | False | True | - |
+| Recovered Original Recordings | 130 | 130 | PASS |
+| Unique Incomplete Speakers | 13 | 13 | PASS |
+| Missing Targets | 0 | 0 | PASS |
+| Compressed Bytes Consumed | 71,016,615,616 B | - | - |
+| Tar Members Scanned | 1,889,282 | - | - |
+| Early Stream Termination | True | True | - |
 
 ### Strata Breakdown
 | Stratum | Target Files | Recovered Files | Status |
 | :--- | :---: | :---: | :---: |
+| Australian English | 16 | 16 | PASS |
+| Canadian English | 73 | 73 | PASS |
+| England English | 8 | 8 | PASS |
+| US English | 33 | 33 | PASS |
 
 ---
 

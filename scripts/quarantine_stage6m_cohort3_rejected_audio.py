@@ -172,11 +172,32 @@ def verify_quarantine_retrieval_authorization(
             f"Diagnostic quarantine audio retrieval blocked: unauthorized purpose '{purpose}'."
         )
 
-    # 4. Gating checks
+    # 4. Invariant boundaries
+    if auth_boundaries.get("substitutions_permitted") != 0:
+        raise PermissionError(
+            f"Diagnostic quarantine audio retrieval blocked: substitutions_permitted is "
+            f"'{auth_boundaries.get('substitutions_permitted')}' (expected 0)."
+        )
+    if auth_boundaries.get("manifest_modification") != "PROHIBITED":
+        raise PermissionError(
+            f"Diagnostic quarantine audio retrieval blocked: manifest_modification is "
+            f"'{auth_boundaries.get('manifest_modification')}' (expected 'PROHIBITED')."
+        )
+    if auth_boundaries.get("cohort_promotion") != "PROHIBITED":
+        raise PermissionError(
+            f"Diagnostic quarantine audio retrieval blocked: cohort_promotion is "
+            f"'{auth_boundaries.get('cohort_promotion')}' (expected 'PROHIBITED')."
+        )
+
+    # 5. Gating checks
     gating = auth_boundaries.get("execution_gating", {})
     if gating.get("quarantine_retrieval") != "AUTHORIZED_BY_PROJECT_LEAD":
         raise PermissionError(
             f"Diagnostic quarantine audio retrieval blocked: quarantine_retrieval gate is '{gating.get('quarantine_retrieval')}'."
+        )
+    if gating.get("forensic_triage") != "AUTHORIZED_BY_PROJECT_LEAD":
+        raise PermissionError(
+            f"Diagnostic quarantine audio retrieval blocked: forensic_triage gate is '{gating.get('forensic_triage')}'."
         )
     if gating.get("cohort_promotion") != "STRICTLY_PROHIBITED":
         raise PermissionError(
@@ -195,7 +216,7 @@ def verify_quarantine_retrieval_authorization(
             f"Diagnostic quarantine audio retrieval blocked: confirmatory_inference is '{gating.get('confirmatory_inference')}' (expected 'STRICTLY_BLOCKED')."
         )
 
-    # 5. Parent manifest SHA-256 check
+    # 6. Parent manifest SHA-256 check
     effective_manifest = Path(parent_manifest_path) if parent_manifest_path is not None else PARENT_MANIFEST_JSON
     if not effective_manifest.exists():
         raise PermissionError(
@@ -208,7 +229,14 @@ def verify_quarantine_retrieval_authorization(
             f"Manifest has digest '{actual_manifest_sha}' (expected '{APPROVED_PARENT_MANIFEST_SHA256}')."
         )
 
-    # 6. Targets list SHA-256 check
+    parent_manifest_info = data.get("parent_provisional_manifest", {})
+    if parent_manifest_info.get("sha256") != APPROVED_PARENT_MANIFEST_SHA256:
+        raise PermissionError(
+            f"Diagnostic quarantine audio retrieval blocked: parent manifest digest in decision "
+            f"'{parent_manifest_info.get('sha256')}' does not match approved '{APPROVED_PARENT_MANIFEST_SHA256}'."
+        )
+
+    # 7. Targets list SHA-256 and count check
     effective_targets = Path(targets_json_path) if targets_json_path is not None else QUARANTINE_TARGETS_JSON
     if not effective_targets.exists():
         raise PermissionError(
@@ -221,13 +249,43 @@ def verify_quarantine_retrieval_authorization(
             f"Artifact has digest '{actual_targets_sha}' (expected '{APPROVED_TARGETS_LIST_SHA256}')."
         )
 
-    # 7. Destination directory check
+    quarantine_targets_info = data.get("quarantine_target_list", {})
+    if quarantine_targets_info.get("sha256") != APPROVED_TARGETS_LIST_SHA256:
+        raise PermissionError(
+            f"Diagnostic quarantine audio retrieval blocked: quarantine targets digest in decision "
+            f"'{quarantine_targets_info.get('sha256')}' does not match approved '{APPROVED_TARGETS_LIST_SHA256}'."
+        )
+    if quarantine_targets_info.get("target_recordings_count") != TOTAL_QUARANTINE_TARGETS:
+        raise PermissionError(
+            f"Diagnostic quarantine audio retrieval blocked: quarantine targets count in decision "
+            f"'{quarantine_targets_info.get('target_recordings_count')}' does not match expected {TOTAL_QUARANTINE_TARGETS}."
+        )
+
+    # 8. Source dataset checks
+    src_dataset = data.get("source_dataset", {})
+    if src_dataset.get("dataset_id") != DATASET_ID:
+        raise PermissionError(
+            f"Diagnostic quarantine audio retrieval blocked: source dataset ID is '{src_dataset.get('dataset_id')}' (expected '{DATASET_ID}')."
+        )
+    if src_dataset.get("platform") != "Mozilla Data Collective (MDC)":
+        raise PermissionError(
+            f"Diagnostic quarantine audio retrieval blocked: source platform is '{src_dataset.get('platform')}' (expected 'Mozilla Data Collective (MDC)')."
+        )
+
+    # 9. Destination directory check
     authorized_dest = (PROJECT_ROOT / APPROVED_QUARANTINE_DEST_REL).resolve()
     effective_dest = Path(destination_dir).resolve() if destination_dir is not None else QUARANTINE_DIR.resolve()
     if effective_dest != authorized_dest:
         raise PermissionError(
             f"Diagnostic quarantine audio retrieval blocked: destination directory mismatch. "
             f"Requested destination '{effective_dest}' does not match authorized quarantine destination '{authorized_dest}'."
+        )
+
+    quarantine_dest_info = data.get("quarantine_destination", {})
+    if quarantine_dest_info.get("directory_rel") != APPROVED_QUARANTINE_DEST_REL:
+        raise PermissionError(
+            f"Diagnostic quarantine audio retrieval blocked: destination directory in decision "
+            f"'{quarantine_dest_info.get('directory_rel')}' does not match approved '{APPROVED_QUARANTINE_DEST_REL}'."
         )
 
 
@@ -244,6 +302,74 @@ def load_quarantine_targets(targets_json_path: Path = QUARANTINE_TARGETS_JSON) -
     return records, target_map
 
 
+def validate_archive_member_path(member_name: str, target_map: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+    """
+    Validates archive member path format against expected Common Voice tar hierarchy.
+    Expected format: cv-corpus-27.0-2024-12-06/en/clips/{clip_filename} or clips/{clip_filename}.
+    Returns: (is_valid, clip_filename)
+    """
+    if ".." in member_name or member_name.startswith("/"):
+        return False, None
+    parts = member_name.split("/")
+    if len(parts) < 2:
+        return False, None
+    if parts[-2] != "clips":
+        return False, None
+    clip_filename = parts[-1]
+    if not clip_filename.endswith(".mp3"):
+        return False, None
+    if clip_filename not in target_map:
+        return False, None
+    return True, clip_filename
+
+
+def extract_tar_member_to_file(
+    tar: tarfile.TarFile,
+    member: tarfile.TarInfo,
+    dest_file: Path,
+) -> Tuple[int, str]:
+    """
+    Extracts raw bytes from tar member to destination file via atomic .part file with exact byte verification.
+    Rejects zero-byte members and ensures byte-for-byte fidelity.
+    Returns: (bytes_written, sha256_hex)
+    """
+    if member.size <= 0:
+        raise ValueError(f"Refusing to extract zero-byte archive member: {member.name}")
+
+    dest_file.parent.mkdir(parents=True, exist_ok=True)
+    part_file = dest_file.with_name(f"{dest_file.name}.part")
+
+    extracted_f = tar.extractfile(member)
+    if extracted_f is None:
+        raise IOError(f"Failed to open archive member for reading: {member.name}")
+
+    hasher = hashlib.sha256()
+    bytes_written = 0
+    try:
+        with open(part_file, "wb") as out_f:
+            while True:
+                chunk = extracted_f.read(65536)
+                if not chunk:
+                    break
+                out_f.write(chunk)
+                hasher.update(chunk)
+                bytes_written += len(chunk)
+
+        if bytes_written != member.size:
+            part_file.unlink(missing_ok=True)
+            raise IOError(
+                f"Byte count mismatch extracting {member.name}: wrote {bytes_written} bytes, tar declared {member.size} bytes."
+            )
+
+        # Atomic rename after complete byte validation
+        part_file.replace(dest_file)
+    except Exception:
+        part_file.unlink(missing_ok=True)
+        raise
+
+    return bytes_written, hasher.hexdigest()
+
+
 def scan_quarantine_inventory(
     target_map: Dict[str, Dict[str, Any]],
     quarantine_dir: Path,
@@ -252,7 +378,10 @@ def scan_quarantine_inventory(
     quarantine_dir.mkdir(parents=True, exist_ok=True)
     recovered_inv: Dict[str, Dict[str, Any]] = {}
     for p in quarantine_dir.glob("*.mp3"):
-        if p.name in target_map and p.stat().st_size > 0:
+        if p.name in target_map:
+            sz = p.stat().st_size
+            if sz == 0:
+                raise ValueError(f"Unverified zero-byte file detected in quarantine: {p.name}")
             target_row = target_map[p.name]
             h = compute_sha256(p)
             recovered_inv[p.name] = {
@@ -263,9 +392,11 @@ def scan_quarantine_inventory(
                 "stratum_code": target_row["stratum_code"],
                 "panel_role": target_row["panel_role"],
                 "local_path": safe_rel_path(p),
-                "file_size_bytes": p.stat().st_size,
+                "file_size_bytes": sz,
                 "sha256": h,
             }
+        else:
+            raise ValueError(f"Unexpected foreign file in quarantine directory: {p.name}")
     return recovered_inv
 
 
@@ -299,6 +430,7 @@ def recover_quarantine_from_stream(
     t_last_hb = t_start
     member_no = 0
     early_exit = False
+    seen_archive_members: set[str] = set()
 
     resilient = ThreadedResilientGzipStream(DATASET_ID, plan_getter)
     buffered = io.BufferedReader(resilient, buffer_size=16 * 1024 * 1024)
@@ -325,43 +457,25 @@ def recover_quarantine_from_stream(
                     logger.info(f"[QUARANTINE] Max execution duration {max_duration_seconds}s reached. Pausing stream.")
                     break
 
-                if "clips/" not in name or not member.isfile():
+                is_valid_member, base_name = validate_archive_member_path(name, target_map)
+                if not is_valid_member or not member.isfile():
                     continue
 
-                base_name = name.rsplit("/", 1)[-1]
+                if name in seen_archive_members:
+                    raise ValueError(f"Ambiguous duplicate archive member detected in tar stream: {name}")
+                seen_archive_members.add(name)
+
+                if base_name in recovered_inv and base_name not in remaining:
+                    raise ValueError(f"Ambiguous duplicate clip member detected across stream: {name} (clip {base_name} already recovered)")
+
                 if base_name not in remaining:
                     continue
 
                 target_row = remaining[base_name]
                 rec_id = target_row["recording_id"]
                 dest_file = quarantine_dir / base_name
-                part_file = quarantine_dir / f"{base_name}.part"
 
-                extracted_f = tar.extractfile(member)
-                if extracted_f is None:
-                    continue
-
-                # Stream raw bytes to temporary .part file
-                hasher = hashlib.sha256()
-                bytes_written = 0
-                with open(part_file, "wb") as out_f:
-                    while True:
-                        chunk = extracted_f.read(65536)
-                        if not chunk:
-                            break
-                        out_f.write(chunk)
-                        hasher.update(chunk)
-                        bytes_written += len(chunk)
-
-                if bytes_written != member.size:
-                    part_file.unlink(missing_ok=True)
-                    raise IOError(
-                        f"Byte count mismatch extracting {base_name}: wrote {bytes_written} bytes, tar declared {member.size} bytes."
-                    )
-
-                # Atomic rename after complete byte validation
-                part_file.replace(dest_file)
-                h = hasher.hexdigest()
+                bytes_written, h = extract_tar_member_to_file(tar, member, dest_file)
 
                 item = {
                     "recording_id": rec_id,
@@ -373,6 +487,11 @@ def recover_quarantine_from_stream(
                     "local_path": safe_rel_path(dest_file),
                     "file_size_bytes": bytes_written,
                     "sha256": h,
+                    "source_member_path": name,
+                    "archive_provenance": {
+                        "dataset_id": DATASET_ID,
+                        "member_size_bytes": member.size,
+                    },
                 }
                 recovered_inv[base_name] = item
                 del remaining[base_name]
