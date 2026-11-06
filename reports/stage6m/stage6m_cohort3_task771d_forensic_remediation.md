@@ -1,4 +1,4 @@
-﻿# Stage 6M Task 7.7.1D â€” MP3 Forensic Engine Remediation Report
+# Stage 6M Task 7.7.1D — MP3 Forensic Engine Remediation Report
 
 **Document ID:** `STAGE6M_COHORT3_TASK771D_FORENSIC_REMEDIATION`<br>
 **Governing Standard:** Protocol Section 14.7 (Project-Lead Academic Authorization)<br>
