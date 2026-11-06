@@ -163,27 +163,66 @@ def test_gapless_metadata_prevalence(assessment_json_data):
 
 
 # -----------------------------------------------------------------------------
-# Test 6: ID3v2 Tag Estimation Artifact Explanation
+# Test 6: ID3v2 Tag Estimation Artifact & Complete Histogram Reconciliation
 # -----------------------------------------------------------------------------
 def test_id3v2_tag_estimation_artifact(assessment_json_data):
     acc_sum = assessment_json_data["summary"]["accepted_population"]
-    top_counts = acc_sum["shortfall_top_counts"]
+    dist = acc_sum["shortfall_exact_distribution"]
 
     # In 48 kHz / 64 kbps mono (192 B/frame, 1152 samples/frame):
     # 33-byte tag -> (33 / 192) * 1152 = 198 samples
     # 161-byte tag -> (161 / 192) * 1152 = 966 samples
-    assert "198" in top_counts or 198 in top_counts, "198-sample shortfall cluster must exist"
-    assert "966" in top_counts or 966 in top_counts, "966-sample shortfall cluster must exist"
+    assert "198" in dist or 198 in dist, "198-sample shortfall cluster must exist"
+    assert "966" in dist or 966 in dist, "966-sample shortfall cluster must exist"
+
+    # Complete 11-category histogram reconciliation (18,845 / 18,845)
+    # Categories: 270, 198, 240, 966, 852, 757, 917, 778, 880, 1063, 933
+    expected_categories = {"270", "198", "240", "966", "852", "757", "917", "778", "880", "1063", "933"}
+    actual_categories = {str(k) for k in dist.keys()}
+    assert actual_categories == expected_categories, f"Categories mismatch: {actual_categories ^ expected_categories}"
+
+    total_histogram_sum = sum(dist.values())
+    assert total_histogram_sum == TOTAL_ACCEPTED_RECORDINGS, (
+        f"Accepted histogram sum {total_histogram_sum} != {TOTAL_ACCEPTED_RECORDINGS}"
+    )
+
+    # 11th category verification: delta = 933, 1 recording (common_voice_en_25353615.mp3)
+    assert dist.get("933", dist.get(933)) == 1, "Category 933 must contain exactly 1 recording"
 
 
 # -----------------------------------------------------------------------------
-# Test 7: Potential False-Rejection Candidates Qualification (Refinements A & C)
+# Test 7: Potential False-Rejection Candidates Qualification & Quarantine Range
 # -----------------------------------------------------------------------------
 def test_false_rejection_candidate_classification(assessment_json_data):
     fr = assessment_json_data["summary"]["false_rejection_analysis"]
     assert fr["potential_candidates_count"] == TOTAL_QUARANTINED_RECORDINGS
+    assert fr["structurally_complete_current_files_count"] == TOTAL_QUARANTINED_RECORDINGS
+    assert fr["successfully_decoded_current_files_count"] == TOTAL_QUARANTINED_RECORDINGS
+    assert fr["authoritative_original_duration_references_count"] == 0
     assert fr["proven_false_rejections_count"] == 0, "Must NOT claim proven false rejections without master"
     assert "POTENTIAL" in fr["qualification"].upper()
+
+    # Reconciled quarantined shortfall range: 1,296 to 2,979 PCM sample frames (40.50 ms to 67.551 ms)
+    quar_sum = assessment_json_data["summary"]["quarantined_population"]
+    assert quar_sum["shortfall_pcm_frames_min"] == 1296
+    assert quar_sum["shortfall_pcm_frames_max"] == 2979
+    assert fr.get("census_shortfall_pcm_frames_min") == 1296
+    assert fr.get("census_shortfall_pcm_frames_max") == 2979
+    assert fr.get("census_shortfall_duration_ms_min") == 40.5
+    assert fr.get("census_shortfall_duration_ms_max") == 67.551
+
+    # Named min/max files with verified sample rates and exact shortfalls
+    min_rec = fr.get("min_shortfall_recording", {})
+    max_rec = fr.get("max_shortfall_recording", {})
+    assert min_rec.get("clip_filename") == "common_voice_en_25321355.mp3"
+    assert min_rec.get("sample_rate") == 32000
+    assert min_rec.get("shortfall_pcm_frames") == 1296
+    assert min_rec.get("shortfall_duration_ms") == 40.5
+
+    assert max_rec.get("clip_filename") == "common_voice_en_21907677.mp3"
+    assert max_rec.get("sample_rate") == 44100
+    assert max_rec.get("shortfall_pcm_frames") == 2979
+    assert max_rec.get("shortfall_duration_ms") == 67.551
 
 
 # -----------------------------------------------------------------------------
@@ -202,7 +241,7 @@ def test_false_acceptance_risk_qualification(assessment_json_data, assessment_md
 
 
 # -----------------------------------------------------------------------------
-# Test 9: Strategy Evaluation Across All 18,975 Recordings
+# Test 9: Strategy Evaluation Across All 18,975 Recordings (Correction B & E)
 # -----------------------------------------------------------------------------
 def test_strategy_evaluation_metrics(assessment_json_data):
     acc_sum = assessment_json_data["summary"]["accepted_population"]
@@ -216,13 +255,15 @@ def test_strategy_evaluation_metrics(assessment_json_data):
     assert acc_sum["strategy_b_outcomes"].get("PASS") == TOTAL_ACCEPTED_RECORDINGS
     assert quar_sum["strategy_b_outcomes"].get("PASS") == TOTAL_QUARANTINED_RECORDINGS
 
-    # Strategy C (Metadata-Aware Rule)
-    assert acc_sum["strategy_c_outcomes"].get("PASS") == TOTAL_ACCEPTED_RECORDINGS
-    assert quar_sum["strategy_c_outcomes"].get("PASS") == TOTAL_QUARANTINED_RECORDINGS
+    # Strategy C (Metadata-Aware Rule: origin unverified, admission HOLD)
+    assert acc_sum["strategy_c_outcomes"].get("STRUCTURAL_PASS_ORIGIN_UNVERIFIED") == TOTAL_ACCEPTED_RECORDINGS
+    assert quar_sum["strategy_c_outcomes"].get("STRUCTURAL_PASS_ORIGIN_UNVERIFIED") == TOTAL_QUARANTINED_RECORDINGS
+    assert quar_sum["strategy_c_admission_dispositions"].get("HOLD") == TOTAL_QUARANTINED_RECORDINGS
 
-    # Strategy D (Multi-Evidence Rule)
-    assert acc_sum["strategy_d_outcomes"].get("PASS") == TOTAL_ACCEPTED_RECORDINGS
-    assert quar_sum["strategy_d_outcomes"].get("PASS") == TOTAL_QUARANTINED_RECORDINGS
+    # Strategy D (Multi-Evidence Rule: research rec, structural PASS, origin UNVERIFIED, admission HOLD)
+    assert acc_sum["strategy_d_outcomes"].get("STRUCTURAL_PASS_ORIGIN_UNVERIFIED") == TOTAL_ACCEPTED_RECORDINGS
+    assert quar_sum["strategy_d_outcomes"].get("STRUCTURAL_PASS_ORIGIN_UNVERIFIED") == TOTAL_QUARANTINED_RECORDINGS
+    assert quar_sum["strategy_d_admission_dispositions"].get("HOLD") == TOTAL_QUARANTINED_RECORDINGS
 
 
 # -----------------------------------------------------------------------------
