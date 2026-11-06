@@ -216,7 +216,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (186 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (214272 PCM samples, exactly matching 100% physical frame capacity of 214272 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (214272 PCM samples, exactly matching 100% physical frame capacity of 214272 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1977 frames between container header estimate (216249) and decoded samples (214272) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -324,7 +324,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (182 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (209664 PCM samples, exactly matching 100% physical frame capacity of 209664 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (209664 PCM samples, exactly matching 100% physical frame capacity of 209664 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1955 frames between container header estimate (211619) and decoded samples (209664) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -432,7 +432,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (227 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (261504 PCM samples, exactly matching 100% physical frame capacity of 261504 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (261504 PCM samples, exactly matching 100% physical frame capacity of 261504 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2198 frames between container header estimate (263702) and decoded samples (261504) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -540,7 +540,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (188 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (216576 PCM samples, exactly matching 100% physical frame capacity of 216576 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (216576 PCM samples, exactly matching 100% physical frame capacity of 216576 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1988 frames between container header estimate (218564) and decoded samples (216576) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -648,7 +648,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (209 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (240768 PCM samples, exactly matching 100% physical frame capacity of 240768 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (240768 PCM samples, exactly matching 100% physical frame capacity of 240768 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2099 frames between container header estimate (242867) and decoded samples (240768) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -756,7 +756,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (194 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (223488 PCM samples, exactly matching 100% physical frame capacity of 223488 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (223488 PCM samples, exactly matching 100% physical frame capacity of 223488 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2021 frames between container header estimate (225509) and decoded samples (223488) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -864,7 +864,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (180 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (207360 PCM samples, exactly matching 100% physical frame capacity of 207360 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (207360 PCM samples, exactly matching 100% physical frame capacity of 207360 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1921 frames between container header estimate (209281) and decoded samples (207360) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -972,7 +972,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (115 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (132480 PCM samples, exactly matching 100% physical frame capacity of 132480 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (132480 PCM samples, exactly matching 100% physical frame capacity of 132480 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1567 frames between container header estimate (134047) and decoded samples (132480) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -1080,7 +1080,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (198 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (228096 PCM samples, exactly matching 100% physical frame capacity of 228096 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (228096 PCM samples, exactly matching 100% physical frame capacity of 228096 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2016 frames between container header estimate (230112) and decoded samples (228096) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -1188,7 +1188,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (151 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (173952 PCM samples, exactly matching 100% physical frame capacity of 173952 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (173952 PCM samples, exactly matching 100% physical frame capacity of 173952 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1761 frames between container header estimate (175713) and decoded samples (173952) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -1296,7 +1296,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (227 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (261504 PCM samples, exactly matching 100% physical frame capacity of 261504 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (261504 PCM samples, exactly matching 100% physical frame capacity of 261504 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2176 frames between container header estimate (263680) and decoded samples (261504) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -1404,7 +1404,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (223 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (256896 PCM samples, exactly matching 100% physical frame capacity of 256896 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (256896 PCM samples, exactly matching 100% physical frame capacity of 256896 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2154 frames between container header estimate (259050) and decoded samples (256896) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -1512,7 +1512,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (148 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (170496 PCM samples, exactly matching 100% physical frame capacity of 170496 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (170496 PCM samples, exactly matching 100% physical frame capacity of 170496 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1744 frames between container header estimate (172240) and decoded samples (170496) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -1620,7 +1620,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (141 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (162432 PCM samples, exactly matching 100% physical frame capacity of 162432 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (162432 PCM samples, exactly matching 100% physical frame capacity of 162432 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1711 frames between container header estimate (164143) and decoded samples (162432) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -1728,7 +1728,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (213 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (245376 PCM samples, exactly matching 100% physical frame capacity of 245376 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (245376 PCM samples, exactly matching 100% physical frame capacity of 245376 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2497 frames between container header estimate (247873) and decoded samples (245376) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -1836,7 +1836,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (209 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (240768 PCM samples, exactly matching 100% physical frame capacity of 240768 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (240768 PCM samples, exactly matching 100% physical frame capacity of 240768 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2475 frames between container header estimate (243243) and decoded samples (240768) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -1944,7 +1944,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (201 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (231552 PCM samples, exactly matching 100% physical frame capacity of 231552 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (231552 PCM samples, exactly matching 100% physical frame capacity of 231552 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2431 frames between container header estimate (233983) and decoded samples (231552) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -2052,7 +2052,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (171 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (196992 PCM samples, exactly matching 100% physical frame capacity of 196992 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (196992 PCM samples, exactly matching 100% physical frame capacity of 196992 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2270 frames between container header estimate (199262) and decoded samples (196992) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -2160,7 +2160,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (354 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (407808 PCM samples, exactly matching 100% physical frame capacity of 407808 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (407808 PCM samples, exactly matching 100% physical frame capacity of 407808 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2885 frames between container header estimate (410693) and decoded samples (407808) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -2268,7 +2268,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (220 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (253440 PCM samples, exactly matching 100% physical frame capacity of 253440 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (253440 PCM samples, exactly matching 100% physical frame capacity of 253440 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1440 frames between container header estimate (254880) and decoded samples (253440) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -2376,7 +2376,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (371 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (427392 PCM samples, exactly matching 100% physical frame capacity of 427392 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (427392 PCM samples, exactly matching 100% physical frame capacity of 427392 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2979 frames between container header estimate (430371) and decoded samples (427392) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -2484,7 +2484,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (198 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (228096 PCM samples, exactly matching 100% physical frame capacity of 228096 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (228096 PCM samples, exactly matching 100% physical frame capacity of 228096 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2038 frames between container header estimate (230134) and decoded samples (228096) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -2592,7 +2592,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (259 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (298368 PCM samples, exactly matching 100% physical frame capacity of 298368 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (298368 PCM samples, exactly matching 100% physical frame capacity of 298368 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2370 frames between container header estimate (300738) and decoded samples (298368) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -2700,7 +2700,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (269 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (309888 PCM samples, exactly matching 100% physical frame capacity of 309888 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (309888 PCM samples, exactly matching 100% physical frame capacity of 309888 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2425 frames between container header estimate (312313) and decoded samples (309888) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -2808,7 +2808,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (151 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (173952 PCM samples, exactly matching 100% physical frame capacity of 173952 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (173952 PCM samples, exactly matching 100% physical frame capacity of 173952 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1783 frames between container header estimate (175735) and decoded samples (173952) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -2916,7 +2916,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (262 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (301824 PCM samples, exactly matching 100% physical frame capacity of 301824 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (301824 PCM samples, exactly matching 100% physical frame capacity of 301824 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2387 frames between container header estimate (304211) and decoded samples (301824) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -3024,7 +3024,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (174 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (200448 PCM samples, exactly matching 100% physical frame capacity of 200448 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (200448 PCM samples, exactly matching 100% physical frame capacity of 200448 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2475 frames between container header estimate (202923) and decoded samples (200448) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -3132,7 +3132,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (225 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (259200 PCM samples, exactly matching 100% physical frame capacity of 259200 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (259200 PCM samples, exactly matching 100% physical frame capacity of 259200 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2187 frames between container header estimate (261387) and decoded samples (259200) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -3240,7 +3240,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (225 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (259200 PCM samples, exactly matching 100% physical frame capacity of 259200 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (259200 PCM samples, exactly matching 100% physical frame capacity of 259200 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2165 frames between container header estimate (261365) and decoded samples (259200) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -3348,7 +3348,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (186 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (214272 PCM samples, exactly matching 100% physical frame capacity of 214272 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (214272 PCM samples, exactly matching 100% physical frame capacity of 214272 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1955 frames between container header estimate (216227) and decoded samples (214272) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -3456,7 +3456,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (105 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (120960 PCM samples, exactly matching 100% physical frame capacity of 120960 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (120960 PCM samples, exactly matching 100% physical frame capacity of 120960 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1512 frames between container header estimate (122472) and decoded samples (120960) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -3564,7 +3564,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (219 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (252288 PCM samples, exactly matching 100% physical frame capacity of 252288 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (252288 PCM samples, exactly matching 100% physical frame capacity of 252288 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2132 frames between container header estimate (254420) and decoded samples (252288) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -3672,7 +3672,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (223 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (256896 PCM samples, exactly matching 100% physical frame capacity of 256896 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (256896 PCM samples, exactly matching 100% physical frame capacity of 256896 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2154 frames between container header estimate (259050) and decoded samples (256896) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -3780,7 +3780,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (116 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (133632 PCM samples, exactly matching 100% physical frame capacity of 133632 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (133632 PCM samples, exactly matching 100% physical frame capacity of 133632 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1572 frames between container header estimate (135204) and decoded samples (133632) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -3888,7 +3888,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (199 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (229248 PCM samples, exactly matching 100% physical frame capacity of 229248 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (229248 PCM samples, exactly matching 100% physical frame capacity of 229248 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2021 frames between container header estimate (231269) and decoded samples (229248) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -3996,7 +3996,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (157 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (180864 PCM samples, exactly matching 100% physical frame capacity of 180864 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (180864 PCM samples, exactly matching 100% physical frame capacity of 180864 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1794 frames between container header estimate (182658) and decoded samples (180864) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -4104,7 +4104,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (241 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (277632 PCM samples, exactly matching 100% physical frame capacity of 277632 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (277632 PCM samples, exactly matching 100% physical frame capacity of 277632 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2254 frames between container header estimate (279886) and decoded samples (277632) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -4212,7 +4212,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (227 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (261504 PCM samples, exactly matching 100% physical frame capacity of 261504 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (261504 PCM samples, exactly matching 100% physical frame capacity of 261504 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2176 frames between container header estimate (263680) and decoded samples (261504) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -4320,7 +4320,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (213 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (245376 PCM samples, exactly matching 100% physical frame capacity of 245376 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (245376 PCM samples, exactly matching 100% physical frame capacity of 245376 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2099 frames between container header estimate (247475) and decoded samples (245376) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -4428,7 +4428,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (192 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (221184 PCM samples, exactly matching 100% physical frame capacity of 221184 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (221184 PCM samples, exactly matching 100% physical frame capacity of 221184 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1988 frames between container header estimate (223172) and decoded samples (221184) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -4536,7 +4536,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (129 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (148608 PCM samples, exactly matching 100% physical frame capacity of 148608 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (148608 PCM samples, exactly matching 100% physical frame capacity of 148608 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1644 frames between container header estimate (150252) and decoded samples (148608) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -4644,7 +4644,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (220 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (253440 PCM samples, exactly matching 100% physical frame capacity of 253440 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (253440 PCM samples, exactly matching 100% physical frame capacity of 253440 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2137 frames between container header estimate (255577) and decoded samples (253440) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -4752,7 +4752,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (156 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (179712 PCM samples, exactly matching 100% physical frame capacity of 179712 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (179712 PCM samples, exactly matching 100% physical frame capacity of 179712 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1788 frames between container header estimate (181500) and decoded samples (179712) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -4860,7 +4860,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (122 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (140544 PCM samples, exactly matching 100% physical frame capacity of 140544 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (140544 PCM samples, exactly matching 100% physical frame capacity of 140544 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1611 frames between container header estimate (142155) and decoded samples (140544) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -4968,7 +4968,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (187 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (215424 PCM samples, exactly matching 100% physical frame capacity of 215424 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (215424 PCM samples, exactly matching 100% physical frame capacity of 215424 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1966 frames between container header estimate (217390) and decoded samples (215424) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -5076,7 +5076,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (180 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (207360 PCM samples, exactly matching 100% physical frame capacity of 207360 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (207360 PCM samples, exactly matching 100% physical frame capacity of 207360 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1927 frames between container header estimate (209287) and decoded samples (207360) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -5184,7 +5184,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (185 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (213120 PCM samples, exactly matching 100% physical frame capacity of 213120 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (213120 PCM samples, exactly matching 100% physical frame capacity of 213120 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1955 frames between container header estimate (215075) and decoded samples (213120) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -5292,7 +5292,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (227 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (261504 PCM samples, exactly matching 100% physical frame capacity of 261504 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (261504 PCM samples, exactly matching 100% physical frame capacity of 261504 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2182 frames between container header estimate (263686) and decoded samples (261504) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -5400,7 +5400,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (166 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (191232 PCM samples, exactly matching 100% physical frame capacity of 191232 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (191232 PCM samples, exactly matching 100% physical frame capacity of 191232 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1849 frames between container header estimate (193081) and decoded samples (191232) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -5508,7 +5508,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (212 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (244224 PCM samples, exactly matching 100% physical frame capacity of 244224 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (244224 PCM samples, exactly matching 100% physical frame capacity of 244224 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2099 frames between container header estimate (246323) and decoded samples (244224) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -5616,7 +5616,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (168 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (193536 PCM samples, exactly matching 100% physical frame capacity of 193536 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (193536 PCM samples, exactly matching 100% physical frame capacity of 193536 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1860 frames between container header estimate (195396) and decoded samples (193536) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -5724,7 +5724,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (121 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (139392 PCM samples, exactly matching 100% physical frame capacity of 139392 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (139392 PCM samples, exactly matching 100% physical frame capacity of 139392 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1606 frames between container header estimate (140998) and decoded samples (139392) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -5832,7 +5832,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (191 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (220032 PCM samples, exactly matching 100% physical frame capacity of 220032 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (220032 PCM samples, exactly matching 100% physical frame capacity of 220032 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1988 frames between container header estimate (222020) and decoded samples (220032) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -5940,7 +5940,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (200 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (230400 PCM samples, exactly matching 100% physical frame capacity of 230400 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (230400 PCM samples, exactly matching 100% physical frame capacity of 230400 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2032 frames between container header estimate (232432) and decoded samples (230400) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -6048,7 +6048,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (159 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (183168 PCM samples, exactly matching 100% physical frame capacity of 183168 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (183168 PCM samples, exactly matching 100% physical frame capacity of 183168 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1811 frames between container header estimate (184979) and decoded samples (183168) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -6156,7 +6156,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (238 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (274176 PCM samples, exactly matching 100% physical frame capacity of 274176 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (274176 PCM samples, exactly matching 100% physical frame capacity of 274176 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1539 frames between container header estimate (275715) and decoded samples (274176) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -6264,7 +6264,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (245 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (282240 PCM samples, exactly matching 100% physical frame capacity of 282240 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (282240 PCM samples, exactly matching 100% physical frame capacity of 282240 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1578 frames between container header estimate (283818) and decoded samples (282240) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -6372,7 +6372,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (211 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (243072 PCM samples, exactly matching 100% physical frame capacity of 243072 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (243072 PCM samples, exactly matching 100% physical frame capacity of 243072 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1390 frames between container header estimate (244462) and decoded samples (243072) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -6480,7 +6480,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (199 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (229248 PCM samples, exactly matching 100% physical frame capacity of 229248 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (229248 PCM samples, exactly matching 100% physical frame capacity of 229248 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1323 frames between container header estimate (230571) and decoded samples (229248) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -6588,7 +6588,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (119 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (137088 PCM samples, exactly matching 100% physical frame capacity of 137088 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (137088 PCM samples, exactly matching 100% physical frame capacity of 137088 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1595 frames between container header estimate (138683) and decoded samples (137088) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -6696,7 +6696,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (196 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (225792 PCM samples, exactly matching 100% physical frame capacity of 225792 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (225792 PCM samples, exactly matching 100% physical frame capacity of 225792 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2016 frames between container header estimate (227808) and decoded samples (225792) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -6804,7 +6804,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (201 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (231552 PCM samples, exactly matching 100% physical frame capacity of 231552 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (231552 PCM samples, exactly matching 100% physical frame capacity of 231552 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2038 frames between container header estimate (233590) and decoded samples (231552) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -6912,7 +6912,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (169 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (194688 PCM samples, exactly matching 100% physical frame capacity of 194688 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (194688 PCM samples, exactly matching 100% physical frame capacity of 194688 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1866 frames between container header estimate (196554) and decoded samples (194688) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -7020,7 +7020,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (203 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (233856 PCM samples, exactly matching 100% physical frame capacity of 233856 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (233856 PCM samples, exactly matching 100% physical frame capacity of 233856 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2049 frames between container header estimate (235905) and decoded samples (233856) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -7128,7 +7128,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (152 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (175104 PCM samples, exactly matching 100% physical frame capacity of 175104 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (175104 PCM samples, exactly matching 100% physical frame capacity of 175104 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1772 frames between container header estimate (176876) and decoded samples (175104) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -7236,7 +7236,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (147 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (169344 PCM samples, exactly matching 100% physical frame capacity of 169344 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (169344 PCM samples, exactly matching 100% physical frame capacity of 169344 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1750 frames between container header estimate (171094) and decoded samples (169344) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -7344,7 +7344,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (233 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (268416 PCM samples, exactly matching 100% physical frame capacity of 268416 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (268416 PCM samples, exactly matching 100% physical frame capacity of 268416 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2215 frames between container header estimate (270631) and decoded samples (268416) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -7452,7 +7452,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (274 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (315648 PCM samples, exactly matching 100% physical frame capacity of 315648 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (315648 PCM samples, exactly matching 100% physical frame capacity of 315648 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2436 frames between container header estimate (318084) and decoded samples (315648) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -7560,7 +7560,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (221 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (254592 PCM samples, exactly matching 100% physical frame capacity of 254592 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (254592 PCM samples, exactly matching 100% physical frame capacity of 254592 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2148 frames between container header estimate (256740) and decoded samples (254592) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -7668,7 +7668,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (177 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (203904 PCM samples, exactly matching 100% physical frame capacity of 203904 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (203904 PCM samples, exactly matching 100% physical frame capacity of 203904 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1910 frames between container header estimate (205814) and decoded samples (203904) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -7776,7 +7776,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (302 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (347904 PCM samples, exactly matching 100% physical frame capacity of 347904 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (347904 PCM samples, exactly matching 100% physical frame capacity of 347904 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2586 frames between container header estimate (350490) and decoded samples (347904) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -7884,7 +7884,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (217 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (249984 PCM samples, exactly matching 100% physical frame capacity of 249984 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (249984 PCM samples, exactly matching 100% physical frame capacity of 249984 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2126 frames between container header estimate (252110) and decoded samples (249984) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -7992,7 +7992,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (188 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (216576 PCM samples, exactly matching 100% physical frame capacity of 216576 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (216576 PCM samples, exactly matching 100% physical frame capacity of 216576 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1971 frames between container header estimate (218547) and decoded samples (216576) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -8100,7 +8100,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (92 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (105984 PCM samples, exactly matching 100% physical frame capacity of 105984 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (105984 PCM samples, exactly matching 100% physical frame capacity of 105984 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1451 frames between container header estimate (107435) and decoded samples (105984) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -8208,7 +8208,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (139 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (160128 PCM samples, exactly matching 100% physical frame capacity of 160128 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (160128 PCM samples, exactly matching 100% physical frame capacity of 160128 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1705 frames between container header estimate (161833) and decoded samples (160128) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -8316,7 +8316,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (249 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (286848 PCM samples, exactly matching 100% physical frame capacity of 286848 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (286848 PCM samples, exactly matching 100% physical frame capacity of 286848 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2298 frames between container header estimate (289146) and decoded samples (286848) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -8424,7 +8424,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (167 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (192384 PCM samples, exactly matching 100% physical frame capacity of 192384 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (192384 PCM samples, exactly matching 100% physical frame capacity of 192384 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2337 frames between container header estimate (194721) and decoded samples (192384) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -8532,7 +8532,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (185 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (213120 PCM samples, exactly matching 100% physical frame capacity of 213120 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (213120 PCM samples, exactly matching 100% physical frame capacity of 213120 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 2436 frames between container header estimate (215556) and decoded samples (213120) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -8640,7 +8640,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (162 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (186624 PCM samples, exactly matching 100% physical frame capacity of 186624 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (186624 PCM samples, exactly matching 100% physical frame capacity of 186624 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1365 frames between container header estimate (187989) and decoded samples (186624) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -8748,7 +8748,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (101 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (116352 PCM samples, exactly matching 100% physical frame capacity of 116352 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (116352 PCM samples, exactly matching 100% physical frame capacity of 116352 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1365 frames between container header estimate (117717) and decoded samples (116352) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -8856,7 +8856,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (133 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (153216 PCM samples, exactly matching 100% physical frame capacity of 153216 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (153216 PCM samples, exactly matching 100% physical frame capacity of 153216 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1365 frames between container header estimate (154581) and decoded samples (153216) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -8964,7 +8964,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (187 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (215424 PCM samples, exactly matching 100% physical frame capacity of 215424 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (215424 PCM samples, exactly matching 100% physical frame capacity of 215424 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1365 frames between container header estimate (216789) and decoded samples (215424) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -9072,7 +9072,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (58 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (66816 PCM samples, exactly matching 100% physical frame capacity of 66816 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (66816 PCM samples, exactly matching 100% physical frame capacity of 66816 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1365 frames between container header estimate (68181) and decoded samples (66816) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -9180,7 +9180,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (167 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (192384 PCM samples, exactly matching 100% physical frame capacity of 192384 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (192384 PCM samples, exactly matching 100% physical frame capacity of 192384 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1296 frames between container header estimate (193680) and decoded samples (192384) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -9288,7 +9288,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (92 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (105984 PCM samples, exactly matching 100% physical frame capacity of 105984 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (105984 PCM samples, exactly matching 100% physical frame capacity of 105984 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1296 frames between container header estimate (107280) and decoded samples (105984) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -9396,7 +9396,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (111 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (127872 PCM samples, exactly matching 100% physical frame capacity of 127872 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (127872 PCM samples, exactly matching 100% physical frame capacity of 127872 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1365 frames between container header estimate (129237) and decoded samples (127872) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -9504,7 +9504,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (151 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (173952 PCM samples, exactly matching 100% physical frame capacity of 173952 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (173952 PCM samples, exactly matching 100% physical frame capacity of 173952 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1365 frames between container header estimate (175317) and decoded samples (173952) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -9612,7 +9612,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (156 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (179712 PCM samples, exactly matching 100% physical frame capacity of 179712 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (179712 PCM samples, exactly matching 100% physical frame capacity of 179712 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1365 frames between container header estimate (181077) and decoded samples (179712) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -9720,7 +9720,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (89 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (102528 PCM samples, exactly matching 100% physical frame capacity of 102528 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (102528 PCM samples, exactly matching 100% physical frame capacity of 102528 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (103909) and decoded samples (102528) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -9828,7 +9828,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (95 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (109440 PCM samples, exactly matching 100% physical frame capacity of 109440 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (109440 PCM samples, exactly matching 100% physical frame capacity of 109440 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (110821) and decoded samples (109440) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -9936,7 +9936,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (184 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (211968 PCM samples, exactly matching 100% physical frame capacity of 211968 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (211968 PCM samples, exactly matching 100% physical frame capacity of 211968 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (213349) and decoded samples (211968) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -10044,7 +10044,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (87 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (100224 PCM samples, exactly matching 100% physical frame capacity of 100224 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (100224 PCM samples, exactly matching 100% physical frame capacity of 100224 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (101605) and decoded samples (100224) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -10152,7 +10152,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (92 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (105984 PCM samples, exactly matching 100% physical frame capacity of 105984 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (105984 PCM samples, exactly matching 100% physical frame capacity of 105984 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (107365) and decoded samples (105984) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -10260,7 +10260,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (150 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (172800 PCM samples, exactly matching 100% physical frame capacity of 172800 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (172800 PCM samples, exactly matching 100% physical frame capacity of 172800 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (174181) and decoded samples (172800) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -10368,7 +10368,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (147 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (169344 PCM samples, exactly matching 100% physical frame capacity of 169344 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (169344 PCM samples, exactly matching 100% physical frame capacity of 169344 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (170725) and decoded samples (169344) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -10476,7 +10476,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (110 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (126720 PCM samples, exactly matching 100% physical frame capacity of 126720 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (126720 PCM samples, exactly matching 100% physical frame capacity of 126720 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (128101) and decoded samples (126720) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -10584,7 +10584,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (174 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (200448 PCM samples, exactly matching 100% physical frame capacity of 200448 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (200448 PCM samples, exactly matching 100% physical frame capacity of 200448 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (201829) and decoded samples (200448) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -10692,7 +10692,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (151 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (173952 PCM samples, exactly matching 100% physical frame capacity of 173952 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (173952 PCM samples, exactly matching 100% physical frame capacity of 173952 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1365 frames between container header estimate (175317) and decoded samples (173952) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -10800,7 +10800,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (178 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (205056 PCM samples, exactly matching 100% physical frame capacity of 205056 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (205056 PCM samples, exactly matching 100% physical frame capacity of 205056 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (206437) and decoded samples (205056) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -10908,7 +10908,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (163 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (187776 PCM samples, exactly matching 100% physical frame capacity of 187776 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (187776 PCM samples, exactly matching 100% physical frame capacity of 187776 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1365 frames between container header estimate (189141) and decoded samples (187776) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -11016,7 +11016,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (114 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (131328 PCM samples, exactly matching 100% physical frame capacity of 131328 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (131328 PCM samples, exactly matching 100% physical frame capacity of 131328 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (132709) and decoded samples (131328) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -11124,7 +11124,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (129 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (148608 PCM samples, exactly matching 100% physical frame capacity of 148608 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (148608 PCM samples, exactly matching 100% physical frame capacity of 148608 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (149989) and decoded samples (148608) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -11232,7 +11232,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (141 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (162432 PCM samples, exactly matching 100% physical frame capacity of 162432 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (162432 PCM samples, exactly matching 100% physical frame capacity of 162432 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (163813) and decoded samples (162432) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -11340,7 +11340,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (156 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (179712 PCM samples, exactly matching 100% physical frame capacity of 179712 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (179712 PCM samples, exactly matching 100% physical frame capacity of 179712 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (181093) and decoded samples (179712) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -11448,7 +11448,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (163 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (187776 PCM samples, exactly matching 100% physical frame capacity of 187776 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (187776 PCM samples, exactly matching 100% physical frame capacity of 187776 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (189157) and decoded samples (187776) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -11556,7 +11556,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (109 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (125568 PCM samples, exactly matching 100% physical frame capacity of 125568 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (125568 PCM samples, exactly matching 100% physical frame capacity of 125568 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (126949) and decoded samples (125568) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -11664,7 +11664,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (89 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (102528 PCM samples, exactly matching 100% physical frame capacity of 102528 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (102528 PCM samples, exactly matching 100% physical frame capacity of 102528 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (103909) and decoded samples (102528) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -11772,7 +11772,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (143 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (164736 PCM samples, exactly matching 100% physical frame capacity of 164736 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (164736 PCM samples, exactly matching 100% physical frame capacity of 164736 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (166117) and decoded samples (164736) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -11880,7 +11880,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (130 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (149760 PCM samples, exactly matching 100% physical frame capacity of 149760 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (149760 PCM samples, exactly matching 100% physical frame capacity of 149760 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (151141) and decoded samples (149760) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -11988,7 +11988,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (205 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (236160 PCM samples, exactly matching 100% physical frame capacity of 236160 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (236160 PCM samples, exactly matching 100% physical frame capacity of 236160 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (237541) and decoded samples (236160) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -12096,7 +12096,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (189 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (217728 PCM samples, exactly matching 100% physical frame capacity of 217728 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (217728 PCM samples, exactly matching 100% physical frame capacity of 217728 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (219109) and decoded samples (217728) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -12204,7 +12204,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (177 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (203904 PCM samples, exactly matching 100% physical frame capacity of 203904 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (203904 PCM samples, exactly matching 100% physical frame capacity of 203904 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (205285) and decoded samples (203904) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -12312,7 +12312,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (169 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (194688 PCM samples, exactly matching 100% physical frame capacity of 194688 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (194688 PCM samples, exactly matching 100% physical frame capacity of 194688 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (196069) and decoded samples (194688) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -12420,7 +12420,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (179 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (206208 PCM samples, exactly matching 100% physical frame capacity of 206208 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (206208 PCM samples, exactly matching 100% physical frame capacity of 206208 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (207589) and decoded samples (206208) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -12528,7 +12528,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (107 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (123264 PCM samples, exactly matching 100% physical frame capacity of 123264 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (123264 PCM samples, exactly matching 100% physical frame capacity of 123264 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1381 frames between container header estimate (124645) and decoded samples (123264) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -12636,7 +12636,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (180 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (207360 PCM samples, exactly matching 100% physical frame capacity of 207360 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (207360 PCM samples, exactly matching 100% physical frame capacity of 207360 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (208746) and decoded samples (207360) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -12744,7 +12744,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (110 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (126720 PCM samples, exactly matching 100% physical frame capacity of 126720 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (126720 PCM samples, exactly matching 100% physical frame capacity of 126720 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (128106) and decoded samples (126720) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -12852,7 +12852,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (136 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (156672 PCM samples, exactly matching 100% physical frame capacity of 156672 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (156672 PCM samples, exactly matching 100% physical frame capacity of 156672 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (158058) and decoded samples (156672) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -12960,7 +12960,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (113 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (130176 PCM samples, exactly matching 100% physical frame capacity of 130176 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (130176 PCM samples, exactly matching 100% physical frame capacity of 130176 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (131562) and decoded samples (130176) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -13068,7 +13068,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (146 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (168192 PCM samples, exactly matching 100% physical frame capacity of 168192 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (168192 PCM samples, exactly matching 100% physical frame capacity of 168192 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (169578) and decoded samples (168192) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -13176,7 +13176,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (197 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (226944 PCM samples, exactly matching 100% physical frame capacity of 226944 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (226944 PCM samples, exactly matching 100% physical frame capacity of 226944 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (228330) and decoded samples (226944) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -13284,7 +13284,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (195 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (224640 PCM samples, exactly matching 100% physical frame capacity of 224640 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (224640 PCM samples, exactly matching 100% physical frame capacity of 224640 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (226026) and decoded samples (224640) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -13392,7 +13392,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (90 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (103680 PCM samples, exactly matching 100% physical frame capacity of 103680 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (103680 PCM samples, exactly matching 100% physical frame capacity of 103680 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (105066) and decoded samples (103680) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -13500,7 +13500,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (120 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (138240 PCM samples, exactly matching 100% physical frame capacity of 138240 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (138240 PCM samples, exactly matching 100% physical frame capacity of 138240 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (139626) and decoded samples (138240) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -13608,7 +13608,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (155 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (178560 PCM samples, exactly matching 100% physical frame capacity of 178560 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (178560 PCM samples, exactly matching 100% physical frame capacity of 178560 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (179946) and decoded samples (178560) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -13716,7 +13716,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (120 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (138240 PCM samples, exactly matching 100% physical frame capacity of 138240 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (138240 PCM samples, exactly matching 100% physical frame capacity of 138240 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (139626) and decoded samples (138240) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -13824,7 +13824,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (113 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (130176 PCM samples, exactly matching 100% physical frame capacity of 130176 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (130176 PCM samples, exactly matching 100% physical frame capacity of 130176 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (131562) and decoded samples (130176) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -13932,7 +13932,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (131 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (150912 PCM samples, exactly matching 100% physical frame capacity of 150912 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (150912 PCM samples, exactly matching 100% physical frame capacity of 150912 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (152298) and decoded samples (150912) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -14040,7 +14040,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (131 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (150912 PCM samples, exactly matching 100% physical frame capacity of 150912 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (150912 PCM samples, exactly matching 100% physical frame capacity of 150912 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (152298) and decoded samples (150912) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."
@@ -14148,7 +14148,7 @@
       "forensic_classification": "INCONCLUSIVE",
       "classification_reasons": [
         "Physical MPEG bitstream is complete (133 frames, 0 trailing bytes).",
-        "Exact sample agreement across all 3 independent decoders (153216 PCM samples, exactly matching 100% physical frame capacity of 153216 samples).",
+        "Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) (153216 PCM samples, exactly matching 100% physical frame capacity of 153216 samples).",
         "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
         "Observed shortfall of 1386 frames between container header estimate (154602) and decoded samples (153216) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
         "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification."

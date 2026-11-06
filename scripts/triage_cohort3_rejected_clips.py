@@ -27,21 +27,25 @@ Architecture & Standards:
    - Inspects LAME/Lavf/Lavc extension tag: encoder string, 12-bit encoder delay, 12-bit encoder padding.
    - Reconciles metadata against physical frame capacity and decoded PCM sample counts.
 
-4. Genuinely Independent Decoders:
-   - Decoder 1: PyAV (FFmpeg 7.x libavformat/libavcodec)
-   - Decoder 2: miniaudio (dr_mp3 1.71 single-header independent decoder)
-   - Decoder 3: SoundFile (libsndfile 1.2.2 / libmpg123)
-   - Parser 4: Custom Python MPEG bitstream parser (structural frame validation without PCM decoding)
+4. Decoding Paths and Structural Inspection:
+   - Production decoding path: SoundFile (libsndfile 1.2.2 / libmpg123)
+   - Alternative decoding path 1: PyAV (FFmpeg 7.x libavformat/libavcodec)
+   - Alternative decoding path 2: miniaudio (dr_mp3 1.71 single-header C decoder)
+   - Structural inspection: Custom Python MPEG bitstream parser (frame boundary walking;
+     not a PCM decoder)
 
 5. Deterministic Forensic Classifications:
    - VALID_GAPLESS_PADDING:
        Complete physical MPEG frames, valid sequential frame boundaries to EOF, zero truncation,
-       credible gapless metadata / encoder padding, successful independent decoding across PyAV
-       and miniaudio without error, sample shortfall explained by encoder delay/padding.
+       credible gapless metadata / encoder padding, successful decoding across all three paths
+       without error, sample shortfall explained by encoder delay/padding.
    - TRUNCATED_BITSTREAM:
-       Physical frame truncation, incomplete final frame, corrupt sync header, or decoder decoding failure.
+       Physical MPEG-frame structural failure established by the structural parser: an incomplete
+       final frame, broken synchronization, or unexpected trailing bytes after the last frame.
+       A decoder failure without independently established physical truncation does NOT qualify.
    - INCONCLUSIVE:
-       Missing or contradictory metadata, conflicting decoders, or ambiguous frame boundaries.
+       Missing or contradictory metadata, conflicting decoders, decoder failure without physical
+       structural evidence, or ambiguous frame boundaries.
 
 Auditable Deliverables:
 -----------------------
@@ -721,7 +725,7 @@ def perform_single_file_forensic_triage(
     # 3. Physical MPEG bitstream scan
     frame_scan = inspect_mpeg_physical_frames(raw_bytes, audio_offset)
 
-    # 4. Independent decoders
+    # 4. Decoding paths (production + two alternatives)
     dec_sf = decode_with_soundfile(file_path)
     dec_av = decode_with_pyav(file_path)
     dec_ma = decode_with_miniaudio(file_path)
@@ -841,7 +845,7 @@ def perform_single_file_forensic_triage(
             reasons = [
                 f"Complete physical MPEG frames verified ({frame_scan['total_physical_frames']} frames, zero truncation).",
                 f"Zero physical frame truncation; clean sync boundaries maintained to EOF.",
-                f"Exact sample agreement across all 3 independent decoders ({sf_pcm_frames} samples).",
+                f"Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) ({sf_pcm_frames} samples).",
                 f"Credible LAME gapless metadata validated at Frame 0 (delay={delay}, padding={padding}, total trim {total_gapless_trim} samples).",
                 f"Shortfall of {measured_shortfall} PCM samples reconciles with encoder gapless padding.",
             ]
@@ -849,7 +853,7 @@ def perform_single_file_forensic_triage(
             classification = "INCONCLUSIVE"
             reasons = [
                 f"Physical MPEG bitstream is complete ({frame_scan['total_physical_frames']} frames, 0 trailing bytes).",
-                f"Exact sample agreement across all 3 independent decoders ({sf_pcm_frames} PCM samples, exactly matching 100% physical frame capacity of {physical_capacity} samples).",
+                f"Exact sample agreement across all 3 decoding paths (SoundFile/libsndfile/libmpg123, FFmpeg/PyAV, dr_mp3/miniaudio) ({sf_pcm_frames} PCM samples, exactly matching 100% physical frame capacity of {physical_capacity} samples).",
                 "However, credible gapless metadata (Frame 0 Xing/Info header with LAME delay/padding) is ABSENT.",
                 f"Observed shortfall of {measured_shortfall} frames between container header estimate ({sf_declared}) and decoded samples ({sf_pcm_frames}) is an unconfirmed container duration artifact rather than bitstream-reconciled gapless padding.",
                 "Under Protocol Section 14.7 strict evidentiary rules, absence of verified gapless metadata precludes VALID_GAPLESS_PADDING classification.",
@@ -1020,13 +1024,13 @@ def generate_forensic_reports(
         f"| **Target Rejected Recordings** | **{total_targets}** | Total rejected cohort recordings from Task 7.7 |",
         f"| **Recovered Quarantine Files** | **{recovered_count}** | Byte-verified files present in diagnostic quarantine |",
         f"| **VALID_GAPLESS_PADDING** | **{class_counts.get('VALID_GAPLESS_PADDING', 0)}** | Supported by complete frames, valid gapless tag, and numerical proof |",
-        f"| **TRUNCATED_BITSTREAM** | **{class_counts.get('TRUNCATED_BITSTREAM', 0)}** | Physical frame truncation, broken sync, or decoder failure |",
+        f"| **TRUNCATED_BITSTREAM** | **{class_counts.get('TRUNCATED_BITSTREAM', 0)}** | Physical MPEG-frame structural failure established by the structural parser (incomplete final frame, broken synchronization, or unexpected trailing bytes) |",
         f"| **INCONCLUSIVE** | **{class_counts.get('INCONCLUSIVE', 0)}** | Complete frames & decoder agreement, but gapless metadata absent |",
         f"| **UNRESOLVED_MISSING_FILE** | **{class_counts.get('UNRESOLVED_MISSING_FILE', 0)}** | Archive members unrecovered |",
         "",
         "### Key Forensic Findings:",
         f"1. **Complete Physical MPEG Bitstream Integrity:** Across all {recovered_count} recovered recordings, sequential physical frame boundary walking verified that 100% of physical frames are complete MPEG-1 Layer III frames with valid sync words (0xFFE/0xFFF), valid bitrates/samplerates, and 0 trailing bytes.",
-        f"2. **Multi-Decoder Cross-Validation:** Independent decoding across SoundFile (chunked PCM counting), FFmpeg (PyAV), and dr_mp3 (miniaudio) decoded the exact sample frames with zero errors. All {reconciled_pcm_count} files fully reconciled decoded samples with physical frame capacity ($N_{{\\text{{frames}}}} \\times 1152$).",
+        f"2. **Multi-Path Decoding Cross-Validation:** Three decoding paths were compared: the production SoundFile/libsndfile/libmpg123 path and two alternative implementations using FFmpeg/PyAV and dr_mp3/miniaudio. A separate custom Python MPEG parser was used for structural inspection. All three decoding paths decoded the exact sample frames with zero errors; all {reconciled_pcm_count} files fully reconciled decoded samples with physical frame capacity ($N_{{\\text{{frames}}}} \\times 1152$).",
         f"3. **Bitrate Distribution & Absence of Frame 0 Gapless Metadata:** Sequential frame-by-frame parsing verified that all {recovered_count} recordings exhibit 100% constant bitrate across every frame ({bitrate_summary.get(64, 0)} recordings at 64 kbps CBR, {bitrate_summary.get(48, 0)} recordings at 48 kbps CBR; 0 VBR). Crucially, none of the {recovered_count} recordings contain a Xing/Info header or LAME delay/padding tag at Frame 0.",
         f"4. **Root Cause of Task 7.7 Shortfall:** The shortfall observed in Task 7.7 (range {min_sf} to {max_sf} PCM samples, median {median_sf}) is a container estimation artifact in `libsndfile` (`reader.frames` estimating track duration from file size and un-scanned header assumptions before streaming), not physical bitstream truncation.",
         f"5. **Strict Evidentiary Preclusion of VALID_GAPLESS_PADDING:** Because gapless metadata is absent, the shortfalls cannot be numerically reconciled against LAME delay/padding. Under Protocol Section 14.7 strict evidentiary rules, these recordings are classified as **INCONCLUSIVE**, preventing premature authorization of Option A or premature modification of the production validator.",
@@ -1067,10 +1071,10 @@ def generate_forensic_reports(
         "",
         "| Tool | Version / Engine | Role | Decoding Outcome |",
         "|:---|:---|:---|:---|",
-        f"| **FFmpeg (PyAV)** | `av {av.__version__}` (FFmpeg 7.x) | Independent PCM Decoder | Zero packet errors |",
-        f"| **dr_mp3 (miniaudio)** | `miniaudio {miniaudio.__version__}` (dr_mp3 1.71) | Independent C Single-Header Decoder | Exact sample match with FFmpeg |",
-        f"| **libsndfile / mpg123** | `soundfile {sf.__version__}` (libsndfile {getattr(sf, '__libsndfile_version__', '1.2.2')}) | Bounded-Memory Chunk Decoder | Exact sample match with FFmpeg & dr_mp3 |",
-        "| **Custom Frame Parser** | Python bitstream frame-boundary walker | Structural Validation | 100% physical frame integrity |",
+        f"| **SoundFile / libsndfile / libmpg123** | `soundfile {sf.__version__}` (libsndfile {getattr(sf, '__libsndfile_version__', '1.2.2')}) | **Production decoding path** used by the validator | Exact sample match with both alternatives |",
+        f"| **FFmpeg (PyAV)** | `av {av.__version__}` (FFmpeg 7.x) | Alternative decoding path | Zero packet errors; exact sample match with production path |",
+        f"| **dr_mp3 (miniaudio)** | `miniaudio {miniaudio.__version__}` (dr_mp3 1.71) | Alternative decoding path | Exact sample match with production path and FFmpeg/PyAV |",
+        "| **Custom Python MPEG parser** | Python bitstream frame-boundary walker | Structural inspection (not a PCM decoder) | 100% physical frame integrity verified |",
         "",
         "---",
         "",

@@ -1,4 +1,4 @@
-# Stage 6M Task 7.7.1D — MP3 Forensic Engine Remediation Report
+﻿# Stage 6M Task 7.7.1D â€” MP3 Forensic Engine Remediation Report
 
 **Document ID:** `STAGE6M_COHORT3_TASK771D_FORENSIC_REMEDIATION`<br>
 **Governing Standard:** Protocol Section 14.7 (Project-Lead Academic Authorization)<br>
@@ -13,7 +13,7 @@
 | **Target Rejected Recordings** | **130** | Total rejected cohort recordings from Task 7.7 |
 | **Recovered Quarantine Files** | **130** | Byte-verified files present in diagnostic quarantine |
 | **VALID_GAPLESS_PADDING** | **0** | Supported by complete frames, valid gapless tag, and numerical proof |
-| **TRUNCATED_BITSTREAM** | **0** | Physical frame truncation, broken sync, or decoder failure |
+| **TRUNCATED_BITSTREAM** | **0** | Physical MPEG-frame structural failure established by the structural parser (incomplete final frame, broken synchronization, or unexpected trailing bytes) |
 | **INCONCLUSIVE** | **130** | Complete frames & decoder agreement, but gapless metadata absent |
 | **UNRESOLVED_MISSING_FILE** | **0** | Archive members unrecovered |
 

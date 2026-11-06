@@ -586,3 +586,78 @@ def test_all_130_quarantined_files_physical_and_decoder_consensus():
 
     # Exactly 78 at 64 kbps, 52 at 48 kbps
     assert bitrate_counts == {64: 78, 48: 52}
+
+
+# ============================================================================
+# 7. Report-Description Accuracy (Task 7.7.1D Documentation Cleanup)
+# ============================================================================
+
+def test_truncated_bitstream_description_does_not_mention_decoder_failure():
+    """
+    The TRUNCATED_BITSTREAM classification description in the script module-level
+    docstring must refer only to physical structural evidence established by the
+    structural parser.  It must NOT list decoder failure as a *positive* reason
+    for physical truncation.  The docstring may mention decoder failure only to
+    clarify that it does NOT qualify as physical truncation evidence.
+    Decoder failure alone maps to INCONCLUSIVE (see
+    test_decoder_failure_without_physical_truncation_yields_inconclusive).
+    """
+    import scripts.triage_cohort3_rejected_clips as _mod
+    docstring = _mod.__doc__ or ""
+    # The description block for TRUNCATED_BITSTREAM must be present
+    assert "TRUNCATED_BITSTREAM" in docstring, "TRUNCATED_BITSTREAM block missing from module docstring"
+    # Grab the text between TRUNCATED_BITSTREAM and the next classification label
+    trunc_block_start = docstring.index("TRUNCATED_BITSTREAM")
+    trunc_block_end = docstring.index("INCONCLUSIVE", trunc_block_start)
+    trunc_block = docstring[trunc_block_start:trunc_block_end]
+    # Old (wrong) framing listed decoder failure as a positive reason.
+    # The corrected docstring may mention "decoder failure" only in a negation clause
+    # ("does NOT qualify").  Reject the old framing explicitly.
+    old_positive_framings = [
+        "or decoder decoding failure",
+        "or decoder failure",
+        ", or decoder failure",
+    ]
+    for bad_phrase in old_positive_framings:
+        assert bad_phrase.lower() not in trunc_block.lower(), (
+            f"TRUNCATED_BITSTREAM description must not list decoder failure as physical "
+            f"evidence (found old framing: {bad_phrase!r}). "
+            "Decoder failure without physical truncation must classify as INCONCLUSIVE."
+        )
+    # Positive check: the block must state that decoder failure does NOT qualify.
+    assert "does not qualify" in trunc_block.lower(), (
+        "TRUNCATED_BITSTREAM description should explicitly state that decoder failure "
+        "without physical truncation does NOT qualify for this classification."
+    )
+
+
+def test_decoder_path_description_distinguishes_production_from_alternatives():
+    """
+    The module docstring must distinguish:
+      - SoundFile / libsndfile / libmpg123 as the production decoding path
+      - FFmpeg / PyAV as an alternative decoding path
+      - dr_mp3 / miniaudio as a second alternative decoding path
+      - Custom Python MPEG parser as a structural inspection tool, NOT a PCM decoder
+    It must NOT describe all three decoding paths as 'independent decoders' or
+    count the custom parser as a fourth decoder.
+    """
+    import scripts.triage_cohort3_rejected_clips as _mod
+    docstring = _mod.__doc__ or ""
+
+    # Production path must be identified
+    assert "production decoding path" in docstring.lower(), (
+        "Module docstring must identify SoundFile/libsndfile/libmpg123 as the production decoding path."
+    )
+    # Alternative paths must be identified
+    assert "alternative decoding path" in docstring.lower(), (
+        "Module docstring must identify alternative decoding paths (FFmpeg/PyAV, dr_mp3/miniaudio)."
+    )
+    # Custom parser must be labelled as structural inspection, not a decoder
+    assert "not a pcm decoder" in docstring.lower(), (
+        "Module docstring must state that the custom Python MPEG parser is not a PCM decoder."
+    )
+    # Must NOT call all three paths 'genuinely independent decoders' or use that framing
+    assert "genuinely independent decoders" not in docstring.lower(), (
+        "Module docstring must not describe all decoding paths as 'Genuinely Independent Decoders'; "
+        "the production path and alternative paths have distinct roles."
+    )
