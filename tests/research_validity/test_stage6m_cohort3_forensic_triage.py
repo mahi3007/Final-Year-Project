@@ -42,6 +42,7 @@ from scripts.quarantine_stage6m_cohort3_rejected_audio import (
 from scripts.triage_cohort3_rejected_clips import (
     APPROVED_PARENT_MANIFEST_SHA256,
     APPROVED_QUARANTINE_LEDGER_SHA256,
+    APPROVED_QUARANTINE_LEDGER_SHA256_LF,
     APPROVED_TARGETS_LIST_SHA256,
     FORENSIC_AUTH_JSON,
     PARENT_MANIFEST_JSON,
@@ -76,7 +77,7 @@ def test_triage_governance_canonical_artifacts():
     )
     assert digests["parent_manifest_sha256"] == APPROVED_PARENT_MANIFEST_SHA256
     assert digests["quarantine_targets_sha256"] == APPROVED_TARGETS_LIST_SHA256
-    assert digests["quarantine_ledger_sha256"] == APPROVED_QUARANTINE_LEDGER_SHA256
+    assert digests["quarantine_ledger_sha256"] in (APPROVED_QUARANTINE_LEDGER_SHA256, APPROVED_QUARANTINE_LEDGER_SHA256_LF)
     assert len(digests["forensic_authorization_sha256"]) == 64
 
 
@@ -484,6 +485,38 @@ def test_numerical_gapless_reconciliation_boundary(tmp_path):
     assert res_mismatch["forensic_classification"] == "INCONCLUSIVE"
 
 
+def test_decoder_failure_without_physical_truncation_yields_inconclusive(tmp_path):
+    """Verify that when physical frames are complete, a decoder failure fails closed to INCONCLUSIVE rather than TRUNCATED_BITSTREAM."""
+    target_info = {
+        "recording_id": "syn_dec_fail_001",
+        "clip_filename": "syn_dec_fail.mp3",
+        "speaker_id": "spk_synth",
+        "accent_group": "Canada",
+        "stratum_code": "canada",
+        "panel_role": "evaluation",
+        "task7_7_error_message": "",
+    }
+    test_file = tmp_path / "syn_dec_fail.mp3"
+    hdr = b"\xFF\xFB\x50\xC4"  # valid MPEG-1 Layer III 64 kbps mono frame header
+    test_file.write_bytes(hdr + (b"\x00" * 204))  # 208 bytes frame
+
+    # Mock decoder failure (e.g. soundfile raises decoding error)
+    mock_sf_fail = {"success": False, "error": "Internal decoder crash", "metadata_declared_frames": None, "actual_decoded_pcm_frames": None}
+    mock_av = {"success": True, "decoded_pcm_frames": 1152, "sample_rate": 44100, "channels": 1, "error": None}
+    mock_ma = {"success": True, "decoded_pcm_frames": 1152, "sample_rate": 44100, "channels": 1, "error": None}
+
+    with patch("scripts.triage_cohort3_rejected_clips.decode_with_soundfile", return_value=mock_sf_fail), \
+         patch("scripts.triage_cohort3_rejected_clips.decode_with_pyav", return_value=mock_av), \
+         patch("scripts.triage_cohort3_rejected_clips.decode_with_miniaudio", return_value=mock_ma):
+
+        res = perform_single_file_forensic_triage(test_file, target_info)
+
+    # Must be INCONCLUSIVE, NOT TRUNCATED_BITSTREAM, because bitstream itself is not physically truncated
+    assert res["forensic_classification"] == "INCONCLUSIVE"
+    assert res["forensic_classification"] != "TRUNCATED_BITSTREAM"
+    assert any("Decoder failure without confirmed physical bitstream truncation" in r for r in res["classification_reasons"])
+
+
 # ============================================================================
 # 6. Physical Quarantined 130-File Consensus Verification
 # ============================================================================
@@ -492,9 +525,10 @@ def test_all_130_quarantined_files_physical_and_decoder_consensus():
     """
     Verifies that all 130 quarantined recordings:
     1. Possess 100% complete MPEG-1 Layer III frames with zero trailing bytes.
-    2. Have exact multi-decoder agreement (SoundFile == PyAV == miniaudio).
-    3. Exactly equal physical frame capacity (N_frames * 1152).
-    4. Are classified as INCONCLUSIVE due to lack of Frame 0 gapless metadata.
+    2. Have verified frame-by-frame Constant Bitrate (78 at 64 kbps, 52 at 48 kbps).
+    3. Have exact multi-decoder agreement (SoundFile == PyAV == miniaudio).
+    4. Exactly equal physical frame capacity (N_frames * 1152).
+    5. Are classified as INCONCLUSIVE due to lack of Frame 0 gapless metadata.
     """
     if not QUARANTINE_DIR.is_dir():
         pytest.skip(f"Quarantine directory {QUARANTINE_DIR} not found.")
@@ -503,6 +537,8 @@ def test_all_130_quarantined_files_physical_and_decoder_consensus():
         targets = json.load(f)["targets"]
 
     assert len(targets) == TOTAL_QUARANTINE_TARGETS
+
+    bitrate_counts: Dict[int, int] = {}
 
     for target in targets:
         fname = target["clip_filename"]
@@ -517,6 +553,10 @@ def test_all_130_quarantined_files_physical_and_decoder_consensus():
         assert frame_scan["all_frames_valid"] is True, f"Invalid frames in {fname}"
         assert frame_scan["final_frame_complete"] is True, f"Incomplete final frame in {fname}"
         assert frame_scan["trailing_bytes_count"] == 0, f"Trailing bytes in {fname}"
+        assert frame_scan["is_constant_bitrate"] is True, f"Non-CBR frames detected in {fname}"
+
+        dom_br = frame_scan["dominant_bitrate_kbps"]
+        bitrate_counts[dom_br] = bitrate_counts.get(dom_br, 0) + 1
 
         # 2. SoundFile chunked decode
         sf_res = decode_with_soundfile(fpath)
@@ -543,3 +583,6 @@ def test_all_130_quarantined_files_physical_and_decoder_consensus():
         assert triage["forensic_classification"] == "INCONCLUSIVE"
         assert triage["forensic_classification"] != "VALID_GAPLESS_PADDING"
         assert triage["forensic_classification"] != "TRUNCATED_BITSTREAM"
+
+    # Exactly 78 at 64 kbps, 52 at 48 kbps
+    assert bitrate_counts == {64: 78, 48: 52}

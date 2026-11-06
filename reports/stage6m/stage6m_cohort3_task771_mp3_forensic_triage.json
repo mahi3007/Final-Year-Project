@@ -3,12 +3,12 @@
   "document_id": "STAGE6M_COHORT3_TASK771_MP3_FORENSIC_TRIAGE",
   "protocol_version": "v1.5-five-stratum-parity",
   "governing_standard": "Protocol Section 14.7 (Project-Lead Academic Authorization)",
-  "generated_at": "2026-11-06T05:07:23.697471+00:00",
+  "generated_at": "2026-11-06T06:08:14.349297+00:00",
   "governance_provenance": {
     "parent_manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
     "quarantine_targets_sha256": "a530fb8b60fc302e536ce14efb620cda936ad91783f7d1f482a430dd154696ae",
     "forensic_authorization_sha256": "23b8e6073556dccc475b3d35df2a669d732625617c002582736bbf64a672fee2",
-    "quarantine_ledger_sha256": "4cdf48e008d0cd74e280d587d60e4021bea2c9e48b914b81e486cb16fb2314ce"
+    "quarantine_ledger_sha256": "98ae234d0f6985ef42d69b5e6a79250501cd1ef27861fc0310455b96d901a2e8"
   },
   "inventory_summary": {
     "total_target_recordings": 130,
@@ -21,6 +21,14 @@
     "TRUNCATED_BITSTREAM": 0,
     "INCONCLUSIVE": 130,
     "UNRESOLVED_MISSING_FILE": 0
+  },
+  "bitrate_distribution": {
+    "dominant_bitrate_counts": {
+      "64": 78,
+      "48": 52
+    },
+    "constant_bitrate_verified_recordings": 130,
+    "variable_bitrate_recordings": 0
   },
   "strata_breakdown": {
     "canada": {
@@ -143,6 +151,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 186
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 214272,
@@ -247,6 +259,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 182
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 209664,
@@ -351,6 +367,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 227
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 261504,
@@ -455,6 +475,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 188
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 216576,
@@ -559,6 +583,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 209
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 240768,
@@ -663,6 +691,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 194
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 223488,
@@ -767,6 +799,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 180
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 207360,
@@ -871,6 +907,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 115
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 132480,
@@ -975,6 +1015,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 198
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 228096,
@@ -1079,6 +1123,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 151
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 173952,
@@ -1183,6 +1231,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 227
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 261504,
@@ -1287,6 +1339,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 223
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 256896,
@@ -1391,6 +1447,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 148
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 170496,
@@ -1495,6 +1555,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 141
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 162432,
@@ -1599,6 +1663,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 213
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 245376,
@@ -1703,6 +1771,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 209
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 240768,
@@ -1807,6 +1879,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 201
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 231552,
@@ -1911,6 +1987,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 171
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 196992,
@@ -2015,6 +2095,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 354
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 407808,
@@ -2119,6 +2203,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 220
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 253440,
@@ -2223,6 +2311,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 371
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 427392,
@@ -2327,6 +2419,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 198
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 228096,
@@ -2431,6 +2527,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 259
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 298368,
@@ -2535,6 +2635,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 269
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 309888,
@@ -2639,6 +2743,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 151
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 173952,
@@ -2743,6 +2851,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 262
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 301824,
@@ -2847,6 +2959,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 174
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 200448,
@@ -2951,6 +3067,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 225
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 259200,
@@ -3055,6 +3175,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 225
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 259200,
@@ -3159,6 +3283,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 186
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 214272,
@@ -3263,6 +3391,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 105
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 120960,
@@ -3367,6 +3499,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 219
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 252288,
@@ -3471,6 +3607,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 223
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 256896,
@@ -3575,6 +3715,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 116
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 133632,
@@ -3679,6 +3823,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 199
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 229248,
@@ -3783,6 +3931,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 157
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 180864,
@@ -3887,6 +4039,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 241
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 277632,
@@ -3991,6 +4147,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 227
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 261504,
@@ -4095,6 +4255,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 213
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 245376,
@@ -4199,6 +4363,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 192
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 221184,
@@ -4303,6 +4471,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 129
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 148608,
@@ -4407,6 +4579,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 220
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 253440,
@@ -4511,6 +4687,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 156
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 179712,
@@ -4615,6 +4795,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 122
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 140544,
@@ -4719,6 +4903,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 187
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 215424,
@@ -4823,6 +5011,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 180
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 207360,
@@ -4927,6 +5119,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 185
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 213120,
@@ -5031,6 +5227,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 227
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 261504,
@@ -5135,6 +5335,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 166
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 191232,
@@ -5239,6 +5443,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 212
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 244224,
@@ -5343,6 +5551,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 168
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 193536,
@@ -5447,6 +5659,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 121
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 139392,
@@ -5551,6 +5767,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 191
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 220032,
@@ -5655,6 +5875,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 200
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 230400,
@@ -5759,6 +5983,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 159
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 183168,
@@ -5863,6 +6091,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 238
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 274176,
@@ -5967,6 +6199,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 245
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 282240,
@@ -6071,6 +6307,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 211
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 243072,
@@ -6175,6 +6415,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 199
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 229248,
@@ -6279,6 +6523,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 119
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 137088,
@@ -6383,6 +6631,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 196
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 225792,
@@ -6487,6 +6739,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 201
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 231552,
@@ -6591,6 +6847,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 169
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 194688,
@@ -6695,6 +6955,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 203
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 233856,
@@ -6799,6 +7063,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 152
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 175104,
@@ -6903,6 +7171,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 147
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 169344,
@@ -7007,6 +7279,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 233
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 268416,
@@ -7111,6 +7387,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 274
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 315648,
@@ -7215,6 +7495,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 221
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 254592,
@@ -7319,6 +7603,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 177
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 203904,
@@ -7423,6 +7711,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 302
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 347904,
@@ -7527,6 +7819,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 217
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 249984,
@@ -7631,6 +7927,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 188
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 216576,
@@ -7735,6 +8035,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 92
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 105984,
@@ -7839,6 +8143,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 139
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 160128,
@@ -7943,6 +8251,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 249
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 286848,
@@ -8047,6 +8359,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 167
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 192384,
@@ -8151,6 +8467,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 44100,
         "dominant_bitrate_kbps": 64,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "64": 185
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 213120,
@@ -8255,6 +8575,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 162
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 186624,
@@ -8359,6 +8683,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 101
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 116352,
@@ -8463,6 +8791,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 133
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 153216,
@@ -8567,6 +8899,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 187
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 215424,
@@ -8671,6 +9007,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 58
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 66816,
@@ -8775,6 +9115,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 167
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 192384,
@@ -8879,6 +9223,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 92
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 105984,
@@ -8983,6 +9331,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 111
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 127872,
@@ -9087,6 +9439,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 151
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 173952,
@@ -9191,6 +9547,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 156
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 179712,
@@ -9295,6 +9655,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 89
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 102528,
@@ -9399,6 +9763,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 95
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 109440,
@@ -9503,6 +9871,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 184
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 211968,
@@ -9607,6 +9979,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 87
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 100224,
@@ -9711,6 +10087,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 92
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 105984,
@@ -9815,6 +10195,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 150
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 172800,
@@ -9919,6 +10303,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 147
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 169344,
@@ -10023,6 +10411,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 110
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 126720,
@@ -10127,6 +10519,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 174
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 200448,
@@ -10231,6 +10627,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 151
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 173952,
@@ -10335,6 +10735,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 178
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 205056,
@@ -10439,6 +10843,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 163
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 187776,
@@ -10543,6 +10951,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 114
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 131328,
@@ -10647,6 +11059,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 129
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 148608,
@@ -10751,6 +11167,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 141
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 162432,
@@ -10855,6 +11275,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 156
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 179712,
@@ -10959,6 +11383,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 163
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 187776,
@@ -11063,6 +11491,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 109
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 125568,
@@ -11167,6 +11599,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 89
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 102528,
@@ -11271,6 +11707,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 143
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 164736,
@@ -11375,6 +11815,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 130
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 149760,
@@ -11479,6 +11923,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 205
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 236160,
@@ -11583,6 +12031,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 189
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 217728,
@@ -11687,6 +12139,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 177
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 203904,
@@ -11791,6 +12247,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 169
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 194688,
@@ -11895,6 +12355,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 179
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 206208,
@@ -11999,6 +12463,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 107
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 123264,
@@ -12103,6 +12571,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 180
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 207360,
@@ -12207,6 +12679,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 110
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 126720,
@@ -12311,6 +12787,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 136
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 156672,
@@ -12415,6 +12895,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 113
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 130176,
@@ -12519,6 +13003,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 146
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 168192,
@@ -12623,6 +13111,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 197
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 226944,
@@ -12727,6 +13219,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 195
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 224640,
@@ -12831,6 +13327,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 90
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 103680,
@@ -12935,6 +13435,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 120
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 138240,
@@ -13039,6 +13543,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 155
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 178560,
@@ -13143,6 +13651,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 120
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 138240,
@@ -13247,6 +13759,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 113
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 130176,
@@ -13351,6 +13867,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 131
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 150912,
@@ -13455,6 +13975,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 131
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 150912,
@@ -13559,6 +14083,10 @@
         "dominant_layer": "Layer III",
         "dominant_sample_rate": 32000,
         "dominant_bitrate_kbps": 48,
+        "is_constant_bitrate": true,
+        "bitrate_distribution_frames": {
+          "48": 133
+        },
         "dominant_channel_mode": "mono",
         "samples_per_frame": 1152,
         "total_physical_capacity_samples": 153216,

@@ -1,8 +1,8 @@
 # Stage 6M Task 7.7.1D — MP3 Forensic Engine Remediation Report
 
-**Document ID:** `STAGE6M_COHORT3_TASK771D_FORENSIC_REMEDIATION`  
-**Governing Standard:** Protocol Section 14.7 (Project-Lead Academic Authorization)  
-**Generated At:** 2026-11-06 05:07:23 UTC  
+**Document ID:** `STAGE6M_COHORT3_TASK771D_FORENSIC_REMEDIATION`<br>
+**Governing Standard:** Protocol Section 14.7 (Project-Lead Academic Authorization)<br>
+**Generated At:** 2026-11-06 06:08:14 UTC
 
 ---
 
@@ -20,9 +20,10 @@
 ### Key Forensic Findings:
 1. **Complete Physical MPEG Bitstream Integrity:** Across all 130 recovered recordings, sequential physical frame boundary walking verified that 100% of physical frames are complete MPEG-1 Layer III frames with valid sync words (0xFFE/0xFFF), valid bitrates/samplerates, and 0 trailing bytes.
 2. **Multi-Decoder Cross-Validation:** Independent decoding across SoundFile (chunked PCM counting), FFmpeg (PyAV), and dr_mp3 (miniaudio) decoded the exact sample frames with zero errors. All 130 files fully reconciled decoded samples with physical frame capacity ($N_{\text{frames}} \times 1152$).
-3. **Absence of Frame 0 Gapless Metadata:** Crucially, 130 of 130 recordings lack a standard Xing/Info header and LAME delay/padding tag at Frame 0. The recordings are Constant Bitrate (CBR) MP3s.
+3. **Bitrate Distribution & Absence of Frame 0 Gapless Metadata:** Sequential frame-by-frame parsing verified that all 130 recordings exhibit 100% constant bitrate across every frame (78 recordings at 64 kbps CBR, 52 recordings at 48 kbps CBR; 0 VBR). Crucially, none of the 130 recordings contain a Xing/Info header or LAME delay/padding tag at Frame 0.
 4. **Root Cause of Task 7.7 Shortfall:** The shortfall observed in Task 7.7 (range 1296 to 2979 PCM samples, median 1705) is a container estimation artifact in `libsndfile` (`reader.frames` estimating track duration from file size and un-scanned header assumptions before streaming), not physical bitstream truncation.
 5. **Strict Evidentiary Preclusion of VALID_GAPLESS_PADDING:** Because gapless metadata is absent, the shortfalls cannot be numerically reconciled against LAME delay/padding. Under Protocol Section 14.7 strict evidentiary rules, these recordings are classified as **INCONCLUSIVE**, preventing premature authorization of Option A or premature modification of the production validator.
+6. **Distinction Between In-File Structural Completeness and Source Completeness:** Physical frame completeness ($N_{\text{frames}} \times 1152$) proves that all MPEG frames present in the file are structurally sound and fully decodable. It does not prove that complete MPEG frames were not lost upstream prior to archive packing (an open scientific question addressed in Task 7.7.2).
 
 ---
 
@@ -30,10 +31,10 @@
 
 | Artifact | Path | SHA-256 Digest | Status |
 |:---|:---|:---|:---|
-| Parent Manifest | `datasets/splits/stage6m_cohort3_provisional_manifest.json` | `b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547` | **LOCKED (IMMUTABLE)** |
+| Parent Manifest | `datasets/splits/stage6m_cohort3_provisional_manifest.json` | `b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547` | **PROVISIONAL (IMMUTABLE DIGEST, UNLOCKED)** |
 | Quarantine Targets | `datasets/splits/stage6m_cohort3_task771_quarantine_targets.json` | `a530fb8b60fc302e536ce14efb620cda936ad91783f7d1f482a430dd154696ae` | **FROZEN** |
 | Authorization Decision | `reports/stage6m/stage6m_cohort3_task771_forensic_authorization_decision.json` | `23b8e6073556dccc475b3d35df2a669d732625617c002582736bbf64a672fee2` | **VERIFIED** |
-| Quarantine Ledger | `datasets/splits/stage6m_cohort3_quarantine_ledger.csv` | `4cdf48e008d0cd74e280d587d60e4021bea2c9e48b914b81e486cb16fb2314ce` | **VERIFIED MATCH** |
+| Quarantine Ledger | `datasets/splits/stage6m_cohort3_quarantine_ledger.csv` | `98ae234d0f6985ef42d69b5e6a79250501cd1ef27861fc0310455b96d901a2e8` | **VERIFIED MATCH** |
 
 ---
 
@@ -65,7 +66,7 @@ In strict compliance with Project-Lead Preservation Rules:
 1. **Option A is NOT authorized.** Quarantined files remain isolated in `cohort3_rejected_quarantine`.
 2. **Production validator is NOT modified.** `MAX_MP3_PADDING_FRAMES` remains untouched at 1,152.
 3. **Cohort 3 promotion is PROHIBITED.** No quarantined file is moved to `cohort3_audio` or counted toward Cohort 3 quota.
-4. **Manifest and Inference remain LOCKED.** Provisional manifest hash `b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547` remains unchanged; GPU adaptation and confirmatory inference remain blocked.
+4. **Provisional manifest remains UNLOCKED with immutable digest.** Provisional manifest hash `b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547` remains unchanged; final manifest lock, GPU adaptation, and confirmatory inference remain strictly blocked.
 
 ---
 *Audit Trail Generated Under Protocol Section 14.7 by Stage 6M v1.5 Remediated Forensic Pipeline*
