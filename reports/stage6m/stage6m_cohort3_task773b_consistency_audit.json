@@ -1,0 +1,355 @@
+{
+  "metadata": {
+    "task": "Stage 6M v1.5 Task 7.7.3E \u2014 Historical Power Provenance Final Reconciliation",
+    "protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7, Project-Lead Academic Authorization)",
+    "governing_branch": "stage6m-five-stratum-parity",
+    "starting_commit": "949f9f13a057face9df774b02b58eb44b715b56b",
+    "document_status": "SPECIFICATION_CLOSURE_PROPOSAL_ONLY",
+    "execution_mode": "RESEARCH_DOCUMENTATION_AND_CONSISTENCY_SPECIFICATION",
+    "timestamp_utc": "2026-11-06T20:30:00+00:00",
+    "author": "Antigravity Research Pair (under Project Lead Review)"
+  },
+  "phase_1_power_provenance_and_sampling_design": {
+    "historical_power_provenance_reconciliation": {
+      "result_a_exploratory_screening": {
+        "label": "Task 5 Exploratory Screening",
+        "task": "Stage 6M Task 5 (Sample-Size Power Sweep)",
+        "source_artifact": "reports/stage6m/stage6m_v1_5_sample_size_power_sweep.json",
+        "evaluation_stage": "EXPLORATORY_SCREENING",
+        "sample_size_ng": 220,
+        "total_evaluation_speakers": 1100,
+        "outer_trials": 2000,
+        "bootstrap_replicates": 2000,
+        "successful_trajectories": 1893,
+        "joint_power_pct": 94.65,
+        "exact_one_sided_95_lcb_pct": 93.747416,
+        "exact_two_sided_95_ci_pct": [
+          93.571456,
+          95.595129
+        ],
+        "legacy_stored_lcb_95_pct": 93.571,
+        "legacy_field_problem_note": "In stage6m_v1_5_sample_size_power_sweep.json, the field 'lcb_95' stored 0.93571 (93.571%), which corresponds to the lower endpoint of the two-sided 95% confidence interval [93.571456%, 95.595129%], not the exact one-sided 95% Clopper-Pearson lower confidence bound (93.747416%).",
+        "generating_model": "Uncalibrated generator across initial grid sweep N_g in [220, 285]",
+        "treatment_effect_profile": "Uncalibrated probability clipping (realized disparity reduction Delta_D uncalibrated)",
+        "scientific_status": "SUPERSEDED (Exploratory Screening Only)",
+        "provenance_description": "Task 5 exploratory screening sweep across N_g in [220, 285] evaluated at 2,000 outer trials and B=2,000 bootstrap replicates. At N_g=220, reported 94.65% joint power (1,893 / 2,000 trials). Exact one-sided 95% LCB is 93.747416%; exact two-sided 95% CI is [93.571456%, 95.595129%]. Legacy source artifact stored 93.571% in field 'lcb_95', which was the two-sided lower endpoint. This was an uncalibrated coarse screening sweep designed to map the feasibility trajectory, not a confirmatory evaluation. FORMALLY SUPERSEDED."
+      },
+      "result_b_uncalibrated_full_depth_confirmation": {
+        "label": "Task 5 Uncalibrated Full-Depth Confirmation",
+        "task": "Stage 6M Task 5 (Scientific Readiness Audit)",
+        "source_artifact": "reports/stage6m/stage6m_v1_5_scientific_readiness_audit.json",
+        "evaluation_stage": "FINAL_CONFIRMATION (Uncalibrated)",
+        "sample_size_ng": 220,
+        "total_evaluation_speakers": 1100,
+        "outer_trials": 10000,
+        "bootstrap_replicates": 20000,
+        "successful_trajectories": 9535,
+        "joint_power_pct": 95.35,
+        "exact_one_sided_95_lcb_pct": 94.988733,
+        "exact_two_sided_95_ci_pct": [
+          94.918893,
+          95.75444
+        ],
+        "legacy_stored_lcb_95_pct": 94.919,
+        "legacy_field_problem_note": "In stage6m_v1_5_scientific_readiness_audit.json, the field 'lcb_95' stored 0.94919 (94.919%), which corresponds to the lower endpoint of the two-sided 95% confidence interval [94.918893%, 95.754440%], not the exact one-sided 95% Clopper-Pearson lower confidence bound (94.988733%).",
+        "generating_model": "Uncalibrated generator with nonlinear probability clipping producing -2.1733 pp disparity narrowing (0.1733 pp overshoot vs nominal -2.0 pp)",
+        "treatment_effect_profile": "Delta_A = Delta_B = -3.5 pp nominal, realized Delta_D = -2.1733 pp (overshoot)",
+        "scientific_status": "SUPERSEDED (Uncalibrated Confirmation)",
+        "provenance_description": "Task 5 uncalibrated full-depth confirmation evaluated at 10,000 outer trials and B=20,000 bootstrap replicates. At N_g=220, reported 95.35% joint power (9,535 / 10,000 trials). Exact one-sided 95% LCB is 94.988733%; exact two-sided 95% CI is [94.918893%, 95.754440%]. Legacy source artifact stored 94.919% in field 'lcb_95', which was the two-sided lower endpoint. Although run at full confirmatory depth, it employed the uncalibrated generator where probability clipping caused an artificial overshoot in disparity reduction (realized Delta_D = -2.1733 pp vs nominal -2.0 pp). FORMALLY SUPERSEDED."
+      },
+      "result_c_calibrated_confirmation": {
+        "label": "Task 6.3 Calibrated Primary-Model Confirmation",
+        "task": "Stage 6M Task 6.3 (Primary Model Power Consistency Audit)",
+        "source_artifact": "reports/stage6m/stage6m_v1_5_primary_model_power_consistency.json",
+        "evaluation_stage": "CALIBRATED_PRIMARY_CONFIRMATION",
+        "sample_size_ng": 220,
+        "total_evaluation_speakers": 1100,
+        "outer_trials": 10000,
+        "bootstrap_replicates": 20000,
+        "successful_trajectories": 9058,
+        "joint_power_pct": 90.58,
+        "exact_one_sided_95_lcb_pct": 90.085739,
+        "exact_two_sided_95_ci_pct": [
+          89.990601,
+          91.145641
+        ],
+        "exact_clopper_pearson_reconciliation_note": "The standard exact Clopper-Pearson calculation for 9,058 successes in 10,000 trials gives one-sided 95% LCB = 90.085739% and two-sided 95% CI = [89.990601%, 91.145641%], perfectly consistent with stage6m_v1_5_mc_acceptance_rule_audit.json. The previous upper endpoint report of 91.146603% is corrected to the standard exact value 91.145641%.",
+        "generating_model": "Exact nested-clipping quadrature calibration strictly targeting Delta_D = -2.0000 pp and Delta_A = Delta_B = -3.5 pp",
+        "treatment_effect_profile": "Strictly calibrated: Delta_D = -2.0000 pp, Delta_A = Delta_B = -3.5 pp (0.0000 pp drift)",
+        "scientific_status": "APPROVED DESIGN RESULT (Governing Section 14.7 Design)",
+        "provenance_description": "Task 6.3 calibrated-model confirmation evaluated at 10,000 outer trials and B=20,000 bootstrap replicates strictly targeting the pre-registered treatment effect (Delta_D = -2.0000 pp, Delta_A = Delta_B = -3.5 pp). Formally confirmed 90.58% joint power (9,058 / 10,000 trials). Exact One-Sided 95% Clopper-Pearson LCB is 90.085739% (>= 90.0000% -> PASS by +0.0857 pp / +8 trials). Exact two-sided 95% CI is [89.990601%, 91.145641%]. Under the protocol's one-sided LCB convention, the design passes; the two-sided lower endpoint (89.990601%, shortfall -0.0094 pp) does not pass the 90% criterion on its own. Governing result for approved Section 14.7 primary design."
+      },
+      "three_result_comparison_table": [
+        {
+          "result_id": "RESULT_A",
+          "historical_label": "Task 5 Exploratory Screening",
+          "source_artifact": "stage6m_v1_5_sample_size_power_sweep.json",
+          "trials_k_n": "1,893 / 2,000",
+          "outer_trials": 2000,
+          "bootstrap_b": 2000,
+          "joint_power": "94.65%",
+          "one_sided_95_lcb": "93.747416%",
+          "two_sided_95_ci": "[93.571456%, 95.595129%]",
+          "legacy_stored_field": "Stored lcb_95: 0.93571 (= two-sided lower endpoint)",
+          "generating_model": "Uncalibrated Grid Sweep",
+          "disparity_target": "Uncalibrated Clipping",
+          "scientific_status": "SUPERSEDED (Exploratory Screening)"
+        },
+        {
+          "result_id": "RESULT_B",
+          "historical_label": "Task 5 Uncalibrated Confirmation",
+          "source_artifact": "stage6m_v1_5_scientific_readiness_audit.json",
+          "trials_k_n": "9,535 / 10,000",
+          "outer_trials": 10000,
+          "bootstrap_b": 20000,
+          "joint_power": "95.35%",
+          "one_sided_95_lcb": "94.988733%",
+          "two_sided_95_ci": "[94.918893%, 95.754440%]",
+          "legacy_stored_field": "Stored lcb_95: 0.94919 (= two-sided lower endpoint)",
+          "generating_model": "Uncalibrated Generator",
+          "disparity_target": "Delta_D = -2.1733 pp (Overshoot)",
+          "scientific_status": "SUPERSEDED (Uncalibrated Confirmation)"
+        },
+        {
+          "result_id": "RESULT_C",
+          "historical_label": "Task 6.3 Calibrated Confirmation",
+          "source_artifact": "stage6m_v1_5_primary_model_power_consistency.json",
+          "trials_k_n": "9,058 / 10,000",
+          "outer_trials": 10000,
+          "bootstrap_b": 20000,
+          "joint_power": "90.58%",
+          "one_sided_95_lcb": "90.085739%",
+          "two_sided_95_ci": "[89.990601%, 91.145641%]",
+          "legacy_stored_field": "Stored one_sided_95_lcb: 90.09% / CI: [89.99%, 91.15%]",
+          "generating_model": "Calibrated Quadrature Model",
+          "disparity_target": "Delta_D = -2.0000 pp (Strictly Calibrated)",
+          "scientific_status": "APPROVED DESIGN RESULT (Section 14.7)"
+        }
+      ],
+      "attribution_rules": [
+        "Rule 1: Result A (94.65%) must strictly be labeled exploratory screening (2,000 trials, B=2,000 bootstrap replicates, one-sided 95% LCB = 93.747416%, two-sided 95% CI: [93.571456%, 95.595129%]).",
+        "Rule 2: Result B (95.35%) must strictly be labeled full-depth uncalibrated confirmation (10,000 trials, B=20,000 replicates, one-sided 95% LCB = 94.988733%, two-sided 95% CI: [94.918893%, 95.754440%]).",
+        "Rule 3: Result C (90.58%) must strictly be labeled Task 6.3 calibrated confirmation (10,000 trials, B=20,000 replicates, one-sided 95% LCB = 90.085739%, two-sided 95% CI: [89.990601%, 91.145641%]).",
+        "Rule 4: Both uncalibrated results (A & B) are formally identified as superseded.",
+        "Rule 5: The 90.58% calibrated result remains the sole approved design result for N_g = 220 under Section 14.7.",
+        "Rule 6: No historical result is silently deleted, conflated, or rewritten."
+      ],
+      "conditionality_caveat": "CRITICAL SCIENTIFIC CAVEAT: The 90.58% joint power result is strictly conditional on realizing the hypothesized population treatment profile (true disparity narrowing of -2.0 pp and superiority of -3.5 pp). If true disparity narrowing is <= -1.0 pp, simulated joint power degrades below 50%. These estimates represent design scenario targets rather than physical guarantees."
+    },
+    "approved_primary_design": {
+      "evaluation_speakers_per_stratum": 220,
+      "confirmatory_evaluation_strata": 5,
+      "confirmatory_evaluation_speakers": 1100,
+      "clips_per_speaker": 15,
+      "total_evaluation_clips": 16500,
+      "gate_reference_speakers": 100,
+      "gate_reference_clips": 1500,
+      "australian_replacement_reserve_speakers": 65,
+      "australian_replacement_reserve_clips": 975,
+      "total_materialized_speakers": 1265,
+      "total_materialized_clips": 18975,
+      "authorization_reference": "Protocol Section 14.7 Project-Lead Academic Authorization (Commit 06cf833)"
+    },
+    "design_comparison_table": [
+      {
+        "metric": "Governing Benchmark Strata",
+        "protocol_v1_5_spec": "5 Strata (Australian, Canadian, England, South Asian, US)",
+        "task_6_3_calibrated_power": "5 Strata evaluated across N_g in [220, 285]",
+        "provisional_manifest": "5 Strata (Australian, Canadian, England, South Asian, US)",
+        "status": "CONGRUENT"
+      },
+      {
+        "metric": "Confirmatory Evaluation Speakers",
+        "protocol_v1_5_spec": "1,100 speakers (N_g = 220 per stratum)",
+        "task_6_3_calibrated_power": "N_g = 220: Confirmed 90.58% joint power (LCB_95 = 90.085739%)",
+        "provisional_manifest": "1,100 evaluation speakers (220 per stratum x 5)",
+        "status": "CONGRUENT"
+      },
+      {
+        "metric": "Clips per Speaker (Cluster Size C)",
+        "protocol_v1_5_spec": "C = 15 clips per speaker",
+        "task_6_3_calibrated_power": "C = 15 clips per speaker (sigma_paired = 0.032 speaker-level)",
+        "provisional_manifest": "15 clips per speaker (100% of selected speakers)",
+        "status": "CONGRUENT"
+      },
+      {
+        "metric": "Gate-Reference Speaker Reserve",
+        "protocol_v1_5_spec": "100 speakers (20 per stratum; excluded from eval power)",
+        "task_6_3_calibrated_power": "20 reserved gate speakers deducted from capacity ceiling",
+        "provisional_manifest": "100 gate-reference speakers (20 per stratum x 5)",
+        "status": "CONGRUENT"
+      },
+      {
+        "metric": "Australian Replacement Reserve",
+        "protocol_v1_5_spec": "65 speakers (285 - 220 = 65 unexposed Australian reserve)",
+        "task_6_3_calibrated_power": "Preserves 65 Australian evaluation speakers (+21.3% buffer)",
+        "provisional_manifest": "65 Australian reserve speakers (role: australian_reserve)",
+        "status": "CONGRUENT"
+      },
+      {
+        "metric": "Total Materialized Speakers",
+        "protocol_v1_5_spec": "1,265 speakers (1,100 eval + 100 gate + 65 reserve)",
+        "task_6_3_calibrated_power": "Capacity envelope bounded by Australian N_total <= 305",
+        "provisional_manifest": "1,265 speakers (1,100 eval + 100 gate + 65 reserve)",
+        "status": "CONGRUENT"
+      },
+      {
+        "metric": "Total Materialized Audio Clips",
+        "protocol_v1_5_spec": "18,975 clips (1,265 x 15)",
+        "task_6_3_calibrated_power": "Not directly modeled (clip count fixed at 15/speaker)",
+        "provisional_manifest": "18,975 clips (16,500 eval + 1,500 gate + 975 reserve)",
+        "status": "CONGRUENT"
+      }
+    ]
+  },
+  "phase_2_incomplete_speaker_analysis": {
+    "census_summary": {
+      "total_manifest_speakers": 1265,
+      "fully_intact_speakers_15_clips": 1252,
+      "affected_evaluation_speakers": 13,
+      "empty_clusters_count": 4,
+      "partial_clusters_count": 9,
+      "affected_gate_speakers": 0,
+      "affected_reserve_speakers": 0,
+      "total_quarantined_clips": 130,
+      "total_retained_clips_affected_speakers": 65,
+      "complete_evaluation_speakers": 1087,
+      "gate_reference_speakers_intact": 100,
+      "australian_reserve_speakers_intact": 65
+    },
+    "per_stratum_speaker_counts_under_policy_2b": {
+      "Australian English": {
+        "option_a_complete": 218,
+        "option_b_non_empty": 220,
+        "registered_target": 220,
+        "delta_opt_a": -2,
+        "delta_opt_b": 0
+      },
+      "Canadian English": {
+        "option_a_complete": 215,
+        "option_b_non_empty": 217,
+        "registered_target": 220,
+        "delta_opt_a": -5,
+        "delta_opt_b": -3
+      },
+      "England English": {
+        "option_a_complete": 219,
+        "option_b_non_empty": 220,
+        "registered_target": 220,
+        "delta_opt_a": -1,
+        "delta_opt_b": 0
+      },
+      "South Asian English": {
+        "option_a_complete": 220,
+        "option_b_non_empty": 220,
+        "registered_target": 220,
+        "delta_opt_a": 0,
+        "delta_opt_b": 0
+      },
+      "US English": {
+        "option_a_complete": 215,
+        "option_b_non_empty": 219,
+        "registered_target": 220,
+        "delta_opt_a": -5,
+        "delta_opt_b": -1
+      },
+      "Total Evaluation Speakers": {
+        "option_a_complete": 1087,
+        "option_b_non_empty": 1096,
+        "registered_target": 1100,
+        "delta_opt_a": -13,
+        "delta_opt_b": -4
+      }
+    },
+    "power_consequence_of_incomplete_clusters": "CRITICAL STATISTICAL FINDING: Under Policy 2B, neither Option A (complete clusters only) nor Option B (unequal clusters) preserves the full registered N_g = 220 design across all strata. Option A results in cross-stratum speaker sample size imbalance (N_g in [215, 220], total 1,087 speakers), while Option B retains more recordings (65 accepted clips across 9 partial clusters) but introduces nine unequal-size speaker clusters (C_i in [1, 14] for 9 speakers, total 1,096 speakers). Under Option B, the statistical analysis must formally define whether speakers or recordings receive equal weighting and how the paired-cluster bootstrap handles those unequal cluster sizes (e.g. cluster-level resampling vs ratio estimation). The approved Task 6.3 joint power of 90.58% applies strictly to the balanced N_g = 220, C = 15 specification. Therefore, NEITHER OPTION CAN INHERIT THE APPROVED 90.58% POWER RESULT WITHOUT A FORMAL RE-EVALUATION. A dedicated Monte Carlo power simulation would be required to verify whether Option A or Option B maintains the one-sided 95% LCB >= 90.0% threshold.",
+    "reserve_replacement_nuance": "OPTION C STRUCTURAL SCOPE: The provisional manifest contains 65 replacement reserve speakers for Australian English ONLY. These 65 Australian reserves may potentially replace the 2 affected Australian evaluation speakers (restoring Australian English to 220 complete speakers), strictly subject to the protocol's replacement conditions. However, the manifest contains ZERO replacement reserves for Canadian (5 affected), US (5 affected), or England (1 affected). The Australian reserves cannot replace Canadian, US, or England speakers without destroying accent stratum validity. Therefore, full cohort restoration through the reserve is structurally impossible without a formal protocol amendment and drawing from unexposed Common Voice pools."
+  },
+  "phase_3_admission_policy_and_role_terminology": {
+    "dataset_admission_vs_evaluation_participation": "CRITICAL GOVERNANCE DISTINCTION: Admitting all 18,975 recordings into the dataset assets (e.g. under Policy 2A) does NOT mean all 1,265 speakers participate in the confirmatory evaluation estimand. The 1,100 evaluation speakers, 100 gate-reference speakers, and 65 Australian reserve speakers strictly retain their distinct, pre-registered roles: - Evaluation Speakers (1,100): Exclusively evaluated in Primary Hypothesis Testing (Events A, B, C, D). - Gate-Reference Speakers (100): Exclusively calibrate adaptation gating; never evaluated in WER contrast estimands. - Australian Reserve Speakers (65): Standby pool for authorized dropouts; unexposed during primary confirmatory execution.",
+    "policy_2b_terminology_refinement": "Policy 2B is formally designated an ESTIMATION_DISCREPANCY_SCREEN (or ESTIMATION_SHORTFALL_HOLD). The shortfall threshold (Delta > 1152 samples / 24-67.5 ms) represents an inherited duration-estimation discrepancy arising from non-audio container bytes. It is NOT evidence of physical bitstream corruption or upstream whole-frame truncation. The 130 recordings are held under ADMISSION_HOLD in diagnostic quarantine as an empirical discrepancy anomaly, and any scientific decision regarding their eventual admission requires separate Project Lead authorization.",
+    "policy_options_summary": [
+      {
+        "policy_id": "POLICY_1",
+        "name": "Strict Mandatory Claim B Prerequisite",
+        "decision_status": "Project Lead Protocol Decision (Option 1)",
+        "rule": "Admit IF AND ONLY IF Claim B (authoritative master duration) is verified.",
+        "admitted_clips": 0,
+        "quarantined_clips": 18975,
+        "admitted_speakers": 0,
+        "consequence": "All 18,975 recordings placed on ADMISSION_HOLD; confirmatory benchmark paused."
+      },
+      {
+        "policy_id": "POLICY_2A",
+        "name": "Pure Claim A Physical Bitstream Admission",
+        "decision_status": "Project Lead Protocol Decision (Option 2A)",
+        "rule": "Admit under PROTOCOL_ADMIT_ORIGIN_UNVERIFIED IF physical MPEG frames are complete to EOF and PCM decoding succeeds.",
+        "admitted_clips": 18975,
+        "quarantined_clips": 0,
+        "admitted_speakers": 1265,
+        "consequence": "All 18,975 recordings admitted as dataset assets. Restores all 1,100 evaluation speakers to 15-clip clusters."
+      },
+      {
+        "policy_id": "POLICY_2B",
+        "name": "Decoupled Physical Validation with Estimation Discrepancy Screen",
+        "decision_status": "Project Lead Protocol Decision (Option 2B)",
+        "rule": "Admit if physical frames complete AND container shortfall Delta <= 1152. Hold if Delta > 1152.",
+        "admitted_clips": 18845,
+        "quarantined_clips": 130,
+        "admitted_speakers": 1252,
+        "consequence": "Admits 18,845 baseline files; holds 130 files in diagnostic quarantine under ADMISSION_HOLD. 13 evaluation speakers handled via Option A or B."
+      }
+    ]
+  },
+  "phase_4_recovery_specification_refinements": {
+    "archive_replay_complexity": "In a sequential .tar.gz archive, TAR member headers are compressed within a continuous DEFLATE bitstream without seek points. On network reconnect or restart from byte 0: the client sequentially replays decompression and TAR member scanning. To verify previously committed members against recorded ledger hashes, their decompressed payload must still be streamed and hashed in memory. Thus: NO REPEATED DISK WRITES and NO REPEATED AUDIO DECODING occur for committed members, but DECOMPRESSION, TAR SCANNING, and IN-MEMORY HASH COMPUTATION DO OCCUR. True O(1) random-access requires an external index. The claim of zero validation overhead is formally retracted.",
+    "windows_promotion_flags": "On Windows, atomic no-clobber promotion must use MoveFileExW with flag 0 (omitting MOVEFILE_REPLACE_EXISTING), which fails atomically with ERROR_ALREADY_EXISTS if the target exists. Where immediate filesystem metadata durability is required, the implementation must additionally specify MOVEFILE_WRITE_THROUGH. The implementation explicitly separates no-replace behavior from durability.",
+    "durability_uncertain_recovery_state": "In Scenario 20 (filesystem metadata flush failure): if promotion succeeds (e.g. POSIX hard-link created or MoveFileExW executed) but directory metadata fsync fails, the promotion cannot simply be 'aborted and staged file retained' because the destination link already exists on disk. The pipeline transitions the recording to state DURABILITY_UNCERTAIN: 1. Retain both staging and destination copies without unlinking either. 2. Write a DURABILITY_UNCERTAIN record to the WAL journal with unique tx_id. 3. Stop further materialization. 4. On restart, the reconciliation sweep verifies destination file existence and SHA-256 against staging; if identical, completes    ledger write and removes redundant staging link. Zero acquired copies are deleted.",
+    "wal_transaction_architecture": "The Write-Ahead Log (.staging/wal_journal.jsonl) uses unique transaction IDs (tx_id = uuid4 or monotonic counter) with serialized single-writer appends. Each entry contains: tx_id, timestamp, rec_id, attempt_id, staging_path, target_path, sha256, status. Torn or partial final lines on recovery are discarded; uncommitted PREPARED entries inspect destination existence and reconcile idempotently. The CSV ledgers are reproducible, idempotent projections of the authoritative WAL journal.",
+    "preservation_of_acquired_copies": "Zero unlinking strictly means NEVER DELETING THE ONLY ACQUIRED COPY of an audio recording. Removing a redundant staging hard-link after verified, fsynced destination creation does not violate evidence preservation."
+  },
+  "phase_5_numerical_and_matrix_closure": {
+    "authoritative_byte_inventory": {
+      "accepted_audio": {
+        "file_count": 18845,
+        "exact_bytes": 704970734,
+        "mib": 672.31,
+        "mb": 704.97
+      },
+      "quarantine_audio": {
+        "file_count": 130,
+        "exact_bytes": 4780224,
+        "mib": 4.56,
+        "mb": 4.78
+      },
+      "total_evidence_base": {
+        "file_count": 18975,
+        "exact_bytes": 709750958,
+        "mib": 676.87,
+        "mb": 709.75
+      }
+    },
+    "reconciliation_of_superseded_byte_values": {
+      "accepted_delta": "+6,448 B (704,970,734 authoritative vs 704,964,286 preliminary exploratory estimate).",
+      "quarantine_delta": "-1,205 B (4,780,224 authoritative vs 4,781,429 preliminary exploratory estimate).",
+      "net_total_delta": "+5,243 B (709,750,958 authoritative vs 709,745,715 preliminary exploratory estimate).",
+      "explanation": "Earlier values were preliminary exploratory estimates; frozen ledgers and disk match to the single byte."
+    },
+    "total_adversarial_scenarios": 23,
+    "adversarial_scenarios_qualification": "All 23 scenarios represent a proposed test matrix for future validation suites. They do NOT constitute proof that the proposed staging, atomic promotion, crash recovery, and ledger reconciliation pipeline has passed those tests, because that pipeline is currently in proposal status and has not yet been implemented."
+  },
+  "protected_invariants_verification": {
+    "production_validator_unchanged": true,
+    "max_mp3_padding_frames_value": 1152,
+    "unlink_line_1049_unchanged": true,
+    "accepted_audio_files_count": 18845,
+    "quarantined_audio_files_count": 130,
+    "provisional_manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "manifest_status": "UNLOCKED",
+    "acquisition_ledger_sha256_lf": "63b24401b3ab415417b4163553da877f4ae025c65c6fe6136b27b535fa1fd9c5",
+    "quarantine_ledger_sha256_lf": "98ae234d0f6985ef42d69b5e6a79250501cd1ef27861fc0310455b96d901a2e8",
+    "confirmatory_promotions_permitted": false,
+    "speakers_substituted": 0,
+    "gpu_adaptation_blocked": true,
+    "confirmatory_inference_blocked": true
+  }
+}
