@@ -1,35 +1,22 @@
 {
   "task_identifier": "STAGE6M-GATE6-EVENT-D-VERIFICATION",
-  "generated_at_utc": "2026-11-08T13:45:00+00:00",
+  "generated_at_utc": "2026-11-08T14:15:00+00:00",
   "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
   "governing_authorization": "STAGE6M-GATE6-AUTH-DECISION-20261108",
-  "verification_scope": "Event D Stratified Paired-Cluster Bootstrap Determinism & Bitwise Reproducibility",
+  "verification_scope": "Canonical Ordered Speaker Input & Deterministic Event D Bootstrap Distribution Verification",
   "runtime_provenance": {
     "python_version": "3.11.9 (tags/v3.11.9:de54cf5) [MSC v.1938 64 bit (AMD64)]",
     "numpy_version": "1.26.4",
     "scipy_version": "1.16.1",
     "pandas_version": "2.3.3",
     "numba_version": "0.66.0",
-    "host_os": "Windows 11 (AMD64)"
+    "host_os": "Windows 11 AMD64 (Local Recorded Offline Compute Environment)"
   },
-  "input_artifacts": {
-    "prediction_stream": {
-      "path": "results/stage6m_cohort3_results/prequential_stream_records.jsonl",
-      "sha256": "42fc02cefc00f4ffd40022feade68aec8dd915818afde46ce71bd534c2b72163",
-      "records": 16500
-    },
-    "sealed_evaluation_transcripts": {
-      "path": "datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json",
-      "sha256": "f427ae7fbf386f77b0795cc1fa33b2f7831c89f89ecfce7fa30036cde5c5223e",
-      "records": 16500
-    }
-  },
-  "population_parameters": {
-    "total_evaluation_clips": 16500,
-    "total_clusters": 1100,
-    "strata_count": 5,
-    "clusters_per_stratum": 220,
-    "clips_per_cluster": 15,
+  "canonical_input_provenance": {
+    "ordered_speaker_records_json_sha256": "8526b87fb990149f744eff3fb5780c207716a7f7dda049d58c087e5f0f910dab",
+    "ordered_speaker_id_stratum_sequence_sha256": "a3597afa94c7b41283a6bcf8ea890dc37764b315d3abab1ac9cd48f578eaf82d",
+    "total_speakers": 1100,
+    "speakers_per_stratum": 220,
     "total_reference_words": 160519
   },
   "stratum_word_and_error_breakdown": {
@@ -88,7 +75,7 @@
     "arm1_disparity_range_pp": 23.160614,
     "arm2_disparity_range_pp": 80.275951,
     "arm3_disparity_range_pp": 22.779001,
-    "delta_disparity_pp": -0.381613
+    "delta_disparity_pp": -0.381618
   },
   "deterministic_bootstrap_specification": {
     "num_bootstrap_replicates": 20000,
@@ -98,48 +85,36 @@
     "execution_mode": "Deterministic NumPy Fallback (use_fast_bootstrap=False)",
     "runtime_duration_seconds": 1.80
   },
+  "bitwise_distribution_verification": {
+    "trial_1_distribution_sha256": "01f2c5635541b1cc3fd9038a52fe2b00c33e38951be5a7092c83202a5ad1182e",
+    "trial_2_distribution_sha256": "01f2c5635541b1cc3fd9038a52fe2b00c33e38951be5a7092c83202a5ad1182e",
+    "np_array_equal_result": true,
+    "determinism_status": "VERIFIED_BITWISE_DETERMINISTIC"
+  },
   "deterministic_inferential_statistics": {
     "criterion_id": "disparity_non_increase",
     "criterion_name": "Cross-Accent Disparity Non-Increase (Event D)",
     "hypothesis_test": "H1: Delta_Range <= 0.00 pp",
     "null_threshold_pp": 0.00,
     "point_estimate_pp": -0.3816,
-    "bootstrap_mean_pp": -0.3807,
-    "bootstrap_std_pp": 0.1932,
+    "exact_point_estimate": -0.381618,
+    "bootstrap_mean_pp": -0.3838,
+    "exact_bootstrap_mean": -0.383752,
+    "bootstrap_std_pp": 0.1968,
+    "exact_bootstrap_std": 0.196833,
     "nominal_alpha": 0.05,
-    "nominal_95_lcb_pp": -0.6976,
+    "nominal_95_lcb_pp": -0.7082,
     "nominal_95_ucb_pp": -0.0605,
     "raw_one_sided_p_value": 0.025850,
     "nominal_95_pass": true,
     "multiplicity_family_m": 8,
     "adjusted_alpha": 0.00625,
     "simultaneous_percentile": 99.375,
-    "adjusted_lcb_pp": -0.8710,
+    "adjusted_lcb_pp": -0.8718,
     "adjusted_ucb_pp": 0.1060,
+    "exact_adjusted_ucb": 0.106032,
     "adjusted_one_sided_p_value": 0.206800,
     "confirmatory_decision": "FAIL",
-    "interpretation": "Event D passes at nominal 95% confidence level (UCB = -0.0605 pp <= 0.00 pp, p = 0.02585), but fails under simultaneous Bonferroni multiplicity adjustment (99.375% UCB = +0.1060 pp > 0.00 pp, adjusted p = 0.206800)."
-  },
-  "bitwise_reproducibility_verification": {
-    "trial_1": {
-      "seed": 42,
-      "num_replicates": 20000,
-      "point_estimate": -0.3816,
-      "nominal_ucb_95": -0.0605,
-      "adjusted_ucb_99375": 0.1060,
-      "p_raw": 0.025850,
-      "p_adj": 0.206800
-    },
-    "trial_2": {
-      "seed": 42,
-      "num_replicates": 20000,
-      "point_estimate": -0.3816,
-      "nominal_ucb_95": -0.0605,
-      "adjusted_ucb_99375": 0.1060,
-      "p_raw": 0.025850,
-      "p_adj": 0.206800
-    },
-    "bitwise_identical": true,
-    "determinism_status": "VERIFIED_BITWISE_DETERMINISTIC"
+    "interpretation": "Event D passes at nominal 95% confidence level (UCB = -0.0605 pp <= 0.00 pp, raw p = 0.025850), but fails under simultaneous Bonferroni multiplicity adjustment (99.375% UCB = +0.1060 pp > 0.00 pp, adjusted p = 0.206800)."
   }
 }

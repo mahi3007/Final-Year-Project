@@ -1,0 +1,105 @@
+{
+  "catalogue_id": "STAGE6M-GATE6-FINAL-OUTPUT-CATALOGUE",
+  "generated_at_utc": "2026-11-08T14:15:00+00:00",
+  "governing_authorization": "STAGE6M-GATE6-AUTH-DECISION-20261108",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "closure_status": "EVIDENCE_PACKAGE_RECONCILED_AND_CLOSED",
+  "artifacts": {
+    "stage6m_gate6_final_evidence_closure_report.md": {
+      "rel_path": "reports/stage6m/stage6m_gate6_final_evidence_closure_report.md",
+      "bytes": 12972,
+      "sha256": "f5468d45828a36c4699aaf52a7caf759cbc5c67d76f9693d8a70d2a8f52250e5",
+      "description": "Authoritative Gate 6 final evidence closure report (Markdown)"
+    },
+    "stage6m_gate6_final_evidence_closure_report.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_final_evidence_closure_report.json",
+      "bytes": 3607,
+      "sha256": "d2e8a0da950486391c9f1c72aa907881b2dc8f6bbdc7b13c6884f9c25826086c",
+      "description": "Machine-readable Gate 6 final evidence closure report"
+    },
+    "stage6m_gate6_event_d_final_verification.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_event_d_final_verification.json",
+      "bytes": 2999,
+      "sha256": "545a6af0acca5fd017262ec5e3f1cb6f9c8be681b7458565b5d652f5bd39eeca",
+      "description": "Authoritative Event D deterministic bootstrap distribution verification"
+    },
+    "stage6m_gate6_event_d_deterministic_verification.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_event_d_deterministic_verification.json",
+      "bytes": 4626,
+      "sha256": "f22f77dbc13789e0e3ffc22dae58b99e53fe7b07d5d9defcfd103d3d4bbb4946",
+      "description": "Reconciled Event D deterministic bootstrap verification record"
+    },
+    "stage6m_gate6_canonical_speaker_input_provenance.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_canonical_speaker_input_provenance.json",
+      "bytes": 1308,
+      "sha256": "c22f1e1ff23fffb70c8cbb3d577a11b5f7429d2a04d2c398820cbb0cd25c8225",
+      "description": "Canonical stream-ordered speaker input provenance record"
+    },
+    "stage6m_gate6_deterministic_scoring_execution.log": {
+      "rel_path": "reports/stage6m/stage6m_gate6_deterministic_scoring_execution.log",
+      "bytes": 7616,
+      "sha256": "daa2bab280c9ec43f673902919568061844d24eb7ae8f4398c9fb9fa13d52cf3",
+      "description": "Authoritative deterministic scoring execution log"
+    },
+    "stage6m_gate6_source_input_provenance.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_source_input_provenance.json",
+      "bytes": 3374,
+      "sha256": "10ece3ca7e1b0fc43ced69b63592fe3660f9e6aebe006123d2e1f7bb4ae76dec",
+      "description": "Source code, protocol spec, and benchmark input provenance registry"
+    },
+    "stage6m_gate6_offline_scoring_report.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_offline_scoring_report.json",
+      "bytes": 8368,
+      "sha256": "525fdb650a62935ee5b430f59aea2d95946b5aac9987eba881c45ef25605328e",
+      "description": "Authoritative machine-readable Gate 6 offline multiplicity scoring report"
+    },
+    "stage6m_gate6_offline_scoring_report.md": {
+      "rel_path": "reports/stage6m/stage6m_gate6_offline_scoring_report.md",
+      "bytes": 19589,
+      "sha256": "a74f8093ff329d1ee7ce1ec148fcae6dceb905a3719d446f508e2e403e6cbaed",
+      "description": "Authoritative formal Gate 6 offline multiplicity scoring report (Markdown)"
+    },
+    "stage6m_gate6_scoring_execution.log": {
+      "rel_path": "reports/stage6m/stage6m_gate6_scoring_execution.log",
+      "bytes": 8270,
+      "sha256": "b0c6d6de39c666af7b5ba47022c4f0562b0f4664c893d04e407c1cf0777028ef",
+      "description": "ORIGINAL_PRELIMINARY_SCORING_LOG_UNSEEDED_NUMBA (Historical preliminary execution record)"
+    },
+    "stage6m_gate6_numeric_reconciliation.md": {
+      "rel_path": "reports/stage6m/stage6m_gate6_numeric_reconciliation.md",
+      "bytes": 9606,
+      "sha256": "78be2a0a917baf46e1b18564c34f837c0b959ee96f2ae06a65ff224a1f094be2",
+      "description": "Canonical error and word count reconciliation report"
+    },
+    "stage6m_gate6_corrected_scientific_interpretation.md": {
+      "rel_path": "reports/stage6m/stage6m_gate6_corrected_scientific_interpretation.md",
+      "bytes": 8035,
+      "sha256": "817f7c9f9c24d8b4a25ec7944fd853a231725830da610ce056bfca54d7332969",
+      "description": "Calibrated scientific interpretation & dissertation guidance"
+    },
+    "stage6m_gate6_reproducibility_audit.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_reproducibility_audit.json",
+      "bytes": 4455,
+      "sha256": "29315bfa9cf2672ab0c4ecac6f9009bc067fbd45c659b56f8d8d98c028055ccb",
+      "description": "Machine-readable reproducibility audit findings"
+    },
+    "stage6m_gate6_reproducibility_audit.md": {
+      "rel_path": "reports/stage6m/stage6m_gate6_reproducibility_audit.md",
+      "bytes": 13197,
+      "sha256": "5aeb2b1f63fe88ff130047046522097c2cfbf71e1069b7ba3f3e503e387aa712",
+      "description": "Formal reproducibility audit report (Markdown)"
+    },
+    "stage6m_gate6_authorization_record.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_authorization_record.json",
+      "bytes": 2482,
+      "sha256": "7f1a9330402bd7cd19d25e47ce308a39e806f3335e656b1f7142675cd579df08",
+      "description": "Formal Project Lead Gate 6 authorization record"
+    },
+    "stage6m_gate6_authorization_record.md": {
+      "rel_path": "reports/stage6m/stage6m_gate6_authorization_record.md",
+      "bytes": 4536,
+      "sha256": "c798c865f89a99a9b782c66e578a8a4cb0fb2ede82f2dc9d253e3268bae2f97f",
+      "description": "Formal Project Lead Gate 6 authorization dossier (Markdown)"
+    }
+  }
+}

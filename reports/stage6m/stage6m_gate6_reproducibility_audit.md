@@ -48,7 +48,7 @@ The execution environment and imported libraries were independently audited:
 Event D evaluates cross-accent disparity non-increase across the 5 confirmatory strata:
 $$H_1: \Delta D \le 0.00\text{ pp}, \quad \text{where } \Delta D = D_{\text{DSG}} - D_{\text{Static}}$$
 
-The deterministic bootstrap ($B = 20,000$, $\text{seed} = 42$) over 1,100 speaker clusters (220 clusters per stratum) yielded:
+The deterministic bootstrap ($B = 20,000$, $\text{seed} = 42$) over 1,100 canonical stream-ordered speaker clusters (`ordered_speaker_records_json_sha256 = 8526b87fb990149f744eff3fb5780c207716a7f7dda049d58c087e5f0f910dab`, 220 clusters per stratum) yielded:
 
 ```
 ───────────────────────────────────────────────────────────────────────────────────────
@@ -56,19 +56,22 @@ EVENT D DETERMINISTIC INFERENTIAL STATISTICS (B = 20,000, seed = 42)
 ───────────────────────────────────────────────────────────────────────────────────────
 Arm 1 (Static) Disparity:             23.1606 pp (South Asian 37.11% - Canadian 13.95%)
 Arm 3 (DSG) Disparity:                22.7790 pp (South Asian 37.36% - Canadian 14.58%)
-Point Estimate (Delta D):             -0.3816 pp (-0.38 pp)
-Bootstrap Distribution Mean:          -0.3807 pp
-Bootstrap Distribution Std Error:      0.1932 pp
+Point Estimate (Delta D):             -0.3816 pp (-0.381618 pp)
+Bootstrap Distribution Mean:          -0.3838 pp (-0.383752 pp)
+Bootstrap Distribution Std Error:      0.1968 pp (0.196833 pp)
 ───────────────────────────────────────────────────────────────────────────────────────
 Nominal Confidence Bound (95%):
+  One-Sided Lower Confidence Bound:   -0.7082 pp
   One-Sided Upper Confidence Bound:   -0.0605 pp (<= 0.00 pp) -> PASS at nominal alpha=0.05
   Raw One-Sided p-value:               0.025850 (< 0.05)
 ───────────────────────────────────────────────────────────────────────────────────────
 Simultaneous Bonferroni Bound (99.375%, M = 8):
+  One-Sided Lower Confidence Bound:   -0.8718 pp
   One-Sided Upper Confidence Bound:   +0.1060 pp (> 0.00 pp)  -> FAIL at simultaneous alpha=0.00625
   Adjusted One-Sided p-value:          0.206800 (> 0.05)
 ───────────────────────────────────────────────────────────────────────────────────────
-Bitwise Reproducibility Across Runs:  VERIFIED BITWISE IDENTICAL
+Full Distribution SHA-256 Digest:     01f2c5635541b1cc3fd9038a52fe2b00c33e38951be5a7092c83202a5ad1182e
+Bitwise Array Equality Across Runs:   TRUE (np.array_equal verified)
 ───────────────────────────────────────────────────────────────────────────────────────
 ```
 

@@ -1,0 +1,83 @@
+{
+  "closure_report_identifier": "STAGE6M-GATE6-FINAL-EVIDENCE-CLOSURE-REPORT",
+  "generated_at_utc": "2026-11-08T14:15:00+00:00",
+  "governing_authorization": "STAGE6M-GATE6-AUTH-DECISION-20261108",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "previous_audit_commit": "d8321cae40028e2c1be50cecca41b0311faf9643",
+  "closure_verdict": "EVIDENCE_PACKAGE_RECONCILED_AND_CLOSED",
+  "confirmatory_benchmark_verdict": "INCONCLUSIVE",
+  "reproducibility_checklist": {
+    "item_1_historical_preliminary_log_preserved": {
+      "status": "PASS",
+      "path": "reports/stage6m/stage6m_gate6_scoring_execution.log",
+      "bytes": 8270,
+      "sha256": "b0c6d6de39c666af7b5ba47022c4f0562b0f4664c893d04e407c1cf0777028ef",
+      "catalogue_label": "ORIGINAL_PRELIMINARY_SCORING_LOG_UNSEEDED_NUMBA"
+    },
+    "item_2_canonical_ordered_speaker_records": {
+      "status": "PASS",
+      "total_speakers": 1100,
+      "speakers_per_stratum": 220,
+      "ordering_rule": "First-appearance in prequential prediction stream"
+    },
+    "item_3_canonical_speaker_input_digest_recorded": {
+      "status": "PASS",
+      "ordered_speaker_records_json_sha256": "8526b87fb990149f744eff3fb5780c207716a7f7dda049d58c087e5f0f910dab",
+      "ordered_speaker_id_stratum_sequence_sha256": "a3597afa94c7b41283a6bcf8ea890dc37764b315d3abab1ac9cd48f578eaf82d"
+    },
+    "item_4_deterministic_bootstrap_parameters": {
+      "status": "PASS",
+      "bootstrap_replicates": 20000,
+      "seed": 42,
+      "engine": "NumPy deterministic fallback (use_fast_bootstrap=False)"
+    },
+    "item_5_full_bootstrap_distribution_array_equal": {
+      "status": "PASS",
+      "verification": "np.array_equal(distribution_run_1, distribution_run_2) == True"
+    },
+    "item_6_complete_distribution_sha256_match": {
+      "status": "PASS",
+      "distribution_sha256": "01f2c5635541b1cc3fd9038a52fe2b00c33e38951be5a7092c83202a5ad1182e"
+    },
+    "item_7_cross_artifact_statistical_reconciliation": {
+      "status": "PASS",
+      "reconciled_statistics": {
+        "point_estimate_pp": -0.3816,
+        "bootstrap_mean_pp": -0.3838,
+        "bootstrap_std_pp": 0.1968,
+        "nominal_95_lcb_pp": -0.7082,
+        "nominal_95_ucb_pp": -0.0605,
+        "simultaneous_99375_lcb_pp": -0.8718,
+        "simultaneous_99375_ucb_pp": 0.1060,
+        "raw_p_value": 0.025850,
+        "adjusted_p_value": 0.206800
+      },
+      "verification": "stage6m_gate6_offline_scoring_report.json and stage6m_gate6_event_d_final_verification.json agree exactly on all reported statistics."
+    },
+    "item_8_preliminary_log_labeled": {
+      "status": "PASS",
+      "metadata_label": "ORIGINAL_PRELIMINARY_SCORING_LOG_UNSEEDED_NUMBA"
+    },
+    "item_9_authoritative_deterministic_log_created": {
+      "status": "PASS",
+      "path": "reports/stage6m/stage6m_gate6_deterministic_scoring_execution.log"
+    },
+    "item_10_source_code_and_input_provenance_recorded": {
+      "status": "PASS",
+      "path": "reports/stage6m/stage6m_gate6_source_input_provenance.json",
+      "artifacts_count": 10
+    },
+    "item_11_sealed_transcript_key_excluded_from_git": {
+      "status": "PASS",
+      "git_tracking_status": "EXCLUDED",
+      "remote_branch_status": "NOT_FOUND_404"
+    },
+    "item_12_confirmatory_verdict_retained": {
+      "status": "PASS",
+      "verdict": "INCONCLUSIVE",
+      "rule": "SUCCESS <=> Event A and Event B and Event C and Event D",
+      "evaluation": "FAIL (Event A failed by +0.15 pp; Event D failed by +0.11 pp simultaneous UCB)"
+    }
+  }
+}

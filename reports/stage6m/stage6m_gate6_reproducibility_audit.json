@@ -24,14 +24,21 @@
       "seed": 42,
       "execution_path": "Deterministic Fallback (np.random.default_rng(42))",
       "runtime_seconds": 1.80,
+      "ordered_speaker_records_json_sha256": "8526b87fb990149f744eff3fb5780c207716a7f7dda049d58c087e5f0f910dab",
+      "distribution_sha256": "01f2c5635541b1cc3fd9038a52fe2b00c33e38951be5a7092c83202a5ad1182e",
+      "np_array_equal": true,
       "point_estimate_pp": -0.3816,
+      "bootstrap_mean_pp": -0.3838,
+      "bootstrap_std_pp": 0.1968,
+      "nominal_95_lcb_pp": -0.7082,
       "nominal_95_ucb_pp": -0.0605,
+      "adjusted_99375_lcb_pp": -0.8718,
       "adjusted_99375_ucb_pp": 0.1060,
       "p_raw": 0.025850,
       "p_adj": 0.206800,
       "nominal_decision": "PASS",
       "confirmatory_decision": "FAIL",
-      "reproducibility_check": "Identical results (+0.1060 pp) obtained across repeated runs with seed 42."
+      "reproducibility_check": "Identical distribution (SHA-256 01f2c563...) and results (+0.1060 pp) obtained across repeated runs with seed 42."
     },
     "phase_3_numeric_reconciliation": {
       "status": "RECONCILED_AND_UNIFIED",

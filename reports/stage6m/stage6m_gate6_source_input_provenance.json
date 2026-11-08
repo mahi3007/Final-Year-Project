@@ -1,0 +1,71 @@
+{
+  "provenance_registry_identifier": "STAGE6M-GATE6-SOURCE-INPUT-PROVENANCE",
+  "generated_at_utc": "2026-11-08T14:15:00+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_authorization": "STAGE6M-GATE6-AUTH-DECISION-20261108",
+  "source_code_artifacts": {
+    "offline_scoring_script": {
+      "path": "scripts/score_stage6m_cohort3_offline_gate6.py",
+      "bytes": 8433,
+      "sha256": "c1d500fe164a2a5722637c0dc4533fb0c31b8c4d7fd82c5b9a976828fc7c97c8",
+      "role": "Canonical offline scoring pipeline orchestrator"
+    },
+    "paired_cluster_inference_module": {
+      "path": "src/dsg_ctta/evaluation/paired_cluster_inference_v15.py",
+      "bytes": 34308,
+      "sha256": "3da236bcfdfa03f61c6c925ed68a41aff6518f1b740fb8169681623ccd453e58",
+      "role": "Confirmatory paired-cluster inference engine (v1.5.0-Approved)"
+    },
+    "metrics_implementation": {
+      "path": "src/dsg_ctta/offline/metrics.py",
+      "bytes": 4065,
+      "sha256": "090fa889c2131e3980abac61e72759a0ac93151066a86ce7c9a185971747fdf6",
+      "role": "Levenshtein edit-distance dynamic programming evaluation module"
+    },
+    "text_normalizer": {
+      "path": "src/dsg_ctta/data/normalization.py",
+      "bytes": 1924,
+      "sha256": "2a500503e7b8d820e60eb4f2c97581f0ad0299d570ee338a4af42fe61b52965d",
+      "role": "Canonical ASR text normalizer implementation"
+    },
+    "protocol_specification": {
+      "path": "reports/stage6m/stage6m_v1_5_candidate_five_stratum_protocol_spec.md",
+      "bytes": 13974,
+      "sha256": "48152fefacb007387df4d8cd6e81cf3aafdf928372ec5f0e53296ae89ae71ff0",
+      "role": "Approved Stage 6M v1.5 Five-Stratum confirmatory protocol specification"
+    }
+  },
+  "benchmark_input_artifacts": {
+    "prediction_stream": {
+      "path": "results/stage6m_cohort3_results/prequential_stream_records.jsonl",
+      "bytes": 6935760,
+      "sha256": "42fc02cefc00f4ffd40022feade68aec8dd915818afde46ce71bd534c2b72163",
+      "role": "Frozen prequential prediction records (4,125 windows, 16,500 clips, 49,500 arm outputs)"
+    },
+    "sealed_evaluation_transcripts_key": {
+      "path": "datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json",
+      "bytes": 10430837,
+      "sha256": "f427ae7fbf386f77b0795cc1fa33b2f7831c89f89ecfce7fa30036cde5c5223e",
+      "role": "Sealed evaluation transcript reference key (cryptographic digest only; excluded from tracking)"
+    },
+    "locked_final_manifest": {
+      "path": "datasets/splits/stage6m_cohort3_final_manifest.json",
+      "bytes": 26680115,
+      "sha256": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+      "role": "Canonical locked final evaluation manifest"
+    },
+    "online_inference_manifest": {
+      "path": "datasets/splits/stage6m_cohort3_online_inference_manifest.json",
+      "bytes": 27731809,
+      "sha256": "0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1",
+      "role": "Online inference streaming schedule manifest"
+    },
+    "materialization_disposition_ledger": {
+      "path": "datasets/splits/stage6m_cohort3_materialization_disposition_ledger.csv",
+      "bytes": 8637604,
+      "sha256": "b242282ef1586219885f475fba0d1de117e7b68289ca9a42e36378cac638a0c5",
+      "role": "Complete materialization disposition audit ledger"
+    }
+  },
+  "verification_verdict": "PASS"
+}

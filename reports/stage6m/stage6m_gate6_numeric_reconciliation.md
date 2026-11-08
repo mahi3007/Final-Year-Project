@@ -97,17 +97,19 @@ This empirical finding conclusively demonstrates that unconstrained test-time ad
 
 ## 5. Event D Bootstrap Verification & Reconciled Statistics
 
-The initial report recorded a nominal 95% UCB of $-0.02\text{ pp}$ and simultaneous UCB of $+0.11\text{ pp}$ from an unseeded fast execution. Running the deterministic stratified paired-cluster bootstrap ($B = 20,000$, $\text{seed} = 42$, `use_fast_bootstrap=False`) yields the bitwise reproducible values:
+The initial report recorded a nominal 95% UCB of $-0.02\text{ pp}$ and simultaneous UCB of $+0.11\text{ pp}$ from an unseeded fast execution. Running the deterministic stratified paired-cluster bootstrap ($B = 20,000$, $\text{seed} = 42$, `use_fast_bootstrap=False`) on the canonical stream-ordered speaker records (`ordered_speaker_records_json_sha256 = 8526b87fb990149f744eff3fb5780c207716a7f7dda049d58c087e5f0f910dab`) yields the bitwise reproducible values across independent trials (`np.array_equal = True`, distribution digest `01f2c5635541b1cc3fd9038a52fe2b00c33e38951be5a7092c83202a5ad1182e`):
 
-| Statistic | Raw Preliminary Run | Deterministic Verification Run | Registered Threshold | Status |
+| Statistic | Raw Preliminary Run | Deterministic Canonical Run | Registered Threshold | Status |
 | :--- | :---: | :---: | :---: | :---: |
-| **Point Estimate ($\Delta D$)** | $-0.38\text{ pp}$ | **$-0.3816\text{ pp}$** | N/A | Point reduction |
-| **Bootstrap Mean** | $-0.38\text{ pp}$ | **$-0.3807\text{ pp}$** | N/A | Unbiased |
-| **Bootstrap Std Error** | $0.19\text{ pp}$ | **$0.1932\text{ pp}$** | N/A | Stable |
-| **Nominal 95% One-Sided UCB** | $-0.02\text{ pp}$ | **$-0.0605\text{ pp}$** | $\le 0.00\text{ pp}$ | **PASS** at nominal $\alpha = 0.05$ |
+| **Point Estimate ($\Delta D$)** | $-0.38\text{ pp}$ | **$-0.3816\text{ pp}$** ($-0.381618\text{ pp}$) | N/A | Point reduction |
+| **Bootstrap Mean** | $-0.38\text{ pp}$ | **$-0.3838\text{ pp}$** ($-0.383752\text{ pp}$) | N/A | Unbiased |
+| **Bootstrap Std Error** | $0.19\text{ pp}$ | **$0.1968\text{ pp}$** ($0.196833\text{ pp}$) | N/A | Stable |
+| **Nominal 95% One-Sided LCB** | $-0.70\text{ pp}$ | **$-0.7082\text{ pp}$** ($-0.708196\text{ pp}$) | N/A | Lower band |
+| **Nominal 95% One-Sided UCB** | $-0.02\text{ pp}$ | **$-0.0605\text{ pp}$** ($-0.060489\text{ pp}$) | $\le 0.00\text{ pp}$ | **PASS** at nominal $\alpha = 0.05$ |
 | **Nominal Raw $p$-value** | $0.0261$ | **$0.025850$** | $< 0.05$ | Statistically significant raw |
-| **Simultaneous 99.375% One-Sided UCB**| $+0.11\text{ pp}$ | **$+0.1060\text{ pp}$** | $\le 0.00\text{ pp}$ | **FAIL** at simultaneous $\alpha = 0.00625$ |
+| **Simultaneous 99.375% LCB** | $-0.87\text{ pp}$ | **$-0.8718\text{ pp}$** ($-0.871801\text{ pp}$) | N/A | Simultaneous lower band |
+| **Simultaneous 99.375% One-Sided UCB**| $+0.11\text{ pp}$ | **$+0.1060\text{ pp}$** ($+0.106032\text{ pp}$) | $\le 0.00\text{ pp}$ | **FAIL** at simultaneous $\alpha = 0.00625$ |
 | **Adjusted $p$-value ($M = 8$)** | $0.2084$ | **$0.206800$** | $< 0.05$ | Not significant after Bonferroni |
 
 ### Conclusion
-The empirical point estimate confirms that DSG reduces cross-accent disparity by $0.38\text{ pp}$, and the nominal 95% confidence bound excludes any disparity increase ($-0.0605\text{ pp} \le 0.00\text{ pp}$). However, after controlling family-wise error across all $M = 8$ hypotheses, the simultaneous upper bound reaches $+0.1060\text{ pp}$. In accordance with the pre-registered decision rule, Event D strictly evaluates to `FAIL`.
+The empirical point estimate confirms that DSG reduces cross-accent disparity by $0.38\text{ pp}$, and the nominal 95% confidence bound excludes any disparity increase ($-0.0605\text{ pp} \le 0.00\text{ pp}$). However, after controlling family-wise error across all $M = 8$ hypotheses, the simultaneous upper bound reaches $+0.1060\text{ pp}$. In accordance with the pre-registered decision rule, Event D strictly evaluates to `FAIL`. Both `stage6m_gate6_offline_scoring_report.json` and `stage6m_gate6_event_d_final_verification.json` now agree on these exact values to all reported decimal places.

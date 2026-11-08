@@ -1,0 +1,29 @@
+{
+  "provenance_identifier": "STAGE6M-GATE6-CANONICAL-SPEAKER-INPUT-PROVENANCE",
+  "generated_at_utc": "2026-11-08T14:15:00+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_authorization": "STAGE6M-GATE6-AUTH-DECISION-20261108",
+  "aggregation_methodology": {
+    "stream_source": "results/stage6m_cohort3_results/prequential_stream_records.jsonl",
+    "stream_records_count": 16500,
+    "aggregation_granularity": "Speaker cluster (15 clips per speaker, exactly 1,100 speakers)",
+    "speaker_ordering_rule": "First-appearance insertion order within prequential streaming sequence (stream order invariant)"
+  },
+  "speaker_population_metrics": {
+    "total_evaluation_speakers": 1100,
+    "speakers_per_stratum": {
+      "Australian English": 220,
+      "Canadian English": 220,
+      "England English": 220,
+      "South Asian English": 220,
+      "US English": 220
+    },
+    "clips_per_speaker": 15,
+    "total_reference_words": 160519
+  },
+  "cryptographic_input_digests": {
+    "ordered_speaker_records_json_sha256": "8526b87fb990149f744eff3fb5780c207716a7f7dda049d58c087e5f0f910dab",
+    "ordered_speaker_id_stratum_sequence_sha256": "a3597afa94c7b41283a6bcf8ea890dc37764b315d3abab1ac9cd48f578eaf82d"
+  },
+  "verification_verdict": "PASS"
+}
