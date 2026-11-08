@@ -27,7 +27,7 @@ Scoring Script:        c1d500fe164a2a5722637c0dc4533fb0c31b8c4d7fd82c5b9a976828f
 Inference Module:      3da236bcfdfa03f61c6c925ed68a41aff6518f1b740fb8169681623ccd453e58  src/dsg_ctta/evaluation/paired_cluster_inference_v15.py
 Metrics Module:        090fa889c2131e3980abac61e72759a0ac93151066a86ce7c9a185971747fdf6  src/dsg_ctta/offline/metrics.py
 TextNormalizer:        2a500503e7b8d820e60eb4f2c97581f0ad0299d570ee338a4af42fe61b52965d  src/dsg_ctta/data/normalization.py
-Approved Protocol Spec:48152fefacb007387df4d8cd6e81cf3aafdf928372ec5f0e53296ae89ae71ff0  reports/stage6m/stage6v1_5_candidate_five_stratum_protocol_spec.md
+Approved Protocol Spec:48152fefacb007387df4d8cd6e81cf3aafdf928372ec5f0e53296ae89ae71ff0  reports/stage6m/stage6m_v1_5_candidate_five_stratum_protocol_spec.md
 Prediction Stream:     42fc02cefc00f4ffd40022feade68aec8dd915818afde46ce71bd534c2b72163  results/stage6m_cohort3_results/prequential_stream_records.jsonl
 Sealed Key (Digest):   f427ae7fbf386f77b0795cc1fa33b2f7831c89f89ecfce7fa30036cde5c5223e  datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json
 Final Manifest:        171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0  datasets/splits/stage6m_cohort3_final_manifest.json
@@ -125,3 +125,4 @@ Historical Log Note:   The preliminary unseeded log (stage6m_gate6_scoring_execu
                        is preserved bitwise unchanged as historical evidence under catalogue
                        entry ORIGINAL_PRELIMINARY_SCORING_LOG_UNSEEDED_NUMBA.
 ================================================================================
+

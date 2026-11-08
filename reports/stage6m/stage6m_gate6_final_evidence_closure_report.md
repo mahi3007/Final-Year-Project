@@ -115,7 +115,7 @@ Under Protocol Section 14.7, the confirmatory benchmark evaluates the synchronou
 $$\text{SUCCESS} \iff \text{Event A} \land \text{Event B} \land \text{Event C} \land \text{Event D}$$
 
 1. **Event B (`PASS`):** Statistically significant superiority over ungated SUTA ($\Delta = -39.4047\text{ pp}$, simultaneous $\text{UCB} = -36.7776\text{ pp} < 0.00\text{ pp}$, $p < 10^{-6}$).
-2. **Event C (`PASS`):** Statistically significant compliance with all 5 regional accent safety regression guards ($\text{UCBs} \le +0.93\text{ pp}$ across all strata vs. the $+2.00\text{ pp}$ ceiling).
+2. **Event C (`PASS`):** Met all five pre-registered accent safety regression guards under simultaneous multiplicity-adjusted confidence bounds ($\text{UCBs} \le +0.93\text{ pp}$ across all strata vs. the $+2.00\text{ pp}$ ceiling).
 3. **Event A (`FAIL`):** Superiority over the static foundation model was not demonstrated ($\Delta = +0.1489\text{ pp}$, simultaneous $\text{UCB} = +0.3024\text{ pp} \ge 0.00\text{ pp}$).
 4. **Event D (`FAIL`):** Disparity non-increase was not demonstrated under simultaneous Bonferroni multiplicity adjustment ($\Delta D = -0.3816\text{ pp}$, nominal 95% $\text{UCB} = -0.0605\text{ pp}$, but simultaneous 99.375% $\text{UCB} = +0.1060\text{ pp} > 0.00\text{ pp}$).
 
@@ -123,5 +123,6 @@ $$\text{SUCCESS} \iff \text{Event A} \land \text{Event B} \land \text{Event C} \
 
 This result represents the strongest possible foundation for the doctoral dissertation:
 - It confirms that Continual Test-Time Adaptation without sentinel governance is susceptible to catastrophic deletion collapse (3,299 empty decoded hypotheses out of 3,300 clips on US English in the evaluated configuration).
-- It proves that Disparity Safety Gating (DSG) reliably prevents this collapse over 16,500 clips, maintaining tight empirical parity ($+0.15\text{ pp}$) with the foundation model.
+- In the evaluated Wav2Vec2-base streaming configuration, the DSG arm avoided the severe degradation observed in the ungated SUTA arm, achieving a pooled WER of 20.9489% compared with 60.3536%. These findings are specific to the evaluated model, dataset, streaming configuration, and adaptation procedure.
 - It provides an honest, publication-grade finding adhering strictly to pre-registered family-wise error control without post-hoc rationalization.
+

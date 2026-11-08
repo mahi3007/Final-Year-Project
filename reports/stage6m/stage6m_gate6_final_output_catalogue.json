@@ -1,26 +1,26 @@
 {
   "catalogue_id": "STAGE6M-GATE6-FINAL-OUTPUT-CATALOGUE",
-  "generated_at_utc": "2026-11-08T14:15:00+00:00",
+  "generated_at_utc": "2026-11-08T14:25:00+00:00",
   "governing_authorization": "STAGE6M-GATE6-AUTH-DECISION-20261108",
   "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
   "closure_status": "EVIDENCE_PACKAGE_RECONCILED_AND_CLOSED",
   "artifacts": {
     "stage6m_gate6_final_evidence_closure_report.md": {
       "rel_path": "reports/stage6m/stage6m_gate6_final_evidence_closure_report.md",
-      "bytes": 12972,
-      "sha256": "f5468d45828a36c4699aaf52a7caf759cbc5c67d76f9693d8a70d2a8f52250e5",
+      "bytes": 13129,
+      "sha256": "2cbd31522da2c765b5323ef17b786b2070daff95d62d95d81999e30f227a86a0",
       "description": "Authoritative Gate 6 final evidence closure report (Markdown)"
     },
     "stage6m_gate6_final_evidence_closure_report.json": {
       "rel_path": "reports/stage6m/stage6m_gate6_final_evidence_closure_report.json",
-      "bytes": 3607,
-      "sha256": "d2e8a0da950486391c9f1c72aa907881b2dc8f6bbdc7b13c6884f9c25826086c",
+      "bytes": 3608,
+      "sha256": "c5c2b278b8f5fef33262ab5b76bbb155127b40b8f937313fb1f6877bcea1b2e4",
       "description": "Machine-readable Gate 6 final evidence closure report"
     },
     "stage6m_gate6_event_d_final_verification.json": {
       "rel_path": "reports/stage6m/stage6m_gate6_event_d_final_verification.json",
-      "bytes": 2999,
-      "sha256": "545a6af0acca5fd017262ec5e3f1cb6f9c8be681b7458565b5d652f5bd39eeca",
+      "bytes": 3000,
+      "sha256": "f7a0122fe92cdb6cb9d471815f614764c599c5326c937bd963182e3404e3d280",
       "description": "Authoritative Event D deterministic bootstrap distribution verification"
     },
     "stage6m_gate6_event_d_deterministic_verification.json": {
@@ -31,20 +31,20 @@
     },
     "stage6m_gate6_canonical_speaker_input_provenance.json": {
       "rel_path": "reports/stage6m/stage6m_gate6_canonical_speaker_input_provenance.json",
-      "bytes": 1308,
-      "sha256": "c22f1e1ff23fffb70c8cbb3d577a11b5f7429d2a04d2c398820cbb0cd25c8225",
+      "bytes": 1309,
+      "sha256": "175902192cd77c93b540c087261b97cd235f1a8b87c3281c4fe3326803e1b158",
       "description": "Canonical stream-ordered speaker input provenance record"
     },
     "stage6m_gate6_deterministic_scoring_execution.log": {
       "rel_path": "reports/stage6m/stage6m_gate6_deterministic_scoring_execution.log",
-      "bytes": 7616,
-      "sha256": "daa2bab280c9ec43f673902919568061844d24eb7ae8f4398c9fb9fa13d52cf3",
+      "bytes": 7619,
+      "sha256": "bfe4ce6b78aace90d118e2161fa6267c0c9511853439d011c11945212aa980a0",
       "description": "Authoritative deterministic scoring execution log"
     },
     "stage6m_gate6_source_input_provenance.json": {
       "rel_path": "reports/stage6m/stage6m_gate6_source_input_provenance.json",
-      "bytes": 3374,
-      "sha256": "10ece3ca7e1b0fc43ced69b63592fe3660f9e6aebe006123d2e1f7bb4ae76dec",
+      "bytes": 3375,
+      "sha256": "fc4acb542feefa44e129f92c19518376eb8e64efc5a64c21f54e470fef03ab34",
       "description": "Source code, protocol spec, and benchmark input provenance registry"
     },
     "stage6m_gate6_offline_scoring_report.json": {
