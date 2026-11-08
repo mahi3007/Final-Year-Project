@@ -2,7 +2,7 @@
   "report_id": "STAGE6M-GATE5-TECHNICAL-CLOSEOUT-REPORT",
   "timestamp_utc": "2026-11-08T12:44:34.162411+00:00",
   "governing_authorization": "STAGE6M-GATE5-AUTH-DECISION-20261108",
-  "overall_status": "REQUIRES_PROJECT_LEAD_DECISION",
+  "overall_status": "REMEDIATION_COMPLETED_PENDING_GATE6_AUTH",
   "tasks": {
     "task_1_sealed_key_exposure_investigation": {
       "status": "PASS",
@@ -25,7 +25,7 @@
       }
     },
     "task_2_remediation_plan": {
-      "status": "REQUIRES_PROJECT_LEAD_DECISION",
+      "status": "PASS",
       "plan": {
         "step_1": "Change repository visibility to Private via GitHub UI Settings.",
         "step_2": "Create local reference backup branch: backup-stage6m-gate5-5062e50.",
@@ -33,6 +33,16 @@
         "step_4": "Excise sealed key from commit 5062e50 via git rm --cached and git commit --amend.",
         "step_5": "Verify zero commits in git history reference the blob.",
         "step_6": "Execute git push --force-with-lease origin stage6m-five-stratum-parity only upon explicit Project Lead authorization."
+      },
+      "remediation_execution_record": {
+        "executed_at_utc": "2026-11-08T12:55:09.325392+00:00",
+        "repository_privacy_status": "PRIVATE (Verified by user)",
+        "backup_branch_created": "backup-stage6m-gate5-5062e50",
+        "gitignore_hardened": true,
+        "amended_commit": "0058aca0792945d8b671607f2df48ae382a5266d",
+        "superseded_commit": "5062e504e9c6fbb1ec5aa0ebf6a92c5ebbb05b62",
+        "remote_update_disposition": "FORCED_UPDATE_LEASE_SUCCESS",
+        "file_presence_in_published_remote_refs": false
       }
     },
     "task_3_three_arm_prediction_audit": {

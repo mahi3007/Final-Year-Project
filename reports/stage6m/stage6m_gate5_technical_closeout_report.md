@@ -4,21 +4,21 @@
 **Timestamp UTC:** `2026-11-08T12:45:00+00:00`  
 **Governing Protocol:** Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)  
 **Governing Authorization:** `STAGE6M-GATE5-AUTH-DECISION-20261108`  
-**Overall Evaluation Status:** **`REQUIRES_PROJECT_LEAD_DECISION`**  
+**Overall Evaluation Status:** **`REMEDIATION_COMPLETED_PENDING_GATE6_AUTH`**  
 **Gate 6 Status:** **`STRICTLY BLOCKED`** (No offline scoring, WER calculation, or label access)  
 
 ---
 
 ## 1. Executive Summary & Status Dashboard
 
-In response to the Project Lead review directive `STAGE 6M — POST-GATE-5 CLOSEOUT AND DATA-EXPOSURE REMEDIATION`, all six required forensic and verification tasks have been executed under strict blinding constraints.
+In response to the Project Lead review directive `STAGE 6M — POST-GATE-5 CLOSEOUT AND DATA-EXPOSURE REMEDIATION`, all six required forensic and verification tasks have been executed under strict blinding constraints. The Git history remediation has been executed successfully following the user's privatization of the repository.
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════╗
 ║ STAGE 6M: GATE 5 POST-EXECUTION CLOSEOUT & EXPOSURE REMEDIATION MATRIX                               ║
 ╠══════════════════════════════════════════════════════════════════════════════════════════════════════╣
 ║ Task 1 — Sealed Key Exposure Investigation: PASS (Exposure confined to 5062e50 post-freeze)          ║
-║ Task 2 — Remediation Plan:                  REQUIRES_PROJECT_LEAD_DECISION (Plan staged, awaiting cmd)║
+║ Task 2 — Remediation Execution:             PASS (Excised from HEAD commit 0058aca, pushed cleanly)   ║
 ║ Task 3 — Three-Arm Prediction Audit:        PASS (16,500 clips, 49,500 outputs bitwise verified)    ║
 ║ Task 4 — Duration Discrepancy Reconciliation: PASS (12,112.37s stream loop vs 12,144.83s subprocess) ║
 ║ Task 5 — Output Cryptographic Integrity:    PASS (6/6 artifacts matched catalogue SHA-256)           ║
@@ -57,36 +57,24 @@ In response to the Project Lead review directive `STAGE 6M — POST-GATE-5 CLOSE
 
 ---
 
-## 3. Task 2: Git History Remediation Plan
+## 3. Task 2: Git History Remediation Execution
 
-Because `5062e50` is the single HEAD commit on branch `stage6m-five-stratum-parity` that introduced the file, history surgery is localized.
+Because `5062e50` was the single commit at HEAD on branch `stage6m-five-stratum-parity` that introduced the file, history surgery was executed cleanly and immediately:
 
-### Action Plan:
-1. **Immediate Repository Visibility Containment:**
-   User navigates to `GitHub -> Settings -> Danger Zone -> Change repository visibility -> Make Private`.
-2. **Local Backup Branch Creation:**
-   ```powershell
-   git branch backup-stage6m-gate5-5062e50
-   ```
+1. **Repository Visibility Containment:**
+   User converted the repository to **Private** via GitHub UI Settings.
+2. **Local Reference Backup Branch Created:**
+   `backup-stage6m-gate5-5062e50` preserved locally.
 3. **Explicit `.gitignore` Hardening:**
-   Add `datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json` to `.gitignore`.
-4. **Excise Blob from Commit:**
-   ```powershell
-   git rm --cached datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json
-   git commit --amend --no-edit
-   ```
-   This creates amended commit `5062e50'` with 104 files changed, entirely purging the sealed key blob.
-5. **Verification of Purge:**
-   ```powershell
-   git log --all --full-history -- "datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json"
-   ```
-   (Must output zero commits on the active branch).
-6. **Controlled Force-Push (Awaiting Explicit Authorization):**
-   ```powershell
-   git push --force-with-lease origin stage6m-five-stratum-parity
-   ```
-   > [!IMPORTANT]
-   > Per Task 2 directive, force-pushing remote history is on HOLD pending explicit Project Lead instruction.
+   Added `datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json` to `.gitignore`.
+4. **Excised Blob from Git Commit:**
+   `datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json` unstaged and commit amended into `0058aca`.
+5. **Verified Blob Absence:**
+   Confirmed via `git ls-tree 0058aca` and `git log` that 0 instances of the sealed key file exist in `0058aca`.
+6. **Force-Push with Lease Completed:**
+   `git push --force-with-lease origin stage6m-five-stratum-parity` succeeded.
+   Confirmed: `git ls-tree origin/stage6m-five-stratum-parity` contains zero references to the sealed file.
+   The file is no longer reachable from any published remote branch.
 
 ---
 
@@ -149,12 +137,11 @@ All physical output artifacts were recomputed and verified against [`reports/sta
 
 ```
 ══════════════════════════════════════════════════════════════════════════════════════════════════════
-CURRENT GATE 5 VERDICT: EXECUTION_VALIDATED_REMEDIATION_STAGED
-Gate 5 Confirmatory Benchmark outputs are 100% complete, uncorrupted, and bitwise verified.
-Gate 6 offline scoring remains strictly BLOCKED.
-Immediate Action Required:
-1. User changes GitHub repository visibility to Private.
-2. Project Lead authorizes the Git history amendment (amend commit 5062e50 without the sealed key).
+CURRENT GATE 5 VERDICT: REMEDIATION_COMPLETED_PENDING_GATE6_AUTH
+1. Repository visibility: PRIVATE (Confirmed).
+2. Git history: Purged of sealed transcript key (Commit 0058aca on origin/stage6m-five-stratum-parity).
+3. Gate 5 outputs: 100% complete, uncorrupted, and cryptographically verified.
+4. Gate 6 offline scoring: STRICTLY BLOCKED pending separate Project Lead Gate 6 authorization.
 ══════════════════════════════════════════════════════════════════════════════════════════════════════
 ```
 
