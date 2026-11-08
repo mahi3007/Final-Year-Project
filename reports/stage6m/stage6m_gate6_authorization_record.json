@@ -1,0 +1,39 @@
+{
+  "authorization_record_id": "STAGE6M-GATE6-AUTH-RECORD",
+  "decision_identifier": "STAGE6M-GATE6-AUTH-DECISION-20261108",
+  "decision_date": "2026-11-08",
+  "decision_timestamp_utc": "2026-11-08T13:11:29+00:00",
+  "authority": "Project Lead (Dissertation Author)",
+  "decision": "APPROVED",
+  "scope": "GATE 6 OFFLINE MULTIPLICITY SCORING ONLY",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "gate5_completion_status": "CONFIRMATORY_EXECUTION_COMPLETED",
+  "gate5_closeout_status": "REMEDIATION_COMPLETED_PENDING_GATE6_AUTH",
+  "execution_boundary": "LOCAL_OFFLINE_ENVIRONMENT_ONLY",
+  "authorized_activities": [
+    "Offline access to the sealed evaluation transcript key exclusively for the registered scoring procedure.",
+    "Verify all 16,500 evaluation transcript records and their correspondence with the frozen online inference manifest.",
+    "Score all 16,500 evaluation clips across Arm 1 (Static), Arm 2 (Ungated SUTA), and Arm 3 (DSG-gated SUTA).",
+    "Calculate registered pooled speaker-level WER across all 1,100 evaluation speakers.",
+    "Calculate five-stratum accent-disparity outcomes (D_arm = max WER - min WER, Delta D = D_3 - D_1).",
+    "Perform registered stratified-cluster bootstrap for Event D (B=20,000 resamples, seed=42).",
+    "Perform single-step simultaneous Bonferroni multiplicity correction (M=8, alpha_adj=0.00625, 99.375% percentile UCB).",
+    "Produce comprehensive machine-readable (.json) and human-readable (.md) research reports."
+  ],
+  "mandatory_restrictions": [
+    "Do not modify frozen Gate 5 predictions (results/stage6m_cohort3_results/prequential_stream_records.jsonl, SHA-256: 42fc02ce...).",
+    "Do not retrain or adapt any model.",
+    "Do not create replacement predictions.",
+    "Do not expose evaluation transcripts to Kaggle or external network services.",
+    "Do not include reserve labels or reserve recordings (975 clips) in the primary evaluation.",
+    "Do not alter registered hypotheses or thresholds (Event A < 0.00 pp, Event B < 0.00 pp, Event C <= +2.00 pp, Event D <= 0.00 pp).",
+    "Preserve all input hashes, scoring logs, and outputs."
+  ],
+  "stop_conditions": [
+    "Stop on any missing or duplicate recording ID.",
+    "Stop on any hash mismatch against frozen catalogue.",
+    "Stop on any incorrect transcript mapping.",
+    "Stop on any deviation from the approved statistical protocol."
+  ]
+}
