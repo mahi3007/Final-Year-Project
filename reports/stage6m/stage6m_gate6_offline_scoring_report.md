@@ -189,3 +189,4 @@ All generated Gate 6 scoring artifacts have been preserved in [`reports/stage6m/
 | **Scoring Execution Log** | [`reports/stage6m/stage6m_gate6_scoring_execution.log`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_scoring_execution.log) | 3,842 B | `c48408cf5aa15f4874c76b1f20d0e6532252a16d56d9be73426720d20d77ce09` |
 | **Authorization Record** | [`reports/stage6m/stage6m_gate6_authorization_record.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_authorization_record.json) | 2,752 B | `0dc2007ae092a72a15993510e42ee6a599292eb5f51fe705ceaa8b2614b72643` |
 | **Authorization Dossier** | [`reports/stage6m/stage6m_gate6_authorization_record.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_authorization_record.md) | 3,210 B | `d4e5f6a7b8c9...` |
+

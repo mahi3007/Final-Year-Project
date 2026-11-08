@@ -12,3 +12,4 @@ if isinstance(d, dict):
 elif isinstance(d, list):
     print(f"List length: {len(d)}")
     print("Element keys:", list(d[0].keys()))
+

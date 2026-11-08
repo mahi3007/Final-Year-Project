@@ -53,3 +53,4 @@ In accordance with Protocol Section 14.7, Gate 6 offline statistical multiplicit
 - **Model Invariance:** No retraining, fine-tuning, or adaptation can occur.
 - **Data Isolation:** Sealed evaluation references must never be exposed outside the local scoring process. Zero upload to Kaggle, GitHub, or public endpoints.
 - **Population Integrity:** Exactly 0 Australian reserve clips (975 clips) or Sentinel reference clips (1,500 clips) may enter primary evaluation scoring.
+
