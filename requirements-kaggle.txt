@@ -1,0 +1,28 @@
+# ==============================================================================
+# Stage 6M: Kaggle Cloud Virtual GPU Dependency Lock File
+# ==============================================================================
+# Target Hardware: Kaggle Notebooks (NVIDIA Tesla T4 x2 / P100, CUDA 12.1/11.8)
+# Governing Standard: Stage 6M v1.5 Five-Stratum Benchmark (Section 14.7)
+# ==============================================================================
+
+# Core Deep Learning & Modeling
+torch>=2.0.0
+transformers>=4.30.0,<5.0.0
+
+# Audio I/O & Decoding
+soundfile>=0.12.1
+av>=10.0.0
+miniaudio>=1.59
+librosa>=0.10.0
+
+# Scientific Computation & Data Handling
+numpy>=1.24.0,<2.0.0
+scipy>=1.10.0
+pandas>=2.0.0
+
+# Statistical Analysis & Metrics
+statsmodels>=0.14.0
+editdistance>=0.6.2
+
+# Testing & Verification
+pytest>=8.0.0

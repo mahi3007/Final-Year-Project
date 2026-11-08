@@ -1,0 +1,94 @@
+{
+  "specification_id": "STAGE6M-KAGGLE-EXEC-SPEC-20261107-V2",
+  "generated_at_utc": "2026-11-07T17:48:00+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "reference_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "execution_platform": {
+    "provider": "Kaggle Cloud Virtual Machine Container",
+    "primary_accelerator": "NVIDIA Tesla T4 x2 (Dual GPU)",
+    "historical_accelerator_reference": "NVIDIA Tesla P100 (RETIRED BY KAGGLE ON SEPTEMBER 15, 2026; HISTORICAL BENCHMARK ONLY)",
+    "gpu_specs": {
+      "model": "NVIDIA Tesla T4",
+      "device_count": 2,
+      "architecture": "Turing TU104",
+      "cuda_cores_per_gpu": 2560,
+      "tensor_cores_per_gpu": 320,
+      "vram_per_gpu_gb": 15.78,
+      "memory_type": "GDDR6",
+      "memory_bandwidth_gbps": 320.0,
+      "dual_gpu_memory_architecture": "DISCRETE_MEMORY_SPACES (Two 16 GB VRAM devices; NOT a single unified 32 GB pool)"
+    },
+    "dual_gpu_allocation_policy": {
+      "policy_name": "SEQUENTIAL_STREAM_DEVICE_ISOLATION",
+      "primary_device": "cuda:0",
+      "auxiliary_device": "cuda:1 (Optional Sentinel Validation Offload)",
+      "prohibition": "DO NOT arbitrarily distribute sequential streaming clips across GPUs; sequential adaptation state is Markovian and must not be fractured across devices"
+    },
+    "host_specs": {
+      "vcpu_count": 4,
+      "host_ram_gb": 30.0,
+      "scratch_disk_gb": 20.0,
+      "scratch_mount": "/kaggle/working",
+      "input_mount_root": "/kaggle/input"
+    },
+    "quota_and_session_constraints": {
+      "max_session_hours": 12.0,
+      "weekly_gpu_quota_hours": 30.0,
+      "internet_access": "ENABLED_FOR_PACKAGE_INSTALL_AND_MODEL_WEIGHTS",
+      "persistence_model": "Outputs saved in /kaggle/working are preserved in notebook version runs"
+    }
+  },
+  "runtime_software_environment": {
+    "os": "Linux x86_64 (Ubuntu 22.04 LTS container)",
+    "python_target": "3.10.x / 3.11.x",
+    "cuda_runtime": "12.1 / 11.8",
+    "nvidia_driver_minimum": "535.86.10",
+    "upgrade_policy": "NO_UNPINNED_PYTORCH_CUDA_UPGRADES (Preserve Kaggle preinstalled CUDA PyTorch build)",
+    "exact_dependency_freeze": "requirements-kaggle-lock.txt"
+  },
+  "transcript_isolation_architecture": {
+    "status": "ENFORCED_AND_AUDITED",
+    "restricted_online_manifest": {
+      "path": "datasets/splits/stage6m_cohort3_online_inference_manifest.json",
+      "sha256": "0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1",
+      "evaluation_labels": "NULLIFIED (Zero label exposure to online streaming runner)",
+      "gate_reference_labels": "ACTIVE (Required for live DSG non-inferiority evaluation)"
+    },
+    "sealed_evaluation_transcripts_key": {
+      "path": "datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json",
+      "sha256": "f427ae7fbf386f77b0795cc1fa33b2f7831c89f89ecfce7fa30036cde5c5223e",
+      "access_rule": "STRICTLY RESERVED FOR GATE 6 POST-INFERENCE OFFLINE SCORING"
+    }
+  },
+  "workload_profile": {
+    "confirmatory_evaluation_clips": 16500,
+    "evaluation_speakers": 1100,
+    "gate_reference_speakers": 100,
+    "australian_reserve_speakers": 65,
+    "total_benchmark_recordings": 18975,
+    "total_payload_bytes": 709750958,
+    "window_size_k": 4,
+    "total_evaluation_windows": 4125,
+    "candidate_adaptation_updates": 4124,
+    "streaming_arms": [
+      "Arm 1: Static Baseline (Unadapted theta_0)",
+      "Arm 2: Ungated Continuous Test-Time Adaptation (SUTA)",
+      "Arm 3: Disparity Safety Gate (DSG-Controlled SUTA)"
+    ],
+    "runtime_estimation_status": "PRELIMINARY_ANALYTICAL_ESTIMATE_PENDING_KAGGLE_GATE4_MEASUREMENT",
+    "preliminary_estimates": {
+      "forward_pass_ms_per_clip": 35.0,
+      "suta_step_ms_per_window": 65.0,
+      "gate_evaluation_ms_per_candidate": 120.0,
+      "preliminary_total_hours": "2.8 - 4.2 hours (UNVERIFIED UNTIL MEASURED ON KAGGLE T4)"
+    }
+  },
+  "deterministic_controls": {
+    "random_seed": 20261101,
+    "torch_deterministic": true,
+    "torch_benchmark": false,
+    "cuda_device_id": 0,
+    "floating_point_precision": "float32"
+  }
+}

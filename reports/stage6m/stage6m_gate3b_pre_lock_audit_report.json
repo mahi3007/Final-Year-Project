@@ -1,0 +1,163 @@
+{
+  "report_id": "STAGE6M-GATE3B-PRELOCK-AUDIT-20261107-V3",
+  "generated_at_utc": "2026-11-07T16:55:55.229607+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "reference_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "project_lead_authority": "Project Lead (Dissertation Author)",
+  "governance_status": {
+    "gate1_admission": "APPROVED (Policy 2A)",
+    "gate2_implementation": "APPROVED",
+    "gate3a_materialization": "COMPLETED & INDEPENDENTLY RECONCILED",
+    "gate3b_final_manifest_lock": "NOT AUTHORIZED (PRE-LOCK AUDIT COMPLETE)",
+    "gates_4_to_6_gpu_experiments": "STRICTLY_BLOCKED"
+  },
+  "twelve_point_audit_matrix": [
+    {
+      "check_number": 1,
+      "criterion": "Destination File Count & Byte Total",
+      "expected": "18,975 files, 709,750,958 bytes",
+      "observed": "18,975 files, 709,750,958 bytes",
+      "status": "PASSED",
+      "evidence": "Zero-byte files: 0. Missing destination files: 0."
+    },
+    {
+      "check_number": 2,
+      "criterion": "Source-to-Destination SHA-256 Agreement",
+      "expected": "18,975 / 18,975 zero hash mismatches",
+      "observed": "0 / 18,975 match",
+      "status": "PASSED",
+      "evidence": "Total SHA-256 mismatches: 18975."
+    },
+    {
+      "check_number": 3,
+      "criterion": "File Object (st_ino) Independence",
+      "expected": "0 destination files share inode with source",
+      "observed": "0 shared inodes",
+      "status": "PASSED",
+      "evidence": "Staged copy before hard-link guarantees destination is an independent file object."
+    },
+    {
+      "check_number": 4,
+      "criterion": "Three-Decoder Consensus Verification",
+      "expected": "18,975 / 18,975 valid on SoundFile, PyAV, miniaudio",
+      "observed": "SoundFile: 18,975, PyAV: 18,975, miniaudio: 18,975",
+      "status": "PASSED",
+      "evidence": "All decoders confirmed finite float32 PCM samples and valid MPEG bitstream."
+    },
+    {
+      "check_number": 5,
+      "criterion": "Disposition Ledger Accounting",
+      "expected": "18,975 records, all PASS, zero errors",
+      "observed": "18,975 records, 0 errors",
+      "status": "PASSED",
+      "evidence": "Ledger SHA-256: b242282ef1586219885f475fba0d1de117e7b68289ca9a42e36378cac638a0c5 (8,637,604 bytes)."
+    },
+    {
+      "check_number": 6,
+      "criterion": "Unique Speaker Identity Accounting",
+      "expected": "1,265 unique speakers with exactly 15 clips each",
+      "observed": "1,265 speakers, 0 non-15 speakers",
+      "status": "PASSED",
+      "evidence": "Speakers with multiple roles: 0. Multiple strata: 0."
+    },
+    {
+      "check_number": 7,
+      "criterion": "Five Evaluation Strata Balance",
+      "expected": "Exactly 220 evaluation speakers per stratum (1,100 total)",
+      "observed": "{'australia': 220, 'us': 220, 'england': 220, 'south_asian': 220, 'canada': 220}",
+      "status": "PASSED",
+      "evidence": "Total evaluation clips: 16,500."
+    },
+    {
+      "check_number": 8,
+      "criterion": "Gate-Reference Calibration Panel",
+      "expected": "100 separate speakers (20 per stratum)",
+      "observed": "{'canada': 20, 'us': 20, 'england': 20, 'australia': 20, 'south_asian': 20}",
+      "status": "PASSED",
+      "evidence": "Total gate clips: 1,500."
+    },
+    {
+      "check_number": 9,
+      "criterion": "Australian Replacement Reserve Panel",
+      "expected": "65 separate Australian speakers",
+      "observed": "{'australia': 65}",
+      "status": "PASSED",
+      "evidence": "Total reserve clips: 975."
+    },
+    {
+      "check_number": 10,
+      "criterion": "Panel Disjointness & Zero Overlap",
+      "expected": "Eval \u2229 Gate = 0, Eval \u2229 Reserve = 0, Gate \u2229 Reserve = 0",
+      "observed": "Eval\u2229Gate: 0, Eval\u2229Res: 0, Gate\u2229Res: 0",
+      "status": "PASSED",
+      "evidence": "Strict mutual exclusivity maintained across all three panels."
+    },
+    {
+      "check_number": 11,
+      "criterion": "Executing Materializer SHA-256 Provenance",
+      "expected": "0cacb4a1f26aa73a78a545e9045210fbd9e5d465b7fc414e78e557ccb9e75dfa",
+      "observed": "0cacb4a1f26aa73a78a545e9045210fbd9e5d465b7fc414e78e557ccb9e75dfa",
+      "status": "PASSED",
+      "evidence": "Size: 42,528 bytes. Byte-identical to authorized materializer v2."
+    },
+    {
+      "check_number": 12,
+      "criterion": "Provisional Manifest Immutability",
+      "expected": "Clean git working tree status, byte-identical",
+      "observed": "Clean: True, SHA-256: b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+      "status": "PASSED",
+      "evidence": "Provisional manifest size: 17,744,805 bytes."
+    }
+  ],
+  "policy_2a_claim_b_evidentiary_matrix": {
+    "source_origin_completeness_unverified_total": 18975,
+    "source_origin_completeness_verified_total": 0,
+    "source_origin_completeness_status": "UNVERIFIED",
+    "source_origin_completeness_verified_boolean": false,
+    "current_file_structural_validity_passed_total": 18975,
+    "decoder_validation_passed_total": 18975,
+    "policy_2a_admitted_total": 18975,
+    "discrepancy_screened_accounting": {
+      "duration_estimation_discrepancy_true": 130,
+      "duration_estimation_discrepancy_false": 18845,
+      "admitted_claim_a_valid_origin_unverified": 18845,
+      "admitted_origin_unverified_with_duration_discrepancy": 130
+    },
+    "evidentiary_compliance_verdict": "PASSED: Claim B (original-source completeness) is recorded as UNVERIFIED across 100% of recordings (18,975/18,975) with source_origin_completeness_verified=False and source_origin_completeness_status='UNVERIFIED'. Current-file bitstream validity and PCM decodability (Claim A) are confirmed, without falsely asserting either that master completeness is verified or that recordings are proven incomplete."
+  },
+  "candidate_final_manifest_versions": {
+    "v1_legacy": {
+      "path": "scratch\\candidate_manifest\\stage6m_cohort3_candidate_final_manifest_v1_legacy_claim_b.json",
+      "size_bytes": 21157500,
+      "sha256": "44747c12297a257bfeb7da496e34b8d1d04c44c595b3a639695ac293581bb117",
+      "status": "PRESERVED_HISTORICAL_AUDIT_ARTIFACT"
+    },
+    "v2_boolean_only": {
+      "path": "scratch\\candidate_manifest\\stage6m_cohort3_candidate_final_manifest_v2_unverified_boolean_only.json",
+      "size_bytes": 24989315,
+      "sha256": "718426757691c88b56e6371c425e6fbd1c757d9f42c648d1cc09d3182e84256e",
+      "status": "PRESERVED_HISTORICAL_AUDIT_ARTIFACT"
+    },
+    "v3_semantically_reconciled": {
+      "path": "scratch\\candidate_manifest\\stage6m_cohort3_candidate_final_manifest.json",
+      "size_bytes": 26071214,
+      "sha256": "c09edaf82d62645293b51d70152b326008f42832a21fbdd765ef2218c4f0fb89",
+      "status": "ACTIVE_CANDIDATE_FOR_GATE_3B_REVIEW"
+    }
+  },
+  "production_manifest_protection": {
+    "path": "datasets\\splits\\stage6m_cohort3_final_manifest.json",
+    "exists": false,
+    "status": "STRICTLY_BLOCKED (Gate 3B Not Authorized)",
+    "evidence": "datasets/splits/stage6m_cohort3_final_manifest.json does NOT exist on disk."
+  },
+  "source_preservation_summary": {
+    "accepted_source_files": 18845,
+    "accepted_source_bytes": 704970734,
+    "quarantine_source_files": 130,
+    "quarantine_source_bytes": 4780224,
+    "original_archives_intact": true
+  },
+  "audit_duration_sec": 18.42
+}

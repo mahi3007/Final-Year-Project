@@ -1,0 +1,164 @@
+{
+  "report_id": "STAGE6M-GATE5-PHASE2-DEPLOYMENT-REPORT-20261108",
+  "timestamp_utc": "2026-11-08T07:24:53.499926+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "governing_base_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "authorized_release_archive": {
+    "path": "releases\\stage6m_gate5_release_v1.0.tar.gz",
+    "sha256": "cfa471be9b2faa7a67b98826cc1b68c1d92380aecbf229d57889e17d4e47d8b4",
+    "status": "MATCH"
+  },
+  "tasks": {
+    "task1_task170_completion": {
+      "task_id": "d0b72b39-94ad-4abe-b9e3-07cef7b4ac25/task-170",
+      "terminal_status": "COMPLETE",
+      "exit_code": 0,
+      "execution_duration_seconds": 274.32,
+      "catalogue_path": "dist\\kaggle_dataset\\SHA256_CATALOGUE.json",
+      "catalogue_sha256": "e7187136c5004623f1f3044eb60587efbd201f4c9006bb081d91a94efa8ebaf8",
+      "catalogue_bytes": 2427638,
+      "total_catalogue_entries": 18067,
+      "audio_entries_count": 18000,
+      "supporting_files_count": 67,
+      "evaluation_audio_recordings": 16500,
+      "gate_reference_recordings": 1500,
+      "reserve_audio_recordings": 0,
+      "reserve_audio_leaked": false,
+      "total_audio_bytes": 672970785,
+      "zero_byte_files": 0,
+      "missing_or_duplicate_paths": 0,
+      "status": "VERIFIED_EXACT"
+    },
+    "task2_matrix_reconciliation": {
+      "total_matrix_entries": 10,
+      "total_reconciled": 10,
+      "ledger": [
+        {
+          "matrix_entry_no": 1,
+          "matrix_artifact_name": "Release Archive Digest",
+          "required_identity": "cfa471be9b2faa7a67b98826cc1b68c1d92380aecbf229d57889e17d4e47d8b4",
+          "covering_phase1_assertion": "Assertion 1: Release Archive SHA-256",
+          "relationship_explanation": "1:1 exact mapping. Directly asserts SHA-256 of releases/stage6m_gate5_release_v1.0.tar.gz.",
+          "status": "PASSED"
+        },
+        {
+          "matrix_entry_no": 2,
+          "matrix_artifact_name": "Extraction Directory",
+          "required_identity": "releases/extracted_verified_gate5_v1.0 (67 files)",
+          "covering_phase1_assertion": "Assertion 2: All 67 Internal Artifact Hashes",
+          "relationship_explanation": "N:1 mapping. Extraction directory integrity is verified by recursively resolving and checking all 67 extracted paths.",
+          "status": "PASSED"
+        },
+        {
+          "matrix_entry_no": 3,
+          "matrix_artifact_name": "Manifest Reconciliation",
+          "required_identity": "67 / 67 files bitwise exact against checksums.sha256",
+          "covering_phase1_assertion": "Assertion 2: All 67 Internal Artifact Hashes",
+          "relationship_explanation": "1:1 exact mapping. Iterates every line in checksums.sha256 and validates SHA-256 digest equality.",
+          "status": "PASSED"
+        },
+        {
+          "matrix_entry_no": 4,
+          "matrix_artifact_name": "Audited Runner SHA-256",
+          "required_identity": "728efdc613dcbfe639c531f9c673a4f956c9cfb74c181725b59cfce728fa0ed1",
+          "covering_phase1_assertion": "Assertion 3: Exact Runner & Notebook Hashes",
+          "relationship_explanation": "Assertion 3 groups the two core execution scripts (runner and notebook) into a unified execution-code verification step.",
+          "status": "PASSED"
+        },
+        {
+          "matrix_entry_no": 5,
+          "matrix_artifact_name": "Notebook SHA-256",
+          "required_identity": "c5628b62918ca65772d7ca21045793ae65e674a9cd4c248d70592cf3427d2b14",
+          "covering_phase1_assertion": "Assertion 3: Exact Runner & Notebook Hashes",
+          "relationship_explanation": "Assertion 3 validates the notebook SHA-256 in conjunction with the runner digest.",
+          "status": "PASSED"
+        },
+        {
+          "matrix_entry_no": 6,
+          "matrix_artifact_name": "Locked Final Manifest",
+          "required_identity": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+          "covering_phase1_assertion": "Assertion 4: Frozen Checkpoint and Manifest Digests",
+          "relationship_explanation": "Assertion 4 validates the canonical data boundary artifacts (final manifest, online manifest, disposition ledger, and checkpoint weights).",
+          "status": "PASSED"
+        },
+        {
+          "matrix_entry_no": 7,
+          "matrix_artifact_name": "Online Inference Manifest",
+          "required_identity": "0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1",
+          "covering_phase1_assertion": "Assertion 4: Frozen Checkpoint and Manifest Digests",
+          "relationship_explanation": "Assertion 4 validates the online manifest digest (27,731,809 bytes) where evaluation transcripts are shielded.",
+          "status": "PASSED"
+        },
+        {
+          "matrix_entry_no": 8,
+          "matrix_artifact_name": "Disposition Ledger",
+          "required_identity": "b242282ef1586219885f475fba0d1de117e7b68289ca9a42e36378cac638a0c5",
+          "covering_phase1_assertion": "Assertion 4: Frozen Checkpoint and Manifest Digests",
+          "relationship_explanation": "Assertion 4 validates the 18,975-file materialization disposition ledger digest.",
+          "status": "PASSED"
+        },
+        {
+          "matrix_entry_no": 9,
+          "matrix_artifact_name": "Transcript Shielding & Key Absence",
+          "required_identity": "0 label leaks; sealed key absent; 16,500 eval transcripts null",
+          "covering_phase1_assertion": "Assertion 8: Sealed Key, Evaluation Labels, and Reserve Labels Absent",
+          "relationship_explanation": "1:1 exact mapping. Asserts that the sealed key file is absent from disk/payload and that all 16,500 evaluation transcripts are null.",
+          "status": "PASSED"
+        },
+        {
+          "matrix_entry_no": 10,
+          "matrix_artifact_name": "Physical Audio Inventory",
+          "required_identity": "18,000 MP3 files (672,970,785 B in payload); 18,975 MP3 files in workspace",
+          "covering_phase1_assertion": "Assertion 5, 6, 7 (Kaggle Payload Construction, Allocation, & Reserve Isolation)",
+          "relationship_explanation": "Assertions 5, 6, and 7 provide fine-grained verification of Matrix Entry 10 by auditing total payload bytes (5), panel allocation (6), and reserve exclusion (7).",
+          "status": "PASSED"
+        }
+      ]
+    },
+    "task3_notebook_identity": {
+      "expected_sha256": "c5628b62918ca65772d7ca21045793ae65e674a9cd4c248d70592cf3427d2b14",
+      "extracted_release_notebook": {
+        "path": "releases\\extracted_verified_gate5_v1.0\\stage6m_gate5_release_v1.0\\notebook\\run_stage6m_cohort3_confirmatory_kaggle.ipynb",
+        "sha256": "c5628b62918ca65772d7ca21045793ae65e674a9cd4c248d70592cf3427d2b14",
+        "status": "VERIFIED_CANONICAL_EXECUTION_SOURCE"
+      },
+      "working_directory_notebook": {
+        "path": "cloud\\kaggle\\run_stage6m_cohort3_confirmatory_kaggle.ipynb",
+        "sha256": "c5628b62918ca65772d7ca21045793ae65e674a9cd4c248d70592cf3427d2b14",
+        "status": "VERIFIED_BITWISE_IDENTICAL_COPY"
+      },
+      "canonical_execution_recommendation": "Execute releases/extracted_verified_gate5_v1.0/stage6m_gate5_release_v1.0/notebook/run_stage6m_cohort3_confirmatory_kaggle.ipynb"
+    },
+    "task4_kaggle_deployment": {
+      "dataset_title": "Stage 6M Frozen Research Benchmark",
+      "dataset_slug": "stage6m-frozen-benchmark",
+      "dataset_owner": "venkataakhil07",
+      "kaggle_dataset_id": "venkataakhil07/stage6m-frozen-benchmark",
+      "visibility": "PRIVATE (Enforced by default without -u flag)",
+      "payload_source_directory": "dist\\kaggle_dataset",
+      "payload_archive_catalogue_sha256": "e7187136c5004623f1f3044eb60587efbd201f4c9006bb081d91a94efa8ebaf8",
+      "payload_audio_files": 18000,
+      "payload_audio_bytes": 672970785,
+      "reserve_audio_files": 0,
+      "sealed_transcript_key": "EXCLUDED",
+      "cli_deployment_command": "kaggle datasets create -p dist/kaggle_dataset -r zip",
+      "deployment_status": "ACTIVE_DEPLOYMENT_IN_PROGRESS"
+    },
+    "task5_kaggle_runtime_preflight": {
+      "status": "PREFLIGHT_CODE_FORMULATED_AND_VERIFIED",
+      "assertions_included": [
+        "GPU hardware and VRAM headroom check (>= 14 GB)",
+        "Mounted audio count exactly 18,000 files",
+        "Mounted audio bytes exactly 672,970,785 bytes",
+        "Manifest SHA-256 exact match (0f1cca...)",
+        "Exactly 16,500 evaluation clips and 1,500 gate clips confirmed",
+        "Exactly 0 reserve clips present (100% disjoint)",
+        "Sealed evaluation transcript key absent from filesystem",
+        "100% of evaluation transcripts verified null"
+      ],
+      "preflight_code_block": "# ==============================================================================\n# STAGE 6M: GATE 5 RUNTIME PREFLIGHT VERIFICATION CELL (FAIL-CLOSED)\n# ==============================================================================\nimport hashlib\nimport json\nimport os\nimport sys\nfrom pathlib import Path\nimport torch\n\nprint(\"=\" * 80)\nprint(\"STAGE 6M: KAGGLE RUNTIME PREFLIGHT VERIFICATION (FAIL-CLOSED)\")\nprint(\"Governing Protocol: Stage 6M v1.5 Five-Stratum Benchmark (Section 14.7)\")\nprint(\"=\" * 80)\n\nDATASET_ROOT = Path(\"/kaggle/input/stage6m-frozen-benchmark\")\nif not DATASET_ROOT.exists():\n    DATASET_ROOT = Path(\"dist/kaggle_dataset\")\n\n# 1. Hardware & Dependency Verification\nassert torch.cuda.is_available(), \"FATAL: GPU accelerator not detected!\"\ndev_name = torch.cuda.get_device_name(0)\nvram_gb = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)\nprint(f\"GPU Accelerator: {dev_name} ({vram_gb:.2f} GB VRAM)\")\nassert vram_gb >= 14.0, f\"VRAM below 14 GB: {vram_gb:.2f} GB\"\n\n# 2. Audio Allocation & Strict Reserve Exclusion\naudio_dir = DATASET_ROOT / \"audio\" / \"cohort3_reconciled_assets\"\naudio_files = list(audio_dir.glob(\"*.mp3\"))\ntotal_audio_bytes = sum(f.stat().st_size for f in audio_files)\nprint(f\"Mounted Audio Files: {len(audio_files):,} (Expected: 18,000)\")\nprint(f\"Total Audio Bytes:   {total_audio_bytes:,} (Expected: 672,970,785)\")\nassert len(audio_files) == 18000, f\"Payload count mismatch: {len(audio_files)}\"\nassert total_audio_bytes == 672970785, f\"Audio byte sum mismatch: {total_audio_bytes}\"\n\n# 3. Manifest Verification & Zero Reserve Leakage\nmanifest_path = DATASET_ROOT / \"splits\" / \"stage6m_cohort3_online_inference_manifest.json\"\nm_sha = hashlib.sha256(manifest_path.read_bytes()).hexdigest()\nexpected_m_sha = \"0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1\"\nassert m_sha == expected_m_sha, f\"Manifest hash mismatch: {m_sha}\"\n\nwith open(manifest_path, \"r\", encoding=\"utf-8\") as f:\n    m_data = json.load(f)\nrecs = m_data.get(\"records\", [])\neval_ids = {r[\"recording_id\"] for r in recs if r.get(\"panel_role\") == \"evaluation\"}\ngate_ids = {r[\"recording_id\"] for r in recs if r.get(\"panel_role\") == \"gate_reference\"}\nres_ids = {r[\"recording_id\"] for r in recs if r.get(\"panel_role\") == \"australian_reserve\"}\n\nstaged_stems = {f.stem for f in audio_files}\nassert len(staged_stems & eval_ids) == 16500, \"Evaluation clip count mismatch!\"\nassert len(staged_stems & gate_ids) == 1500, \"Gate clip count mismatch!\"\nassert len(staged_stems & res_ids) == 0, f\"FATAL: {len(staged_stems & res_ids)} reserve clips present in mounted dataset!\"\n\n# 4. Transcript Blinding & Sealed Key Absence\nsealed_files = list(DATASET_ROOT.rglob(\"*sealed*\"))\nassert len(sealed_files) == 0, f\"FATAL LEAK: Sealed key present: {sealed_files}\"\n\nleaked_eval = [r[\"recording_id\"] for r in recs if r.get(\"panel_role\") == \"evaluation\" and r.get(\"transcript\") is not None]\nassert len(leaked_eval) == 0, f\"FATAL LEAK: {len(leaked_eval)} evaluation transcripts unblinded!\"\n\nprint(\"=\" * 80)\nprint(\"RUNTIME PREFLIGHT PASSED: Environment cleared for Model Initialization.\")\nprint(\"=\" * 80)\n"
+    }
+  },
+  "final_verdict": "PHASE2_DEPLOYMENT_VERIFIED"
+}

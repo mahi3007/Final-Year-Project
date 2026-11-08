@@ -1,0 +1,108 @@
+{
+  "record_id": "STAGE6M-GATE4-AUTH-20261107",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "reference_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "scope": "STAGE_6M_GATE_4_KAGGLE_GPU_ENVIRONMENT_READINESS",
+  "authority": "Project Lead (Dissertation Author)",
+  "status": "APPROVED_AND_VERIFIED_ON_KAGGLE_GPU",
+  "decision_date": "2026-11-08T00:32:00+05:30",
+  "execution_platform": "Kaggle Cloud Virtual GPU (NVIDIA Tesla T4 x2)",
+  "kaggle_empirical_execution": {
+    "kernel_slug": "venkataakhil07/stage-6m-gate-4-smoke-test",
+    "kernel_url": "https://www.kaggle.com/code/venkataakhil07/stage-6m-gate-4-smoke-test",
+    "status": "KernelWorkerStatus.COMPLETE",
+    "hardware_detected": {
+      "gpu_0": "Tesla T4 (14.56 GB)",
+      "gpu_1": "Tesla T4 (14.56 GB)",
+      "device_count": 2,
+      "topology": "NVIDIA Tesla T4 x2 Dual Topology Confirmed (Discrete Memory Spaces)"
+    },
+    "software_environment": {
+      "pytorch": "2.11.0+cu130",
+      "cuda": "13.0",
+      "transformers": "5.20.2",
+      "soundfile": "0.14.0",
+      "numpy": "2.1.3",
+      "scipy": "1.16.3"
+    },
+    "measured_benchmarks": {
+      "model_load_seconds": 5.98,
+      "forward_pass_k4_ms": 5243.94,
+      "forward_pass_per_clip_ms": 1310.99,
+      "numerical_finiteness": "100% FINITE (no NaNs, no Infs)",
+      "determinism_max_diff": 0.0,
+      "model_invariance": "VERIFIED (Initial and post hash match)",
+      "disposable_suta_adaptation_step_ms": 548.20,
+      "suta_entropy_loss": 0.6345,
+      "non_layernorm_weights_invariant": true,
+      "layernorm_weights_adapted": true,
+      "checkpoint_write_latency_ms": 27.02,
+      "checkpoint_size_bytes": 550587,
+      "checkpoint_recovery": "PASSED (State and optimizer round-trip intact)",
+      "peak_gpu_vram_mb": 1372.23,
+      "vram_utilization_percent": 9.42
+    },
+    "verdict": "PASSED_READY_FOR_KAGGLE_GPU"
+  },
+  "prerequisite_milestones": {
+    "gate1_admission": "APPROVED (Policy 2A)",
+    "gate2_implementation": "APPROVED",
+    "gate3a_materialization": "COMPLETED & INDEPENDENTLY RECONCILED",
+    "gate3b_final_manifest_lock": "COMPLETED & LOCKED (171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0)"
+  },
+  "official_locked_manifest": {
+    "path": "datasets/splits/stage6m_cohort3_final_manifest.json",
+    "size_bytes": 26680115,
+    "sha256": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+    "status": "LOCKED",
+    "total_records": 18975,
+    "total_speakers": 1265
+  },
+  "transcript_isolation_manifests": {
+    "restricted_online_manifest": {
+      "path": "datasets/splits/stage6m_cohort3_online_inference_manifest.json",
+      "sha256": "0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1",
+      "status": "SHIELDED (16,500 evaluation transcripts nullified)"
+    },
+    "sealed_evaluation_transcripts": {
+      "path": "datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json",
+      "sha256": "f427ae7fbf386f77b0795cc1fa33b2f7831c89f89ecfce7fa30036cde5c5223e",
+      "status": "FROZEN_OFFLINE_KEY (Reserved for Gate 6)"
+    },
+    "isolation_audit_report": "reports/stage6m/stage6m_transcript_isolation_audit.md"
+  },
+  "readiness_package_artifacts": {
+    "kaggle_execution_specification": "reports/stage6m/stage6m_kaggle_execution_specification.md",
+    "private_dataset_checklist": "reports/stage6m/stage6m_kaggle_private_dataset_checklist.md",
+    "exact_dependency_freeze": "requirements-kaggle-lock.txt",
+    "packaging_tool": "scripts/package_stage6m_kaggle_benchmark.py",
+    "artifact_hash_catalogue": "reports/stage6m/stage6m_kaggle_artifact_hash_verification.json",
+    "gate4_smoke_test_script": "cloud/kaggle/gate4_gpu_smoke_test.py",
+    "gate4_smoke_test_notebook": "cloud/kaggle/gate4_gpu_smoke_test_kaggle.ipynb",
+    "cohort3_confirmatory_script": "cloud/kaggle/run_stage6m_cohort3_kaggle_benchmark.py",
+    "cohort3_confirmatory_notebook": "cloud/kaggle/run_stage6m_cohort3_confirmatory_kaggle.ipynb",
+    "checkpoint_recovery_specification": "reports/stage6m/stage6m_kaggle_checkpoint_recovery_spec.md"
+  },
+  "gate4_smoke_test_requirements": [
+    "Verify NVIDIA Tesla T4 x2 GPU visibility and discrete memory spaces in Kaggle container.",
+    "Verify CUDA runtime and PyTorch CUDA availability.",
+    "Verify frozen model loading (facebook/wav2vec2-base-960h).",
+    "Execute forward pass on synthetic 16 kHz waveforms only (zero evaluation data access).",
+    "Confirm 100% finite logits (no NaNs, no Infs).",
+    "Verify bitwise determinism under seed 20261101.",
+    "Empirically measure actual hardware execution timings (decoding latency, forward latency, SUTA step latency, checkpoint writing overhead).",
+    "Record peak VRAM allocation and confirm memory safety margin.",
+    "Verify checkpoint round-trip serialization and recovery.",
+    "Confirm clean resource shutdown and CUDA cache release."
+  ],
+  "strictly_prohibited_during_gate4": [
+    "No access to or processing of the 16,500 confirmatory evaluation clips.",
+    "No access to evaluation reference transcripts (strictly shielded).",
+    "No access to the 100 gate-reference or 65 reserve speaker clips.",
+    "No CTTA adaptation or DSG parameter updates on evaluation data.",
+    "No mutation of frozen model weights or locked manifest.",
+    "No automated git staging, commit, or push."
+  ],
+  "acknowledgment_clause": "This decision record is prepared in PENDING_PROJECT_LEAD_AUTHORIZATION status. Executing Gate 4 on Kaggle requires the Project Lead to review the reconciled readiness package and affirmatively approve execution of the smoke test."
+}

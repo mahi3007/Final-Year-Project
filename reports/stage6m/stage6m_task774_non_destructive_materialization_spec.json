@@ -1,0 +1,198 @@
+{
+  "metadata": {
+    "document_id": "STAGE6M_TASK774_NON_DESTRUCTIVE_MATERIALIZATION_SPEC",
+    "document_title": "Stage 6M Task 7.7.4 Non-Destructive Dataset Materialization & Verification Architecture Specification",
+    "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+    "governing_branch": "stage6m-five-stratum-parity",
+    "reference_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+    "timestamp_utc": "2026-11-07T14:06:12.122945+00:00",
+    "document_status": "APPROVED_ENGINEERING_SPECIFICATION (Gate 2 Approved for Implementation & Pre-Production Validation)",
+    "governance_classification": "Engineering Architecture Specification (Implementation Authorized)",
+    "project_lead": "Venkata Akhil Kumar",
+    "authoritative_notice": "This document is the approved engineering specification for Task 7.7.4. Gate 2 formally authorizes implementation of scripts/materialize_stage6m_cohort3_audio_v2.py and pre-production validation. Zero physical audio promotion, mutation, or copying of real recordings is authorized under Gate 2. Production dataset finalization, reconciliation into datasets/audio/stage6m/cohort3_reconciled_assets/, and final manifest locking remain strictly governed under Gate 3."
+  },
+  "section_1_forensic_audit_of_existing_materializer": {
+    "source_file": "scripts/materialize_stage6m_cohort3_audio.py",
+    "audit_objective": "Identify every destructive, overwriting, or unsafe operation in the legacy production materializer.",
+    "identified_flaws_and_risks": [
+      {
+        "flaw_id": "DESTRUCTIVE_UNLINK_ON_FAILURE",
+        "location": "Line 1049: dest_file.unlink(missing_ok=True)",
+        "mechanism": "When validate_audio_file() returns False, the script immediately unlinks (deletes) dest_file from disk. If rerun against existing files that fail the legacy 1,152-sample threshold, it permanently deletes them from the filesystem without creating a forensic backup.",
+        "severity": "CRITICAL / DESTRUCTIVE",
+        "remediation": "Strict prohibition of unlink() on extracted files; route invalid files to forensic isolation without deleting source or destination."
+      },
+      {
+        "flaw_id": "DIRECT_IN_PLACE_OVERWRITE",
+        "location": "Line 1011: with open(dest_file, 'wb') as out_f:",
+        "mechanism": "Extracted audio streams are written directly to the target filename dest_file without atomic staging. If the extraction stream drops (e.g. HTTP disconnect, network timeout, thread failure), a partial, corrupt MP3 file is left at the destination path with no rollback.",
+        "severity": "HIGH / DATA INTEGRITY RISK",
+        "remediation": "Mandatory atomic staging via temporary files (.tmp.{rec_id}.mp3) with complete checksum validation prior to os.replace()."
+      },
+      {
+        "flaw_id": "SAMPLING_RATE_UNAWARE_PADDING_THRESHOLD",
+        "location": "Line 394: MAX_MP3_PADDING_FRAMES = 1152",
+        "mechanism": "The script enforces a fixed threshold of 1,152 sample frames across all files regardless of sampling rate, treating any shortfall Delta > 1152 as bitstream truncation. For 44.1 kHz (26.12 ms) and 32 kHz (36.00 ms) files, ID3 container metadata sizing artifacts naturally induce shortfalls of 1,296 to 2,979 frames (30.0 to 67.5 ms). This incorrectly caused 130 perfectly decodable clips to be rejected.",
+        "severity": "HIGH / FALSE REJECTION RISK",
+        "remediation": "Decouple current-file physical decodability (Claim A) from metadata container duration estimation discrepancies."
+      },
+      {
+        "flaw_id": "ABSENCE_OF_IDEMPOTENT_RESUME",
+        "location": "Lines 1000-1016",
+        "mechanism": "The legacy script does not verify existing destination files against authoritative SHA-256 hashes before opening them for writing. An accidental rerun can overwrite already validated files.",
+        "severity": "MEDIUM / I/O INEFFICIENCY & INTEGRITY HAZARD",
+        "remediation": "Idempotent pre-check: if dest_file exists and matches ledger SHA-256, skip re-extraction."
+      }
+    ]
+  },
+  "section_2_non_destructive_replacement_architecture": {
+    "core_architectural_principles": [
+      {
+        "principle_id": "P1_READ_ONLY_SOURCE_ACCESS",
+        "name": "Strict Read-Only Source Access",
+        "specification": "The source archives (tar.gz) and existing quarantine audio directory (cohort3_rejected_quarantine) must be mounted and accessed with read-only permissions. Zero mutation, deletion, or renaming of source files is permitted."
+      },
+      {
+        "principle_id": "P2_ATOMIC_NO_CLOBBER_PUBLICATION",
+        "name": "Atomic No-Clobber Publication via Hard-Link & Process-Isolated Staging",
+        "specification": "Audio files must be written to an isolated, run-specific staging directory: dest_dir / f'.staging_run_{run_id}/' (where run_id encodes process PID, timestamp, and a 128-bit UUID). Individual staging files use full 128-bit UUIDs: staging_dir / f'{recording_id}_{uuid.uuid4().hex}.tmp' opened with os.O_CREAT | os.O_EXCL | os.O_WRONLY. In the event of an O_EXCL collision, the materializer executes a bounded retry loop (up to 5 attempts with exponential backoff) with a fresh UUID. Full cryptographic SHA-256 verification and multi-decoder PCM decodability must pass before publication. Final publication MUST be executed using same-filesystem atomic hard-linking: os.link(temp_path, dest_path) followed by os.unlink(temp_path). Under POSIX and Windows NTFS, os.link() atomically fails with FileExistsError if dest_path already exists, guaranteeing that existing files CANNOT be overwritten or clobbered. The use of os.replace() is STRICTLY FORBIDDEN because os.replace() unconditionally replaces any existing destination file, introducing an unsafe race condition if another process creates dest_path concurrently between the existence check and publication."
+      },
+      {
+        "principle_id": "P3_IDEMPOTENT_EXISTENCE_VERIFICATION",
+        "name": "Idempotent Digest Verification & Fail-Closed Mismatch Handling",
+        "specification": "If dest_dir / f'{recording_id}.mp3' already exists on disk prior to staging, the materializer computes its SHA-256 digest. If the hash matches the ledger, the file is validated and skipped with zero disk writes. If the hash mismatches, execution immediately fails closed (DestinationCollisionMismatchError) without modifying, overwriting, or deleting the existing file."
+      },
+      {
+        "principle_id": "P4_ISOLATED_DESTINATION_STRUCTURE",
+        "name": "Isolated Reconciled Target Directory & OS-Level Ownership-Locked Orphan Sweep",
+        "specification": "Materialized assets are directed to an isolated, dedicated directory (datasets/audio/stage6m/cohort3_reconciled_assets/). Staging occurs strictly within dedicated, run-specific directories: dest_dir / f'.staging_run_{run_id}/'. To prevent accidental deletion of active staging directories during multi-process execution, PID and heartbeat TTL checks alone are NOT sufficient: PID reuse and delayed heartbeats can cause an active process to be mistaken for an orphan. Each materializer process creates a dedicated lockfile (run.lock) inside its staging directory and acquires an OS-level exclusive file lock (msvcrt.locking with LK_NBLCK on Windows; fcntl.flock with LOCK_EX | LOCK_NB on POSIX) for the entire duration of the run. Orphan recovery sweeps are strictly forbidden from pruning any staging directory unless: (1) an exclusive OS-level file lock is successfully acquired on run.lock (proving no running process holds it); (2) the heartbeat timestamp exceeds the safe orphan TTL (> 3,600s); and (3) PID inspection confirms the process is terminated. If the OS lock cannot be acquired, an active concurrent process holds the directory and the sweep immediately skips it."
+      },
+      {
+        "principle_id": "P5_EXPLICIT_PER_FILE_DISPOSITION_RECORD",
+        "name": "Explicit Disposition Ledger",
+        "specification": "Every audio file processed must receive an explicit cryptographic and forensic entry in a disposition ledger (stage6m_cohort3_materialization_disposition_ledger.csv) recording its source, destination, size, SHA-256, duration, sample rate, channels, PCM frame count, container frame count, Delta, and scientific admission disposition."
+      }
+    ],
+    "workflow_step_sequence": [
+      "Step 1: Ingest authoritative provisional manifest (18,975 records).",
+      "Step 2: Initialize read-only source reader (accessing remote tar.gz and local quarantine inventory).",
+      "Step 3: Check if destination file dest_path already exists. If yes: compute SHA-256. If matching: mark VERIFIED_EXISTING_SKIPPED and proceed to next clip. If mismatch: fail closed immediately.",
+      "Step 4: Initialize run-specific staging directory: dest_dir / f'.staging_run_{run_id}/'. Create run.lock and acquire an OS-level exclusive file lock (msvcrt.locking on Windows / fcntl.flock on POSIX), held open throughout process lifetime.",
+      "Step 5: Generate unique staging path with full 128-bit UUID: staging_dir / f'{rec_id}_{uuid.uuid4().hex}.tmp'. Open with os.O_CREAT | os.O_EXCL | os.O_WRONLY (retry loop on collision).",
+      "Step 6: Extract audio bitstream into temporary staging file.",
+      "Step 7: Compute SHA-256 digest of staging file and verify against ledger digest.",
+      "Step 8: Execute multi-decoder PCM decodability test (SoundFile, PyAV, miniaudio) ensuring bitstream integrity.",
+      "Step 9: Atomic no-clobber publication: execute os.link(temp_path, dest_path). If FileExistsError is raised (concurrent creation): unlink temp_path, verify dest_path SHA-256 (if matching, treat as verified concurrent; if mismatch, fail closed). Once linked, call os.unlink(temp_path).",
+      "Step 10: Filesystem capability check: if os.link() raises OSError (e.g. cross-volume link EXDEV or unsupported filesystem), fail closed immediately (UnsupportedFilesystemError); NEVER fall back to os.replace() or file overwrite.",
+      "Step 11: Append cryptographic entry to disposition ledger.",
+      "Step 12: Emit final materialization report and cryptographic verification manifest; release lock, remove run.lock, and cleanly remove empty run staging directory."
+    ]
+  },
+  "section_3_preservation_and_representation_of_quarantine_recordings": {
+    "forensic_preservation_policy": "The 130 quarantined audio files in datasets/audio/stage6m/cohort3_rejected_quarantine/ (4,780,224 bytes, ledger LF SHA-256: 98ae234d0f6985ef42d69b5e6a79250501cd1ef27861fc0310455b96d901a2e8) must remain physically intact in their dedicated quarantine directory as immutable forensic evidence.",
+    "policy_2a_dataset_representation": {
+      "admission_status": "ADMITTED_ASSET",
+      "forensic_disposition": "ADMITTED_ORIGIN_UNVERIFIED_WITH_DURATION_DISCREPANCY",
+      "provenance_disclosure": "In the reconciled dataset manifest, these 130 recordings are admitted as evaluation assets based on verified current-file MPEG bitstream integrity and successful PCM decoding (Claim A satisfied). However, each record carries an explicit metadata flag: origin_completeness_verified: false and container_estimation_discrepancy_frames: Delta, formally recording that upstream capture completeness (Claim B) is unverified. Current-file structural integrity and PCM decoding have been evaluated using the documented validation procedures. Original-source completeness relative to the uncompressed master recordings remains unverified for all 18,975 recordings because authoritative master references are unavailable. The 130 quarantined recordings additionally have documented duration-estimation discrepancies, which are not, by themselves, proof of physical truncation.",
+      "prohibition_of_silent_promotion": "Task 7.7.4 strictly forbids copying or moving quarantined files into the main directory without generating an immutable provenance record. Every admitted recording must trace directly to its quarantine ledger entry."
+    }
+  },
+  "section_4_failure_handling_rollback_and_idempotency": {
+    "failure_scenarios": [
+      {
+        "scenario": "Destination file already exists with identical SHA-256",
+        "handling": "Pre-check validates digest against ledger. Skip extraction and staging completely (zero disk writes). Return VERIFIED_EXISTING."
+      },
+      {
+        "scenario": "Destination file already exists with mismatched SHA-256",
+        "handling": "Execution immediately halts with DestinationCollisionMismatchError. Destination file is NOT modified, deleted, or overwritten."
+      },
+      {
+        "scenario": "Race condition: destination file appears between check and publication",
+        "handling": "os.link(temp_path, dest_path) atomically raises FileExistsError without modifying dest_path. Temporary staging file is unlinked. dest_path SHA-256 is checked: if matching, recorded as verified; if mismatch, execution halts with error. Zero overwriting occurs."
+      },
+      {
+        "scenario": "Filesystem does not support hard links or operation spans volumes (EXDEV)",
+        "handling": "os.link() raises OSError. Materializer immediately fails closed (UnsupportedFilesystemError) and unlinks staging file. Falling back to os.replace() or copying over destination is strictly prohibited."
+      },
+      {
+        "scenario": "Network stream interruption or HTTP TCP reset during extraction",
+        "handling": "ThreadedResilientGzipStream catches socket error, issues HTTP 206 Partial Content request at exact byte offset with exponential backoff (max 5 retries). Staging file is unlinked if incomplete."
+      },
+      {
+        "scenario": "SHA-256 checksum mismatch on staged file",
+        "handling": "Staging file is immediately unlinked. No corrupt file is ever published. Error logged to failed_inventory."
+      },
+      {
+        "scenario": "PCM decoding failure or non-finite audio samples",
+        "handling": "Staged file is moved to diagnostic isolation directory; final destination is left untouched. Failure recorded."
+      },
+      {
+        "scenario": "Temporary filename collision during exclusive creation (O_CREAT | O_EXCL)",
+        "handling": "While a 128-bit UUID collision probability is negligible, if FileExistsError occurs on open, the materializer catches it and executes a bounded retry loop (up to 5 attempts) generating a fresh UUID with exponential backoff before failing."
+      },
+      {
+        "scenario": "Process killed mid-execution (SIGINT / SIGKILL / crash) with concurrent runs active",
+        "handling": "Each run stages files within its dedicated directory (.staging_run_{run_id}/). To guard against PID reuse and delayed heartbeats, recovery sweeps require acquiring an exclusive OS-level file lock on run.lock (msvcrt.locking on Windows / fcntl.flock on POSIX) in non-blocking mode. If an active process is currently running, the OS kernel denies lock acquisition, guaranteeing the active directory is never touched. Pruning occurs only if the exclusive OS lock is acquired AND heartbeat TTL > 3,600s AND PID verification confirms process termination."
+      }
+    ],
+    "rollback_guarantee": "Zero partial, corrupt, or clobbered destination files can ever exist. os.link() provides atomic no-clobber publication, guaranteeing that existing files are never replaced under any concurrency scenario."
+  },
+  "section_5_safety_verification_test_suite": {
+    "required_tests": [
+      {
+        "test_name": "test_destination_already_exists_correct_hash_skips_writes",
+        "assertion": "Verifies that when a destination file exists with matching ledger SHA-256, the materializer skips extraction and performs zero disk writes."
+      },
+      {
+        "test_name": "test_destination_already_exists_mismatched_hash_fails_closed",
+        "assertion": "Verifies that when a destination file exists with a mismatched hash, execution fails closed and the destination file remains completely unaltered."
+      },
+      {
+        "test_name": "test_race_condition_destination_appears_concurrently_no_clobber",
+        "assertion": "Simulates a concurrent process creating the destination file between check and publication; verifies that os.link raises FileExistsError and the destination file is never overwritten."
+      },
+      {
+        "test_name": "test_unsupported_filesystem_fails_closed_no_replace_fallback",
+        "assertion": "Simulates an OSError from os.link (unsupported hardlinks); verifies that the materializer fails closed and does NOT fall back to os.replace()."
+      },
+      {
+        "test_name": "test_process_crash_orphaned_staging_files_preserves_dest",
+        "assertion": "Simulates a crash leaving orphaned .staging_*.tmp files; verifies that recovery cleans up staging files and destination/source files remain intact."
+      },
+      {
+        "test_name": "test_staging_orphan_recovery_requires_exclusive_os_lock_guards_pid_reuse",
+        "assertion": "Verifies that an active process holding an OS-level exclusive file lock on run.lock blocks orphan recovery sweeps from deleting its staging directory, even if PID inspection or heartbeat timing is simulated as expired, protecting against PID reuse."
+      },
+      {
+        "test_name": "test_materializer_cannot_unlink_source_files",
+        "assertion": "Verifies that all source files and quarantine directory files have unchanged modification times, byte counts, and SHA-256 digests after materializer run."
+      },
+      {
+        "test_name": "test_quarantine_forensic_preservation_and_disposition_flagging",
+        "assertion": "Verifies that all 130 quarantined clips carry the explicit ADMITTED_ORIGIN_UNVERIFIED_WITH_DURATION_DISCREPANCY tag and exact Delta sample frame shortfalls."
+      }
+    ]
+  },
+  "section_6_governance_and_preconditions": {
+    "implementation_status": "AUTHORIZED_FOR_IMPLEMENTATION_AND_VALIDATION (Gate 2 Passed; Pre-Production Only)",
+    "governance_roadmap": {
+      "gate_1": "Policy 2A Scientific Admission \u2014 Authorizes formal scientific admission criteria and target dataset definition ONLY. Stated evidentiary limitations apply (Claim B unverified across all 18,975 recordings). Does NOT authorize Task 7.7.4 implementation or production dataset operations.",
+      "gate_2": "Task 7.7.4 Materializer Authorization \u2014 Authorizes implementation and execution of non-destructive materializer workflow under exclusive OS-level ownership locking.",
+      "gate_3": "Manifest Approval & Locking \u2014 Final dataset verification, hash reconciliation, and manifest locking (STATUS: LOCKED).",
+      "gates_4_to_6": "Environment readiness, confirmatory GPU CTTA experiments, and simultaneous statistical analysis."
+    },
+    "mandatory_authorization_gates": [
+      "Gate 1: Project Lead formal decision on Scientific Admission Policy (Policy 2A).",
+      "Gate 2: Project Lead formal authorization of Task 7.7.4 materializer implementation and execution.",
+      "Gate 3: Execution of materialization dry run on 10 synthetic clips and physical verification of non-destructive invariants.",
+      "Gate 4: Manifest verification and hash reconciliation locking under Gate 3 (STATUS: LOCKED)."
+    ],
+    "strictly_prohibited": [
+      "Automatic execution of Task 7.7.4 under Gate 1 approval alone.",
+      "Modifying lines 394 and 1049 of scripts/materialize_stage6m_cohort3_audio.py without Gate 2 authorization.",
+      "Running the legacy materializer against existing Cohort 3 audio.",
+      "Executing GPU CTTA inference."
+    ]
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "authorization_record": {
+    "decision_id": "STAGE6M-GATE5-AUTH-DECISION-20261108",
+    "status": "APPROVED",
+    "scope": "GATE 5 CONFIRMATORY EXECUTION ONLY",
+    "authorized_by": "Project Lead",
+    "timestamp_utc": "2026-11-07T19:48:00+00:00",
+    "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+    "governing_branch": "stage6m-five-stratum-parity",
+    "governing_base_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+    "authorized_release": {
+      "path": "releases/stage6m_gate5_release_v1.0.tar.gz",
+      "required_sha256": "cfa471be9b2faa7a67b98826cc1b68c1d92380aecbf229d57889e17d4e47d8b4",
+      "superseded_draft_sha256": "48e14452207b0e331e903aecb6b657febbbce46b83d2c81ce584bd9dc894342b",
+      "verification_status": "PRE_EXECUTION_CHECKS_PASSED"
+    },
+    "authorized_experiment_bounds": {
+      "cohort_speakers": 1100,
+      "strata": ["australia", "canada", "england", "south_asian", "us"],
+      "evaluation_clips": 16500,
+      "streaming_windows": 4125,
+      "window_size_k": 4,
+      "arms": [
+        "Arm 1: Static Baseline (theta_0 unadapted reference)",
+        "Arm 2: Ungated Continuous SUTA (LayerNorm adaptation in eval mode)",
+        "Arm 3: Disparity Safety Gate Controlled SUTA (Sentinel screening with OBF alpha spending)"
+      ],
+      "gate_reference_sentinel_speakers": 100,
+      "gate_reference_sentinel_clips": 1500,
+      "terminal_window_rule": "Window 4,124 (U = 4,124 updates) is prediction-only"
+    },
+    "mandatory_data_isolation_rules": {
+      "sealed_evaluation_key_status": "STRICTLY_EXCLUDED_AND_UNMOUNTED",
+      "sealed_key_sha256": "f427ae7fbf386f77b0795cc1fa33b2f7831c89f89ecfce7fa30036cde5c5223e",
+      "evaluation_transcripts_shielded": true,
+      "reserve_clips_shielded": true,
+      "gate6_scoring_separation": "Gate 6 multiplicity-controlled statistical analysis remains strictly blocked and offline until Gate 5 prediction streams are frozen"
+    },
+    "phase1_preflight_status": {
+      "verdict": "PHASE1_PREFLIGHT_PASSED",
+      "preflight_report_id": "STAGE6M-GATE5-PHASE1-PREFLIGHT-20261108",
+      "kaggle_payload_dir": "dist/kaggle_dataset",
+      "total_audio_recordings_staged": 18000,
+      "evaluation_recordings": 16500,
+      "gate_reference_recordings": 1500,
+      "reserve_recordings": 0,
+      "sealed_key_excluded": true,
+      "all_9_assertions_passed": true
+    },
+    "runtime_projections": {
+      "expected_runtime_hours": 4.14,
+      "conservative_p95_planning_scenario_hours": 5.50,
+      "statistical_qualification": "Multiplying per-window p95 by 4,125 produces a conservative planning scenario for session headroom; it is not a statistical claim that the full experiment runtime distribution has a 95th-percentile value of 5.5 hours.",
+      "kaggle_12h_limit_headroom_ratio": 2.90,
+      "safety_buffer_hours": 7.86
+    },
+    "execution_stop_conditions": [
+      "Any frozen artifact hash differs",
+      "Any unapproved transcript becomes accessible",
+      "Any reserve clip enters the primary evaluation stream unexpectedly",
+      "The registered protocol is not followed",
+      "Checkpoint recovery or audit logging fails",
+      "The execution environment differs from approved release requirements"
+    ]
+  }
+}

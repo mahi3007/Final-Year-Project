@@ -1,0 +1,92 @@
+[{"stream_name":"stderr","time":8.266738988,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.266786702,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.266793734,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.266798118,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.896224115,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.896258321,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.896262169,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.896265943,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":17.410273842,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17.410309642,"data":"STAGE 6M GATE 4: KAGGLE ACCELERATOR AUDIT\n"}
+,{"stream_name":"stdout","time":17.410314859,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17.41031854,"data":"PyTorch:         2.11.0+cu130\n"}
+,{"stream_name":"stdout","time":17.41032191,"data":"CUDA:            13.0\n"}
+,{"stream_name":"stdout","time":17.410325354,"data":"CUDA available:  True\n"}
+,{"stream_name":"stdout","time":17.410328583,"data":"GPU count:       2\n"}
+,{"stream_name":"stdout","time":17.410331741,"data":"  GPU 0: Tesla T4 (14.56 GB)\n"}
+,{"stream_name":"stdout","time":17.410334747,"data":"  GPU 1: Tesla T4 (14.56 GB)\n"}
+,{"stream_name":"stdout","time":17.410338005,"data":"\n"}
+,{"stream_name":"stdout","time":17.410341993,"data":"STATUS: NVIDIA Tesla T4 x2 Dual Topology Confirmed (Discrete Memory Spaces).\n"}
+,{"stream_name":"stdout","time":30.099547565,"data":"  Installing build dependencies ... \u001b[?25l\u001b[?25hdone\r\n"}
+,{"stream_name":"stdout","time":79.594385661,"data":"  Getting requirements to build wheel ... \u001b[?25l\u001b[?25hdone\r\n"}
+,{"stream_name":"stdout","time":81.217203739,"data":"  Preparing metadata (pyproject.toml) ... \u001b[?25l\u001b[?25hdone\r\n"}
+,{"stream_name":"stdout","time":84.860111751,"data":"  Installing build dependencies ... \u001b[?25l\u001b[?25hdone\r\n"}
+,{"stream_name":"stdout","time":85.92353993,"data":"  Getting requirements to build wheel ... \u001b[?25l\u001b[?25hdone\r\n"}
+,{"stream_name":"stdout","time":86.380368249,"data":"  Preparing metadata (pyproject.toml) ... \u001b[?25l\u001b[?25hdone\r\n"}
+,{"stream_name":"stdout","time":404.003762368,"data":"  Building wheel for statsmodels (pyproject.toml) ... \u001b[?25l\u001b[?25hdone\r\n"}
+,{"stream_name":"stdout","time":424.922913642,"data":"  Building wheel for miniaudio (pyproject.toml) ... \u001b[?25l\u001b[?25hdone\r\n"}
+,{"stream_name":"stdout","time":443.528611936,"data":"Transformers: 5.20.2\n"}
+,{"stream_name":"stdout","time":443.528660562,"data":"SoundFile:    0.14.0\n"}
+,{"stream_name":"stdout","time":443.528667491,"data":"NumPy:        2.1.3\n"}
+,{"stream_name":"stdout","time":443.528672509,"data":"SciPy:        1.16.3\n"}
+,{"stream_name":"stdout","time":443.528677381,"data":"Dependency verification PASSED.\n"}
+,{"stream_name":"stdout","time":455.042540463,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":455.042581289,"data":"STAGE 6M GATE 4: SYNTHETIC DATA SMOKE TEST EXECUTION\n"}
+,{"stream_name":"stdout","time":455.042586566,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":455.042590371,"data":"Executing on target device: cuda:0\n"}
+,{"stream_name":"stdout","time":455.042594021,"data":"\n"}
+,{"stream_name":"stdout","time":455.042597374,"data":"[Step 1] Loading Frozen ASR Model (facebook/wav2vec2-base-960h)...\n"}
+,{"stream_name":"stderr","time":455.169521155,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":455.169547618,"data":"\n"}
+,{"stream_name":"stderr","time":455.169552997,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":460.478596061,"data":"[transformers] \u001b[1mWav2Vec2ForCTC LOAD REPORT\u001b[0m from: facebook/wav2vec2-base-960h\n"}
+,{"stream_name":"stderr","time":460.478631323,"data":"Key                        | Status  | \n"}
+,{"stream_name":"stderr","time":460.478636266,"data":"---------------------------+---------+-\n"}
+,{"stream_name":"stderr","time":460.47864012,"data":"wav2vec2.masked_spec_embed | MISSING | \n"}
+,{"stream_name":"stderr","time":460.478643943,"data":"\n"}
+,{"stream_name":"stderr","time":460.478647482,"data":"Notes:\n"}
+,{"stream_name":"stderr","time":460.478664939,"data":"- MISSING:\tthose params were newly initialized because missing from the checkpoint. Consider training on your downstream task.\n"}
+,{"stream_name":"stderr","time":460.478669789,"data":"\n"}
+,{"stream_name":"stderr","time":460.47867345,"data":"[transformers] \u001b[1mWav2Vec2ForCTC LOAD REPORT\u001b[0m from: facebook/wav2vec2-base-960h\n"}
+,{"stream_name":"stderr","time":460.478677571,"data":"Key                        | Status  | \n"}
+,{"stream_name":"stderr","time":460.47868122,"data":"---------------------------+---------+-\n"}
+,{"stream_name":"stderr","time":460.478684761,"data":"wav2vec2.masked_spec_embed | MISSING | \n"}
+,{"stream_name":"stderr","time":460.478688146,"data":"\n"}
+,{"stream_name":"stderr","time":460.478691191,"data":"Notes:\n"}
+,{"stream_name":"stderr","time":460.47869448,"data":"- MISSING:\tthose params were newly initialized because missing from the checkpoint. Consider training on your downstream task.\n"}
+,{"stream_name":"stdout","time":462.158920699,"data":"  Model loaded in:          5.98 seconds\n"}
+,{"stream_name":"stdout","time":462.159053247,"data":"  Initial Parameter Hash:   75675734fb2e81f5670988269f05210792b38a79534302edcdb128d04bb29123\n"}
+,{"stream_name":"stdout","time":462.15905939,"data":"\n"}
+,{"stream_name":"stdout","time":462.159062958,"data":"[Step 2] Executing Batched Forward Pass on Synthetic Waveforms (K = 4)...\n"}
+,{"stream_name":"stdout","time":467.429594712,"data":"  Forward Pass Latency:     5243.94 ms (1310.99 ms / clip)\n"}
+,{"stream_name":"stdout","time":467.429631016,"data":"  Logits Tensor Shape:      [4, 149, 32]\n"}
+,{"stream_name":"stdout","time":467.429635427,"data":"\n"}
+,{"stream_name":"stdout","time":467.429638843,"data":"[Step 3] Checking Numerical Stability \u0026 Bitwise Determinism...\n"}
+,{"stream_name":"stdout","time":467.429658317,"data":"  Numerical Finiteness:     100% FINITE (no NaNs, no Infs)\n"}
+,{"stream_name":"stdout","time":467.429662059,"data":"  Max Determinism Diff:     0.00000000e+00\n"}
+,{"stream_name":"stdout","time":468.708090007,"data":"  Model Invariance:         VERIFIED (Initial and post hash match)\n"}
+,{"stream_name":"stdout","time":468.708138358,"data":"\n"}
+,{"stream_name":"stdout","time":468.708142588,"data":"[Step 4] Testing Synthetic LayerNorm Adaptation (Disposable Model Copy)...\n"}
+,{"stream_name":"stdout","time":471.610897828,"data":"  Adaptation Step Latency:  548.20 ms\n"}
+,{"stream_name":"stdout","time":471.610929315,"data":"  SUTA Entropy Loss:        0.6345 (FINITE)\n"}
+,{"stream_name":"stdout","time":471.610934876,"data":"  Non-LN Weights Status:    100% INVARIANT (Hash unchanged)\n"}
+,{"stream_name":"stdout","time":471.610939219,"data":"  LayerNorm Weights Status: ADAPTED (Entropy minimization applied)\n"}
+,{"stream_name":"stdout","time":471.610943461,"data":"\n"}
+,{"stream_name":"stdout","time":471.610947317,"data":"[Step 5] Testing Checkpoint Serialization \u0026 Recovery...\n"}
+,{"stream_name":"stdout","time":471.610951763,"data":"  Checkpoint Write Latency: 27.02 ms (550,587 bytes)\n"}
+,{"stream_name":"stdout","time":471.610955823,"data":"  Recovery Verification:    PASSED (State and optimizer round-trip intact)\n"}
+,{"stream_name":"stdout","time":471.610959861,"data":"\n"}
+,{"stream_name":"stdout","time":471.610963666,"data":"[Step 6] Peak GPU VRAM Allocated: 1372.23 MB\n"}
+,{"stream_name":"stdout","time":471.661126823,"data":"\n"}
+,{"stream_name":"stdout","time":471.661198235,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":471.661204907,"data":"GATE 4 SMOKE TEST VERDICT: PASSED_READY_FOR_KAGGLE_GPU\n"}
+,{"stream_name":"stdout","time":471.661208943,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":476.77467659,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":476.774707405,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":476.932737185,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":476.932758393,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":477.730851429,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":477.815787187,"data":"[NbConvertApp] Writing 113343 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":480.303791905,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":480.86293341,"data":"[NbConvertApp] Writing 399662 bytes to __results__.html\n"}
+]

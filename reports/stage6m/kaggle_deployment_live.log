@@ -1,0 +1,68 @@
+[2026-11-08 07:21:39 UTC] ================================================================================
+[2026-11-08 07:21:39 UTC] STAGE 6M GATE 5: PRE-DEPLOYMENT PAYLOAD INVARIANT VERIFICATION
+[2026-11-08 07:21:39 UTC] ================================================================================
+[2026-11-08 07:21:39 UTC] Catalogue SHA-256: e7187136c5004623f1f3044eb60587efbd201f4c9006bb081d91a94efa8ebaf8
+[2026-11-08 07:21:39 UTC] [PASS] Catalogue SHA-256 matches expected frozen digest.
+[2026-11-08 07:21:39 UTC] Audio files count: 18,000 (Expected: 18,000)
+[2026-11-08 07:21:39 UTC] Audio byte sum:   672,970,785 (Expected: 672,970,785)
+[2026-11-08 07:21:39 UTC] [PASS] Audio payload exactness verified: 18,000 files, 672,970,785 bytes.
+[2026-11-08 07:21:40 UTC] CRITICAL ERROR: 'str' object has no attribute 'get'
+[2026-11-08 07:22:22 UTC] ================================================================================
+[2026-11-08 07:22:22 UTC] STAGE 6M GATE 5: PRE-DEPLOYMENT PAYLOAD INVARIANT VERIFICATION
+[2026-11-08 07:22:22 UTC] ================================================================================
+[2026-11-08 07:22:22 UTC] Catalogue SHA-256: e7187136c5004623f1f3044eb60587efbd201f4c9006bb081d91a94efa8ebaf8
+[2026-11-08 07:22:22 UTC] [PASS] Catalogue SHA-256 matches expected frozen digest.
+[2026-11-08 07:22:22 UTC] Audio files count: 18,000 (Expected: 18,000)
+[2026-11-08 07:22:22 UTC] Audio byte sum:   672,970,785 (Expected: 672,970,785)
+[2026-11-08 07:22:22 UTC] [PASS] Audio payload exactness verified: 18,000 files, 672,970,785 bytes.
+[2026-11-08 07:22:23 UTC] Identified reserve sample IDs in final manifest: 975
+[2026-11-08 07:22:23 UTC] [PASS] Zero reserve recordings present in payload (100% disjoint).
+[2026-11-08 07:22:23 UTC] Online inference manifest SHA-256: 0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1
+[2026-11-08 07:22:23 UTC] [PASS] Online inference manifest verified.
+[2026-11-08 07:22:23 UTC] [PASS] Sealed transcript key strictly excluded.
+[2026-11-08 07:22:23 UTC] ================================================================================
+[2026-11-08 07:22:23 UTC] STAGE 6M GATE 5: INITIALIZING KAGGLE CLIENT & AUTHENTICATION
+[2026-11-08 07:22:23 UTC] ================================================================================
+[2026-11-08 07:22:23 UTC] Authenticated as Kaggle user: venkataakhil07
+[2026-11-08 07:22:28 UTC] Dataset venkataakhil07/stage6m-frozen-benchmark not yet created on Kaggle (403 Client Error: Forbidden for url: https://www.kaggle.com/api/v1/datasets/status/venkataakhil07/stage6m-frozen-benchmark). Proceeding with initial creation.
+[2026-11-08 07:22:28 UTC] Found cached upload token for audio.zip: CfDJ8FwkkMkekkBCtzoFDl4V...
+[2026-11-08 07:22:28 UTC] Found cached upload token for configs.zip: CfDJ8FwkkMkekkBCtzoFDl4V...
+[2026-11-08 07:22:28 UTC] Zipping and uploading splits directory...
+[2026-11-08 07:22:28 UTC] Archiving splits to splits.zip...
+[2026-11-08 07:22:29 UTC] Archive created: C:\Users\venka\AppData\Local\Temp\tmp1sq65udd\splits.zip (2,547,530 bytes). Uploading blob...
+[2026-11-08 07:22:57 UTC] Uploaded splits.zip successfully. Token: CfDJ8FwkkMkekkBCtzoFDl4V...
+[2026-11-08 07:22:57 UTC] Zipping and uploading src directory...
+[2026-11-08 07:22:57 UTC] Archiving src to src.zip...
+[2026-11-08 07:22:57 UTC] Archive created: C:\Users\venka\AppData\Local\Temp\tmpasb6c11r\src.zip (172,003 bytes). Uploading blob...
+[2026-11-08 07:23:11 UTC] Uploaded src.zip successfully. Token: CfDJ8FwkkMkekkBCtzoFDl4V...
+[2026-11-08 07:23:11 UTC] Uploading file requirements-kaggle-lock.txt (1,379 bytes)...
+[2026-11-08 07:23:21 UTC] Uploaded requirements-kaggle-lock.txt successfully. Token: CfDJ8FwkkMkekkBCtzoFDl4V...
+[2026-11-08 07:23:21 UTC] Uploading file SHA256_CATALOGUE.json (2,427,638 bytes)...
+[2026-11-08 07:23:39 UTC] Uploaded SHA256_CATALOGUE.json successfully. Token: CfDJ8FwkkMkekkBCtzoFDl4V...
+[2026-11-08 07:23:39 UTC] ================================================================================
+[2026-11-08 07:23:39 UTC] STAGE 6M GATE 5: SUBMITTING CREATE DATASET REQUEST TO KAGGLE
+[2026-11-08 07:23:39 UTC] ================================================================================
+[2026-11-08 07:23:39 UTC] Dataset Title:    Stage 6M Frozen Research Benchmark
+[2026-11-08 07:23:39 UTC] Dataset Slug:     venkataakhil07/stage6m-frozen-benchmark
+[2026-11-08 07:23:39 UTC] License:          CC0-1.0
+[2026-11-08 07:23:39 UTC] Visibility:       PRIVATE (is_private=True)
+[2026-11-08 07:23:39 UTC] Attached Files:   6 items
+[2026-11-08 07:23:39 UTC]   - audio.zip: token=CfDJ8FwkkMkekkBCtzoF...
+[2026-11-08 07:23:39 UTC]   - configs.zip: token=CfDJ8FwkkMkekkBCtzoF...
+[2026-11-08 07:23:39 UTC]   - splits.zip: token=CfDJ8FwkkMkekkBCtzoF...
+[2026-11-08 07:23:39 UTC]   - src.zip: token=CfDJ8FwkkMkekkBCtzoF...
+[2026-11-08 07:23:39 UTC]   - requirements-kaggle-lock.txt: token=CfDJ8FwkkMkekkBCtzoF...
+[2026-11-08 07:23:39 UTC]   - SHA256_CATALOGUE.json: token=CfDJ8FwkkMkekkBCtzoF...
+[2026-11-08 07:23:46 UTC] Kaggle API create_dataset response: {"ref": "/datasets/venkataakhil07/stage6m-frozen-benchmark", "url": "https://www.kaggle.com/datasets/venkataakhil07/stage6m-frozen-benchmark", "status": "Ok", "error": "", "invalidTags": []}
+[2026-11-08 07:23:46 UTC] ================================================================================
+[2026-11-08 07:23:46 UTC] STAGE 6M GATE 5: MONITORING DATASET STATUS UNTIL READY
+[2026-11-08 07:23:46 UTC] ================================================================================
+[2026-11-08 07:23:49 UTC] Status check exception: 403 Client Error: Forbidden for url: https://www.kaggle.com/api/v1/datasets/status/venkataakhil07/stage6m-frozen-benchmark
+[2026-11-08 07:24:00 UTC] Status check exception: 403 Client Error: Forbidden for url: https://www.kaggle.com/api/v1/datasets/status/venkataakhil07/stage6m-frozen-benchmark
+[2026-11-08 07:24:11 UTC] Status check exception: 403 Client Error: Forbidden for url: https://www.kaggle.com/api/v1/datasets/status/venkataakhil07/stage6m-frozen-benchmark
+[2026-11-08 07:24:22 UTC] Status check exception: 403 Client Error: Forbidden for url: https://www.kaggle.com/api/v1/datasets/status/venkataakhil07/stage6m-frozen-benchmark
+[2026-11-08 07:24:33 UTC] [46s] Dataset status: ready
+[2026-11-08 07:24:33 UTC] ================================================================================
+[2026-11-08 07:24:33 UTC] [SUCCESS] Dataset venkataakhil07/stage6m-frozen-benchmark is READY on Kaggle!
+[2026-11-08 07:24:33 UTC] Kaggle Dataset URL: https://www.kaggle.com/datasets/venkataakhil07/stage6m-frozen-benchmark
+[2026-11-08 07:24:33 UTC] ================================================================================

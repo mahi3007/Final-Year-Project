@@ -1,0 +1,38 @@
+{
+  "record_id": "STAGE6M-GATE3A-AUTH-20261107",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "reference_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "scope": "STAGE_6M_GATE_3A_PRODUCTION_MATERIALIZATION",
+  "authority": "Project Lead (Dissertation Author)",
+  "status": "APPROVED",
+  "approval_date": "2026-11-07",
+  "target_destination_dir": "datasets/audio/stage6m/cohort3_reconciled_assets",
+  "payload_accounting": {
+    "total_target_recordings": 18975,
+    "accepted_clips": 18845,
+    "quarantined_discrepancy_screened_clips": 130,
+    "total_speakers": 1265,
+    "evaluation_speakers": 1100,
+    "gate_speakers": 100,
+    "reserve_speakers": 65,
+    "total_payload_bytes": 709750958,
+    "target_volume": "C:\\ (NTFS Serial 0xca18eefa)",
+    "publication_method": "os.link() Atomic Hard-Link"
+  },
+  "authorized_operations": [
+    "Execute scripts/materialize_stage6m_cohort3_audio_v2.py with --authorize-gate3a flag.",
+    "Non-destructive physical materialization of 18,845 accepted and 130 discrepancy-screened recordings into datasets/audio/stage6m/cohort3_reconciled_assets/.",
+    "Multi-decoder consensus verification (SoundFile, PyAV, miniaudio) on all staged assets.",
+    "Full-payload SHA-256 validation.",
+    "Emission of datasets/splits/stage6m_cohort3_materialization_disposition_ledger.csv.",
+    "Physical destination inventory audit reconciling 18,975 files and 709,750,958 bytes."
+  ],
+  "strictly_prohibited_operations": [
+    "Final manifest generation or locking (datasets/splits/stage6m_cohort3_final_manifest.json is strictly reserved for Gate 3B).",
+    "GPU environment provisioning or testing (Gate 4 is blocked).",
+    "Confirmatory GPU inference, adaptation, or evaluation cohort unsealing (Gate 5 is blocked).",
+    "Statistical estimation or empirical reporting (Gate 6 is blocked)."
+  ],
+  "acknowledgment_clause": "The Project Lead has formally authorized Gate 3A with the understanding that authorization permits processing the 18,975 real audio assets into cohort3_reconciled_assets/ and generating the disposition ledger, but strictly excludes final manifest locking and GPU experiments."
+}

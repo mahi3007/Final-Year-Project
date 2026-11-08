@@ -1,0 +1,21 @@
+{
+  "report_id": "STAGE6M-TASK774-EXECUTION-1794074379",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "execution_statistics": {
+    "total_target_records": 18975,
+    "published_atomic_hardlink": 0,
+    "verified_existing_skipped": 0,
+    "dry_run_planned": 18975,
+    "quarantined_admitted_count": 130,
+    "accepted_admitted_count": 18845,
+    "total_destination_bytes": 709750958,
+    "all_decoders_valid_count": 18975,
+    "failure_count": 0,
+    "start_time_utc": "2026-11-07T17:59:37.819113+00:00",
+    "completion_time_utc": "2026-11-07T17:59:39.759433+00:00",
+    "elapsed_seconds": 1.94
+  },
+  "ledger_file": "C:\\Users\\venka\\Downloads\\final year project main\\datasets\\splits\\stage6m_cohort3_materialization_disposition_ledger.csv",
+  "destination_directory": "C:\\Users\\venka\\Downloads\\final year project main\\datasets\\audio\\stage6m\\cohort3_reconciled_assets"
+}

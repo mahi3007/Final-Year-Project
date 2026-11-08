@@ -1,0 +1,36 @@
+{
+  "catalogue_id": "STAGE6M-GATE5-OUTPUT-CATALOGUE",
+  "generated_at_utc": "2026-11-08T12:05:17.900123+00:00",
+  "artifacts": {
+    "prequential_stream_records.jsonl": {
+      "rel_path": "results/stage6m_cohort3_results/prequential_stream_records.jsonl",
+      "bytes": 6935760,
+      "sha256": "42fc02cefc00f4ffd40022feade68aec8dd915818afde46ce71bd534c2b72163",
+      "records_count": 16500,
+      "description": "Raw streaming prequential recognition hypotheses for Arm 1, Arm 2, and Arm 3 across all 16,500 clips"
+    },
+    "stage6m_cohort3_results.tar.gz": {
+      "rel_path": "results/stage6m_cohort3_results/stage6m_cohort3_results.tar.gz",
+      "bytes": 945742,
+      "sha256": "41b8ed58d23b89a9f6e9963b9cb5cf04fcc7413cfff82069a9eb90ce52a2ab8c",
+      "description": "Immutable results archive bundled directly on the Kaggle worker node"
+    },
+    "checkpoint_latest.json": {
+      "rel_path": "checkpoints/stage6m_cohort3/checkpoint_latest.json",
+      "bytes": 126,
+      "sha256": "2b993107b7b20bdc4281eb554453159dcce4d2ae72e4c905e9027a9fdfb29f32",
+      "completed_window_idx": 4124,
+      "state_file": "state_win_4124.pt"
+    },
+    "stage6m_gate5_execution_start_verification_report.json": {
+      "rel_path": "reports/stage6m/stage6m_gate5_execution_start_verification_report.json",
+      "bytes": 2013,
+      "sha256": "88c2dc1afdf8367bdd13186d43dbb41271fb6033addf88466a67478031d9125e"
+    },
+    "stage6m_gate5_confirmatory_execution.log": {
+      "rel_path": "reports/stage6m/stage6m_gate5_confirmatory_execution.log",
+      "bytes": 11956,
+      "sha256": "f726dbd0fddff7cebd8237c23b3a80c674bb759a50f71ada1ce5afbb3e494e82"
+    }
+  }
+}

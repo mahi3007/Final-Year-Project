@@ -67,6 +67,8 @@ desktop.ini
 
 # Large external datasets and archives (GitHub limit is 100MB per file)
 datasets/external/
+datasets/audio/
+datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json
 *.zip
 *.tar
 !stage6_audio_bundle.tar.gz
@@ -80,6 +82,7 @@ test_festvox.wav
 *.bin
 *.onnx
 *.safetensors
+checkpoints/
 
 # Temporary Kaggle downloads and extracted research bundles
 scratch/all_kaggle_research_outputs/
@@ -91,5 +94,16 @@ scratch/kaggle_run_output_full/
 scratch/kaggle_run_output_utf8/
 scratch/selective_download/
 scratch/*.log
+scratch/candidate_manifest/
+scratch/gate4_output/
+scratch/*transcript*
+scratch/*step_896*
+scratch/read_step_details.py
+scratch/inspect_cells.py
+scratch/print_kernel_log.py
+cloud/kaggle/gate*_kernel/
+cloud/kaggle/gate*_output/
+cloud/kaggle/gate5_execution_output/
+releases/*/
 results/stage6m_kaggle/
 

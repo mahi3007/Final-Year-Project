@@ -1,0 +1,36 @@
+# ==============================================================================
+# Stage 6M: Kaggle Virtual GPU Exact Dependency Freeze & Environment Record
+# ==============================================================================
+# Target Environment: Kaggle Notebooks (NVIDIA Tesla T4 x2, CUDA 12.1 Container)
+# Governing Protocol: Stage 6M v1.5 Five-Stratum Benchmark (Section 14.7)
+# ==============================================================================
+# CRITICAL DIRECTIVE:
+# Do NOT run unpinned upgrades of PyTorch or CUDA runtime on Kaggle.
+# Use the verified container baseline with exactly pinned complementary packages.
+# ==============================================================================
+
+# Verified Preinstalled Framework Baseline (Preserve Kaggle Container Builds)
+# torch==2.1.2+cu121 (or active preinstalled PyTorch with CUDA support)
+# torchvision==0.16.2+cu121
+# torchaudio==2.1.2+cu121
+
+# Core Transformers & Tokenization (Exact Tested Release)
+transformers==4.40.2
+
+# Specialized Audio Decoders & Resampling (Exact Pins)
+soundfile==0.12.1
+av==12.0.0
+miniaudio==1.59
+librosa==0.10.2.post1
+
+# Scientific Computation & Data Handling (Exact Pins)
+numpy==1.26.4
+scipy==1.13.0
+pandas==2.2.2
+
+# Statistical Evaluation & Error Distance (Exact Pins)
+statsmodels==0.14.2
+editdistance==0.8.1
+
+# Automated Testing & Verification
+pytest==8.1.1

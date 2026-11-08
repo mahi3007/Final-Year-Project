@@ -1,0 +1,161 @@
+{
+  "report_id": "STAGE6M-GATE5-CONFIRMATORY-EXECUTION-REPORT",
+  "timestamp_utc": "2026-11-08T12:05:17.900123+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_authorization": "STAGE6M-GATE5-AUTH-DECISION-20261108",
+  "verdict": "CONFIRMATORY_EXECUTION_COMPLETED",
+  "execution_summary": {
+    "kernel_slug": "venkataakhil07/stage-6m-gate-5-confirmatory-benchmark",
+    "kernel_version": 2,
+    "platform": "Kaggle Virtual GPU (NVIDIA Tesla T4 x2)",
+    "benchmark_execution_duration_seconds": 12144.83,
+    "benchmark_execution_duration_hours": 3.37,
+    "total_windows_registered": 4125,
+    "total_windows_completed": 4125,
+    "total_clips_evaluated": 16500,
+    "clips_per_window_k": 4,
+    "arms_evaluated": [
+      "Arm 1: Static Baseline (theta_0 unadapted reference)",
+      "Arm 2: Ungated Continuous Test-Time Adaptation (SUTA)",
+      "Arm 3: Disparity Safety Gate Controlled Adaptation (DSG Sentinel Screening with OBF alpha spending)"
+    ],
+    "first_record": {
+      "window_idx": 0,
+      "recording_id": "common_voice_en_111416",
+      "speaker_id": "be349663882400f4bc7a15148239610783b92069946153359aeafc06ff5f9af1dff68a1ddaf5f717461d6190f3f59691cae4a7af12732b460fdb818eab59f89b",
+      "stratum_code": "australia",
+      "hyp_arm1": "I NEVER HAD ANY SUCH IDEA",
+      "hyp_arm2": "I NEVER HAD ANY SUCH IDEA",
+      "hyp_arm3": "I NEVER HAD ANY SUCH IDEA"
+    },
+    "last_record": {
+      "window_idx": 4124,
+      "recording_id": "common_voice_en_17256200",
+      "speaker_id": "ac8bf279e1ad1976290f1bfe22f79bc1c1053b934ca19c591fcc8847c500722bc2e911590104835cb315372e75464e1a3d6f63eda497d63b380a5a7e5720b1dd",
+      "stratum_code": "us",
+      "hyp_arm1": "AFTER EXPERIENCING A MIND BLOWING SENSUAL ORIGY MIKE WAS SURE HE HAD TAKEN AN OVERDOSE",
+      "hyp_arm2": "",
+      "hyp_arm3": "AFTER EXPERIENCING A MINE BLOWING SENSUAL ORGY MIKE WAS SURE HE HAD TAKEN AN OVERDOSE"
+    }
+  },
+  "phase_a_guard": {
+    "report_id": "STAGE6M-GATE5-EXECUTION-START-VERIFICATION-REPORT",
+    "timestamp_utc": "2026-11-08T08:32:47.741761+00:00",
+    "governing_authorization": "STAGE6M-GATE5-AUTH-DECISION-20261108",
+    "verdict": "EXECUTION_START_VERIFIED",
+    "all_11_checks_passed": true,
+    "checks": {
+      "check1_dataset_mount": {
+        "status": "PASSED",
+        "root": "/kaggle/input/datasets/venkataakhil07/stage6m-frozen-benchmark"
+      },
+      "check2_hardware_topology": {
+        "status": "PASSED",
+        "device_count": 2,
+        "gpus": [
+          {
+            "device": 0,
+            "name": "Tesla T4",
+            "vram_gb": 14.56
+          },
+          {
+            "device": 1,
+            "name": "Tesla T4",
+            "vram_gb": 14.56
+          }
+        ]
+      },
+      "check3_software_versions": {
+        "status": "PASSED",
+        "python": "3.13.16",
+        "pytorch": "2.11.0+cu130",
+        "cuda": "13.0"
+      },
+      "check4_audio_inventory": {
+        "status": "PASSED",
+        "file_count": 18000,
+        "total_bytes": 672970785
+      },
+      "check5_eval_clips": {
+        "status": "PASSED",
+        "count": 16500
+      },
+      "check6_gate_clips": {
+        "status": "PASSED",
+        "count": 1500
+      },
+      "check7_reserve_exclusion": {
+        "status": "PASSED",
+        "overlap": 0,
+        "physically_excluded": 975
+      },
+      "check8_transcript_shielding": {
+        "status": "PASSED",
+        "nullified_eval_transcripts": 16500
+      },
+      "check9_sealed_key_exclusion": {
+        "status": "PASSED",
+        "found_instances": 0
+      },
+      "check10_cryptographic_identities": {
+        "status": "PASSED",
+        "online_manifest": "0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1",
+        "final_manifest": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+        "catalogue": "e7187136c5004623f1f3044eb60587efbd201f4c9006bb081d91a94efa8ebaf8"
+      },
+      "check11_import_resolution": {
+        "status": "PASSED",
+        "resolved_path": "/kaggle/working/src/dsg_ctta/__init__.py"
+      }
+    },
+    "duration_seconds": 6.28
+  },
+  "phase_b_execution": {
+    "runner_exit_code": 0,
+    "runner_status": "COMPLETED",
+    "prequential_stream_records_count": 16500,
+    "checkpoint_latest": {
+      "completed_window_idx": 4124,
+      "state_file": "state_win_4124.pt",
+      "timestamp_utc": "2026-11-08T11:55:06.099624+00:00"
+    }
+  },
+  "phase_d_data_isolation": {
+    "sealed_evaluation_key_status": "STRICTLY_SEALED_AND_OFFLINE",
+    "evaluation_reference_transcripts_leaked": 0,
+    "reserve_audio_leaked": 0,
+    "gate6_status": "BLOCKED_PENDING_EXPLICIT_AUTHORIZATION"
+  },
+  "output_catalogue": {
+    "prequential_stream_records.jsonl": {
+      "rel_path": "results/stage6m_cohort3_results/prequential_stream_records.jsonl",
+      "bytes": 6935760,
+      "sha256": "42fc02cefc00f4ffd40022feade68aec8dd915818afde46ce71bd534c2b72163",
+      "records_count": 16500,
+      "description": "Raw streaming prequential recognition hypotheses for Arm 1, Arm 2, and Arm 3 across all 16,500 clips"
+    },
+    "stage6m_cohort3_results.tar.gz": {
+      "rel_path": "results/stage6m_cohort3_results/stage6m_cohort3_results.tar.gz",
+      "bytes": 945742,
+      "sha256": "41b8ed58d23b89a9f6e9963b9cb5cf04fcc7413cfff82069a9eb90ce52a2ab8c",
+      "description": "Immutable results archive bundled directly on the Kaggle worker node"
+    },
+    "checkpoint_latest.json": {
+      "rel_path": "checkpoints/stage6m_cohort3/checkpoint_latest.json",
+      "bytes": 126,
+      "sha256": "2b993107b7b20bdc4281eb554453159dcce4d2ae72e4c905e9027a9fdfb29f32",
+      "completed_window_idx": 4124,
+      "state_file": "state_win_4124.pt"
+    },
+    "stage6m_gate5_execution_start_verification_report.json": {
+      "rel_path": "reports/stage6m/stage6m_gate5_execution_start_verification_report.json",
+      "bytes": 2013,
+      "sha256": "88c2dc1afdf8367bdd13186d43dbb41271fb6033addf88466a67478031d9125e"
+    },
+    "stage6m_gate5_confirmatory_execution.log": {
+      "rel_path": "reports/stage6m/stage6m_gate5_confirmatory_execution.log",
+      "bytes": 11956,
+      "sha256": "f726dbd0fddff7cebd8237c23b3a80c674bb759a50f71ada1ce5afbb3e494e82"
+    }
+  }
+}

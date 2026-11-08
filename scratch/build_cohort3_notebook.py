@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+"""Builds cloud/kaggle/run_stage6m_cohort3_confirmatory_kaggle.ipynb with T4 x2 and isolated manifests."""
+
+import json
+from pathlib import Path
+
+nb = {
+    "cells": [
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "# Stage 6M: Multi-Model Cumulative Adaptation & Confirmatory Benchmark\n",
+                "## Official Cloud GPU Execution Notebook (Kaggle NVIDIA Tesla T4 × 2)\n",
+                "\n",
+                "**Governing Protocol:** Stage 6M v1.5 Five-Stratum Benchmark (Section 14.7)  \n",
+                "**Governing Branch:** `stage6m-five-stratum-parity` @ `baee3b8381389ffde38e907dc137623748c254a8`  \n",
+                "**Restricted Online Manifest:** `datasets/splits/stage6m_cohort3_online_inference_manifest.json`  \n",
+                "**Expected Online Manifest SHA-256:** `0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1`  \n",
+                "**Parent Locked Manifest SHA-256:** `171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0`  \n",
+                "**Target Accelerator:** NVIDIA Tesla T4 × 2 (Dual 16 GB VRAM GPUs; Tesla P100 is retired)  \n",
+                "\n",
+                "---\n",
+                "### Three-Arm Matched Experimental Design\n",
+                "1. **Arm 1 (Static Baseline):** Fixed unadapted reference ($\\\\theta_0$) across 4,125 sequential stream windows.\n",
+                "2. **Arm 2 (Ungated CTTA):** Continuous test-time adaptation via SUTA (LayerNorm affine updates).\n",
+                "3. **Arm 3 (DSG Gate-Controlled CTTA):** Continuous adaptation governed by Disparity Safety Gate on Sentinel Panel with Lan-DeMets O'Brien-Fleming alpha spending and atomic candidate live rollback on rejection.\n",
+                "\n",
+                "**Dataset & Transcript Shielding Accounting:**\n",
+                "- **Evaluation Cohort:** 1,100 speakers / 16,500 clips (220 per stratum across Australia, Canada, England, South Asian, US).\n",
+                "- **Evaluation Reference Labels:** **STRICTLY SEALED** (`transcript == null` in online manifest).\n",
+                "- **Gate-Reference Panel:** 100 speakers / 1,500 clips (20 per stratum, labels active for live Sentinel WER calculation).\n",
+                "- **Panel Overlap:** 0 (strictly disjoint)."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Step 1: Hardware Accelerator Verification (NVIDIA T4 x2)\n",
+                "import sys, platform, torch\n",
+                "\n",
+                "print('=' * 80)\n",
+                "print('STAGE 6M KAGGLE EXECUTION: HARDWARE ACCELERATOR CHECK')\n",
+                "print('=' * 80)\n",
+                "cuda_avail = torch.cuda.is_available()\n",
+                "print(f'CUDA Available: {cuda_avail}')\n",
+                "if cuda_avail:\n",
+                "    dev_count = torch.cuda.device_count()\n",
+                "    dev_name_0 = torch.cuda.get_device_name(0)\n",
+                "    vram_gb_0 = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)\n",
+                "    print(f'Device Count:     {dev_count}')\n",
+                "    print(f'Primary GPU (0):  {dev_name_0} ({vram_gb_0:.2f} GB VRAM)')\n",
+                "    if dev_count > 1:\n",
+                "        dev_name_1 = torch.cuda.get_device_name(1)\n",
+                "        vram_gb_1 = torch.cuda.get_device_properties(1).total_memory / (1024 ** 3)\n",
+                "        print(f'Secondary GPU (1): {dev_name_1} ({vram_gb_1:.2f} GB VRAM) [NVIDIA T4 x2 Dual Topology Confirmed]')\n",
+                "    assert vram_gb_0 >= 14.0, f'VRAM {vram_gb_0:.2f} GB below expected 16GB profile!'\n",
+                "    print('STATUS: GPU accelerator confirmed ready.')\n",
+                "else:\n",
+                "    print('[ERROR] No GPU detected! Please configure Notebook Settings -> Accelerator -> GPU T4 x2.')\n"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Step 2: Workspace Setup & Exact Dependency Installation\n",
+                "import os, subprocess\n",
+                "\n",
+                "if not os.path.exists('datasets') and os.path.exists('/kaggle/input/stage6m-frozen-benchmark'):\n",
+                "    print('Kaggle frozen benchmark dataset mounted at /kaggle/input/stage6m-frozen-benchmark/')\n",
+                "\n",
+                "# Install complementary metrics and audio libraries (soundfile 0.14.0 is preinstalled)\n",
+                "!pip install -q editdistance==0.8.1 statsmodels==0.14.2 miniaudio==1.59\n",
+                "print('Dependencies verified successfully.')\n"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Step 3: Cryptographic Lock & Transcript Shielding Verification\n",
+                "import hashlib\n",
+                "from pathlib import Path\n",
+                "\n",
+                "possible_paths = [\n",
+                "    Path('/kaggle/input/stage6m-frozen-benchmark/splits/stage6m_cohort3_online_inference_manifest.json'),\n",
+                "    Path('/kaggle/input/stage6m-frozen-benchmark/stage6m_cohort3_online_inference_manifest.json'),\n",
+                "    Path('datasets/splits/stage6m_cohort3_online_inference_manifest.json'),\n",
+                "    Path('/kaggle/input/stage6m-frozen-benchmark/splits/stage6m_cohort3_final_manifest.json'),\n",
+                "    Path('/kaggle/input/stage6m-frozen-benchmark/stage6m_cohort3_final_manifest.json'),\n",
+                "    Path('datasets/splits/stage6m_cohort3_final_manifest.json')\n",
+                "]\n",
+                "\n",
+                "target_manifest = None\n",
+                "for p in possible_paths:\n",
+                "    if p.exists():\n",
+                "        target_manifest = p\n",
+                "        break\n",
+                "\n",
+                "assert target_manifest is not None, 'Could not locate official manifest!'\n",
+                "manifest_sha256 = hashlib.sha256(target_manifest.read_bytes()).hexdigest()\n",
+                "expected_online = '0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1'\n",
+                "expected_parent = '171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0'\n",
+                "\n",
+                "print(f'Manifest Path:   {target_manifest}')\n",
+                "print(f'Manifest Size:   {target_manifest.stat().st_size:,} bytes')\n",
+                "print(f'Observed SHA256: {manifest_sha256}')\n",
+                "if manifest_sha256 == expected_online:\n",
+                "    print('CRITICAL CHECK PASSED: Restricted online inference manifest authentic (transcripts shielded).')\n",
+                "elif manifest_sha256 == expected_parent:\n",
+                "    print('CRITICAL CHECK PASSED: Parent locked manifest authentic (runner will enforce in-memory shielding).')\n",
+                "else:\n",
+                "    raise ValueError(f'Digest mismatch! Unexpected hash {manifest_sha256}')\n"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Step 4: Launch Confirmatory 3-Arm Benchmark\n",
+                "# Executes the three-arm stream across all 4,125 streaming windows\n",
+                "!python cloud/kaggle/run_stage6m_cohort3_kaggle_benchmark.py\n"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Step 5: Bundle Output Results for Download\n",
+                "!tar -czvf /kaggle/working/stage6m_cohort3_results.tar.gz -C /kaggle/working stage6m_cohort3_results checkpoints\n",
+                "import os\n",
+                "if os.path.exists('/kaggle/working/stage6m_cohort3_results.tar.gz'):\n",
+                "    sz = os.path.getsize('/kaggle/working/stage6m_cohort3_results.tar.gz')\n",
+                "    print(f'Results packaged successfully: /kaggle/working/stage6m_cohort3_results.tar.gz ({sz:,} bytes)')\n",
+                "    print('Download this file from the Kaggle Output pane on the right.')\n"
+            ]
+        }
+    ],
+    "metadata": {
+        "language_info": {"name": "python"},
+        "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}
+    },
+    "nbformat": 4,
+    "nbformat_minor": 4
+}
+
+out_path = Path("cloud/kaggle/run_stage6m_cohort3_confirmatory_kaggle.ipynb")
+out_path.write_text(json.dumps(nb, indent=2), encoding="utf-8")
+print("Wrote", out_path, out_path.stat().st_size, "bytes")

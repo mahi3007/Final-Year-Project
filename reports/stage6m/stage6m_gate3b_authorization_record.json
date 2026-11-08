@@ -1,0 +1,90 @@
+{
+  "record_id": "STAGE6M-GATE3B-AUTH-20261107",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "reference_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "scope": "STAGE_6M_GATE_3B_FINAL_MANIFEST_VALIDATION_AND_LOCK",
+  "authority": "Project Lead (Dissertation Author)",
+  "status": "APPROVED",
+  "decision_date": "2026-11-07",
+  "pre_lock_audit_reference": {
+    "report_id": "STAGE6M-GATE3B-PRELOCK-AUDIT-20261107-V3",
+    "report_json": "reports/stage6m/stage6m_gate3b_pre_lock_audit_report.json",
+    "report_md": "reports/stage6m/stage6m_gate3b_pre_lock_audit_report.md",
+    "audit_status": "ALL_12_INVARIANTS_PASSED",
+    "evidentiary_policy": "Policy 2A (Reconciled Target Population Admission)",
+    "claim_a_status": "VERIFIED_FOR_ALL_18975_RECORDS",
+    "claim_b_status": "UNVERIFIED_FOR_ALL_18975_RECORDS (Absence of Uncompressed Master Captures)",
+    "claim_b_field_semantics": {
+      "source_origin_completeness_verified": false,
+      "source_origin_completeness_status": "UNVERIFIED"
+    }
+  },
+  "candidate_manifest": {
+    "path": "scratch/candidate_manifest/stage6m_cohort3_candidate_final_manifest.json",
+    "size_bytes": 26071214,
+    "sha256": "c09edaf82d62645293b51d70152b326008f42832a21fbdd765ef2218c4f0fb89",
+    "legacy_versions_preserved": [
+      {
+        "version": "v1_legacy_claim_b",
+        "path": "scratch/candidate_manifest/stage6m_cohort3_candidate_final_manifest_v1_legacy_claim_b.json",
+        "size_bytes": 21157500,
+        "sha256": "44747c12297a257bfeb7da496e34b8d1d04c44c595b3a639695ac293581bb117"
+      },
+      {
+        "version": "v2_boolean_only",
+        "path": "scratch/candidate_manifest/stage6m_cohort3_candidate_final_manifest_v2_unverified_boolean_only.json",
+        "size_bytes": 24989315,
+        "sha256": "718426757691c88b56e6371c425e6fbd1c757d9f42c648d1cc09d3182e84256e"
+      }
+    ],
+    "status": "UNLOCKED_CANDIDATE_SEMANTICALLY_RECONCILED"
+  },
+  "target_production_manifest": {
+    "path": "datasets/splits/stage6m_cohort3_final_manifest.json",
+    "status": "LOCKED",
+    "size_bytes": 26680115,
+    "sha256": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+    "lock_timestamp_utc": "2026-11-07T17:07:40.854400+00:00",
+    "records_count": 18975,
+    "speakers_count": 1265
+  },
+  "payload_accounting": {
+    "total_target_recordings": 18975,
+    "accepted_clips": 18845,
+    "quarantined_discrepancy_screened_clips": 130,
+    "total_speakers": 1265,
+    "evaluation_speakers": 1100,
+    "gate_speakers": 100,
+    "reserve_speakers": 65,
+    "total_payload_bytes": 709750958,
+    "target_destination_dir": "datasets/audio/stage6m/cohort3_reconciled_assets",
+    "publication_method": "os.link() Atomic Hard-Link (Verified Separate File Objects)"
+  },
+  "authorized_operations_when_approved": [
+    "Promote and lock the candidate manifest from scratch/candidate_manifest/ to datasets/splits/stage6m_cohort3_final_manifest.json.",
+    "Validate final manifest against 18,975 published assets in cohort3_reconciled_assets/.",
+    "Verify all 5 accent strata and 3 speaker panels in locked state.",
+    "Calculate and record cryptographic manifest SHA-256 digest.",
+    "Set manifest_status to 'LOCKED'."
+  ],
+  "strictly_prohibited_operations": [
+    "Mutation or deletion of provisional manifest (stage6m_cohort3_provisional_manifest.json).",
+    "GPU environment provisioning or testing (Gate 4 remains blocked).",
+    "Confirmatory GPU inference, adaptation, or evaluation cohort unsealing (Gate 5 remains blocked).",
+    "Statistical estimation or empirical reporting (Gate 6 remains blocked).",
+    "Automated git staging, commit, or push."
+  ],
+  "acknowledgment_clause": "This decision record is prepared in UNEXECUTED status. Gate 3B authorization requires explicit review and affirmative sign-off by the Project Lead before the final manifest is published and locked.",
+  "execution_record": {
+    "executed_at_utc": "2026-11-07T17:07:40.854400+00:00",
+    "authority": "Project Lead (Dissertation Author)",
+    "governing_policy": "Policy 2A (Reconciled Target Population Admission)",
+    "lock_audit_reference": {
+      "report_id": "STAGE6M-GATE3B-LOCK-AUDIT-20261107",
+      "report_json": "reports/stage6m/stage6m_gate3b_lock_audit_report.json",
+      "report_md": "reports/stage6m/stage6m_gate3b_lock_audit_report.md",
+      "audit_verdict": "PASSED_AND_LOCKED"
+    }
+  }
+}

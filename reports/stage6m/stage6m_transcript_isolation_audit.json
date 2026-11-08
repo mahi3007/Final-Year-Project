@@ -1,0 +1,29 @@
+{
+  "report_id": "STAGE6M-TRANSCRIPT-ISOLATION-AUDIT-20261107",
+  "generated_at_utc": "2026-11-07T17:48:05.025934+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "parent_locked_manifest": {
+    "path": "datasets/splits/stage6m_cohort3_final_manifest.json",
+    "bytes": 26680115,
+    "sha256": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+    "status": "LOCKED"
+  },
+  "restricted_online_manifest": {
+    "path": "datasets/splits/stage6m_cohort3_online_inference_manifest.json",
+    "bytes": 27731809,
+    "sha256": "0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1",
+    "total_records": 18975,
+    "evaluation_records_shielded": 16500,
+    "gate_reference_records_active": 1500,
+    "reserve_records_shielded": 975,
+    "evaluation_transcript_leakage_count": 0
+  },
+  "sealed_evaluation_transcripts_key": {
+    "path": "datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json",
+    "bytes": 10430837,
+    "sha256": "f427ae7fbf386f77b0795cc1fa33b2f7831c89f89ecfce7fa30036cde5c5223e",
+    "total_sealed_records": 17475
+  },
+  "verification_verdict": "ZERO_LABEL_EXPOSURE_CONFIRMED",
+  "audit_elapsed_seconds": 2.11
+}

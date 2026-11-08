@@ -1,0 +1,39 @@
+{
+  "device": "cpu",
+  "num_windows_evaluated": 15,
+  "clips_per_window_k": 4,
+  "sentinel_batch_size": 5,
+  "cold_start_forward_ms": 541.62,
+  "warmed_forward_median_ms": {
+    "arm1": 592.83,
+    "arm2": 569.91,
+    "arm3": 559.47,
+    "per_clip_arm1": 148.21
+  },
+  "warmed_forward_p95_ms": {
+    "arm1": 646.36,
+    "arm2": 852.5,
+    "arm3": 896.44
+  },
+  "adaptation_step_median_ms": {
+    "arm2_ungated": 1359.36,
+    "arm3_candidate": 1473.14
+  },
+  "sentinel_evaluation_median_ms": 1437.82,
+  "checkpoint_serialization_median_ms": 29.14,
+  "window_cycle_median_ms": 6137.35,
+  "window_cycle_p95_ms": 7054.59,
+  "peak_vram_mb": 0.0,
+  "runtime_projections": {
+    "total_windows": 4125,
+    "total_clips": 16500,
+    "kaggle_t4_expected_cycle_sec": 3.6,
+    "kaggle_t4_expected_runtime_hours": 4.12,
+    "kaggle_t4_p95_cycle_sec": 4.8,
+    "kaggle_t4_p95_runtime_hours": 5.5,
+    "kaggle_12h_session_limit_hours": 12.0,
+    "session_safety_margin_hours": 7.88,
+    "session_safety_headroom_ratio": 2.91,
+    "verdict": "SAFE_WITHIN_12H_KAGGLE_LIMIT"
+  }
+}

@@ -1,0 +1,353 @@
+{
+  "report_id": "STAGE6M-GATE3-READINESS-REVIEW-20261107-V2",
+  "generated_at_utc": "2026-11-07T16:11:02.584057+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "reference_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "project_lead_authority": "Project Lead (Dissertation Author)",
+  "executive_summary": {
+    "overall_status": "READY_FOR_SPLIT_GATE3_REVIEW",
+    "gate1_status": "APPROVED",
+    "gate1_approval_date": "2026-11-07",
+    "gate1_policy": "Policy 2A (Reconciled Target Population Admission)",
+    "gate2_status": "APPROVED",
+    "gate2_approval_date": "2026-11-07",
+    "gate2_scope": "Engineering Implementation & Pre-Production Validation",
+    "gate3_combined_status": "DEFERRED_PENDING_SPLIT_AUTHORIZATION",
+    "gate3_deferral_reason": "Separate production materialization authorization from final manifest approval and locking.",
+    "gate3a_status": "APPROVED",
+    "gate3a_approval_date": "2026-11-07",
+    "gate3b_status": "PENDING_GATE3A_EXECUTION",
+    "gates_4_to_6_status": "STRICTLY_BLOCKED",
+    "protected_boundaries_status": "PRESERVED",
+    "zero_production_audio_materialized": true,
+    "zero_manifest_mutations": true,
+    "zero_git_modifications_committed": true
+  },
+  "governance_checkpoint_split": {
+    "gate3a_specification": {
+      "checkpoint": "GATE 3A \u2014 PRODUCTION MATERIALIZATION",
+      "authority": "Project Lead (Dissertation Author)",
+      "status": "UNEXECUTED (Pending User Authorization)",
+      "scope": [
+        "Execute materialize_stage6m_cohort3_audio_v2.py with explicit --authorize-gate3a flag.",
+        "Materialize into separate directory datasets/audio/stage6m/cohort3_reconciled_assets/.",
+        "Process 18,845 accepted clips (from cohort3_audio) and 130 discrepancy-screened clips (from cohort3_rejected_quarantine).",
+        "Preserve all source files in their original locations without deletion, moving, or renaming (Rule P1).",
+        "Apply atomic no-clobber publication via os.link() on NTFS volume C:\\ (Rule P2).",
+        "Execute three-decoder consensus verification (SoundFile, PyAV, miniaudio) on all staged files (Rule P5).",
+        "Generate per-file cryptographic disposition ledger (datasets/splits/stage6m_cohort3_materialization_disposition_ledger.csv) (Rule P6).",
+        "Independently audit all 18,975 destination file identities, sizes, and SHA-256 digests.",
+        "STRICT BOUNDARY: Gate 3A must NOT generate or lock the final manifest.",
+        "STOP IMMEDIATELY after audio materialization, decoder validation, and ledger emission."
+      ]
+    },
+    "gate3b_specification": {
+      "checkpoint": "GATE 3B \u2014 FINAL MANIFEST VALIDATION AND LOCK",
+      "authority": "Project Lead (Dissertation Author)",
+      "status": "UNEXECUTED (Pending Gate 3A Completion & User Authorization)",
+      "preconditions": [
+        "Gate 3A successfully executed and verified.",
+        "Destination directory cohort3_reconciled_assets/ contains exactly 18,975 validated audio files totaling 709,750,958 bytes.",
+        "Per-file disposition ledger independently reconciled against target population (1,252 complete speakers, 9 partial speakers, 4 empty speakers = 1,265 total speakers).",
+        "Confirmatory evaluation cohort satisfies exact five-stratum parity (Australian, Canadian, England, South Asian, US English; exactly 220 speakers and 3,300 clips per stratum = 1,100 speakers / 16,500 clips).",
+        "Gate cohort (100 speakers / 1,500 clips; 20 per stratum) and reserve cohort (65 speakers / 975 clips) strict isolation verified."
+      ],
+      "action": [
+        "Ingest stage6m_cohort3_provisional_manifest.json and disposition ledger.",
+        "Promote and write datasets/splits/stage6m_cohort3_final_manifest.json with manifest_status: 'LOCKED'.",
+        "Record cryptographic SHA-256 seal of the final manifest.",
+        "Authorize progression to Gate 4 (GPU Environment Readiness)."
+      ]
+    }
+  },
+  "phase1_regression_audit": {
+    "test_command": "python -m pytest tests/research_validity/ -q",
+    "total_tests_collected": 539,
+    "total_passed": 539,
+    "total_failed": 0,
+    "total_skipped": 0,
+    "total_xfailed": 0,
+    "exit_code": 0,
+    "duration_seconds": 830.48,
+    "duration_formatted": "13m 50s",
+    "warnings_count": 6,
+    "warnings_summary": [
+      "torchvision/transforms/_functional_pil.py: DeprecationWarning for Image.BILINEAR, NEAREST, BICUBIC (Pillow 10 deprecation)",
+      "importlib._bootstrap: DeprecationWarning for SwigPyPacked and SwigPyObject missing __module__ attribute",
+      "sys:1: DeprecationWarning for swigvarlink missing __module__ attribute"
+    ],
+    "subsuite_breakdown": {
+      "materializer_v2_unit_tests": {
+        "path": "tests/research_validity/test_stage6m_cohort3_materializer_v2.py",
+        "passed": 10,
+        "failed": 0,
+        "duration_sec": 1.18
+      },
+      "materialization_regression_tests": {
+        "path": "tests/research_validity/test_stage6m_cohort3_audio_materialization.py",
+        "passed": 37,
+        "failed": 0,
+        "duration_sec": 14.46
+      },
+      "cohort3_complete_suite": {
+        "passed": 91,
+        "failed": 0
+      },
+      "entire_research_validity_suite": {
+        "passed": 539,
+        "failed": 0,
+        "duration_sec": 830.48
+      }
+    }
+  },
+  "phase2_code_review_audit": {
+    "target_script": "scripts/materialize_stage6m_cohort3_audio_v2.py",
+    "script_size_bytes": 42528,
+    "script_sha256": "0cacb4a1f26aa73a78a545e9045210fbd9e5d465b7fc414e78e557ccb9e75dfa",
+    "boundary_guard_enforcement": {
+      "unauthorized_status": "BLOCKED_UNAUTHORIZED",
+      "unauthorized_exit_code": 2,
+      "authorization_cli_flag": "--authorize-gate3a",
+      "evidence": "When invoked against production destination without --authorize-gate3a, script logs error 'BLOCKED_UNAUTHORIZED: Gate 2 authorizes implementation and pre-production validation ONLY. Production dataset materialization into cohort3_reconciled_assets/ requires explicit Gate 3A authorization...', prints to stderr, and halts execution via sys.exit(2). Verified by test_production_boundary_guard_blocks_unauthorized_materialization."
+    },
+    "audit_criteria": [
+      {
+        "rule": "P1: Read-Only Source Access",
+        "status": "PASSED",
+        "evidence": "Source files opened strictly in binary read mode ('rb'). Source path identity check prevents source == dest. No unlink, rename, or write handles opened on source."
+      },
+      {
+        "rule": "P2: Atomic No-Clobber Publication",
+        "status": "PASSED",
+        "evidence": "Publication executed via os.link(). Under Windows NTFS, os.link() raises FileExistsError on destination collision. os.replace() is strictly prohibited."
+      },
+      {
+        "rule": "P3: Idempotent Digest Verification",
+        "status": "PASSED",
+        "evidence": "Pre-check compares destination SHA-256 against expected hash. Existing matching files skip extraction (0 disk writes). Mismatched files fail closed with DestinationCollisionMismatchError."
+      },
+      {
+        "rule": "P4: OS-Level Ownership Locking",
+        "status": "PASSED",
+        "evidence": "RunLockManager acquires exclusive non-blocking lock via msvcrt.locking(LK_NBLCK, 1) on Windows (fcntl.flock on POSIX). Sweep routine strictly ignores directories with active locks."
+      },
+      {
+        "rule": "P5: Multi-Decoder Consensus Verification",
+        "status": "PASSED",
+        "evidence": "verify_audio_three_decoders runs SoundFile streaming decode (4096-frame chunks, verifying finite float32 PCM), PyAV, and miniaudio. Consensus required before publication."
+      },
+      {
+        "rule": "P6: Cryptographic Disposition Ledger",
+        "status": "PASSED",
+        "evidence": "All 18,975 assets (18,845 accepted + 130 discrepancy-screened) tracked in stage6m_cohort3_materialization_disposition_ledger.csv with action, hash, size, frames, and decodability status."
+      },
+      {
+        "rule": "Crash Safety & Orphan Sweeping",
+        "status": "PASSED",
+        "evidence": "Staging occurs in unique .staging_run_{run_id} directories. Unlinked on clean completion. sweep_orphaned_staging_directories safely cleans stale runs (>3600s) only if lock acquisition succeeds."
+      },
+      {
+        "rule": "Production Boundary Guard",
+        "status": "PASSED",
+        "evidence": "Script enforces BLOCKED_UNAUTHORIZED with exit code 2 if destination is default reconciled directory and --authorize-gate3a is missing, preventing automated tools from mistaking a blocked run for success."
+      }
+    ]
+  },
+  "phase3_reproducibility_ledger": {
+    "scripts/materialize_stage6m_cohort3_audio_v2.py": {
+      "sha256": "0cacb4a1f26aa73a78a545e9045210fbd9e5d465b7fc414e78e557ccb9e75dfa",
+      "size_bytes": 42528,
+      "exists": true
+    },
+    "tests/research_validity/test_stage6m_cohort3_materializer_v2.py": {
+      "sha256": "32cde0d57b85d0b5a0a6b25da4e27d85f0408bf311df3587cd732eb0cfd29587",
+      "size_bytes": 18948,
+      "exists": true
+    },
+    "tests/research_validity/test_stage6m_cohort3_audio_materialization.py": {
+      "sha256": "5701a21dc1d1070c1a9a28ec1b689bb3571f7d004d6dd84ca7fd4361d173c544",
+      "size_bytes": 109924,
+      "exists": true
+    },
+    "scratch/test_gate2_ntfs_and_locking_harness.py": {
+      "sha256": "8fc90c378658e9b92483971902c0b9161a73d941fe363498d05acc9d83929fc3",
+      "size_bytes": 24618,
+      "exists": true
+    },
+    "scripts/generate_stage6m_task774_non_destructive_materialization_spec.py": {
+      "sha256": "74802ee315144a15cf0a41adfa4944188dc52fd138521508e0732b8409c31415",
+      "size_bytes": 32114,
+      "exists": true
+    },
+    "reports/stage6m/stage6m_task774_non_destructive_materialization_spec.json": {
+      "sha256": "86fb60b5a303a05b71f01ed92dcd9eb597858db2a53d13c1a24c310dd3d5d4a1",
+      "size_bytes": 19745,
+      "exists": true
+    },
+    "reports/stage6m/stage6m_task774_non_destructive_materialization_spec.md": {
+      "sha256": "9b78741e0400efaa9350576d7f9caa7026c67305f75863659a9cfecea809ba08",
+      "size_bytes": 19574,
+      "exists": true
+    },
+    "scripts/generate_stage6m_scientific_admission_decision_dossier.py": {
+      "sha256": "5581be55f5786187ef942213992ea932403e81e6c6f7e529c5aed1f7058d3e72",
+      "size_bytes": 101120,
+      "exists": true
+    },
+    "reports/stage6m/stage6m_scientific_admission_decision_dossier.json": {
+      "sha256": "303746b180959a407accdb29df912ead8dc7ca2e6e1501f782b7fcc48fbb41eb",
+      "size_bytes": 42817,
+      "exists": true
+    },
+    "reports/stage6m/stage6m_scientific_admission_decision_dossier.md": {
+      "sha256": "e240cf2a2b9ee2f33c6c0095c211f9420b9ad79ed070d5f3f7823e26314e1ce8",
+      "size_bytes": 43635,
+      "exists": true
+    },
+    "scripts/generate_stage6m_policy_2a_protocol_addendum.py": {
+      "sha256": "8cbe970089c34d33c0976f5b48bc5b8973828acedd3776b7371eeba9ad157103",
+      "size_bytes": 45216,
+      "exists": true
+    },
+    "reports/stage6m/stage6m_policy_2a_protocol_addendum.json": {
+      "sha256": "59d4249df98f089707262edf53d282884c9daceeebe72faab6affd37b55cc4c7",
+      "size_bytes": 23786,
+      "exists": true
+    },
+    "reports/stage6m/stage6m_policy_2a_protocol_addendum.md": {
+      "sha256": "c1b3735143b29cc109154efba194e0468c51fe8deac19bec274a05256facac60",
+      "size_bytes": 22591,
+      "exists": true
+    },
+    "datasets/splits/stage6m_cohort3_provisional_manifest.json": {
+      "sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+      "size_bytes": 17744805,
+      "exists": true
+    }
+  },
+  "phase4_production_execution_plan": {
+    "authorized_script": "scripts/materialize_stage6m_cohort3_audio_v2.py",
+    "execution_command": "python scripts/materialize_stage6m_cohort3_audio_v2.py --manifest datasets/splits/stage6m_cohort3_provisional_manifest.json --source-audio-dir datasets/external/common_voice_27/cohort3_audio --quarantine-dir datasets/external/common_voice_27/cohort3_rejected_quarantine --destination-dir datasets/audio/stage6m/cohort3_reconciled_assets --disposition-ledger datasets/splits/stage6m_cohort3_materialization_disposition_ledger.csv --report-json reports/stage6m/stage6m_task774_materialization_report.json --authorize-gate3a",
+    "payload_accounting": {
+      "total_target_recordings": 18975,
+      "accepted_clips_source": "datasets/external/common_voice_27/cohort3_audio",
+      "accepted_clips_count": 18845,
+      "discrepancy_screened_quarantine_source": "datasets/external/common_voice_27/cohort3_rejected_quarantine",
+      "discrepancy_screened_quarantine_count": 130,
+      "total_speakers": 1265,
+      "complete_speakers": 1252,
+      "partial_speakers": 9,
+      "empty_speakers": 4,
+      "evaluation_speakers": 1100,
+      "evaluation_clips": 16500,
+      "evaluation_strata": 5,
+      "evaluation_speakers_per_stratum": 220,
+      "gate_speakers": 100,
+      "gate_clips": 1500,
+      "gate_speakers_per_stratum": 20,
+      "reserve_speakers": 65,
+      "reserve_clips": 975,
+      "total_payload_bytes": 709750958,
+      "target_filesystem": "NTFS",
+      "target_volume_serial": "0xca18eefa",
+      "publication_method": "os.link() Atomic Hard-Link"
+    },
+    "gate3a_execution_phases": [
+      {
+        "step": 1,
+        "action": "Pre-execution volume and disk space verification (requires >= 2 GB free disk space on volume C:\\)"
+      },
+      {
+        "step": 2,
+        "action": "Sweep any orphaned staging directories older than 3600 seconds"
+      },
+      {
+        "step": 3,
+        "action": "Initialize RunLockManager with exclusive OS-level file lock on run.lock"
+      },
+      {
+        "step": 4,
+        "action": "Materialize 18,845 accepted clips: stage with UUID -> 3-decoder check -> publish via os.link()"
+      },
+      {
+        "step": 5,
+        "action": "Materialize 130 discrepancy-screened quarantine clips: stage with UUID -> 3-decoder check -> publish via os.link()"
+      },
+      {
+        "step": 6,
+        "action": "Emit per-file disposition ledger CSV and comprehensive materialization report JSON"
+      },
+      {
+        "step": 7,
+        "action": "Perform physical destination inventory audit: exactly 18,975 files, 709,750,958 bytes, 0 missing, 0 corrupt"
+      },
+      {
+        "step": 8,
+        "action": "HALT AND STOP. Do not generate or lock final manifest. Await Gate 3B authorization."
+      }
+    ]
+  },
+  "phase5_manifest_locking_plan": {
+    "provisional_manifest_path": "datasets/splits/stage6m_cohort3_provisional_manifest.json",
+    "provisional_manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "disposition_ledger_path": "datasets/splits/stage6m_cohort3_materialization_disposition_ledger.csv",
+    "locked_manifest_path": "datasets/splits/stage6m_cohort3_final_manifest.json",
+    "locking_procedure": [
+      {
+        "step": "Manifest Ingestion",
+        "description": "Load provisional manifest and cross-reference with materialization disposition ledger."
+      },
+      {
+        "step": "Physical Destination Audit",
+        "description": "Assert all 18,975 files exist in cohort3_reconciled_assets/ with exact SHA-256 match."
+      },
+      {
+        "step": "Stratum Balance Audit",
+        "description": "Assert exactly 220 evaluation speakers across Australian, Canadian, England, South Asian, and US English (1,100 total evaluation speakers). Assert 20 gate speakers per stratum (100 total)."
+      },
+      {
+        "step": "Cryptographic Manifest Sealing",
+        "description": "Set manifest_status to 'LOCKED', record Gate 1, Gate 2, Gate 3A, and Gate 3B approvals, and compute canonical SHA-256 of locked manifest."
+      }
+    ]
+  },
+  "combined_gate3_deferral_decision": {
+    "title": "STAGE 6M GATE 3: COMBINED PRODUCTION DATASET FINALIZATION",
+    "authority": "Project Lead (Dissertation Author)",
+    "date": "2026-11-07",
+    "status": "[X] DEFERRED PENDING ADDITIONAL VALIDATION",
+    "reason": "Separate production materialization authorization from final manifest approval and locking.",
+    "next_authorization": "GATE 3A \u2014 Production Materialization",
+    "subsequent_authorization": "GATE 3B \u2014 Final Manifest Validation and Lock",
+    "gpu_readiness_status": "BLOCKED",
+    "confirmatory_inference_status": "BLOCKED",
+    "statistical_analysis_status": "BLOCKED"
+  },
+  "gate3a_authorization_record": {
+    "title": "STAGE 6M GATE 3A: PRODUCTION MATERIALIZATION",
+    "authority": "Project Lead (Dissertation Author)",
+    "date": "2026-11-07",
+    "status": "[X] AUTHORIZED FOR PRODUCTION MATERIALIZATION",
+    "scope_summary": "Authorize materialize_stage6m_cohort3_audio_v2.py to process 18,845 accepted and 130 quarantined assets into cohort3_reconciled_assets/, emit per-file ledger, and stop prior to manifest locking.",
+    "strict_halt_notice": "GATE 3A DOES NOT PERMIT FINAL MANIFEST LOCKING. SYSTEM MUST HALT UPON COMPLETION OF MATERIALIZATION AUDIT.",
+    "record_file": "reports/stage6m/stage6m_gate3a_authorization_record.json"
+  },
+  "gate3b_unexecuted_template": {
+    "title": "STAGE 6M GATE 3B: FINAL MANIFEST VALIDATION AND LOCK",
+    "authority": "Project Lead (Dissertation Author)",
+    "date": "UNEXECUTED (Pending Gate 3A Completion & User Authorization)",
+    "status_options": [
+      "[ ] AUTHORIZED FOR FINAL MANIFEST LOCK",
+      "[ ] REJECTED",
+      "[ ] DEFERRED PENDING ADDITIONAL VALIDATION"
+    ],
+    "scope_summary": "Following physical reconciliation of all 18,975 assets, authorize generation of datasets/splits/stage6m_cohort3_final_manifest.json with manifest_status: 'LOCKED'."
+  },
+  "unresolved_limitations_and_disclosures": [
+    "Research Scope Boundary: Evaluates Mozilla Common Voice 27.0 (English) as distributed to researchers. No claim of verification against original uncompressed studio masters.",
+    "Decoder Evidence Distinction: 18,845 clips admitted via SoundFile decoding and physical MPEG frame inspection; 130 discrepancy-screened clips admitted via three-decoder consensus under Policy 2A.",
+    "Demographic Parity Limitation: Confirmatory evaluation is strictly balanced across five accent strata (Australian, Canadian, England, South Asian, US English; 220 speakers each). Gender and age distributions remain observational.",
+    "Downstream GPU Experiments: Gates 4, 5, and 6 remain strictly blocked. Zero GPU execution is permitted prior to Gate 3B manifest locking."
+  ]
+}

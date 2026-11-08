@@ -1,0 +1,179 @@
+{
+  "audit_id": "STAGE6M-GATE5-DATA-ISOLATION-AUDIT-20261108",
+  "timestamp_utc": "2026-11-08T05:52:20.898099+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "governing_base_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "release_archive": {
+    "path": "releases\\stage6m_gate5_release_v1.0.tar.gz",
+    "sha256": "cfa471be9b2faa7a67b98826cc1b68c1d92380aecbf229d57889e17d4e47d8b4",
+    "expected_sha256": "cfa471be9b2faa7a67b98826cc1b68c1d92380aecbf229d57889e17d4e47d8b4",
+    "status": "PASSED"
+  },
+  "sections": {
+    "section1_runner_logic": {
+      "runner_path": "releases\\extracted_verified_gate5_v1.0\\stage6m_gate5_release_v1.0\\runner\\run_stage6m_cohort3_kaggle_benchmark.py",
+      "runner_sha256": "728efdc613dcbfe639c531f9c673a4f956c9cfb74c181725b59cfce728fa0ed1",
+      "eval_filtering_verified": true,
+      "gate_filtering_verified": true,
+      "reserve_filtering_verified": true,
+      "disjointness_assertions_verified": true,
+      "status": "PASSED"
+    },
+    "section2_runtime_audio_allowlist": {
+      "status": "PASSED",
+      "evaluation_recordings": 16500,
+      "evaluation_bytes": 615810151,
+      "gate_reference_recordings": 1500,
+      "gate_reference_bytes": 57160634,
+      "positive_runtime_allowlist_count": 18000,
+      "positive_runtime_allowlist_bytes": 672970785,
+      "reserve_recordings_in_allowlist": 0,
+      "reserve_bytes_in_allowlist": 0,
+      "disjointness_guarantee": "100% DISJOINT"
+    },
+    "section3_physical_accessibility_analysis": {
+      "status": "ANALYZED_AND_BOUNDED",
+      "current_filesystem_state": {
+        "directory": "datasets\\audio\\stage6m\\cohort3_reconciled_assets",
+        "total_files_on_disk": 18975,
+        "evaluation_files_on_disk": 16500,
+        "gate_reference_files_on_disk": 1500,
+        "reserve_files_on_disk": 975,
+        "isolation_mechanism": "APPLICATION_LOGIC_FILTERING_AND_MANIFEST_PARTITIONING"
+      },
+      "finding": "The 975 reserve audio files (36,780,173 bytes) are physically present in datasets/audio/stage6m/cohort3_reconciled_assets alongside the 18,000 evaluation and gate-reference files. While application logic strictly prevents the runner from loading any reserve clip (zero calls to load reserve audio), the files are physically co-located rather than physically inaccessible.",
+      "physical_segregation_safeguard": "For Kaggle private dataset deployment or local execution, a dedicated runtime payload containing strictly the 18,000 allowlisted clips (672,970,785 bytes) should be created. Any attempt by the runner to access a reserve recording will then fail-closed with FileNotFoundError at the operating system file descriptor boundary."
+    },
+    "section4_arm_specific_transcript_access": {
+      "status": "PASSED",
+      "arm1_static_baseline": {
+        "transcript_access": "NONE",
+        "mode": "FROZEN_INFERENCE_ONLY",
+        "verified": true
+      },
+      "arm2_ungated_suta": {
+        "transcript_access": "NONE",
+        "mode": "UNSUPERVISED_TEST_TIME_ADAPTATION",
+        "loss_function": "compute_masked_suta_loss (Entropy + MCC)",
+        "verified": true
+      },
+      "arm3_dsg_gated_suta": {
+        "candidate_adaptation": "UNSUPERVISED_TEST_TIME_ADAPTATION",
+        "sentinel_gate_acceptance": "APPROVED_SENTINEL_TRANSCRIPTS_ONLY",
+        "source_line": 450,
+        "code_snippet": "ref_texts = [r[\"transcript\"] for r in sample_sentinel]",
+        "target_panel": "sample_sentinel (100 gate-reference speakers only)",
+        "verified": true
+      }
+    },
+    "section5_evaluation_transcripts_shielding": {
+      "status": "PASSED",
+      "online_manifest_evaluation_transcripts_null": true,
+      "evaluation_transcripts_sealed_count": 16500,
+      "evaluation_label_leaks": 0,
+      "sealed_transcript_key_absent_from_release": true,
+      "runner_in_memory_nullification_active": true
+    },
+    "section6_bypass_vulnerability_audit": {
+      "status": "PASSED",
+      "runner_manifest_hash_check_fail_closed": true,
+      "notebook_manifest_hash_check_fail_closed": true,
+      "unauthorized_path_bypass_possible": false
+    },
+    "section7_pre_execution_assertions": {
+      "status": "PASSED",
+      "check8_integrated_into_pre_execution_suite": true,
+      "fail_closed_policy_enforced": true
+    },
+    "section8_matrix_reconciliation": {
+      "status": "PASSED",
+      "total_matrix_entries": 10,
+      "total_verified_entries": 10,
+      "coverage_ratio": "100%",
+      "reconciliation_ledger": [
+        {
+          "matrix_entry_no": 1,
+          "matrix_artifact_name": "Release Archive Digest",
+          "expected_value": "cfa471be9b2faa7a67b98826cc1b68c1d92380aecbf229d57889e17d4e47d8b4",
+          "covered_by_test": "Check 1: Release Archive SHA-256",
+          "test_function": "compute_sha256(RELEASE_TAR) == EXPECTED_TAR_SHA256",
+          "status": "COVERED_AND_VERIFIED"
+        },
+        {
+          "matrix_entry_no": 2,
+          "matrix_artifact_name": "Extraction Directory",
+          "expected_value": "releases/extracted_verified_gate5_v1.0 (67 files)",
+          "covered_by_test": "Check 2: Clean Extraction to Verified Isolation Directory",
+          "test_function": "tar.extractall() -> 67 files verified",
+          "status": "COVERED_AND_VERIFIED"
+        },
+        {
+          "matrix_entry_no": 3,
+          "matrix_artifact_name": "Manifest Reconciliation",
+          "expected_value": "67 / 67 files match checksums.sha256 bitwise exact",
+          "covered_by_test": "Check 3: Checksums Manifest Reconciliation",
+          "test_function": "compute_sha256(f) == exp_h for all 67 files",
+          "status": "COVERED_AND_VERIFIED"
+        },
+        {
+          "matrix_entry_no": 4,
+          "matrix_artifact_name": "Audited Runner SHA-256",
+          "expected_value": "728efdc613dcbfe639c531f9c673a4f956c9cfb74c181725b59cfce728fa0ed1",
+          "covered_by_test": "Check 4: Runner & Notebook Identity Verification",
+          "test_function": "compute_sha256(runner_p) == EXPECTED_RUNNER_SHA256",
+          "status": "COVERED_AND_VERIFIED"
+        },
+        {
+          "matrix_entry_no": 5,
+          "matrix_artifact_name": "Notebook SHA-256",
+          "expected_value": "c5628b62918ca65772d7ca21045793ae65e674a9cd4c248d70592cf3427d2b14",
+          "covered_by_test": "Check 4: Runner & Notebook Identity Verification",
+          "test_function": "compute_sha256(nb_p) == EXPECTED_NOTEBOOK_SHA256",
+          "status": "COVERED_AND_VERIFIED"
+        },
+        {
+          "matrix_entry_no": 6,
+          "matrix_artifact_name": "Locked Final Manifest",
+          "expected_value": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+          "covered_by_test": "Check 5: Manifests and Disposition Ledger Cryptographic Verification",
+          "test_function": "compute_sha256(final_m_path) == EXPECTED_FINAL_MANIFEST_SHA256",
+          "status": "COVERED_AND_VERIFIED"
+        },
+        {
+          "matrix_entry_no": 7,
+          "matrix_artifact_name": "Online Inference Manifest",
+          "expected_value": "0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1",
+          "covered_by_test": "Check 5: Manifests and Disposition Ledger Cryptographic Verification",
+          "test_function": "compute_sha256(online_m_path) == EXPECTED_ONLINE_MANIFEST_SHA256",
+          "status": "COVERED_AND_VERIFIED"
+        },
+        {
+          "matrix_entry_no": 8,
+          "matrix_artifact_name": "Disposition Ledger",
+          "expected_value": "b242282ef1586219885f475fba0d1de117e7b68289ca9a42e36378cac638a0c5",
+          "covered_by_test": "Check 5: Manifests and Disposition Ledger Cryptographic Verification",
+          "test_function": "compute_sha256(ledger_path) == EXPECTED_LEDGER_SHA256",
+          "status": "COVERED_AND_VERIFIED"
+        },
+        {
+          "matrix_entry_no": 9,
+          "matrix_artifact_name": "Transcript Shielding",
+          "expected_value": "0 leaks; sealed key absent; 16,500 eval transcripts null",
+          "covered_by_test": "Check 6: Transcript Isolation & Evaluation Label Shielding (and Check 8)",
+          "test_function": "len(eval_leaks) == 0 and len(sealed_in_release) == 0",
+          "status": "COVERED_AND_VERIFIED"
+        },
+        {
+          "matrix_entry_no": 10,
+          "matrix_artifact_name": "Physical Audio Inventory",
+          "expected_value": "18,975 MP3 files, 709,750,958 bytes",
+          "covered_by_test": "Check 7: Physical Audio Inventory Verification",
+          "test_function": "len(audio_files) == 18975 and sum(bytes) == 709750958",
+          "status": "COVERED_AND_VERIFIED"
+        }
+      ]
+    }
+  },
+  "final_verdict": "DATA_ISOLATION_VERIFIED"
+}

@@ -1,0 +1,64 @@
+{
+  "preflight_id": "STAGE6M-GATE5-PHASE1-PREFLIGHT-20261108",
+  "timestamp_utc": "2026-11-08T06:15:16.632775+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "governing_base_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "assertions": {
+    "assertion1_archive_sha256": {
+      "status": "PASSED",
+      "path": "releases\\stage6m_gate5_release_v1.0.tar.gz",
+      "sha256": "cfa471be9b2faa7a67b98826cc1b68c1d92380aecbf229d57889e17d4e47d8b4",
+      "bytes": 161268
+    },
+    "assertion2_internal_artifacts": {
+      "status": "PASSED",
+      "total_files": 67,
+      "reconciled_files": 67
+    },
+    "assertion3_runner_notebook_identities": {
+      "status": "PASSED",
+      "runner_sha256": "728efdc613dcbfe639c531f9c673a4f956c9cfb74c181725b59cfce728fa0ed1",
+      "notebook_sha256": "c5628b62918ca65772d7ca21045793ae65e674a9cd4c248d70592cf3427d2b14"
+    },
+    "assertion4_manifest_ledger_digests": {
+      "status": "PASSED",
+      "locked_manifest_sha256": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+      "online_manifest_sha256": "0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1",
+      "disposition_ledger_sha256": "b242282ef1586219885f475fba0d1de117e7b68289ca9a42e36378cac638a0c5",
+      "checkpoint_model_id": "facebook/wav2vec2-base-960h",
+      "checkpoint_params_digest": "75675734fb2e81f5670988269f05210792b38a79534302edcdb128d04bb29123"
+    },
+    "assertion5_kaggle_payload_constructed": {
+      "status": "PASSED",
+      "payload_dir": "dist\\kaggle_dataset",
+      "audio_files_count": 18000,
+      "audio_bytes": 672970785
+    },
+    "assertion6_evaluation_gate_allocation": {
+      "status": "PASSED",
+      "evaluation_recordings_present": 16500,
+      "gate_reference_recordings_present": 1500
+    },
+    "assertion7_zero_reserve_recordings": {
+      "status": "PASSED",
+      "reserve_recordings_present": 0,
+      "disjointness_verified": true
+    },
+    "assertion8_labels_and_key_isolation": {
+      "status": "PASSED",
+      "sealed_evaluation_key_absent": true,
+      "evaluation_transcripts_sealed": 16500,
+      "reserve_transcripts_sealed": 975,
+      "leaked_transcripts_count": 0
+    },
+    "assertion9_hardware_dependencies": {
+      "status": "PASSED",
+      "target_accelerator": "NVIDIA Tesla T4 x2",
+      "python_runtime": "3.13.0",
+      "pytorch_version": "2.11.0+cu130",
+      "cuda_toolkit": "13.0"
+    }
+  },
+  "verdict": "PHASE1_PREFLIGHT_PASSED"
+}

@@ -1,0 +1,70 @@
+{
+  "report_id": "STAGE6M-GATE5-KAGGLE-MOUNT-AUDIT-20261108",
+  "timestamp_utc": "2026-11-08T07:59:11.484901+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_authorization": "STAGE6M-GATE5-AUTH-DECISION-20261108",
+  "verdict": "RUNTIME_PREFLIGHT_PASSED",
+  "kernel_execution": {
+    "kernel_slug": "venkataakhil07/stage-6m-gate-5-runtime-mount-audit",
+    "execution_platform": "Kaggle Virtual GPU (NVIDIA Tesla T4 x2)"
+  },
+  "step1_mount": {
+    "status": "PASSED",
+    "root": "/kaggle/input/datasets/venkataakhil07/stage6m-frozen-benchmark",
+    "top_level_items": [
+      "SHA256_CATALOGUE.json",
+      "audio",
+      "configs",
+      "requirements-kaggle-lock.txt",
+      "splits",
+      "src"
+    ],
+    "is_audio_extracted": true
+  },
+  "step2_audio": {
+    "status": "PASSED",
+    "audio_files_count": 18000,
+    "audio_bytes": 672970785,
+    "catalogue_matches": 18000,
+    "catalogue_mismatches": 0,
+    "eval_recordings_count": 16500,
+    "gate_recordings_count": 1500,
+    "reserve_recordings_count": 0
+  },
+  "step3_transcripts": {
+    "status": "PASSED",
+    "eval_transcripts_shielded": true,
+    "sealed_key_present": false
+  },
+  "step4_hardware": {
+    "status": "PASSED",
+    "python_version": "3.13.16",
+    "pytorch_version": "2.11.0+cu130",
+    "cuda_version": "13.0",
+    "device_count": 2,
+    "gpus": [
+      {
+        "device": 0,
+        "model": "Tesla T4",
+        "vram_gb": 14.56
+      },
+      {
+        "device": 1,
+        "model": "Tesla T4",
+        "vram_gb": 14.56
+      }
+    ]
+  },
+  "step5_cryptographic_hashes": {
+    "status": "PASSED",
+    "online_manifest_sha256": "0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1",
+    "final_manifest_sha256": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+    "ledger_sha256": "b242282ef1586219885f475fba0d1de117e7b68289ca9a42e36378cac638a0c5",
+    "catalogue_sha256": "e7187136c5004623f1f3044eb60587efbd201f4c9006bb081d91a94efa8ebaf8"
+  },
+  "local_release_reconciliation": {
+    "archive_sha256": "cfa471be9b2faa7a67b98826cc1b68c1d92380aecbf229d57889e17d4e47d8b4",
+    "runner_sha256": "728efdc613dcbfe639c531f9c673a4f956c9cfb74c181725b59cfce728fa0ed1",
+    "notebook_sha256": "c5628b62918ca65772d7ca21045793ae65e674a9cd4c248d70592cf3427d2b14"
+  }
+}

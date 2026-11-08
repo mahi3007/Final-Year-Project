@@ -1,0 +1,59 @@
+{
+  "dossier_id": "STAGE6M-GATE4-EVIDENCE-DOSSIER-20261108",
+  "generated_at_utc": "2026-11-07T19:15:00+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "base_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "kaggle_kernel": {
+    "slug": "venkataakhil07/stage-6m-gate-4-smoke-test",
+    "version": 2,
+    "url": "https://www.kaggle.com/code/venkataakhil07/stage-6m-gate-4-smoke-test",
+    "status": "KernelWorkerStatus.COMPLETE",
+    "accelerator": "NVIDIA Tesla T4 x2 (Dual 14.56 GB discrete GPUs)"
+  },
+  "preserved_artifacts": {
+    "raw_execution_log": {
+      "path": "reports/stage6m/gate4_evidence/stage-6m-gate-4-smoke-test-v2.log",
+      "bytes": 10234,
+      "sha256": "209952aaf4e84b58d7eb2409aa90bfa3e62b0a9b832ec9a051b85e44b5ee6743"
+    },
+    "smoke_test_notebook": {
+      "path": "cloud/kaggle/gate4_gpu_smoke_test_kaggle.ipynb",
+      "bytes": 14387,
+      "sha256": "95102616a2d146a3590ed4069ed655219de2a54cd18f12ed734e7d623e4921c9"
+    },
+    "smoke_test_script": {
+      "path": "cloud/kaggle/gate4_gpu_smoke_test.py",
+      "bytes": 15507,
+      "sha256": "4bfa203b76a749ec4a5e2cda35d74f49ee70eee7f446ec0eece47bd077983f74"
+    },
+    "gate4_readiness_report_md": {
+      "path": "reports/stage6m/stage6m_gate4_gpu_readiness_report.md"
+    },
+    "gate4_readiness_report_json": {
+      "path": "reports/stage6m/stage6m_gate4_gpu_readiness_report.json"
+    },
+    "gate4_authorization_record_md": {
+      "path": "reports/stage6m/stage6m_gate4_authorization_record.md"
+    },
+    "gate4_authorization_record_json": {
+      "path": "reports/stage6m/stage6m_gate4_authorization_record.json"
+    }
+  },
+  "empirical_benchmarks_summary": {
+    "gpu_0": "Tesla T4 (14.56 GB)",
+    "gpu_1": "Tesla T4 (14.56 GB)",
+    "model_id": "facebook/wav2vec2-base-960h",
+    "model_load_latency_sec": 5.98,
+    "initial_parameter_hash": "75675734fb2e81f5670988269f05210792b38a79534302edcdb128d04bb29123",
+    "forward_latency_k4_ms": 5243.94,
+    "forward_latency_ms_per_clip": 1310.99,
+    "determinism_diff": 0.0,
+    "disposable_adaptation_step_latency_ms": 548.20,
+    "suta_entropy_loss": 0.6345,
+    "checkpoint_write_latency_ms": 27.02,
+    "checkpoint_size_bytes": 550587,
+    "peak_vram_mb": 1372.23,
+    "verdict": "PASSED_READY_FOR_KAGGLE_GPU"
+  }
+}

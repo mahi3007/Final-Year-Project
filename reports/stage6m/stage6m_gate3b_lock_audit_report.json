@@ -1,0 +1,103 @@
+{
+  "report_id": "STAGE6M-GATE3B-LOCK-AUDIT-20261107",
+  "generated_at_utc": "2026-11-07T17:07:40.854400+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "reference_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "authority": "Project Lead (Dissertation Author)",
+  "governance_status": {
+    "gate1_admission": "APPROVED (Policy 2A)",
+    "gate2_implementation": "APPROVED",
+    "gate3a_materialization": "COMPLETED & INDEPENDENTLY RECONCILED",
+    "gate3b_final_manifest_lock": "COMPLETED & LOCKED",
+    "gates_4_to_6_gpu_experiments": "STRICTLY_BLOCKED"
+  },
+  "locked_manifest_specification": {
+    "manifest_path": "datasets/splits/stage6m_cohort3_final_manifest.json",
+    "manifest_status": "LOCKED",
+    "manifest_size_bytes": 26680115,
+    "manifest_sha256": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+    "manifest_records_count": 18975,
+    "manifest_speakers_count": 1265,
+    "lock_timestamp_utc": "2026-11-07T17:07:40.854400+00:00",
+    "hash_embedding_policy": "EXTERNAL_AUDIT_ONLY (No circular self-embedding)"
+  },
+  "candidate_manifest_lineage": {
+    "candidate_v1_legacy": {
+      "path": "scratch/candidate_manifest/stage6m_cohort3_candidate_final_manifest_v1_legacy_claim_b.json",
+      "size_bytes": 21157500,
+      "sha256": "44747c12297a257bfeb7da496e34b8d1d04c44c595b3a639695ac293581bb117",
+      "status": "SUPERSEDED_HISTORICAL_ARTIFACT"
+    },
+    "candidate_v2_boolean_only": {
+      "path": "scratch/candidate_manifest/stage6m_cohort3_candidate_final_manifest_v2_unverified_boolean_only.json",
+      "size_bytes": 24989315,
+      "sha256": "718426757691c88b56e6371c425e6fbd1c757d9f42c648d1cc09d3182e84256e",
+      "status": "SUPERSEDED_HISTORICAL_ARTIFACT"
+    },
+    "candidate_v3_semantically_reconciled": {
+      "path": "scratch/candidate_manifest/stage6m_cohort3_candidate_final_manifest_v3_unverified_semantic_status.json",
+      "size_bytes": 26071214,
+      "sha256": "c09edaf82d62645293b51d70152b326008f42832a21fbdd765ef2218c4f0fb89",
+      "status": "PROMOTED_AND_LOCKED"
+    }
+  },
+  "scientific_design_verification": {
+    "total_speakers": 1265,
+    "total_clips": 18975,
+    "total_payload_bytes": 709750958,
+    "evaluation_speakers": 1100,
+    "evaluation_clips": 16500,
+    "gate_reference_speakers": 100,
+    "gate_reference_clips": 1500,
+    "australian_reserve_speakers": 65,
+    "australian_reserve_clips": 975,
+    "panel_overlaps": {
+      "evaluation_and_gate_reference": 0,
+      "evaluation_and_australian_reserve": 0,
+      "gate_reference_and_australian_reserve": 0
+    },
+    "evaluation_strata_breakdown": {
+      "australia": 220,
+      "south_asian": 220,
+      "us": 220,
+      "canada": 220,
+      "england": 220
+    },
+    "gate_reference_strata_breakdown": {
+      "canada": 20,
+      "us": 20,
+      "australia": 20,
+      "south_asian": 20,
+      "england": 20
+    }
+  },
+  "evidentiary_claims_verification": {
+    "claim_a_current_file_structural_validity_passed": 18975,
+    "claim_a_decoder_validation_passed": 18975,
+    "claim_b_source_origin_completeness_verified_false": 18975,
+    "claim_b_source_origin_completeness_status_unverified": 18975,
+    "policy_2a_admitted": 18975,
+    "accepted_recordings_admitted": 18845,
+    "discrepancy_screened_recordings_admitted": 130
+  },
+  "physical_dataset_inventory_reconciliation": {
+    "destination_directory": "datasets/audio/stage6m/cohort3_reconciled_assets",
+    "destination_file_count": 18975,
+    "destination_byte_total": 709750958,
+    "zero_byte_files": 0,
+    "disposition_ledger_csv": "datasets/splits/stage6m_cohort3_materialization_disposition_ledger.csv",
+    "disposition_ledger_sha256": "b242282ef1586219885f475fba0d1de117e7b68289ca9a42e36378cac638a0c5",
+    "ledger_row_count": 18975,
+    "ledger_hash_matches": 18975,
+    "physical_size_matches": 18975
+  },
+  "provisional_manifest_invariance": {
+    "provisional_manifest_path": "datasets/splits/stage6m_cohort3_provisional_manifest.json",
+    "provisional_manifest_bytes": 17744805,
+    "provisional_manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "git_clean": true
+  },
+  "audit_execution_seconds": 3.97,
+  "audit_verdict": "PASSED_AND_LOCKED"
+}

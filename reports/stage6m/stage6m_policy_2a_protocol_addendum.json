@@ -1,0 +1,309 @@
+{
+  "metadata": {
+    "document_id": "STAGE6M_PROTOCOL_ADDENDUM_POLICY_2A",
+    "document_title": "Stage 6M Protocol Addendum: Policy 2A Physical Integrity & Decodability Benchmark Specification",
+    "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+    "governing_branch": "stage6m-five-stratum-parity",
+    "reference_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+    "timestamp_utc": "2026-11-07T12:29:19.019247+00:00",
+    "document_status": "APPROVED_PROTOCOL_ADDENDUM (Executed under Gate 1 by Project Lead)",
+    "governance_classification": "Academic Honours / Thesis Protocol Addendum (Officially Adopted)",
+    "project_lead": "Venkata Akhil Kumar",
+    "authoritative_notice": "This document is an APPROVED protocol addendum formally executed by the Project Lead (Venkata Akhil Kumar) on 2026-11-07 under Gate 1 (Scientific Admission Decision Record). Policy 2A is formally adopted as the governing scientific admission policy for the Stage 6M v1.5 benchmark. Crucially, Gate 1 authorizes solely the formal scientific admission criteria and target dataset definition; it does NOT authorize Task 7.7.4 implementation, audio mutations, manifest locking, or GPU CTTA execution. Task 7.7.4 requires a separate, explicit Gate 2 authorization."
+  },
+  "section_1_target_population_and_research_scope": {
+    "target_population_definition": "The target speech audio population for the Stage 6M confirmatory benchmark is defined strictly as the speech recordings of Mozilla Common Voice 27.0 (en) as distributed, packaged, and accessible to the scientific community, possessing valid MPEG bitstream synchronization and clean PCM decodability.",
+    "scientific_objective": "To evaluate whether Dynamic Spectral Guidance (DSG) provides statistically significant Word Error Rate (WER) reductions and cross-accent disparity safety during Continuous Test-Time Adaptation (CTTA) on real-world, community-contributed natural speech audio without incurring catastrophic accent-specific regression.",
+    "four_level_audio_integrity_distinction": {
+      "level_1_current_file_structural_integrity": {
+        "dimension": "Current-File Structural Validity Through Observed EOF",
+        "technical_definition": "All available recording files passed the documented MPEG structural checks through their observed file boundaries (valid frame sync headers 0xFFE/0xFFF to EOF, uncorrupted frame synchronization, and complete physical container structure). This does not establish completeness relative to an original recording session or master recording.",
+        "empirical_status": "VERIFIED (18,975 of 18,975 recordings, 100.0%)"
+      },
+      "level_2_full_file_decoder_pcm_success": {
+        "dimension": "Full-File Decoder / PCM Success",
+        "technical_definition": "Clean, finite floating-point PCM decompression without decoding errors or aborts. Verified file-by-file via SoundFile (libmpg123) for all 18,845 accepted recordings in reports/stage6m/stage6m_cohort3_task772b_validator_impact_assessment.json, and verified file-by-file across three independent decoders (SoundFile, PyAV, miniaudio) with sample-exact agreement for all 130 discrepancy-screened recordings in reports/stage6m/stage6m_cohort3_task771_mp3_forensic_triage.json. Full 3-decoder verification across all 18,845 recordings is scheduled under Task 7.7.4 materialization.",
+        "empirical_status": "VERIFIED (18,975 of 18,975 recordings: 18,845 via SoundFile/libmpg123; 130 via 3-way multi-decoder exact match)"
+      },
+      "level_3_completeness_relative_to_original_masters": {
+        "dimension": "Completeness Relative to Original Masters (Claim B)",
+        "technical_definition": "Absence of upstream audio shortening or client-side truncation relative to the uncompressed original microphone capture prior to MP3 compression.",
+        "empirical_status": "UNVERIFIED FOR ALL 18,975 RECORDINGS (Authoritative original masters are unavailable in Common Voice 27.0)"
+      },
+      "level_4_recording_stage_acoustic_clipping": {
+        "dimension": "Recording-Stage Acoustic Clipping",
+        "technical_definition": "Saturation or non-linear distortion occurring at the contributor's physical microphone diaphragm or ADC during the physical recording event.",
+        "empirical_status": "PHYSICALLY IRRECOVERABLE (Cannot be disproven even if an uncompressed master were available)"
+      }
+    },
+    "evidentiary_status_statement": "Current-file structural integrity and PCM decoding have been evaluated using the documented validation procedures. Original-source completeness relative to the uncompressed master recordings remains unverified for all 18,975 recordings because authoritative master references are unavailable. The 130 quarantined recordings additionally have documented duration-estimation discrepancies, which are not, by themselves, proof of physical truncation.",
+    "negative_evidentiary_boundary": "Clean decoding and current-file integrity do NOT prove complete original recording capture or zero recording truncation. An audio file can decode cleanly to PCM even if audio was previously shortened at a valid MPEG frame boundary prior to distribution. Under Policy 2A, the dissertation explicitly discloses that Claim B remains unverified across all 18,975 recordings."
+  },
+  "section_2_preservation_of_registered_balanced_design": {
+    "design_principle": "Strict adherence to the registered balanced five-stratum experimental design authorized under Section 14.7.",
+    "confirmatory_strata_count": 5,
+    "strata_names": [
+      "Australian English",
+      "Canadian English",
+      "England English",
+      "South Asian English",
+      "United States English"
+    ],
+    "evaluation_speakers_per_stratum": 220,
+    "total_evaluation_speakers": 1100,
+    "clips_per_evaluation_speaker": 15,
+    "total_evaluation_clips": 16500,
+    "gate_reference_panel": {
+      "total_speakers": 100,
+      "speakers_per_stratum": 20,
+      "clips_per_speaker": 15,
+      "total_clips": 1500,
+      "role": "Exclusively calibrate adaptation gating and candidate model acceptance; strictly isolated from evaluation estimands."
+    },
+    "reserve_replacement_pool": {
+      "total_speakers": 65,
+      "stratum": "Australian English",
+      "clips_per_speaker": 15,
+      "total_clips": 975,
+      "role": "Dedicated Australian English replacement pool; strictly preserved and isolated."
+    },
+    "total_cohort3_audio_assets": 18975,
+    "cohort_balance_table": [
+      {
+        "stratum": "Australian English",
+        "eval_speakers": 220,
+        "eval_clips": 3300,
+        "gate_speakers": 20,
+        "gate_clips": 300,
+        "reserve_speakers": 65,
+        "reserve_clips": 975,
+        "total_clips": 4575
+      },
+      {
+        "stratum": "Canadian English",
+        "eval_speakers": 220,
+        "eval_clips": 3300,
+        "gate_speakers": 20,
+        "gate_clips": 300,
+        "reserve_speakers": 0,
+        "reserve_clips": 0,
+        "total_clips": 3600
+      },
+      {
+        "stratum": "England English",
+        "eval_speakers": 220,
+        "eval_clips": 3300,
+        "gate_speakers": 20,
+        "gate_clips": 300,
+        "reserve_speakers": 0,
+        "reserve_clips": 0,
+        "total_clips": 3600
+      },
+      {
+        "stratum": "South Asian English",
+        "eval_speakers": 220,
+        "eval_clips": 3300,
+        "gate_speakers": 20,
+        "gate_clips": 300,
+        "reserve_speakers": 0,
+        "reserve_clips": 0,
+        "total_clips": 3600
+      },
+      {
+        "stratum": "United States English",
+        "eval_speakers": 220,
+        "eval_clips": 3300,
+        "gate_speakers": 20,
+        "gate_clips": 300,
+        "reserve_speakers": 0,
+        "reserve_clips": 0,
+        "total_clips": 3600
+      },
+      {
+        "stratum": "Total Confirmatory Cohort",
+        "eval_speakers": 1100,
+        "eval_clips": 16500,
+        "gate_speakers": 100,
+        "gate_clips": 1500,
+        "reserve_speakers": 65,
+        "reserve_clips": 975,
+        "total_clips": 18975
+      }
+    ],
+    "admission_vs_physical_storage_disposition": {
+      "logically_admitted_dataset_assets": 18975,
+      "assets_under_admission_hold": 0,
+      "files_in_accepted_directory": 18845,
+      "files_retained_in_quarantine": 130,
+      "original_source_completeness_verified": 0,
+      "discrepancy_screened_disposition": "ADMITTED_ORIGIN_UNVERIFIED_WITH_DURATION_DISCREPANCY",
+      "accepted_files_disposition": "ADMITTED_CLAIM_A_VALID_ORIGIN_UNVERIFIED",
+      "physical_isolation_note": "Under Policy 2A, all 18,975 recordings are logically admitted as Common Voice assets, while the 130 discrepancy-screened recordings remain physically in the quarantine directory (cohort3_rejected_quarantine). Those are two different concepts. The 130 files carry the explicit admission disposition ADMITTED_ORIGIN_UNVERIFIED_WITH_DURATION_DISCREPANCY, retaining their original physical location until a separate Gate 2 authorization permits any materialization operation. This avoids accidentally suggesting that the 130 recordings are excluded from the research population merely because they remain in quarantine."
+    }
+  },
+  "section_3_exact_primary_estimand_and_mathematical_specifications": {
+    "registered_estimand_standard": "Protocol Section 14.7 / ADR-005 Pre-Registered Primary Inferential Estimand",
+    "speaker_level_wer_calculation": {
+      "formal_definition": "Approach 2: Pooled Speaker Errors Divided by Pooled Reference Words",
+      "formula": "WER_{a, s} = \\frac{\\sum_{c=1}^{C_s} (S_{a, sc} + D_{a, sc} + I_{a, sc})}{\\sum_{c=1}^{C_s} N_{sc}^{\\text{ref}}} \\times 100\\%",
+      "variables": {
+        "a": "Experimental arm (Arm 1 = Static, Arm 2 = Ungated CTTA, Arm 3 = DSG-Gated CTTA)",
+        "s": "Speaker identifier (s in {1, ..., S}, where S = 1,100)",
+        "c": "Clip index within speaker cluster (c in {1, ..., C_s}, where C_s = 15 for all s under Policy 2A)",
+        "S_{a, sc}": "Levensthein substitutions for clip c under arm a",
+        "D_{a, sc}": "Levensthein deletions for clip c under arm a",
+        "I_{a, sc}": "Levensthein insertions for clip c under arm a",
+        "N_{sc}^{\\text{ref}}": "Total reference words in ground-truth transcript for clip c"
+      },
+      "protocol_alignment": "This pooled-speaker formula matches the production implementation in src/dsg_ctta/offline/aggregation.py (spk_wer = (s_s + s_d + s_i) / s_n) and tests/research_validity/test_stage6m_reproducibility_and_gate_validity.py. It prevents small-denominator distortion from single-word clips and avoids changing the pre-registered estimand."
+    },
+    "paired_speaker_difference": {
+      "formula": "\\Delta_s = \\text{WER}_{3, s} - \\text{WER}_{1, s} = \\frac{\\sum_{c=1}^{15} (E_{3, sc} - E_{1, sc})}{\\sum_{c=1}^{15} N_{sc}^{\\text{ref}}} \\times 100\\%",
+      "interpretation": "Negative values (\\Delta_s < 0) represent improvement (error reduction) under DSG-gated adaptation relative to static baseline."
+    },
+    "stratum_aggregation": {
+      "formula": "\\Delta_g = \\frac{1}{N_g} \\sum_{s \\in \\text{Stratum } g} \\Delta_s",
+      "sample_size": "N_g = 220 speakers per stratum (strictly equal across all 5 strata under Policy 2A)."
+    },
+    "primary_confirmatory_contrasts": [
+      {
+        "contrast_id": "CRITERION_1_EVENT_A",
+        "name": "DSG-Gated vs Static Baseline (Primary Utility)",
+        "formula": "\\Delta_{\\text{static}} = \\text{WER}_{3} - \\text{WER}_{1} = \\frac{\\sum_{s,c} (E_{3,sc} - E_{1,sc})}{\\sum_{s,c} N_{sc}^{\\text{ref}}} \\times 100\\%",
+        "null_hypothesis": "H_{0, A}: \\Delta_{\\text{static}} \\ge 0.00\\text{ pp}",
+        "alternative_hypothesis": "H_{1, A}: \\Delta_{\\text{static}} < 0.00\\text{ pp}",
+        "test_statistic": "Linearized cluster-robust ratio estimator with t(S-1) critical value at alpha_adj = 0.00625",
+        "acceptance_criterion": "\\text{UCB}_{99.375\\%}(\\Delta_{\\text{static}}) < 0.00\\text{ pp}"
+      },
+      {
+        "contrast_id": "CRITERION_2_EVENT_B",
+        "name": "DSG-Gated vs Ungated SUTA (Primary Utility)",
+        "formula": "\\Delta_{\\text{ungated}} = \\text{WER}_{3} - \\text{WER}_{2} = \\frac{\\sum_{s,c} (E_{3,sc} - E_{2,sc})}{\\sum_{s,c} N_{sc}^{\\text{ref}}} \\times 100\\%",
+        "null_hypothesis": "H_{0, B}: \\Delta_{\\text{ungated}} \\ge 0.00\\text{ pp}",
+        "alternative_hypothesis": "H_{1, B}: \\Delta_{\\text{ungated}} < 0.00\\text{ pp}",
+        "test_statistic": "Linearized cluster-robust ratio estimator with t(S-1) critical value at alpha_adj = 0.00625",
+        "acceptance_criterion": "\\text{UCB}_{99.375\\%}(\\Delta_{\\text{ungated}}) < 0.00\\text{ pp}"
+      },
+      {
+        "contrast_id": "CRITERION_3_EVENT_C",
+        "name": "Per-Accent Non-Inferiority across All 5 Strata (Fairness Guards)",
+        "formula": "\\Delta_g = \\text{WER}_{3, g} - \\text{WER}_{1, g} \\quad \\forall g \\in \\{1, 2, 3, 4, 5\\}",
+        "null_hypothesis": "H_{0, C, g}: \\Delta_g > +2.00\\text{ pp}",
+        "alternative_hypothesis": "H_{1, C, g}: \\Delta_g \\le +2.00\\text{ pp}",
+        "test_statistic": "Stratum-specific linearized cluster-robust ratio estimator with t(N_g-1) critical value at alpha_adj = 0.00625",
+        "acceptance_criterion": "\\text{UCB}_{99.375\\%}(\\Delta_g) \\le +2.00\\text{ pp} \\quad \\forall g \\in \\{1, 2, 3, 4, 5\\}"
+      },
+      {
+        "contrast_id": "CRITERION_4_EVENT_D",
+        "name": "Cross-Accent Disparity Non-Increase (Fairness Safety)",
+        "formula": "D = \\max_{g \\in \\mathcal{G}} \\text{WER}_g - \\min_{g \\in \\mathcal{G}} \\text{WER}_g, \\quad \\Delta D = D_{\\text{Arm 3}} - D_{\\text{Arm 1}}",
+        "null_hypothesis": "H_{0, D}: \\Delta D > 0.00\\text{ pp}",
+        "alternative_hypothesis": "H_{1, D}: \\Delta D \\le 0.00\\text{ pp}",
+        "test_statistic": "Stratified paired-cluster bootstrap across B = 20,000 replicates evaluated at 99.375th percentile",
+        "acceptance_criterion": "\\text{UCB}_{99.375\\%}(\\Delta D) \\le 0.00\\text{ pp} \\quad (\\text{with diagnostic monitoring boundary } \\le +1.40\\text{ pp})"
+      }
+    ],
+    "composite_joint_success_rule": {
+      "rule_statement": "Stage 6M confirmatory CTTA success is declared IF AND ONLY IF all 8 hypotheses pass simultaneously:",
+      "formula": "\\text{SUCCESS} \\iff \\text{Event A} \\land \\text{Event B} \\land \\text{Event C} \\land \\text{Event D}",
+      "multiplicity_framework": "Fixed Single-Step Simultaneous Bonferroni (M = 8, alpha_family = 0.05, alpha_adj = 0.00625, UCB percentile = 99.375%)"
+    },
+    "mathematical_relationship_between_estimands": {
+      "derivation": "In speech recognition evaluation with cluster sampling, three aggregation levels exist:\\n1. Clip-Macro WER: WER_clip = (1/(S*C)) * sum_s sum_c (E_sc / N_sc). Weights every clip equally.\\n2. Pooled Speaker WER (Approach 2): WER_s = sum_c E_sc / sum_c N_sc = sum_c (N_sc / W_s) * WER_sc. This is a word-count-weighted average of that speaker's clips.\\n3. Speaker-Macro WER: WER_speaker = (1/S) * sum_s WER_s. Weights every speaker equally (1/S).\\n4. Word-Micro WER: WER_word = sum_s sum_c E_sc / sum_s sum_c N_sc. Weights every word equally.",
+      "non_identity_proof": "Comparing Speaker-Macro and Clip-Macro under constant C = 15 clips per speaker:\\nWER_speaker = (1/S) * sum_s sum_c (N_sc / W_s) * WER_sc\\nWER_clip    = (1/S) * sum_s sum_c (1 / C)      * WER_sc\\nThe difference between these two aggregation operations is:\\nWER_speaker - WER_clip = (1/S) * sum_s sum_c (N_sc / W_s - 1/C) * WER_sc\\nAs mathematical aggregation operators (functions over all possible clip WER vectors in [0, inf)^{S x C}), these two estimands are identical functions IF AND ONLY IF N_sc / W_s = 1/C for all clips c, meaning every clip of speaker s has identical reference word count N_sc = W_s / C. While accidental numerical equality can theoretically occur on a single realized dataset through fortuitous cancellation (sum_c (N_sc / W_s - 1/C) * WER_sc = 0), they are fundamentally distinct mathematical estimands that assign different weights to speech samples. In natural speech corpora like Common Voice, utterance lengths vary naturally (e.g. 3 to 15+ words). Therefore, equal clip counts per speaker do NOT make pooled speaker-macro functionally identical to clip-macro.",
+      "concrete_numerical_counterexample": {
+        "scenario": "Consider a minimal cohort with S = 1 speaker and C = 2 clips (balanced clip count):",
+        "clip_1": "N_11 = 2 reference words, E_11 = 2 errors -> WER_11 = 2/2 = 100.0%",
+        "clip_2": "N_12 = 10 reference words, E_12 = 0 errors -> WER_12 = 0/10 = 0.0%",
+        "clip_macro_result": "WER_clip = (1/2) * (100.0% + 0.0%) = 50.0%",
+        "pooled_speaker_macro_result": "WER_s = (2 + 0) / (2 + 10) = 2/12 = 16.67%",
+        "discrepancy": "WER_speaker (16.67%) != WER_clip (50.0%) by 33.33 percentage points despite balanced C=2.",
+        "conclusion": "The registered Section 14.7 protocol specifies Speaker-Macro over Pooled Speaker WERs (Approach 2). This preserves equal speaker weighting (1/S) across the evaluation cohort without distorting estimates by single short utterances, but must NOT be described as mathematically identical to clip-macro."
+      }
+    }
+  },
+  "section_4_statistical_power_and_decision_rules": {
+    "approved_power_result": {
+      "source": "Task 6.3 Calibrated 5-Stratum Power Simulation (Git Commit 06cf833)",
+      "sample_size": "N_g = 220 speakers per stratum (N = 1,100, C = 15, M = 16,500 clips)",
+      "multiplicity_family": "M = 8 One-Sided Hypotheses, Fixed Bonferroni alpha_adj = 0.00625, Percentile = 99.375%",
+      "simulation_depth": "10,000 Monte Carlo trajectories, B = 20,000 bootstrap resamples per trajectory",
+      "calibrated_disparity_reduction": "-2.0 percentage points",
+      "observed_joint_power": "90.58%",
+      "clopper_pearson_exact_bounds": {
+        "one_sided_lcb_95": "90.085739%",
+        "two_sided_ci_95": "[89.990601%, 91.145641%]",
+        "acceptance_criterion": "LCB_95 >= 90.000000% (Passed by +0.0857 pp / +8 trajectories)"
+      }
+    },
+    "conditional_validity_statement": "The calibrated 90.58% joint power result was calculated under the exact M = 8 simultaneous Bonferroni decision architecture with simultaneous one-sided 99.375% bounds. It is strictly conditional on its pre-registered simulation assumptions: between-speaker standard deviation sigma_between = 6.50 pp, within-speaker paired difference standard deviation sigma_paired = 3.20 pp, and target disparity effect Delta D = -2.00 pp. This result demonstrates that the registered balanced sample size (N_g=220) is statistically adequate to detect the targeted effect sizes under Monte Carlo simulation; it does NOT constitute proof of observed DSG efficacy or guarantee real-world adaptation success on the physical confirmatory run.",
+    "reconciliation_of_nominal_vs_simultaneous_confidence_levels": {
+      "reported_nominal_levels": [
+        {
+          "dimension": "Accent Non-Inferiority",
+          "reported_level": "97.5% UCB <= +2.00 pp",
+          "context": "Nominal single-comparison rate (alpha = 0.025 one-sided / 0.05 two-sided) from exploratory Task 5 design screening."
+        },
+        {
+          "dimension": "Disparity Safety",
+          "reported_level": "95.0% UCB <= +1.40 pp",
+          "context": "Unadjusted nominal bootstrap percentile used as an auxiliary diagnostic monitoring boundary in exploratory studies."
+        }
+      ],
+      "confirmatory_bonferroni_architecture": "In the authoritative Stage 6M v1.5 confirmatory benchmark (src/dsg_ctta/evaluation/paired_cluster_inference_v15.py), multiplicity across all M = 8 confirmatory hypotheses is controlled via a single-step simultaneous Bonferroni procedure: alpha_family = 0.05, alpha_adjusted = 0.05 / 8 = 0.00625, simultaneous one-sided UCB percentile = 99.375%. All confirmatory decisions are governed by simultaneous 99.375% bounds (Event A: static UCB < 0.00 pp; Event B: ungated UCB < 0.00 pp; Event C: 5 accent regression UCBs <= +2.00 pp; Event D: disparity bootstrap UCB <= 0.00 pp). Crucially, the Task 6.3 calibrated power result of 90.58% (Clopper-Pearson 95% LCB = 90.085739%) evaluated this exact simultaneous M = 8, 99.375% Bonferroni criterion. The nominal 97.5% and 95.0% levels are exploratory only and do NOT govern confirmatory gate decisions."
+    },
+    "preservation_of_all_decision_thresholds": [
+      {
+        "rule": "Multiplicity Family",
+        "threshold": "M = 8 Hypotheses, alpha_family = 0.05, alpha_adj = 0.00625"
+      },
+      {
+        "rule": "Simultaneous UCB Percentile",
+        "threshold": "99.375% (1 - 0.00625)"
+      },
+      {
+        "rule": "Event A (Superiority vs Static)",
+        "threshold": "UCB_99.375%(Delta_static) < 0.00 pp"
+      },
+      {
+        "rule": "Event B (Superiority vs Ungated SUTA)",
+        "threshold": "UCB_99.375%(Delta_ungated) < 0.00 pp"
+      },
+      {
+        "rule": "Event C (Accent Regression Guards)",
+        "threshold": "UCB_99.375%(Delta_g) <= +2.00 pp for all 5 strata"
+      },
+      {
+        "rule": "Event D (Disparity Safety)",
+        "threshold": "UCB_99.375%(Delta_D) <= 0.00 pp (nominal) / <= +1.40 pp (diagnostic)"
+      },
+      {
+        "rule": "Candidate Loss Sanity",
+        "threshold": "Scalar loss is finite; grad_norm < 100.0; non-zero update norm"
+      }
+    ]
+  },
+  "section_5_governance_and_preconditions": {
+    "operative_status": "ACTIVE / APPROVED UNDER GATE 1 (Executed 2026-11-07)",
+    "governance_roadmap": {
+      "gate_1": "Policy 2A Scientific Admission \u2014 Formally APPROVED on 2026-11-07 by Project Lead. Authorizes formal scientific admission criteria and target dataset definition ONLY. Stated evidentiary limitations apply (Claim B unverified across all 18,975 recordings). Does NOT authorize Task 7.7.4 implementation or production dataset operations.",
+      "gate_2": "Task 7.7.4 Authorization \u2014 Authorizes implementation and execution of non-destructive materializer workflow under exclusive OS-level ownership locking (STATUS: NOT AUTHORIZED / PENDING INDEPENDENT DETERMINATION).",
+      "gate_3": "Manifest Approval & Locking \u2014 Final dataset verification, hash reconciliation, and manifest locking (STATUS: LOCKED).",
+      "gates_4_to_6": "Environment readiness, confirmatory GPU CTTA experiments, and simultaneous statistical analysis."
+    },
+    "preconditions_to_activation": [
+      "1. Project Lead formally executes Gate 1 (Scientific Admission Decision Record for Policy 2A) \u2014 COMPLETE (2026-11-07).",
+      "2. Project Lead independently executes Gate 2 (Task 7.7.4 Non-Destructive Materialization Authorization) \u2014 PENDING.",
+      "3. Reconciled dataset assets are validated without destructive deletion or file mutation.",
+      "4. Final execution manifest is generated, verified, and locked under Gate 3 (STATUS: LOCKED).",
+      "5. Software environment, models, and configuration are verified via non-confirmatory smoke tests (Gate 4)."
+    ],
+    "prohibited_actions": [
+      "No automatic authorization of Task 7.7.4 upon Gate 1 approval.",
+      "No GPU CTTA execution on confirmatory audio.",
+      "No unsealing of evaluation transcripts.",
+      "No promotion or mutation of audio assets prior to independent Gate 2 authorization.",
+      "No git commit or push without explicit instruction."
+    ]
+  }
+}

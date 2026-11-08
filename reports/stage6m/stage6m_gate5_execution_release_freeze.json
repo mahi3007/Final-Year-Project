@@ -1,0 +1,152 @@
+{
+  "release_freeze_metadata": {
+    "document_id": "STAGE6M-GATE5-RELEASE-FREEZE-20261108",
+    "generated_at_utc": "2026-11-07T19:42:00+00:00",
+    "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+    "governing_branch": "stage6m-five-stratum-parity",
+    "governing_base_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+    "preauthorization_audit_verdict": "READY_FOR_PROJECT_LEAD_GATE5_DECISION",
+    "release_freeze_verdict": "RELEASE_PACKAGE_READY_FOR_GATE5_AUTHORIZATION",
+    "authorization_state": "DRAFT / PENDING PROJECT LEAD EXPLICIT AUTHORIZATION"
+  },
+  "task1_execution_source_identity": {
+    "git_branch": "stage6m-five-stratum-parity",
+    "base_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+    "working_tree_status": {
+      "tracked_modified_files": [
+        "reports/stage6m/stage6m_cohort3_data_feasibility_report.json",
+        "reports/stage6m/stage6m_cohort3_data_feasibility_report.md",
+        "tests/research_validity/test_stage6m_cohort3_audio_materialization.py"
+      ],
+      "untracked_execution_artifacts": [
+        "cloud/kaggle/run_stage6m_cohort3_kaggle_benchmark.py",
+        "cloud/kaggle/run_stage6m_cohort3_confirmatory_kaggle.ipynb",
+        "releases/stage6m_gate5_release_v1.0.tar.gz"
+      ]
+    },
+    "audited_runner": {
+      "path": "cloud/kaggle/run_stage6m_cohort3_kaggle_benchmark.py",
+      "bytes": 24090,
+      "sha256": "728efdc613dcbfe639c531f9c673a4f956c9cfb74c181725b59cfce728fa0ed1",
+      "remediated_defects": [
+        "Forced model.eval() during SUTA adaptation to freeze speculative time masking (mask_time_prob=0.065)",
+        "Corrected compute_masked_suta_loss call signature to pass model, input_values, and audio_lengths for silence frame masking",
+        "Integrated full RNG states (Python, NumPy, PyTorch CPU/CUDA) and record line counts into checkpoint serialization and restoration",
+        "Automated output results archive packaging at completion of benchmark"
+      ]
+    },
+    "confirmatory_notebook": {
+      "path": "cloud/kaggle/run_stage6m_cohort3_confirmatory_kaggle.ipynb",
+      "bytes": 7907,
+      "sha256": "c5628b62918ca65772d7ca21045793ae65e674a9cd4c248d70592cf3427d2b14",
+      "execution_directive": "!python cloud/kaggle/run_stage6m_cohort3_kaggle_benchmark.py"
+    },
+    "imported_core_modules_hashes": {
+      "src/dsg_ctta/controller/streaming_gate_v14.py": "86aaeca51eff0f7845c6203f19bf2ee3ef4787ac2d9a3c5a6736698bb1b78e1c",
+      "src/dsg_ctta/controller/streaming_gate.py": "caf809adf7d07567a110c63e2c58844ec6931698e1b3a2df6daa4c79fb906f8e",
+      "src/dsg_ctta/controller/shadow.py": "2d4776386b9f71a69e08571f4e2de3cf26e1fa51be9c0cb41a1442b2d1ae75eb",
+      "src/dsg_ctta/adaptation/safe_update.py": "6a89467d4f037c6941a68bbbe9306cdda83d714f1aa4d90d1877d44c9ba45911",
+      "src/dsg_ctta/data/acoustic.py": "9ae7cf93f0acf4b40205909f64511d5d68b15e76464fc0146cedc41d00b9b1e1",
+      "src/dsg_ctta/data/normalization.py": "2a500503e7b8d820e60eb4f2c97581f0ad0299d570ee338a4af42fe61b52965d",
+      "src/dsg_ctta/offline/metrics.py": "090fa889c2131e3980abac61e72759a0ac93151066a86ce7c9a185971747fdf6"
+    }
+  },
+  "task2_execution_dependencies_frozen": {
+    "target_platform": "Kaggle Linux Container (Python 3.13.0)",
+    "accelerator_hardware": "2 × NVIDIA Tesla T4 (Discrete 14.56 GB GDDR6 VRAM each)",
+    "container_preinstalled_baseline": {
+      "python": "3.13.0",
+      "torch": "2.11.0+cu130",
+      "cuda_toolkit": "13.0",
+      "transformers": "5.20.2",
+      "soundfile": "0.14.0",
+      "numpy": "2.1.3",
+      "scipy": "1.16.3"
+    },
+    "complementary_pinned_wheels": {
+      "editdistance": "0.8.1",
+      "statsmodels": "0.14.2",
+      "miniaudio": "1.59"
+    },
+    "pyav_disposition": "PyAV excluded from installation; soundfile 0.14.0 natively handles all float32 audio decoding without compilation errors"
+  },
+  "task3_frozen_input_identities": {
+    "locked_final_manifest": {
+      "path": "datasets/splits/stage6m_cohort3_final_manifest.json",
+      "bytes": 26680115,
+      "sha256": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+      "claim_b_limitation": "UNVERIFIED across all 18,975 entries"
+    },
+    "online_inference_manifest": {
+      "path": "datasets/splits/stage6m_cohort3_online_inference_manifest.json",
+      "bytes": 27731809,
+      "sha256": "0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1",
+      "evaluation_transcripts_shielded": true
+    },
+    "materialization_disposition_ledger": {
+      "path": "datasets/splits/stage6m_cohort3_materialization_disposition_ledger.csv",
+      "bytes": 8637604,
+      "sha256": "b242282ef1586219885f475fba0d1de117e7b68289ca9a42e36378cac638a0c5"
+    },
+    "acoustic_model_checkpoint": {
+      "identifier": "facebook/wav2vec2-base-960h",
+      "initial_tensor_buffer_hash": "75675734fb2e81f5670988269f05210792b38a79534302edcdb128d04bb29123"
+    }
+  },
+  "task4_data_allowlist_and_isolation": {
+    "permitted_gate5_inputs": [
+      "datasets/audio/stage6m/cohort3_reconciled_assets/ (18,975 MP3 files, 709,750,958 bytes)",
+      "datasets/splits/stage6m_cohort3_online_inference_manifest.json (transcripts sealed for 16,500 eval clips)",
+      "datasets/splits/stage6m_cohort3_materialization_disposition_ledger.csv (reconciliation ledger)",
+      "1,500 gate-reference sentinel transcripts (100 speakers, 20/stratum, used solely for live candidate screening)"
+    ],
+    "strictly_forbidden_inputs": [
+      "datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json (f427ae7fbf386f77b0795cc1fa33b2f7831c89f89ecfce7fa30036cde5c5223e) - MUST NOT BE MOUNTED",
+      "975 Australian reserve evaluation labels",
+      "Any unblinded ground-truth reference transcripts for evaluation audio"
+    ],
+    "isolation_boundary_status": "CONFIRMED_SEALED"
+  },
+  "task5_immutable_release_snapshot": {
+    "release_directory": "releases/stage6m_gate5_release_v1.0",
+    "archive_package": "releases/stage6m_gate5_release_v1.0.tar.gz",
+    "archive_bytes": 161268,
+    "archive_sha256": "cfa471be9b2faa7a67b98826cc1b68c1d92380aecbf229d57889e17d4e47d8b4",
+    "superseded_draft_sha256": "48e14452207b0e331e903aecb6b657febbbce46b83d2c81ce584bd9dc894342b",
+    "digest_manifest": "releases/stage6m_gate5_release_v1.0/checksums.sha256",
+    "total_packaged_files": 67
+  },
+  "task6_draft_authorization_record": {
+    "runtime_projections": {
+      "total_windows": 4125,
+      "clips_per_window": 4,
+      "total_clips": 16500,
+      "expected_scenario": {
+        "cycle_sec": 3.6092,
+        "runtime_hours": 4.14,
+        "runtime_formatted": "4 hours 8 minutes 8 seconds"
+      },
+      "conservative_planning_scenario": {
+        "per_window_p95_sec": 4.80,
+        "runtime_hours": 5.50,
+        "runtime_formatted": "5 hours 30 minutes",
+        "statistical_qualification": "Multiplying the per-window p95 latency by 4,125 produces a conservative planning scenario for session headroom; it is not a statistical claim that the full experiment runtime distribution has a 95th-percentile value of 5.5 hours."
+      },
+      "worst_case_planning_ceiling": {
+        "cycle_sec": 6.00,
+        "runtime_hours": 6.88,
+        "runtime_formatted": "6 hours 52 minutes 30 seconds"
+      },
+      "kaggle_session_limit_hours": 12.0,
+      "safety_headroom_ratio": 2.90,
+      "safety_buffer_hours": 7.86
+    },
+    "stop_conditions_enforced": [
+      "Do NOT start Gate 5 execution without explicit Project Lead sign-off",
+      "Do NOT process confirmatory evaluation audio prior to authorization",
+      "Do NOT upload or mount the sealed evaluation transcript key",
+      "Do NOT modify locked manifest or frozen model weights"
+    ]
+  },
+  "final_verdict": "RELEASE_PACKAGE_READY_FOR_GATE5_AUTHORIZATION"
+}

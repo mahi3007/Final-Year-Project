@@ -1,0 +1,61 @@
+{
+  "catalogue_id": "STAGE6M-KAGGLE-HASH-CATALOGUE-20261107",
+  "generated_at_utc": "2026-11-07T17:59:01.035548+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_branch": "stage6m-five-stratum-parity",
+  "reference_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+  "official_locked_manifest": {
+    "path": "datasets/splits/stage6m_cohort3_final_manifest.json",
+    "bytes": 26680115,
+    "sha256": "171815faab962073b7d446bc6d755602c948386f62437876b5fe54fb82b4f3d0",
+    "status": "LOCKED",
+    "total_records": 18975,
+    "total_speakers": 1265
+  },
+  "disposition_ledger": {
+    "path": "datasets/splits/stage6m_cohort3_materialization_disposition_ledger.csv",
+    "bytes": 8637604,
+    "sha256": "b242282ef1586219885f475fba0d1de117e7b68289ca9a42e36378cac638a0c5",
+    "total_rows": 18975
+  },
+  "physical_audio_inventory": {
+    "directory": "datasets/audio/stage6m/cohort3_reconciled_assets",
+    "file_count": 18975,
+    "total_bytes": 709750958,
+    "zero_byte_files": 0
+  },
+  "configs": {
+    "model_role_registry.json": {
+      "path": "configs/model_role_registry.json",
+      "bytes": 8575,
+      "sha256": "a276bfb8b517fd20dac163b3b3cd2b6d16bbfaf44808d708f54c82842cd8ce2f"
+    },
+    "stage4_thresholds.json": {
+      "path": "configs/stage4_thresholds.json",
+      "bytes": 1157,
+      "sha256": "ed9f31a2c0076a01ec5e6f47d578a2eaadc15977c954897b30f9e71ac92a1853"
+    },
+    "stage5_gate_config.json": {
+      "path": "configs/stage5_gate_config.json",
+      "bytes": 1293,
+      "sha256": "e5833c4fe22d4683faa67b8e108ea9d497b16aa37995f6bd5e79a69198a48088"
+    },
+    "stage6m_model_registry.json": {
+      "path": "configs/stage6m_model_registry.json",
+      "bytes": 5629,
+      "sha256": "7bde510f5b517acb4890468dd4e581e03ce3299564b020d51e2ca86455647cca"
+    },
+    "stage6m_protocol_config.json": {
+      "path": "configs/stage6m_protocol_config.json",
+      "bytes": 9430,
+      "sha256": "8f4654413ef6596a5857d5fc1f7acdceccb3c3d795efe32d51f05f72fe206616"
+    }
+  },
+  "requirements_file": {
+    "path": "requirements-kaggle.txt",
+    "bytes": 1379,
+    "sha256": "53b85af593eacd0645302c3d3293c46924d8cee50bb72a7b6435c4f12e7a7e02"
+  },
+  "verification_elapsed_seconds": 2.38,
+  "verification_verdict": "ALL_ASSETS_VERIFIED_EXACT"
+}

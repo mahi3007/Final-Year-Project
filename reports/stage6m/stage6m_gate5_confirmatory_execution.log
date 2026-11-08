@@ -1,0 +1,241 @@
+================================================================================
+STAGE 6M COHORT 3 CONFIRMATORY STREAMING BENCHMARK (KAGGLE GPU)
+Governing Protocol: Stage 6M v1.5 Five-Stratum Benchmark (Section 14.7)
+Execution Hardware: NVIDIA GPU Acceleration
+================================================================================
+
+[Step 1] Initializing Execution Device: cuda:0
+  Primary GPU:     Tesla T4 (cuda:0)
+  Total VRAM:      14.56 GB
+  GPU Count:       2 (NVIDIA T4 x2 target)
+  Secondary GPU:   Tesla T4 (cuda:1, 14.56 GB) [Discrete memory space]
+
+[Step 2] Verifying Cryptographic Digests of Input Benchmark...
+  Manifest Path:   /kaggle/input/datasets/venkataakhil07/stage6m-frozen-benchmark/splits/stage6m_cohort3_online_inference_manifest.json
+  Manifest SHA256: 0f1cca979a0b7c9872ce576df97a3db48c84358db3b4f287aa77d76a779751a1
+  -> Verified authentic restricted online inference manifest (transcripts shielded).
+  Ledger Path:     /kaggle/input/datasets/venkataakhil07/stage6m-frozen-benchmark/splits/stage6m_cohort3_materialization_disposition_ledger.csv
+  Ledger SHA256:   b242282ef1586219885f475fba0d1de117e7b68289ca9a42e36378cac638a0c5
+  -> Input manifest & ledger verified 100% byte-exact.
+
+[Step 3] Loading Dataset Records & Partitioning Panels...
+  Total Manifest Records:    18,975
+  Evaluation Clips:          16,500 (1,100 speakers)
+  Gate-Reference Clips:      1,500 (100 speakers)
+  Australian Reserve Clips:  975 (65 speakers)
+  -> Panel disjointness verified: 0 shared speakers across all panels.
+  -> Evaluation label shielding verified: 100% of evaluation reference labels are sealed and inaccessible.
+
+[Step 4] Loading Frozen ASR Model (facebook/wav2vec2-base-960h)...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 212/212 [00:00<00:00, 2651.66it/s]
+[transformers] [1mWav2Vec2ForCTC LOAD REPORT[0m from: facebook/wav2vec2-base-960h
+Key                        | Status  | 
+---------------------------+---------+-
+wav2vec2.masked_spec_embed | MISSING | 
+
+Notes:
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 212/212 [00:00<00:00, 2534.68it/s]
+[transformers] [1mWav2Vec2ForCTC LOAD REPORT[0m from: facebook/wav2vec2-base-960h
+Key                        | Status  | 
+---------------------------+---------+-
+wav2vec2.masked_spec_embed | MISSING | 
+
+Notes:
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 212/212 [00:00<00:00, 2559.27it/s]
+[transformers] [1mWav2Vec2ForCTC LOAD REPORT[0m from: facebook/wav2vec2-base-960h
+Key                        | Status  | 
+---------------------------+---------+-
+wav2vec2.masked_spec_embed | MISSING | 
+
+Notes:
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  Initial Frozen Model Parameter Hash: 23aab6760d3487b8e001cf7dd5ba7ef33aa2cd518d283a7ecff6f3f0fdf57d99
+  Streaming Configuration:   4125 windows, K=4, U=4124 candidate updates
+  Safety Gate:               Protocol v1.4.0 OBF Schedule (alpha=0.05, zero disparity tolerance)
+
+================================================================================
+STREAMING EXECUTION COMMENCED: Windows 0 to 4125
+================================================================================
+
+[Step 6] Pre-caching Gate-Reference Sentinel Waveforms...
+  Pre-cached 1500 gate-reference clips.
+  Window   25 / 4125 (  0.6%) | Latency: 2.84s
+  Window   50 / 4125 (  1.2%) | Latency: 3.92s
+  Window   75 / 4125 (  1.8%) | Latency: 2.33s
+  Window  100 / 4125 (  2.4%) | Latency: 3.79s
+  Window  125 / 4125 (  3.0%) | Latency: 3.14s
+  Window  150 / 4125 (  3.6%) | Latency: 4.46s
+  Window  175 / 4125 (  4.2%) | Latency: 2.87s
+  Window  200 / 4125 (  4.8%) | Latency: 4.46s
+  Window  225 / 4125 (  5.5%) | Latency: 2.98s
+  Window  250 / 4125 (  6.1%) | Latency: 4.00s
+  Window  275 / 4125 (  6.7%) | Latency: 3.10s
+  Window  300 / 4125 (  7.3%) | Latency: 3.48s
+  Window  325 / 4125 (  7.9%) | Latency: 2.63s
+  Window  350 / 4125 (  8.5%) | Latency: 4.18s
+  Window  375 / 4125 (  9.1%) | Latency: 3.00s
+  Window  400 / 4125 (  9.7%) | Latency: 4.18s
+  Window  425 / 4125 ( 10.3%) | Latency: 3.12s
+  Window  450 / 4125 ( 10.9%) | Latency: 3.73s
+  Window  475 / 4125 ( 11.5%) | Latency: 2.98s
+  Window  500 / 4125 ( 12.1%) | Latency: 4.26s
+  Window  525 / 4125 ( 12.7%) | Latency: 2.78s
+  Window  550 / 4125 ( 13.3%) | Latency: 4.13s
+  Window  575 / 4125 ( 13.9%) | Latency: 3.14s
+  Window  600 / 4125 ( 14.5%) | Latency: 4.07s
+  Window  625 / 4125 ( 15.2%) | Latency: 2.38s
+  Window  650 / 4125 ( 15.8%) | Latency: 4.12s
+  Window  675 / 4125 ( 16.4%) | Latency: 3.34s
+  Window  700 / 4125 ( 17.0%) | Latency: 4.04s
+  Window  725 / 4125 ( 17.6%) | Latency: 3.04s
+  Window  750 / 4125 ( 18.2%) | Latency: 4.19s
+  Window  775 / 4125 ( 18.8%) | Latency: 2.98s
+  Window  800 / 4125 ( 19.4%) | Latency: 3.57s
+  Window  825 / 4125 ( 20.0%) | Latency: 3.08s
+  Window  850 / 4125 ( 20.6%) | Latency: 3.88s
+  Window  875 / 4125 ( 21.2%) | Latency: 2.67s
+  Window  900 / 4125 ( 21.8%) | Latency: 3.77s
+  Window  925 / 4125 ( 22.4%) | Latency: 3.12s
+  Window  950 / 4125 ( 23.0%) | Latency: 3.96s
+  Window  975 / 4125 ( 23.6%) | Latency: 2.96s
+  Window 1000 / 4125 ( 24.2%) | Latency: 3.87s
+  Window 1025 / 4125 ( 24.8%) | Latency: 2.62s
+  Window 1050 / 4125 ( 25.5%) | Latency: 4.11s
+  Window 1075 / 4125 ( 26.1%) | Latency: 2.62s
+  Window 1100 / 4125 ( 26.7%) | Latency: 4.14s
+  Window 1125 / 4125 ( 27.3%) | Latency: 2.55s
+  Window 1150 / 4125 ( 27.9%) | Latency: 4.23s
+  Window 1175 / 4125 ( 28.5%) | Latency: 2.96s
+  Window 1200 / 4125 ( 29.1%) | Latency: 4.11s
+  Window 1225 / 4125 ( 29.7%) | Latency: 2.69s
+  Window 1250 / 4125 ( 30.3%) | Latency: 4.67s
+  Window 1275 / 4125 ( 30.9%) | Latency: 3.02s
+  Window 1300 / 4125 ( 31.5%) | Latency: 4.03s
+  Window 1325 / 4125 ( 32.1%) | Latency: 2.75s
+  Window 1350 / 4125 ( 32.7%) | Latency: 3.97s
+  Window 1375 / 4125 ( 33.3%) | Latency: 2.98s
+  Window 1400 / 4125 ( 33.9%) | Latency: 4.04s
+  Window 1425 / 4125 ( 34.5%) | Latency: 2.84s
+  Window 1450 / 4125 ( 35.2%) | Latency: 4.48s
+  Window 1475 / 4125 ( 35.8%) | Latency: 2.71s
+  Window 1500 / 4125 ( 36.4%) | Latency: 3.93s
+  Window 1525 / 4125 ( 37.0%) | Latency: 2.58s
+  Window 1550 / 4125 ( 37.6%) | Latency: 4.16s
+  Window 1575 / 4125 ( 38.2%) | Latency: 2.61s
+  Window 1600 / 4125 ( 38.8%) | Latency: 4.18s
+  Window 1625 / 4125 ( 39.4%) | Latency: 2.93s
+  Window 1650 / 4125 ( 40.0%) | Latency: 4.10s
+  Window 1675 / 4125 ( 40.6%) | Latency: 2.56s
+  Window 1700 / 4125 ( 41.2%) | Latency: 3.86s
+  Window 1725 / 4125 ( 41.8%) | Latency: 3.49s
+  Window 1750 / 4125 ( 42.4%) | Latency: 3.83s
+  Window 1775 / 4125 ( 43.0%) | Latency: 2.96s
+  Window 1800 / 4125 ( 43.6%) | Latency: 3.90s
+  Window 1825 / 4125 ( 44.2%) | Latency: 3.59s
+  Window 1850 / 4125 ( 44.8%) | Latency: 3.95s
+  Window 1875 / 4125 ( 45.5%) | Latency: 2.94s
+  Window 1900 / 4125 ( 46.1%) | Latency: 3.41s
+  Window 1925 / 4125 ( 46.7%) | Latency: 2.79s
+  Window 1950 / 4125 ( 47.3%) | Latency: 4.20s
+  Window 1975 / 4125 ( 47.9%) | Latency: 3.02s
+  Window 2000 / 4125 ( 48.5%) | Latency: 4.22s
+  Window 2025 / 4125 ( 49.1%) | Latency: 2.48s
+  Window 2050 / 4125 ( 49.7%) | Latency: 3.87s
+  Window 2075 / 4125 ( 50.3%) | Latency: 2.80s
+  Window 2100 / 4125 ( 50.9%) | Latency: 3.67s
+  Window 2125 / 4125 ( 51.5%) | Latency: 3.00s
+  Window 2150 / 4125 ( 52.1%) | Latency: 4.15s
+  Window 2175 / 4125 ( 52.7%) | Latency: 2.57s
+  Window 2200 / 4125 ( 53.3%) | Latency: 4.20s
+  Window 2225 / 4125 ( 53.9%) | Latency: 2.78s
+  Window 2250 / 4125 ( 54.5%) | Latency: 4.99s
+  Window 2275 / 4125 ( 55.2%) | Latency: 3.14s
+  Window 2300 / 4125 ( 55.8%) | Latency: 3.74s
+  Window 2325 / 4125 ( 56.4%) | Latency: 2.78s
+  Window 2350 / 4125 ( 57.0%) | Latency: 3.69s
+  Window 2375 / 4125 ( 57.6%) | Latency: 3.08s
+  Window 2400 / 4125 ( 58.2%) | Latency: 3.88s
+  Window 2425 / 4125 ( 58.8%) | Latency: 2.53s
+  Window 2450 / 4125 ( 59.4%) | Latency: 4.11s
+  Window 2475 / 4125 ( 60.0%) | Latency: 2.78s
+  Window 2500 / 4125 ( 60.6%) | Latency: 4.54s
+  Window 2525 / 4125 ( 61.2%) | Latency: 3.06s
+  Window 2550 / 4125 ( 61.8%) | Latency: 4.25s
+  Window 2575 / 4125 ( 62.4%) | Latency: 3.08s
+  Window 2600 / 4125 ( 63.0%) | Latency: 3.69s
+  Window 2625 / 4125 ( 63.6%) | Latency: 3.25s
+  Window 2650 / 4125 ( 64.2%) | Latency: 4.66s
+  Window 2675 / 4125 ( 64.8%) | Latency: 3.10s
+  Window 2700 / 4125 ( 65.5%) | Latency: 4.01s
+  Window 2725 / 4125 ( 66.1%) | Latency: 2.59s
+  Window 2750 / 4125 ( 66.7%) | Latency: 4.13s
+  Window 2775 / 4125 ( 67.3%) | Latency: 3.47s
+  Window 2800 / 4125 ( 67.9%) | Latency: 4.46s
+  Window 2825 / 4125 ( 68.5%) | Latency: 2.79s
+  Window 2850 / 4125 ( 69.1%) | Latency: 4.01s
+  Window 2875 / 4125 ( 69.7%) | Latency: 2.37s
+  Window 2900 / 4125 ( 70.3%) | Latency: 3.99s
+  Window 2925 / 4125 ( 70.9%) | Latency: 2.43s
+  Window 2950 / 4125 ( 71.5%) | Latency: 4.42s
+  Window 2975 / 4125 ( 72.1%) | Latency: 3.34s
+  Window 3000 / 4125 ( 72.7%) | Latency: 4.32s
+  Window 3025 / 4125 ( 73.3%) | Latency: 2.98s
+  Window 3050 / 4125 ( 73.9%) | Latency: 4.36s
+  Window 3075 / 4125 ( 74.5%) | Latency: 2.76s
+  Window 3100 / 4125 ( 75.2%) | Latency: 3.89s
+  Window 3125 / 4125 ( 75.8%) | Latency: 2.39s
+  Window 3150 / 4125 ( 76.4%) | Latency: 4.11s
+  Window 3175 / 4125 ( 77.0%) | Latency: 2.57s
+  Window 3200 / 4125 ( 77.6%) | Latency: 3.79s
+  Window 3225 / 4125 ( 78.2%) | Latency: 2.54s
+  Window 3250 / 4125 ( 78.8%) | Latency: 3.97s
+  Window 3275 / 4125 ( 79.4%) | Latency: 2.57s
+  Window 3300 / 4125 ( 80.0%) | Latency: 4.22s
+  Window 3325 / 4125 ( 80.6%) | Latency: 2.58s
+  Window 3350 / 4125 ( 81.2%) | Latency: 3.61s
+  Window 3375 / 4125 ( 81.8%) | Latency: 2.78s
+  Window 3400 / 4125 ( 82.4%) | Latency: 3.95s
+  Window 3425 / 4125 ( 83.0%) | Latency: 2.69s
+  Window 3450 / 4125 ( 83.6%) | Latency: 3.73s
+  Window 3475 / 4125 ( 84.2%) | Latency: 2.45s
+  Window 3500 / 4125 ( 84.8%) | Latency: 3.58s
+  Window 3525 / 4125 ( 85.5%) | Latency: 2.90s
+  Window 3550 / 4125 ( 86.1%) | Latency: 3.48s
+  Window 3575 / 4125 ( 86.7%) | Latency: 3.55s
+  Window 3600 / 4125 ( 87.3%) | Latency: 3.95s
+  Window 3625 / 4125 ( 87.9%) | Latency: 3.04s
+  Window 3650 / 4125 ( 88.5%) | Latency: 3.99s
+  Window 3675 / 4125 ( 89.1%) | Latency: 2.69s
+  Window 3700 / 4125 ( 89.7%) | Latency: 3.98s
+  Window 3725 / 4125 ( 90.3%) | Latency: 2.51s
+  Window 3750 / 4125 ( 90.9%) | Latency: 4.49s
+  Window 3775 / 4125 ( 91.5%) | Latency: 3.02s
+  Window 3800 / 4125 ( 92.1%) | Latency: 4.19s
+  Window 3825 / 4125 ( 92.7%) | Latency: 3.31s
+  Window 3850 / 4125 ( 93.3%) | Latency: 3.69s
+  Window 3875 / 4125 ( 93.9%) | Latency: 2.37s
+  Window 3900 / 4125 ( 94.5%) | Latency: 3.80s
+  Window 3925 / 4125 ( 95.2%) | Latency: 2.61s
+  Window 3950 / 4125 ( 95.8%) | Latency: 3.85s
+  Window 3975 / 4125 ( 96.4%) | Latency: 2.65s
+  Window 4000 / 4125 ( 97.0%) | Latency: 4.50s
+  Window 4025 / 4125 ( 97.6%) | Latency: 2.54s
+  Window 4050 / 4125 ( 98.2%) | Latency: 3.80s
+  Window 4075 / 4125 ( 98.8%) | Latency: 2.76s
+  Window 4100 / 4125 ( 99.4%) | Latency: 3.93s
+  Window 4125 / 4125 (100.0%) | Latency: 1.84s
+
+================================================================================
+BENCHMARK COMPLETED IN 12112.37 SECONDS (3.36 HOURS)
+================================================================================
+
+[Final Packaging] Compressing results to /kaggle/working/stage6m_cohort3_results.tar.gz...

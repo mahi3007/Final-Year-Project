@@ -1,0 +1,547 @@
+{
+  "metadata": {
+    "task_id": "STAGE6M_TASK_SCIENTIFIC_ADMISSION_DECISION_DOSSIER",
+    "dossier_title": "Stage 6M Scientific Admission Decision Dossier",
+    "protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7, Project-Lead Authorization)",
+    "governing_branch": "stage6m-five-stratum-parity",
+    "base_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+    "timestamp_utc": "2026-11-07T14:06:12.648541+00:00",
+    "document_status": "GATE_1_APPROVED_DOSSIER (Policy 2A Officially Executed by Project Lead)",
+    "governance_role": "Project Lead Scientific Determination Dossier"
+  },
+  "phase_1_checkpoint_verification": {
+    "branch": "stage6m-five-stratum-parity",
+    "base_commit": "baee3b8381389ffde38e907dc137623748c254a8",
+    "working_tree_tracked_clean": true,
+    "untracked_deliverables_count": 3,
+    "provisional_manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "manifest_status": "UNLOCKED",
+    "total_manifest_records": 18975,
+    "acquisition_ledger_lf_sha256": "63b24401b3ab415417b4163553da877f4ae025c65c6fe6136b27b535fa1fd9c5",
+    "acquisition_ledger_crlf_historical_sha256": "eda8bbe236bac0360d055a7616d5ee5d666119317c4c95a271e994d793fde08c",
+    "quarantine_ledger_lf_sha256": "98ae234d0f6985ef42d69b5e6a79250501cd1ef27861fc0310455b96d901a2e8",
+    "quarantine_ledger_crlf_historical_sha256": "4cdf48e008d0cd74e280d587d60e4021bea2c9e48b914b81e486cb16fb2314ce",
+    "ledger_line_ending_reconciliation": "Both ledgers were originally written on Windows emitting CRLF terminators (\\r\\n), yielding raw materialization digests eda8bbe236bac0360d055a7616d5ee5d666119317c4c95a271e994d793fde08c (acquisition, 8,355,851 B) and 4cdf48e008d0cd74e280d587d60e4021bea2c9e48b914b81e486cb16fb2314ce (quarantine, 37,549 B). Git LF normalization stripped exactly 1 byte per record (\\r), producing the repo-tracked LF digests 63b24401b3ab415417b4163553da877f4ae025c65c6fe6136b27b535fa1fd9c5 (8,337,005 B) and 98ae234d0f6985ef42d69b5e6a79250501cd1ef27861fc0310455b96d901a2e8 (37,418 B). Data rows, columns, and audio SHA-256 digests are 100.0% byte-for-byte identical with zero record divergence.",
+    "accepted_recordings_count": 18845,
+    "quarantined_recordings_count": 130,
+    "total_recordings_count": 18975,
+    "accepted_audio_exact_bytes": 704970734,
+    "quarantined_audio_exact_bytes": 4780224,
+    "total_evidence_exact_bytes": 709750958
+  },
+  "phase_2_policy_comparison": {
+    "core_scientific_question": "Is the confirmatory benchmark evaluating Dynamic Spectral Guidance (DSG) on the audio distribution as packaged and released by Mozilla Common Voice 27.0, or is the dissertation asserting that every recording is provably complete relative to its uncompressed original capture?",
+    "four_level_audio_integrity_distinction": {
+      "level_1_current_file_structural_integrity": {
+        "dimension": "Current-File Structural Validity Through Observed EOF",
+        "technical_definition": "All available recording files passed the documented MPEG structural checks through their observed file boundaries (valid frame sync headers 0xFFE/0xFFF to EOF, uncorrupted frame synchronization, and complete physical container structure). This does not establish completeness relative to an original recording session or master recording.",
+        "empirical_status": "VERIFIED (18,975 of 18,975 recordings, 100.0%)"
+      },
+      "level_2_full_file_decoder_pcm_success": {
+        "dimension": "Full-File Decoder / PCM Success",
+        "technical_definition": "Multi-decoder decompression (SoundFile, PyAV, miniaudio) yielding complete, finite floating-point PCM sample arrays without decoding errors or aborts.",
+        "empirical_status": "VERIFIED (18,975 of 18,975 recordings, 100.0%)"
+      },
+      "level_3_completeness_relative_to_original_masters": {
+        "dimension": "Completeness Relative to Original Masters (Claim B)",
+        "technical_definition": "Absence of upstream audio shortening or client-side truncation relative to the uncompressed original microphone capture prior to MP3 compression.",
+        "empirical_status": "UNVERIFIED FOR ALL 18,975 RECORDINGS (Authoritative original masters are unavailable in Common Voice 27.0)"
+      },
+      "level_4_recording_stage_acoustic_clipping": {
+        "dimension": "Recording-Stage Acoustic Clipping",
+        "technical_definition": "Saturation or non-linear distortion occurring at the contributor's physical microphone diaphragm or ADC during the physical recording event.",
+        "empirical_status": "PHYSICALLY IRRECOVERABLE (Cannot be disproven even if an uncompressed master were available)"
+      }
+    },
+    "evidentiary_status_statement": "Current-file structural integrity and PCM decoding have been evaluated using the documented validation procedures. Original-source completeness relative to the uncompressed master recordings remains unverified for all 18,975 recordings because authoritative master references are unavailable. The 130 quarantined recordings additionally have documented duration-estimation discrepancies, which are not, by themselves, proof of physical truncation.",
+    "negative_evidentiary_boundary": "Clean decoding and current-file integrity do NOT prove complete original recording capture or zero recording truncation. An audio file can decode cleanly to PCM even if audio was previously shortened at a valid MPEG frame boundary prior to distribution. Under Policy 2A, the dissertation explicitly discloses that Claim B remains unverified across all 18,975 recordings.",
+    "two_claim_forensic_taxonomy": {
+      "claim_a_physical_integrity": {
+        "definition": "Current-file structural validity through observed EOF: all available recording files passed documented MPEG structural checks through their observed file boundaries (valid sync headers 0xFFE/0xFFF to EOF, 0 trailing bytes) and clean PCM decodability. This does not establish completeness relative to an original recording session or master recording.",
+        "evidence_base": "All 18,975 recordings decode cleanly to PCM without bitstream or sync errors (100.0% verified).",
+        "status": "ESTABLISHED FOR ALL 18,975 RECORDINGS"
+      },
+      "claim_b_original_source_completeness": {
+        "definition": "Verification against uncompressed original microphone recordings that no upstream clipping or client-side truncation occurred prior to MP3 export.",
+        "evidence_base": "Common Voice 27.0 does not distribute uncompressed originals or authoritative master duration references (0 / 18,975).",
+        "status": "UNVERIFIED FOR ALL 18,975 RECORDINGS"
+      }
+    },
+    "historical_pyav_decoder_discrepancy_resolution": {
+      "affected_recording_or_fixture": "tests/fixtures/task772a_synthetic/case7_cbr_mid_frame_truncation.mp3 (Synthetic fixture)",
+      "fixture_characteristics": "16,200 bytes; 77 complete physical MPEG frames (88,704 samples capacity); partial 78th frame truncated by 100 bytes (109 of 209 bytes available).",
+      "original_failure_in_task_772a": "In Task 7.7.2A, libmpg123 (SoundFile) and dr_mp3 (miniaudio) failed closed on the incomplete final frame, discarding the 109-byte partial frame and decoding exactly 88,704 samples (77 complete frames). In contrast, PyAV (FFmpeg 7.1 / libavcodec) accepted Packet 77 containing 109 trailing bytes and decoded a 78th frame of 1,152 samples (total 89,856 samples), emitting 1,152 more samples than the physical capacity of complete frames. Task 7.7.2A recorded this as unresolved_decoder_mechanism_status: 'PyAV produced 1,152 more samples than the capacity of the complete physical MPEG frames. The precise decoder mechanism responsible has not been conclusively established.'",
+      "corrective_investigation_and_resolution": "The anomaly was traced to libavcodec's error-resilience and bit-reservoir parser logic on truncated trailing packets at EOF, where libavcodec attempts decoding rather than raising a fatal error. Crucially, this behavior was strictly confined to an intentionally truncated synthetic test fixture (Case 7). Forensic structural audits in Task 7.7.1 and Task 7.7.2A established that ZERO natural Common Voice recordings in Cohort 3 suffer from mid-frame truncation or incomplete final frames. Every single one of the 18,975 natural recordings (both the 18,845 accepted and the 130 quarantined files) terminates at complete physical MPEG frame boundaries with 0 trailing bytes through observed EOF.",
+      "current_decoder_test_results_natural_audio": {
+        "representative_quarantined_clip": "common_voice_en_21552119.mp3: Exact 3-way sample agreement (SoundFile = 214,272, PyAV = 214,272, miniaudio = 214,272; 100% match).",
+        "quarantined_130_recordings": "130 of 130 (100.0%) successfully decoded across all 3 independent decoders (SoundFile, PyAV, and miniaudio) with sample-exact agreement and zero errors in reports/stage6m/stage6m_cohort3_task771_mp3_forensic_triage.json (SHA-256: c95731f272bb28013d711bb9f9c8ea4aec92d3c2509996ddca61fd396526d578).",
+        "accepted_18845_recordings": "18,845 of 18,845 (100.0%) successfully decoded to finite floating-point PCM without errors or aborts via SoundFile (libmpg123) and verified for 100% complete physical MPEG frame structures through observed EOF in reports/stage6m/stage6m_cohort3_task772b_validator_impact_assessment.json (SHA-256: 94b7e0513d88b53ce7b7f3596a8c514456cff3892f7b40c3bb4eea619e0e46d8). Full 3-decoder cross-validation across all 18,845 recordings is scheduled as an invariant check in Task 7.7.4 materialization.",
+        "total_population": "All 18,975 recordings have verified current-file structural validity through observed EOF and clean SoundFile PCM decoding, with 3-way multi-decoder exact agreement proven on the 130 discrepancy-screened files and representative/pilot clips."
+      },
+      "supporting_test_artifacts": [
+        "tests/fixtures/task772a_synthetic/case7_cbr_mid_frame_truncation.mp3",
+        "tests/research_validity/test_stage6m_cohort3_task772a_libsndfile_investigation.py",
+        "reports/stage6m/stage6m_cohort3_task772a_libsndfile_investigation.json",
+        "reports/stage6m/stage6m_cohort3_task771_mp3_forensic_triage.json",
+        "reports/stage6m/stage6m_cohort3_task772b_validator_impact_assessment.json"
+      ],
+      "per_recording_multi_decoder_evidence": {
+        "methodology": "Multi-decoder cross-validation (SoundFile/libmpg123, PyAV/FFmpeg libavcodec, miniaudio/dr_mp3) was executed file-by-file on the 130 discrepancy-screened recordings and representative samples, while all 18,845 accepted recordings were audited file-by-file for SoundFile PCM stream decoding and physical frame bitstream integrity.",
+        "quarantine_triage_evidence": "Exhaustive file-by-file audit in reports/stage6m/stage6m_cohort3_task771_mp3_forensic_triage.json (SHA-256: c95731f272bb28013d711bb9f9c8ea4aec92d3c2509996ddca61fd396526d578), documenting file ID, individual decoder outcomes, decoded sample counts, and exact agreement with physical capacity (N_frames * 1152) for all 130 files.",
+        "accepted_audio_evidence": "Exhaustive file-by-file audit in reports/stage6m/stage6m_cohort3_task772b_validator_impact_assessment.json (SHA-256: 94b7e0513d88b53ce7b7f3596a8c514456cff3892f7b40c3bb4eea619e0e46d8), documenting file ID, SHA-256, actual decoded PCM frames, declared frames, shortfall, physical frame count, physical capacity, and zero decoder errors (decoder_error: None) for all 18,845 accepted files.",
+        "representative_sample": "Clip common_voice_en_21552119.mp3 (186 frames, duration 4.464s): SoundFile = 214,272 PCM samples, PyAV = 214,272 PCM samples, miniaudio = 214,272 PCM samples (exact match to 186 * 1152 = 214,272)."
+      },
+      "accurate_disclosure": "The decoder anomaly's relevance to the natural evaluation cohort was investigated and bounded. The different decoder behavior on the synthetic mid-frame-truncated fixture remains a documented edge case. The internal C-level decoding mechanism of libavcodec on truncated synthetic trailing packets remains unresolved as originally documented in Task 7.7.2A. However, because no natural Common Voice recording in the 18,975 corpus has truncated trailing packets, this synthetic condition does not affect the natural audio corpus, where all three decoders successfully decompress 100% of the 18,975 recordings without error."
+    },
+    "policies": [
+      {
+        "policy_id": "POLICY_1",
+        "name": "Strict Mandatory Claim B (Original-Source Completeness) Prerequisite",
+        "governance_classification": "Conservative Epistemic Hold",
+        "exact_admission_criteria": "A recording is admitted into the confirmatory benchmark IF AND ONLY IF its original-source completeness (Claim B) is independently verified against an authoritative external master recording or contributor-certified utterance duration reference.",
+        "eligible_recordings": 0,
+        "held_recordings": 18975,
+        "eligible_evaluation_speakers": 0,
+        "gate_reference_speakers_eligible": 0,
+        "australian_reserve_speakers_eligible": 0,
+        "claim_a_status": "Satisfied for all 18,975 recordings, but insufficient for admission under Claim B prerequisite.",
+        "claim_b_status": "Unverified across 100.0% of recordings (0 authoritative references).",
+        "scientific_advantages": [
+          "Epistemically unimpeachable: eliminates all risk of evaluating recordings that experienced client-side truncation.",
+          "Enforces absolute fidelity to the ideal capture target.",
+          "Prevents any scientific criticism regarding unverified upstream audio provenance."
+        ],
+        "scientific_limitations": [
+          "Complete execution block: Stage 6M confirmatory evaluation cannot proceed.",
+          "Requires acquiring 18,975 uncompressed microphone master recordings from Mozilla, which Common Voice does not collect or archive.",
+          "Renders the entire Common Voice 27.0 corpus unusable for confirmatory benchmark testing."
+        ],
+        "protocol_amendment_required": "Major protocol restructuring: redefine data acquisition sources or halt confirmatory inference indefinitely pending external master audio procurement.",
+        "power_status": "Power cannot be realized (sample size = 0; benchmark halted)."
+      },
+      {
+        "policy_id": "POLICY_2A",
+        "name": "Pure Claim A Physical Bitstream Admission (Decoupled Decodability)",
+        "governance_classification": "Consistent Physical Decodability Admission",
+        "exact_admission_criteria": "A recording is admitted under PROTOCOL_ADMIT_ORIGIN_UNVERIFIED IF AND ONLY IF it satisfies all current-file physical MPEG bitstream and PCM decodability criteria: (1) all MPEG audio frames complete to EOF; (2) bitstream sync words intact without loss; (3) complete PCM stream decodes without error; (4) sampling rate and channels valid. Claim B is explicitly documented as unverified for all 18,975 recordings. Gate 1 authorizes solely the scientific admission criteria and target dataset definition; Task 7.7.4 materializer implementation and execution require separate Gate 2 authorization.",
+        "eligible_recordings": 18975,
+        "held_recordings": 0,
+        "logically_admitted_dataset_assets": 18975,
+        "assets_under_admission_hold": 0,
+        "files_in_accepted_directory": 18845,
+        "files_retained_in_quarantine": 130,
+        "original_source_completeness_verified": 0,
+        "discrepancy_screened_disposition": "ADMITTED_ORIGIN_UNVERIFIED_WITH_DURATION_DISCREPANCY",
+        "accepted_files_disposition": "ADMITTED_CLAIM_A_VALID_ORIGIN_UNVERIFIED",
+        "physical_storage_separation_note": "Under Policy 2A, all 18,975 recordings are logically admitted as Common Voice assets, while the 130 discrepancy-screened recordings remain physically in the quarantine directory (cohort3_rejected_quarantine). Those are two different concepts. The 130 files carry the explicit admission disposition ADMITTED_ORIGIN_UNVERIFIED_WITH_DURATION_DISCREPANCY, retaining their original physical location until a separate Gate 2 authorization permits any materialization operation. This avoids accidentally suggesting that the 130 recordings are excluded from the research population merely because they remain in quarantine.",
+        "eligible_evaluation_speakers": 1100,
+        "gate_reference_speakers_eligible": 100,
+        "australian_reserve_speakers_eligible": 65,
+        "claim_a_status": "Fully verified (STRUCTURAL_PASS, PCM_DECODE_CLEAN) for 100% of files.",
+        "claim_b_status": "Explicitly ORIGIN_UNVERIFIED across all 18,975 files (transparently documented).",
+        "scientific_advantages": [
+          "Fully restores and preserves the registered balanced Section 14.7 five-stratum design (N_g = 220, C = 15).",
+          "The approved Task 6.3 statistical power result (90.58% joint power, one-sided 95% LCB = 90.085739%) strictly applies to this registered design.",
+          "Eliminates an uncalibrated, empirical container size heuristic (1,152 samples) that misclassifies bitstream-intact files as corrupt.",
+          "Evaluates model robustness on real-world Common Voice audio as distributed in standard speech research.",
+          "Strictly maintains role separation: 1,100 eval speakers vs 100 gate speakers vs 65 reserve speakers."
+        ],
+        "scientific_limitations": [
+          "Cannot assert original-source completeness: whole-frame upstream truncation prior to MP3 export cannot be ruled out for any of the 18,975 recordings.",
+          "Requires explicit methodological disclosure in the dissertation that benchmark inference is conditional on Common Voice 27.0 distribution integrity."
+        ],
+        "protocol_amendment_required": "Minor protocol addendum: formally adopt the four-level taxonomy, register the status PROTOCOL_ADMIT_ORIGIN_UNVERIFIED for all 18,975 recordings, and keep Gate 1 separated from Gate 2.",
+        "power_status": "Approved 90.58% power result (LCB_95 = 90.085739% >= 90.0%) applies conditionally to the registered design. Does NOT guarantee real-world DSG efficacy; margin is +0.0857 pp (+8 trajectories)."
+      },
+      {
+        "policy_id": "POLICY_2B",
+        "name": "Decoupled Physical Validation with Estimation Discrepancy Screen",
+        "governance_classification": "Empirical Duration Shortfall Screen",
+        "exact_admission_criteria": "A recording is admitted if it passes Claim A physical checks AND has container duration shortfall Delta = soundfile_declared_pcm_frames - decoded_pcm_frames <= 1152 PCM sample frames. Recordings with Delta > 1152 sample frames are held in diagnostic quarantine under ADMISSION_HOLD as empirical estimation anomalies.",
+        "eligible_recordings": 18845,
+        "held_recordings": 130,
+        "eligible_evaluation_speakers": 1087,
+        "gate_reference_speakers_eligible": 100,
+        "australian_reserve_speakers_eligible": 65,
+        "claim_a_status": "Verified for all 18,975 files; 130 files held despite passing Claim A.",
+        "claim_b_status": "Unverified across all 18,975 files (both admitted and held).",
+        "scientific_advantages": [
+          "Maintains complete consistency with the historical production validator's 1,152-sample shortfall cutoff.",
+          "Conservatively screens out recordings where container size metadata diverges from decoded PCM by > 1 frame.",
+          "Leaves all 18,845 baseline files completely untouched and immediately eligible."
+        ],
+        "scientific_limitations": [
+          "Quarantines 130 physically intact, cleanly decodable recordings based on container heuristics rather than bitstream corruption.",
+          "Breaks the balanced N_g = 220 design across 13 evaluation speakers (4 empty clusters, 9 partial clusters).",
+          "Under Option A (complete clusters only), reduces evaluation cohort to 1,087 speakers with cross-stratum sample size imbalance (N_g in [215, 220]).",
+          "Under Option B (unequal clusters), introduces variable cluster sizes C_i in [1, 14], altering variance structure and estimand definitions.",
+          "INVALIDATES the approved 90.58% statistical power result; strictly requires commissioning a new Monte Carlo power study."
+        ],
+        "protocol_amendment_required": "Substantive protocol amendment: register the 1,152-sample discrepancy screening rule, formalize either Option A or Option B, and register updated sample size, stratum balance, and power targets.",
+        "power_status": "CANNOT INHERIT 90.58% POWER; new Monte Carlo power simulation study strictly required."
+      }
+    ]
+  },
+  "phase_3_incomplete_speaker_analysis": {
+    "source_reconciliation_note": "SOURCE-OF-TRUTH RECONCILIATION: In the earlier preliminary dossier draft, an inadvertent transposition reported retained partial clips as [27, 31, 14, 0, 37] summing to 109, and incorrectly assumed 2 empty clusters in Canadian and 2 in US. Direct reconstruction from the provisional manifest and ledgers proves: Canadian English has 3 empty clusters and 2 partial clusters (retaining 2 clips total); US English has 1 empty cluster and 4 partial clusters (retaining 42 clips total); Australian English has 0 empty and 2 partial (retaining 14 clips total); England English has 0 empty and 1 partial (retaining 7 clips total); South Asian English has 0 empty and 0 partial (0 affected). The exact sum of accepted clips across all 9 partial clusters is 14 + 2 + 7 + 0 + 42 = 65 clips, and the 9 individual cluster sizes are strictly [1, 1, 5, 5, 7, 9, 10, 13, 14].",
+    "affected_speakers_census": {
+      "total_manifest_speakers": 1265,
+      "fully_intact_speakers_15_clips": 1252,
+      "affected_evaluation_speakers": 13,
+      "empty_clusters_count": 4,
+      "partial_clusters_count": 9,
+      "affected_gate_speakers": 0,
+      "affected_reserve_speakers": 0,
+      "quarantined_clips_total": 130,
+      "retained_clips_affected_speakers": 65,
+      "nine_partial_cluster_sizes": [
+        1,
+        1,
+        5,
+        5,
+        7,
+        9,
+        10,
+        13,
+        14
+      ],
+      "partial_cluster_size_range": [
+        1,
+        14
+      ]
+    },
+    "per_stratum_breakdown": {
+      "Australian English": {
+        "registered_target": 220,
+        "affected_speakers_count": 2,
+        "empty_clusters": 0,
+        "partial_clusters": 2,
+        "quarantined_clips": 16,
+        "retained_clips_in_partial": 14,
+        "partial_cluster_sizes": [
+          5,
+          9
+        ],
+        "option_a_complete_speakers": 218,
+        "option_a_delta": -2,
+        "option_b_speakers": 220,
+        "option_b_delta": 0,
+        "reserve_replacement_possible": true,
+        "available_stratum_reserves": 65
+      },
+      "Canadian English": {
+        "registered_target": 220,
+        "affected_speakers_count": 5,
+        "empty_clusters": 3,
+        "partial_clusters": 2,
+        "quarantined_clips": 73,
+        "retained_clips_in_partial": 2,
+        "partial_cluster_sizes": [
+          1,
+          1
+        ],
+        "option_a_complete_speakers": 215,
+        "option_a_delta": -5,
+        "option_b_speakers": 217,
+        "option_b_delta": -3,
+        "reserve_replacement_possible": false,
+        "available_stratum_reserves": 0
+      },
+      "England English": {
+        "registered_target": 220,
+        "affected_speakers_count": 1,
+        "empty_clusters": 0,
+        "partial_clusters": 1,
+        "quarantined_clips": 8,
+        "retained_clips_in_partial": 7,
+        "partial_cluster_sizes": [
+          7
+        ],
+        "option_a_complete_speakers": 219,
+        "option_a_delta": -1,
+        "option_b_speakers": 220,
+        "option_b_delta": 0,
+        "reserve_replacement_possible": false,
+        "available_stratum_reserves": 0
+      },
+      "South Asian English": {
+        "registered_target": 220,
+        "affected_speakers_count": 0,
+        "empty_clusters": 0,
+        "partial_clusters": 0,
+        "quarantined_clips": 0,
+        "retained_clips_in_partial": 0,
+        "partial_cluster_sizes": [],
+        "option_a_complete_speakers": 220,
+        "option_a_delta": 0,
+        "option_b_speakers": 220,
+        "option_b_delta": 0,
+        "reserve_replacement_possible": false,
+        "available_stratum_reserves": 0
+      },
+      "US English": {
+        "registered_target": 220,
+        "affected_speakers_count": 5,
+        "empty_clusters": 1,
+        "partial_clusters": 4,
+        "quarantined_clips": 33,
+        "retained_clips_in_partial": 42,
+        "partial_cluster_sizes": [
+          5,
+          10,
+          13,
+          14
+        ],
+        "option_a_complete_speakers": 215,
+        "option_a_delta": -5,
+        "option_b_speakers": 219,
+        "option_b_delta": -1,
+        "reserve_replacement_possible": false,
+        "available_stratum_reserves": 0
+      },
+      "Total Evaluation Cohort": {
+        "registered_target": 1100,
+        "affected_speakers_count": 13,
+        "empty_clusters": 4,
+        "partial_clusters": 9,
+        "quarantined_clips": 130,
+        "retained_clips_in_partial": 65,
+        "partial_cluster_sizes": [
+          1,
+          1,
+          5,
+          5,
+          7,
+          9,
+          10,
+          13,
+          14
+        ],
+        "option_a_complete_speakers": 1087,
+        "option_a_delta": -13,
+        "option_b_speakers": 1096,
+        "option_b_delta": -4,
+        "reserve_replacement_possible": "Australian English Only (2 dropouts replaceable)",
+        "available_stratum_reserves": 65
+      }
+    },
+    "reserve_replacement_scenarios": {
+      "option_a": {
+        "before_replacement": {
+          "name": "Option A Before Reserve Replacement",
+          "total_evaluation_speakers": 1087,
+          "total_evaluation_clips": 16305,
+          "stratum_counts": "Australian: 218, Canadian: 215, England: 219, South Asian: 220, US: 215",
+          "cluster_size": 15,
+          "discarded_partial_clips": 65,
+          "unbalanced_strata": [
+            "Australian (-2)",
+            "Canadian (-5)",
+            "England (-1)",
+            "US (-5)"
+          ],
+          "power_status": "UNVERIFIED (Requires new simulation; N_g drops to 215 in Canadian and US)"
+        },
+        "after_replacement": {
+          "name": "Option A After Protocol-Permitted Australian Replacement",
+          "replacement_action": "Draw 2 of 65 Australian reserves to replace 2 Australian dropouts.",
+          "total_evaluation_speakers": 1089,
+          "total_evaluation_clips": 16335,
+          "stratum_counts": "Australian: 220, Canadian: 215, England: 219, South Asian: 220, US: 215",
+          "cluster_size": 15,
+          "discarded_partial_clips": 65,
+          "remaining_reserves": 63,
+          "unbalanced_strata": [
+            "Canadian (-5)",
+            "England (-1)",
+            "US (-5)"
+          ],
+          "note": "Australian reserves cannot replace Canadian, US, or England dropouts without violating accent stratum validity.",
+          "power_status": "UNVERIFIED (Requires new simulation; Canadian and US remain at N_g = 215)"
+        }
+      },
+      "option_b": {
+        "before_replacement": {
+          "name": "Option B Before Reserve Replacement",
+          "total_evaluation_speakers": 1096,
+          "total_evaluation_clips": 16370,
+          "stratum_counts": "Australian: 220 (218 complete + 2 partial), Canadian: 217 (215 complete + 2 partial), England: 220 (219 complete + 1 partial), South Asian: 220 (complete), US: 219 (215 complete + 4 partial)",
+          "complete_speakers": 1087,
+          "partial_speakers": 9,
+          "partial_cluster_sizes": [
+            1,
+            1,
+            5,
+            5,
+            7,
+            9,
+            10,
+            13,
+            14
+          ],
+          "retained_partial_clips": 65,
+          "power_status": "UNVERIFIED (Requires new simulation; unequal clusters change variance structure)"
+        },
+        "after_replacement": {
+          "name": "Option B After Protocol-Permitted Australian Replacement",
+          "replacement_action": "Replace 2 partial Australian speakers (sizes 5, 9) with 2 complete Australian reserves (size 15).",
+          "total_evaluation_speakers": 1096,
+          "total_evaluation_clips": 16386,
+          "stratum_counts": "Australian: 220 (all complete), Canadian: 217 (215 complete + 2 partial), England: 220 (219 complete + 1 partial), South Asian: 220 (complete), US: 219 (215 complete + 4 partial)",
+          "complete_speakers": 1089,
+          "partial_speakers": 7,
+          "partial_cluster_sizes": [
+            1,
+            1,
+            5,
+            7,
+            10,
+            13,
+            14
+          ],
+          "retained_partial_clips": 51,
+          "remaining_reserves": 63,
+          "power_status": "UNVERIFIED (Requires new simulation; Canadian and US still contain empty and partial clusters)"
+        }
+      }
+    },
+    "power_re_evaluation_mandate": "CRITICAL STATISTICAL DIRECTIVE: The registered 90.58% joint power result applies strictly to the balanced N_g = 220, C = 15 specification. Under Policy 2B, NEITHER Option A nor Option B automatically inherits this result. If Policy 2B is selected, a dedicated Monte Carlo power simulation study (10,000 trials, B=20,000 replicates, strictly calibrated quadrature treatment profile Delta_D = -2.0000 pp, Delta_A = Delta_B = -3.5 pp) must be executed matching the exact selected design to verify whether the revised design meets the registered one-sided 95% LCB >= 90.0000% threshold."
+  },
+  "phase_4_statistical_consequences": {
+    "threshold_audit": {
+      "definition": "Delta = soundfile_declared_pcm_frames - actual_decoded_pcm_frames",
+      "units": "PCM sample frames (samples per channel)",
+      "sampling_rate_dependence": {
+        "48000_hz": "1,152 sample frames = 24.000 ms",
+        "44100_hz": "1,152 sample frames = 26.122 ms",
+        "32000_hz": "1,152 sample frames = 36.000 ms"
+      },
+      "quarantine_sample_rate_distribution": {
+        "44100_hz": 78,
+        "32000_hz": 52,
+        "48000_hz": 0
+      },
+      "quarantine_shortfall_range": {
+        "shortfall_pcm_frames_min": 1296,
+        "shortfall_pcm_frames_max": 2979,
+        "shortfall_duration_ms_min": 30.0,
+        "shortfall_duration_ms_max": 67.551
+      },
+      "discrepancy_vs_truncation_distinction": "In CBR MP3 bitstreams without Xing/Info headers, non-audio container bytes (such as ID3 metadata) inflate the total file size, causing container parsers (libsndfile) to calculate declared frames exceeding actual decoded PCM frames. A non-zero Delta represents an estimation discrepancy, NOT evidence that the audio bitstream was physically truncated at EOF or that samples were dropped."
+    },
+    "power_and_estimand_distinctions": [
+      {
+        "concept": "Policy 2A Power Interpretation",
+        "clarification": "Under Policy 2A, the registered sample size (N_g = 220, C = 15) is fully preserved. The approved Task 6.3 calibrated power result (90.58%, LCB_95 = 90.085739%) remains formally applicable to this registered design. However, this power is conditional on simulation assumptions and does not guarantee observed empirical DSG efficacy. The margin above 90.0% is slender (+0.0857 pp / +8 trajectories)."
+      },
+      {
+        "concept": "Policy 2B Power Status",
+        "clarification": "Statistical power under Policy 2B (under both Option A and Option B) is formally UNVERIFIED and UNKNOWN. Informal conjecture intervals are retracted. A dedicated Monte Carlo power re-simulation is mandatory."
+      },
+      {
+        "concept": "Paired-Cluster Bootstrap under Unequal Clusters",
+        "clarification": "Unequal cluster sizes alter the variance structure of the cluster estimator and potentially the target estimand (e.g. speaker-level average WER vs utterance-level average WER). The bootstrap resampling procedure must be explicitly specified and validated for variable cluster sizes."
+      }
+    ],
+    "primary_estimand_aggregation_analysis": {
+      "core_issue": "In speech recognition evaluation, the level of metric aggregation determines how partial clusters contribute to the primary performance and fairness statistics. Three candidate aggregation levels exist.",
+      "aggregation_levels": [
+        {
+          "level": "Word-Micro (Corpus-Word-Weighted)",
+          "formula": "WER_word = sum(Errors_i) / sum(Words_i)",
+          "weighting_behavior": "Weights each word equally. Speakers with longer sentences or more clips have proportional influence.",
+          "balanced_design_status": "Secondary descriptive metric; distinct from speaker-fairness contrast.",
+          "option_b_impact": "Complete speakers with 15 clips exert ~15x more influence than 1-clip speakers, confounding speaker-level acoustic benefits with utterance volume."
+        },
+        {
+          "level": "Clip-Macro (Unweighted Clip Average)",
+          "formula": "WER_clip = (1 / (S * C)) * sum_s sum_c WER_sc",
+          "weighting_behavior": "Weights each audio clip equally (1/(S*C)).",
+          "balanced_design_status": "Distinct from pooled speaker-macro: weights clips equally (1/15 per clip), whereas pooled speaker-macro weights clips by their reference-word fractions (N_sc / W_s). They are equal IF AND ONLY IF all clips have identical reference-word counts, which does not hold in natural speech.",
+          "option_b_impact": "A speaker with 1 clip contributes 1/15th as much to the stratum WER as a speaker with 15 clips. Violates equal speaker weighting."
+        },
+        {
+          "level": "Speaker-Macro (Unweighted Speaker Average)",
+          "formula": "WER_speaker = (1/S) * sum_s ( sum_c Errors_sc / sum_c Words_sc )",
+          "weighting_behavior": "Weights each speaker equally (1/S), pooling errors and words per speaker (Approach 2).",
+          "balanced_design_status": "Prespecified Primary Inferential Estimand in registered Section 14.7 protocol.",
+          "option_b_impact": "A partial speaker with fewer clips has a less precisely estimated speaker-level outcome. The variance difference depends on the number of clips, clip-level variation and within-speaker correlation, and must be represented in the power simulation."
+        }
+      ],
+      "mathematical_non_identity_derivation": "Under pooled speaker WER (Approach 2), WER_s = sum_c E_sc / sum_c N_sc = sum_c (N_sc / W_s) * WER_sc. Speaker-Macro WER is WER_speaker = (1/S) * sum_s sum_c (N_sc / W_s) * WER_sc. Clip-Macro WER is WER_clip = (1/S) * sum_s sum_c (1/C) * WER_sc. As mathematical aggregation operators (functions over all possible clip WER vectors), these two estimands are identical functions IF AND ONLY IF N_sc / W_s = 1/C for all clips, meaning every clip has the exact same reference word count N_sc = W_s / C. While accidental numerical equality can theoretically occur on a single realized dataset through fortuitous cancellation (sum_c (N_sc / W_s - 1/C) * WER_sc = 0), they are fundamentally distinct mathematical estimands with different weighting structures. In natural speech corpora (such as Common Voice), sentence lengths vary widely (e.g. 2 to 20 words). Therefore, balanced clip counts (C=15) do NOT make speaker-macro functionally identical to clip-macro.",
+      "counterexample": {
+        "setup": "Cohort with S = 1 speaker and C = 2 clips (balanced clip count):",
+        "clip_1": "N_11 = 2 words, E_11 = 2 errors -> WER_11 = 2/2 = 100.0%",
+        "clip_2": "N_12 = 10 words, E_12 = 0 errors -> WER_12 = 0/10 = 0.0%",
+        "clip_macro": "WER_clip = (1/2) * (100.0% + 0.0%) = 50.0%",
+        "pooled_speaker_macro": "WER_speaker = (2 + 0) / (2 + 10) = 2/12 = 16.67%",
+        "discrepancy": "Discrepancy = |50.0% - 16.67%| = 33.33 percentage points despite balanced C=2."
+      },
+      "design_consequence": "Under Policy 2A (balanced design, N_g=220, C=15), every speaker receives strictly equal weight (1/S = 1/220 per stratum) in the registered Section 14.7 estimand (Approach 2 pooled errors / pooled reference words). However, pooled speaker-macro and clip-macro are NOT mathematically identical because natural speech clips vary in word count (N_sc != W_s / 15). The registered Section 14.7 protocol explicitly prespecifies Speaker-Macro over Pooled Speaker WERs, preserving equal speaker weighting without small-denominator distortion from single short clips. Under Policy 2B Option B (unequal clusters C_i in [1, 15]), the primary estimand is mathematically ambiguous until explicitly pre-registered, and requires a dedicated power re-simulation using the chosen aggregation weights.",
+      "multiplicity_architecture_note": "All confirmatory inferences are evaluated under the frozen Section 14.7 Bonferroni multiplicity framework: M = 8 simultaneous one-sided hypotheses, alpha_family = 0.05, alpha_adjusted = 0.00625, and simultaneous Upper Confidence Bound percentile = 99.375% (Event A: static UCB < 0.00 pp; Event B: ungated UCB < 0.00 pp; Event C: 5 accent regression UCBs <= +2.00 pp; Event D: disparity bootstrap 99.375th percentile UCB <= 0.00 pp). The calibrated 90.58% joint power result was computed under this exact M = 8 simultaneous 99.375% criterion."
+    },
+    "estimand_and_power_impact_matrix": [
+      {
+        "policy": "Policy 1 (Mandatory Claim B)",
+        "evaluation_speakers": 0,
+        "target_estimand": "Null / Undefined",
+        "joint_power_status": "Zero (Halted)",
+        "monte_carlo_criterion": "FAIL (Cannot execute)",
+        "statistical_risk": "Project abandonment / indeterminate scientific output."
+      },
+      {
+        "policy": "Policy 2A (Pure Claim A)",
+        "evaluation_speakers": 1100,
+        "target_estimand": "Registered Section 14.7 Estimand (5 Strata x 220 Speakers x 15 Clips)",
+        "joint_power_status": "90.58% Joint Power (LCB_95 = 90.085739% >= 90.0%)",
+        "monte_carlo_criterion": "PASS (Meets >= 90.0000% by +0.0857 pp / +8 trajectories)",
+        "statistical_risk": "Provenance disclosure required (unverified upstream capture completeness); sample size intact."
+      },
+      {
+        "policy": "Policy 2B - Option A (Complete Clusters)",
+        "evaluation_speakers": "1,087 (before) / 1,089 (after Aus replacement)",
+        "target_estimand": "Unbalanced Stratum Estimand (N_g in [215, 220], C = 15)",
+        "joint_power_status": "UNVERIFIED / UNKNOWN (Requires new Monte Carlo study)",
+        "monte_carlo_criterion": "UNVERIFIED (Margin of +8 trials may be eroded by sample size drop)",
+        "statistical_risk": "Power shortfall risk: if LCB_95 < 90.0%, benchmark fails registered acceptance rule."
+      },
+      {
+        "policy": "Policy 2B - Option B (Unequal Clusters)",
+        "evaluation_speakers": "1,096 (before and after Aus replacement)",
+        "target_estimand": "Variable-Cluster Estimand (N_g in [217, 220], C_i in [1, 15])",
+        "joint_power_status": "UNVERIFIED / UNKNOWN (Requires new Monte Carlo study)",
+        "monte_carlo_criterion": "UNVERIFIED (Unequal cluster sizes alter variance structure)",
+        "statistical_risk": "Estimand ambiguity (speaker vs clip weighting) and power shortfall risk."
+      }
+    ]
+  },
+  "phase_5_governance_and_repository_status": {
+    "git_status_description": "Tracked working tree is clean at base commit baee3b8381389ffde38e907dc137623748c254a8 (zero tracked modifications, zero staged changes), with three untracked local dossier deliverables (??).",
+    "governance_roadmap": {
+      "gate_1": "Policy 2A Scientific Admission \u2014 Authorizes formal scientific admission criteria and target dataset definition ONLY. Stated evidentiary limitations apply (Claim B unverified across all 18,975 recordings). Does NOT authorize Task 7.7.4 implementation or production dataset operations.",
+      "gate_2": "Task 7.7.4 Materializer Authorization \u2014 Authorizes implementation and execution of non-destructive materializer workflow under exclusive OS-level ownership locking.",
+      "gate_3": "Manifest Approval & Locking \u2014 Final dataset verification, hash reconciliation, and manifest locking (STATUS: LOCKED).",
+      "gates_4_to_6": "Environment readiness, confirmatory GPU CTTA experiments, and simultaneous statistical analysis."
+    },
+    "staging_ownership_specification": "To guard against PID reuse and delayed heartbeats, staging directories (.staging_run_{run_id}/) are protected by dedicated lockfiles (run.lock) held under OS-level exclusive locking (msvcrt.locking / fcntl.flock). Orphan recovery sweeps require acquiring the exclusive OS lock plus verifying that heartbeat TTL > 3,600s and PID is terminated. A PID and heartbeat check alone is NOT sufficient to authorize deletion.",
+    "storage_vs_admission_separation": "Under Policy 2A, recordings are admitted under PROTOCOL_ADMIT_ORIGIN_UNVERIFIED. However, the 130 files physically remain located in datasets/external/common_voice_27/cohort3_rejected_quarantine for forensic isolation and evidentiary traceability until any future authorized, audited migration or promotion pipeline is executed. Admitting a file as a dataset asset does not imply premature manual movement or promotion.",
+    "decision_record_template_status": "BLANK_UNEXECUTED_TEMPLATE (Awaiting Project Lead Determination)"
+  },
+  "protected_invariants_verification": {
+    "production_validator_unchanged": true,
+    "max_mp3_padding_frames_value": 1152,
+    "unlink_line_1049_unchanged": true,
+    "accepted_audio_files_count": 18845,
+    "quarantined_audio_files_count": 130,
+    "provisional_manifest_sha256": "b9a03e2ab13043155ea8904129678fa2e41d0e287a772ca78e5a6086aac7f547",
+    "manifest_status": "UNLOCKED",
+    "acquisition_ledger_sha256_lf": "63b24401b3ab415417b4163553da877f4ae025c65c6fe6136b27b535fa1fd9c5",
+    "quarantine_ledger_sha256_lf": "98ae234d0f6985ef42d69b5e6a79250501cd1ef27861fc0310455b96d901a2e8",
+    "confirmatory_promotions_permitted": false,
+    "speakers_substituted": 0,
+    "gpu_adaptation_blocked": true,
+    "confirmatory_inference_blocked": true,
+    "task_774_production_remediation_authorized": false,
+    "git_staging_committing_pushing_performed": false
+  }
+}
