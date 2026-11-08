@@ -7,7 +7,7 @@ Implements the candidate inferential analysis prescribed in:
 GOVERNANCE RESTRICTIONS:
 - Dedicated to the v1.5 Five-Stratum Candidate.
 - Frozen v1.4.0 execution code (`paired_cluster_inference.py`) remains strictly immutable.
-- Status: CANDIDATE INFERENCE ENGINE (Pre-Registration Draft, DRAFT_HOLD).
+- Status: v1.5.0-Approved (Approved under STAGE6M-GATE6-AUTH-DECISION-20261108).
 
 Requirements Enforced:
 1. Five Canonical Confirmatory Accents: Australian, Canadian, England, South Asian, US English.
@@ -275,7 +275,7 @@ def run_confirmatory_paired_cluster_inference_v15(
     confirmatory_accents: FrozenSet[str] = FIVE_STRATUM_CONFIRMATORY_ACCENTS,
     exploratory_accents: FrozenSet[str] = EXPLORATORY_OUT_OF_DOMAIN_ACCENTS,
     custom_bootstrap_resamples: Optional[np.ndarray] = None,
-    use_fast_bootstrap: bool = True,
+    use_fast_bootstrap: bool = False,
 ) -> ConfirmatoryAnalysisReportV15:
     """
     Executes the v1.5 Candidate Five-Stratum confirmatory inferential analysis.
@@ -737,7 +737,7 @@ def run_confirmatory_paired_cluster_inference_v15(
 
     return ConfirmatoryAnalysisReportV15(
         verdict=verdict,
-        protocol_version="v1.5.0-Candidate",
+        protocol_version="v1.5.0-Approved",
         num_speakers=n_conf_speakers,
         num_confirmatory_strata=len(confirmatory_accents),
         num_bootstrap_replicates=num_bootstrap_replicates,

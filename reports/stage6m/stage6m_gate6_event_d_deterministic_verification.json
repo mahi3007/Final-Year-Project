@@ -1,0 +1,145 @@
+{
+  "task_identifier": "STAGE6M-GATE6-EVENT-D-VERIFICATION",
+  "generated_at_utc": "2026-11-08T13:45:00+00:00",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "governing_authorization": "STAGE6M-GATE6-AUTH-DECISION-20261108",
+  "verification_scope": "Event D Stratified Paired-Cluster Bootstrap Determinism & Bitwise Reproducibility",
+  "runtime_provenance": {
+    "python_version": "3.11.9 (tags/v3.11.9:de54cf5) [MSC v.1938 64 bit (AMD64)]",
+    "numpy_version": "1.26.4",
+    "scipy_version": "1.16.1",
+    "pandas_version": "2.3.3",
+    "numba_version": "0.66.0",
+    "host_os": "Windows 11 (AMD64)"
+  },
+  "input_artifacts": {
+    "prediction_stream": {
+      "path": "results/stage6m_cohort3_results/prequential_stream_records.jsonl",
+      "sha256": "42fc02cefc00f4ffd40022feade68aec8dd915818afde46ce71bd534c2b72163",
+      "records": 16500
+    },
+    "sealed_evaluation_transcripts": {
+      "path": "datasets/splits/stage6m_cohort3_sealed_evaluation_transcripts.json",
+      "sha256": "f427ae7fbf386f77b0795cc1fa33b2f7831c89f89ecfce7fa30036cde5c5223e",
+      "records": 16500
+    }
+  },
+  "population_parameters": {
+    "total_evaluation_clips": 16500,
+    "total_clusters": 1100,
+    "strata_count": 5,
+    "clusters_per_stratum": 220,
+    "clips_per_cluster": 15,
+    "total_reference_words": 160519
+  },
+  "stratum_word_and_error_breakdown": {
+    "Australian English": {
+      "reference_words": 32397,
+      "arm1_errors": 6019,
+      "arm1_wer_pct": 18.578881,
+      "arm2_errors": 6390,
+      "arm2_wer_pct": 19.724049,
+      "arm3_errors": 5733,
+      "arm3_wer_pct": 17.696083,
+      "delta_arm3_arm1_pp": -0.882798
+    },
+    "Canadian English": {
+      "reference_words": 32547,
+      "arm1_errors": 4541,
+      "arm1_wer_pct": 13.952131,
+      "arm2_errors": 7335,
+      "arm2_wer_pct": 22.536639,
+      "arm3_errors": 4745,
+      "arm3_wer_pct": 14.578917,
+      "delta_arm3_arm1_pp": 0.626786
+    },
+    "England English": {
+      "reference_words": 32011,
+      "arm1_errors": 6078,
+      "arm1_wer_pct": 18.987223,
+      "arm2_errors": 19909,
+      "arm2_wer_pct": 62.194246,
+      "arm3_errors": 6142,
+      "arm3_wer_pct": 19.187154,
+      "delta_arm3_arm1_pp": 0.199931
+    },
+    "South Asian English": {
+      "reference_words": 31407,
+      "arm1_errors": 11656,
+      "arm1_wer_pct": 37.112745,
+      "arm2_errors": 31088,
+      "arm2_wer_pct": 98.984303,
+      "arm3_errors": 11733,
+      "arm3_wer_pct": 37.357914,
+      "delta_arm3_arm1_pp": 0.245168
+    },
+    "US English": {
+      "reference_words": 32157,
+      "arm1_errors": 5094,
+      "arm1_wer_pct": 15.841030,
+      "arm2_errors": 32157,
+      "arm2_wer_pct": 100.000000,
+      "arm3_errors": 5274,
+      "arm3_wer_pct": 16.400784,
+      "delta_arm3_arm1_pp": 0.559754
+    }
+  },
+  "disparity_point_estimates": {
+    "arm1_disparity_range_pp": 23.160614,
+    "arm2_disparity_range_pp": 80.275951,
+    "arm3_disparity_range_pp": 22.779001,
+    "delta_disparity_pp": -0.381613
+  },
+  "deterministic_bootstrap_specification": {
+    "num_bootstrap_replicates": 20000,
+    "seed": 42,
+    "rng_generator": "numpy.random.default_rng(42)",
+    "bootstrap_algorithm": "Stratified speaker-cluster paired resampling (220 clusters per stratum with replacement)",
+    "execution_mode": "Deterministic NumPy Fallback (use_fast_bootstrap=False)",
+    "runtime_duration_seconds": 1.80
+  },
+  "deterministic_inferential_statistics": {
+    "criterion_id": "disparity_non_increase",
+    "criterion_name": "Cross-Accent Disparity Non-Increase (Event D)",
+    "hypothesis_test": "H1: Delta_Range <= 0.00 pp",
+    "null_threshold_pp": 0.00,
+    "point_estimate_pp": -0.3816,
+    "bootstrap_mean_pp": -0.3807,
+    "bootstrap_std_pp": 0.1932,
+    "nominal_alpha": 0.05,
+    "nominal_95_lcb_pp": -0.6976,
+    "nominal_95_ucb_pp": -0.0605,
+    "raw_one_sided_p_value": 0.025850,
+    "nominal_95_pass": true,
+    "multiplicity_family_m": 8,
+    "adjusted_alpha": 0.00625,
+    "simultaneous_percentile": 99.375,
+    "adjusted_lcb_pp": -0.8710,
+    "adjusted_ucb_pp": 0.1060,
+    "adjusted_one_sided_p_value": 0.206800,
+    "confirmatory_decision": "FAIL",
+    "interpretation": "Event D passes at nominal 95% confidence level (UCB = -0.0605 pp <= 0.00 pp, p = 0.02585), but fails under simultaneous Bonferroni multiplicity adjustment (99.375% UCB = +0.1060 pp > 0.00 pp, adjusted p = 0.206800)."
+  },
+  "bitwise_reproducibility_verification": {
+    "trial_1": {
+      "seed": 42,
+      "num_replicates": 20000,
+      "point_estimate": -0.3816,
+      "nominal_ucb_95": -0.0605,
+      "adjusted_ucb_99375": 0.1060,
+      "p_raw": 0.025850,
+      "p_adj": 0.206800
+    },
+    "trial_2": {
+      "seed": 42,
+      "num_replicates": 20000,
+      "point_estimate": -0.3816,
+      "nominal_ucb_95": -0.0605,
+      "adjusted_ucb_99375": 0.1060,
+      "p_raw": 0.025850,
+      "p_adj": 0.206800
+    },
+    "bitwise_identical": true,
+    "determinism_status": "VERIFIED_BITWISE_DETERMINISTIC"
+  }
+}

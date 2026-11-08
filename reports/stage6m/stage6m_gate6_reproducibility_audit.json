@@ -1,0 +1,85 @@
+{
+  "audit_identifier": "STAGE6M-GATE6-POST-SCORING-AUDIT-20261108",
+  "audit_timestamp_utc": "2026-11-08T13:48:00+00:00",
+  "governing_authorization": "STAGE6M-GATE6-AUTH-DECISION-20261108",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "audit_scope": "Comprehensive Post-Scoring Reproducibility, Determinism, Numeric Reconciliation & Scientific Terminology Audit",
+  "audit_verdict": "REPRODUCIBILITY_VERIFIED_NUMERICALLY_RECONCILED",
+  "phase_results": {
+    "phase_1_implementation_provenance": {
+      "status": "VERIFIED",
+      "python_runtime": "3.11.9 (tags/v3.11.9:de54cf5) [MSC v.1938 64 bit (AMD64)]",
+      "core_libraries": {
+        "numpy": "1.26.4",
+        "scipy": "1.16.1",
+        "pandas": "2.3.3",
+        "numba": "0.66.0"
+      },
+      "module_path": "c:/Users/venka/Downloads/final year project main/src/dsg_ctta/evaluation/paired_cluster_inference_v15.py",
+      "fast_bootstrap_audit": "Original execution defaulted to use_fast_bootstrap=True, which utilized Numba with unseeded np.random.randint. Fallback path use_fast_bootstrap=False utilizes np.random.default_rng(seed) and is bitwise deterministic. Inference module header updated to v1.5.0-Approved and default changed to use_fast_bootstrap=False."
+    },
+    "phase_2_event_d_determinism": {
+      "status": "VERIFIED_BITWISE_DETERMINISTIC",
+      "bootstrap_replicates": 20000,
+      "seed": 42,
+      "execution_path": "Deterministic Fallback (np.random.default_rng(42))",
+      "runtime_seconds": 1.80,
+      "point_estimate_pp": -0.3816,
+      "nominal_95_ucb_pp": -0.0605,
+      "adjusted_99375_ucb_pp": 0.1060,
+      "p_raw": 0.025850,
+      "p_adj": 0.206800,
+      "nominal_decision": "PASS",
+      "confirmatory_decision": "FAIL",
+      "reproducibility_check": "Identical results (+0.1060 pp) obtained across repeated runs with seed 42."
+    },
+    "phase_3_numeric_reconciliation": {
+      "status": "RECONCILED_AND_UNIFIED",
+      "total_reference_words": 160519,
+      "arm1_static": {
+        "total_errors": 33388,
+        "pooled_wer_pct": 20.800030,
+        "reported_wer_pct": 20.8000
+      },
+      "arm2_ungated": {
+        "total_errors": 96879,
+        "pooled_wer_pct": 60.353603,
+        "reported_wer_pct": 60.3536
+      },
+      "arm3_dsg": {
+        "total_errors": 33627,
+        "pooled_wer_pct": 20.948922,
+        "reported_wer_pct": 20.9489
+      },
+      "delta_static_pp": 0.148892,
+      "delta_ungated_pp": -39.404681,
+      "discrepancy_resolution": "Markdown report updated from preliminary text figures (33,394 / 96,878 / 33,636) to canonical exact numbers (33,388 / 96,879 / 33,627). Both reports now 100% synchronized."
+    },
+    "phase_4_us_english_arm2_investigation": {
+      "status": "EMPIRICALLY_VERIFIED",
+      "total_clips": 3300,
+      "empty_hypotheses": 3299,
+      "empty_hypotheses_percentage": 99.969697,
+      "non_empty_hypotheses": 1,
+      "non_empty_clip_id": "common_voice_en_17256159",
+      "total_deletions": 32154,
+      "total_substitutions": 3,
+      "total_insertions": 0,
+      "total_errors": 32157,
+      "total_words": 32157,
+      "wer_pct": 100.000000,
+      "acoustic_failure_mode": "Catastrophic CTTA Deletion Collapse (Silence / Blank Token Prediction)"
+    },
+    "phase_5_scientific_interpretation": {
+      "status": "ACADEMICALLY_ALIGNED",
+      "recalibrated_language": "Replaced hyperbolic language ('definitively proven', 'impenetrable', 'fundamentally unsafe') with evidence-grounded scientific statements.",
+      "protective_invariance_clarification": "Clarified that is_protective_invariance is false because strict superiority was not achieved and no non-inferiority margin was registered.",
+      "joint_decision_rule": "SUCCESS <=> Event A and Event B and Event C and Event D",
+      "benchmark_verdict": "INCONCLUSIVE"
+    },
+    "phase_6_output_catalogue_reconciliation": {
+      "status": "CATALOGUED",
+      "catalogue_path": "reports/stage6m/stage6m_gate6_reconciled_output_catalogue.json"
+    }
+  }
+}

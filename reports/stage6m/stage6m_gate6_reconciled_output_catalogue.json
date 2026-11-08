@@ -1,0 +1,63 @@
+{
+  "catalogue_id": "STAGE6M-GATE6-RECONCILED-OUTPUT-CATALOGUE",
+  "generated_at_utc": "2026-11-08T13:52:00+00:00",
+  "governing_authorization": "STAGE6M-GATE6-AUTH-DECISION-20261108",
+  "governing_protocol": "Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)",
+  "artifacts": {
+    "stage6m_gate6_offline_scoring_report.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_offline_scoring_report.json",
+      "bytes": 8368,
+      "sha256": "525fdb650a62935ee5b430f59aea2d95946b5aac9987eba881c45ef25605328e"
+    },
+    "stage6m_gate6_offline_scoring_report.md": {
+      "rel_path": "reports/stage6m/stage6m_gate6_offline_scoring_report.md",
+      "bytes": 19589,
+      "sha256": "a74f8093ff329d1ee7ce1ec148fcae6dceb905a3719d446f508e2e403e6cbaed"
+    },
+    "stage6m_gate6_event_d_deterministic_verification.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_event_d_deterministic_verification.json",
+      "bytes": 5000,
+      "sha256": "c5f0bccc8a57192df1e8574b3ae26d459ceb37bd9756049d7f69f869ff9975e5"
+    },
+    "stage6m_gate6_numeric_reconciliation.md": {
+      "rel_path": "reports/stage6m/stage6m_gate6_numeric_reconciliation.md",
+      "bytes": 8772,
+      "sha256": "a362467e394d31733e9d9282b8a18d620b14e63d9bef63c735565af6a78c7e8d"
+    },
+    "stage6m_gate6_corrected_scientific_interpretation.md": {
+      "rel_path": "reports/stage6m/stage6m_gate6_corrected_scientific_interpretation.md",
+      "bytes": 7146,
+      "sha256": "86cc0f29d34fdbf893e272c948e4765240dde4fadc1045304cb26ff05db96d6a"
+    },
+    "stage6m_gate6_reproducibility_audit.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_reproducibility_audit.json",
+      "bytes": 4030,
+      "sha256": "1ccd2cc80c6c677b2660e82af833dbb6670236f0fe5d49ca37ac679a08d73695"
+    },
+    "stage6m_gate6_reproducibility_audit.md": {
+      "rel_path": "reports/stage6m/stage6m_gate6_reproducibility_audit.md",
+      "bytes": 12828,
+      "sha256": "2b25ccbfe3fff0a76438ebd5f3ddbf0987abaaa8ef3b1bb14d3cdc7c8f18bf68"
+    },
+    "stage6m_gate6_output_catalogue.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_output_catalogue.json",
+      "bytes": 384,
+      "sha256": "a072c57ce72935c769a6aca918a5aeff21e514aa5698a858eca420bc75f0dcfd"
+    },
+    "stage6m_gate6_scoring_execution.log": {
+      "rel_path": "reports/stage6m/stage6m_gate6_scoring_execution.log",
+      "bytes": 8270,
+      "sha256": "b0c6d6de39c666af7b5ba47022c4f0562b0f4664c893d04e407c1cf0777028ef"
+    },
+    "stage6m_gate6_authorization_record.json": {
+      "rel_path": "reports/stage6m/stage6m_gate6_authorization_record.json",
+      "bytes": 2482,
+      "sha256": "7f1a9330402bd7cd19d25e47ce308a39e806f3335e656b1f7142675cd579df08"
+    },
+    "stage6m_gate6_authorization_record.md": {
+      "rel_path": "reports/stage6m/stage6m_gate6_authorization_record.md",
+      "bytes": 4536,
+      "sha256": "c798c865f89a99a9b782c66e578a8a4cb0fb2ede82f2dc9d253e3268bae2f97f"
+    }
+  }
+}

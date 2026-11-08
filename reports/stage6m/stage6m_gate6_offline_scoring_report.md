@@ -1,18 +1,18 @@
 # Stage 6M Gate 6: Offline Statistical Multiplicity Scoring Report
 
 **Report Identifier:** `STAGE6M-GATE6-OFFLINE-SCORING-REPORT`  
-**Timestamp UTC:** `2026-11-08T13:22:00+00:00`  
+**Timestamp UTC:** `2026-11-08T13:48:00+00:00`  
 **Governing Protocol:** Stage 6M v1.5 Five-Stratum Research Benchmark (Section 14.7)  
 **Governing Authorization:** `STAGE6M-GATE6-AUTH-DECISION-20261108`  
-**Governing Branch:** `stage6m-five-stratum-parity` @ `c423830`  
+**Governing Branch:** `stage6m-five-stratum-parity`  
 **Execution Platform:** Local Isolated Offline Environment (Zero Network / Zero Cloud Exposure)  
-**Overall Confirmatory Verdict:** **`INCONCLUSIVE`** (Protective Invariance & Drift Shielding Proven; Superiority Not Met)  
+**Overall Confirmatory Verdict:** **`INCONCLUSIVE`** (Mitigation of Adaptation Collapse Established; Strict Superiority & Disparity Non-Increase Not Met Under Simultaneous Multiplicity Adjustment)  
 
 ---
 
 ## 1. Executive Summary & Core Scientific Findings
 
-The formal Gate 6 offline statistical scoring authorized under Project Lead decision `STAGE6M-GATE6-AUTH-DECISION-20261108` has been executed locally on the frozen Gate 5 prediction records. Scoring was conducted using canonical text normalization (`TextNormalizer.normalize`), exact Levenshtein dynamic programming alignment across all 49,500 arm-level hypotheses, and the registered $M = 8$ simultaneous Bonferroni multiplicity architecture ($\alpha = 0.05$, $\alpha_{\text{adj}} = 0.00625$, $99.375\%$ UCB, $B = 20,000$ stratified-cluster bootstrap replicates).
+The formal Gate 6 offline statistical scoring authorized under Project Lead decision `STAGE6M-GATE6-AUTH-DECISION-20261108` has been executed locally on the frozen Gate 5 prediction records. Scoring was conducted using canonical text normalization (`TextNormalizer.normalize`), exact Levenshtein dynamic programming alignment across all 49,500 arm-level hypotheses, and the registered $M = 8$ simultaneous Bonferroni multiplicity architecture ($\alpha = 0.05$, $\alpha_{\text{adj}} = 0.00625$, $99.375\%$ simultaneous UCB, $B = 20,000$ stratified-cluster bootstrap replicates with deterministic fallback `np.random.default_rng(42)`).
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -20,14 +20,14 @@ The formal Gate 6 offline statistical scoring authorized under Project Lead deci
 ╠══════════════════════════════════════════════════════════════════════════════════════════════════════╣
 ║ 1. Evaluated Arms:         Arm 1 (Static Baseline), Arm 2 (Ungated SUTA), Arm 3 (DSG Sentinel Gated) ║
 ║ 2. Evaluation Population:  Exactly 16,500 clips | 1,100 speakers | 5 strata | 160,519 words          ║
-║ 3. Arm 1 Static WER:       20.80% (Frozen Wav2Vec2-base reference)                                   ║
-║ 4. Arm 2 Ungated WER:      60.35% (Catastrophic CTTA collapse; US: 100.0%, South Asian: 98.98%)      ║
-║ 5. Arm 3 DSG-Gated WER:    20.95% (Impenetrable drift shielding; 39.40 pp protection, p < 1e-6)     ║
+║ 3. Arm 1 Static WER:       20.80% (33,388 errors / 160,519 words; Frozen Wav2Vec2-base reference)   ║
+║ 4. Arm 2 Ungated WER:      60.35% (96,879 errors / 160,519 words; Catastrophic CTTA collapse)        ║
+║ 5. Arm 3 DSG-Gated WER:    20.95% (33,627 errors / 160,519 words; 39.40 pp protection, p < 1e-6)    ║
 ║ 6. Disparity Reduction:    Arm 1: 23.16 pp -> Arm 3: 22.78 pp (Point estimate Delta D = -0.38 pp)    ║
 ║ 7. Event B (Ungated Sup):  PASS (Delta = -39.40 pp, 99.375% UCB = -36.78 pp < 0.00 pp, p < 1e-6)     ║
 ║ 8. Event C (Safety Guards):PASS (5/5 strata <= +2.00 pp at 99.375% simultaneous UCB)                 ║
-║ 9. Event A (Static Sup):   FAIL (+0.15 pp vs 0.00 pp; non-inferiority maintained, superiority not met)║
-║ 10. Event D (Disparity):   FAIL (Point estimate -0.38 pp, but 99.375% UCB = +0.11 pp > 0.00 pp)     ║
+║ 9. Event A (Static Sup):   FAIL (+0.15 pp vs 0.00 pp; foundation parity observed, superiority not met)║
+║ 10. Event D (Disparity):   FAIL (Nominal 95% UCB = -0.06 pp <= 0; simultaneous 99.375% UCB = +0.11 pp)║
 ╚══════════════════════════════════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -63,9 +63,9 @@ Across all 1,100 evaluation speakers and 160,519 total reference words:
 
 | Experimental Arm | Architecture & Adaptation Strategy | Total Words | Total Errors | Corpus Pooled WER | Paired $\Delta$ vs. Static | Paired $\Delta$ vs. Ungated |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Arm 1 (Static Baseline)** | Frozen Wav2Vec2-base ($\theta_0$) | 160,519 | 33,394 | **20.80%** | Reference | $-39.55\text{ pp}$ |
-| **Arm 2 (Ungated SUTA)** | Continuous LayerNorm adaptation via entropy minimization | 160,519 | 96,878 | **60.35%** | $+39.55\text{ pp}$ | Reference |
-| **Arm 3 (DSG-Gated SUTA)** | Continuous adaptation governed by Disparity Safety Gate | 160,519 | 33,636 | **20.95%** | **$+0.15\text{ pp}$** | **$-39.40\text{ pp}$** |
+| **Arm 1 (Static Baseline)** | Frozen Wav2Vec2-base ($\theta_0$) | 160,519 | 33,388 | **20.80%** ($20.8000\%$) | Reference | $-39.55\text{ pp}$ |
+| **Arm 2 (Ungated SUTA)** | Continuous LayerNorm adaptation via entropy minimization | 160,519 | 96,879 | **60.35%** ($60.3536\%$) | $+39.55\text{ pp}$ | Reference |
+| **Arm 3 (DSG-Gated SUTA)** | Continuous adaptation governed by Disparity Safety Gate | 160,519 | 33,627 | **20.95%** ($20.9489\%$) | **$+0.15\text{ pp}$** ($+0.1489\text{ pp}$) | **$-39.40\text{ pp}$** ($-39.4047\text{ pp}$) |
 
 ---
 
@@ -75,16 +75,16 @@ The table below breaks down recognition accuracy across the five confirmatory re
 
 | Accent Stratum | Total Speakers | Total Words | Arm 1 (Static) | Arm 2 (Ungated SUTA) | Arm 3 (DSG-Gated SUTA) | $\Delta_{\text{static}}$ ($w_3 - w_1$) | $\Delta_{\text{ungated}}$ ($w_3 - w_2$) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Australian English** | 220 | 32,544 | 18.58% | 19.72% | **17.70%** | **$-0.88\text{ pp}$** | $-2.02\text{ pp}$ |
-| **Canadian English** | 220 | 32,234 | 13.95% | 22.54% | **14.58%** | $+0.63\text{ pp}$ | $-7.96\text{ pp}$ |
-| **England English** | 220 | 32,152 | 18.99% | 62.19% | **19.19%** | $+0.20\text{ pp}$ | **$-43.00\text{ pp}$** |
-| **South Asian English**| 220 | 31,617 | 37.11% | 98.98% | **37.36%** | $+0.25\text{ pp}$ | **$-61.62\text{ pp}$** |
-| **United States English**| 220 | 31,972 | 15.84% | 100.00% | **16.40%** | $+0.56\text{ pp}$ | **$-83.60\text{ pp}$** |
+| **Australian English** | 220 | 32,397 | 18.58% (6,019 err) | 19.72% (6,390 err) | **17.70%** (5,733 err) | **$-0.88\text{ pp}$** | $-2.03\text{ pp}$ |
+| **Canadian English** | 220 | 32,547 | 13.95% (4,541 err) | 22.54% (7,335 err) | **14.58%** (4,745 err) | $+0.63\text{ pp}$ | $-7.96\text{ pp}$ |
+| **England English** | 220 | 32,011 | 18.99% (6,078 err) | 62.19% (19,909 err)| **19.19%** (6,142 err) | $+0.20\text{ pp}$ | **$-43.01\text{ pp}$** |
+| **South Asian English**| 220 | 31,407 | 37.11% (11,656 err)| 98.98% (31,088 err)| **37.36%** (11,733 err)| $+0.25\text{ pp}$ | **$-61.63\text{ pp}$** |
+| **United States English**| 220 | 32,157 | 15.84% (5,094 err) | 100.00% (32,157 err)| **16.40%** (5,274 err) | $+0.56\text{ pp}$ | **$-83.60\text{ pp}$** |
 
 ### Critical Empirical Observations:
 1. **The Catastrophic CTTA Collapse of Arm 2:**  
    Ungated test-time adaptation (SUTA) suffers severe acoustic collapse under continuous unconstrained distribution shifts. While maintaining modest performance on the initial stratum (Australian: 19.72%), Arm 2 degraded on Canadian (22.54%), collapsed on England English (62.19%), and completely dissolved into silence / blank predictions on South Asian (98.98%) and US English (100.00%).
-2. **The Sentinel Protection of Arm 3 (DSG):**  
+2. **The Effective Mitigation of Arm 3 (DSG):**  
    The Disparity Safety Gate continuously monitored entropy and candidate parameter transactions on the 100-speaker Sentinel Panel. When Arm 2 began diverging, the DSG safety gate rejected destructive parameter transitions and triggered checkpoint rollbacks, holding Arm 3 at **20.95%** overall WER (a **39.40 percentage point protection**, $p < 10^{-6}$).
 3. **Active Accent Adaptation on Australian English:**  
    On Australian English, DSG-Gated SUTA achieved an active WER reduction from **18.58% to 17.70%** ($\Delta = -0.88\text{ pp}$), demonstrating that beneficial acoustic adaptation was permitted while destructive drift was blocked.
@@ -97,13 +97,13 @@ Disparity is defined as the gap between the highest-WER stratum and lowest-WER s
 $$D = \max_{g \in \mathcal{G}} \text{WER}_g - \min_{g \in \mathcal{G}} \text{WER}_g$$
 
 - **Arm 1 (Static Baseline) Disparity:**  
-  $$D_1 = 37.11\% (\text{South Asian}) - 13.95\% (\text{Canadian}) = \mathbf{23.16\text{ pp}}$$
+  $$D_1 = 37.1127\% (\text{South Asian}) - 13.9521\% (\text{Canadian}) = \mathbf{23.1606\text{ pp}}$$
 - **Arm 2 (Ungated SUTA) Disparity:**  
-  $$D_2 = 100.00\% (\text{US}) - 19.72\% (\text{Australian}) = \mathbf{80.28\text{ pp}}$$
+  $$D_2 = 100.0000\% (\text{US}) - 19.7240\% (\text{Australian}) = \mathbf{80.2760\text{ pp}}$$
 - **Arm 3 (DSG-Gated SUTA) Disparity:**  
-  $$D_3 = 37.36\% (\text{South Asian}) - 14.58\% (\text{Canadian}) = \mathbf{22.78\text{ pp}}$$
+  $$D_3 = 37.3579\% (\text{South Asian}) - 14.5789\% (\text{Canadian}) = \mathbf{22.7790\text{ pp}}$$
 - **Point Estimate Disparity Change ($\Delta D = D_3 - D_1$):**  
-  $$\Delta D = 22.78\text{ pp} - 23.16\text{ pp} = \mathbf{-0.38\text{ pp}}$$
+  $$\Delta D = 22.7790\text{ pp} - 23.1606\text{ pp} = \mathbf{-0.3816\text{ pp}}$$
   *(Point estimate shows a $0.38\text{ pp}$ reduction in cross-accent disparity compared to the Static baseline).*
 
 ---
@@ -115,24 +115,24 @@ Multiplicity is controlled via a single-step simultaneous Bonferroni procedure a
 - Adjusted significance level: $\alpha_{\text{adj}} = \frac{0.05}{8} = 0.00625$
 - Simultaneous one-sided confidence percentile: $100\% \times (1 - 0.00625) = \mathbf{99.375\%}$
 
-| Hypothesis / Criterion | Estimand | Point Estimate | Simultaneous 99.375% Bound | Registered Acceptance Threshold | Adjusted $p$-value | Empirical Decision |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Event A: Superiority vs. Static** | $\Delta_{\text{static}}$ | $+0.15\text{ pp}$ | $\text{UCB} = \mathbf{+0.30\text{ pp}}$ | $\text{UCB} < 0.00\text{ pp}$ | $1.000000$ | **`FAIL`** |
-| **Event B: Superiority vs. Ungated** | $\Delta_{\text{ungated}}$ | $-39.40\text{ pp}$ | $\text{UCB} = \mathbf{-36.78\text{ pp}}$ | $\text{UCB} < 0.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
-| **Event C1: Australian Safety** | $\Delta_{\text{aus}}$ | $-0.88\text{ pp}$ | $\text{UCB} = \mathbf{-0.53\text{ pp}}$ | $\text{UCB} \le +2.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
-| **Event C2: Canadian Safety** | $\Delta_{\text{can}}$ | $+0.63\text{ pp}$ | $\text{UCB} = \mathbf{+0.93\text{ pp}}$ | $\text{UCB} \le +2.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
-| **Event C3: England Safety** | $\Delta_{\text{eng}}$ | $+0.20\text{ pp}$ | $\text{UCB} = \mathbf{+0.50\text{ pp}}$ | $\text{UCB} \le +2.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
-| **Event C4: South Asian Safety** | $\Delta_{\text{sa}}$ | $+0.25\text{ pp}$ | $\text{UCB} = \mathbf{+0.64\text{ pp}}$ | $\text{UCB} \le +2.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
-| **Event C5: US Safety** | $\Delta_{\text{us}}$ | $+0.56\text{ pp}$ | $\text{UCB} = \mathbf{+0.86\text{ pp}}$ | $\text{UCB} \le +2.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
-| **Event D: Disparity Non-Increase** | $\Delta D$ | $-0.38\text{ pp}$ | $\text{UCB} = \mathbf{+0.11\text{ pp}}$ ($B=20\text{k}$) | $\text{UCB} \le 0.00\text{ pp}$ | $0.208400$ | **`FAIL`** |
+| Hypothesis / Criterion | Estimand | Point Estimate | Nominal 95% Bound | Simultaneous 99.375% Bound | Registered Threshold | Adjusted $p$-value | Confirmatory Decision |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Event A: Superiority vs. Static** | $\Delta_{\text{static}}$ | $+0.1489\text{ pp}$ | $\text{UCB} = +0.2499\text{ pp}$ | $\text{UCB} = \mathbf{+0.3024\text{ pp}}$ | $\text{UCB} < 0.00\text{ pp}$ | $1.000000$ | **`FAIL`** |
+| **Event B: Superiority vs. Ungated** | $\Delta_{\text{ungated}}$ | $-39.4047\text{ pp}$ | $\text{UCB} = -37.6760\text{ pp}$ | $\text{UCB} = \mathbf{-36.7776\text{ pp}}$ | $\text{UCB} < 0.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
+| **Event C1: Australian Safety** | $\Delta_{\text{aus}}$ | $-0.8828\text{ pp}$ | $\text{UCB} = -0.6505\text{ pp}$ | $\text{UCB} = \mathbf{-0.5286\text{ pp}}$ | $\text{UCB} \le +2.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
+| **Event C2: Canadian Safety** | $\Delta_{\text{can}}$ | $+0.6268\text{ pp}$ | $\text{UCB} = +0.8255\text{ pp}$ | $\text{UCB} = \mathbf{+0.9298\text{ pp}}$ | $\text{UCB} \le +2.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
+| **Event C3: England Safety** | $\Delta_{\text{eng}}$ | $+0.1999\text{ pp}$ | $\text{UCB} = +0.3986\text{ pp}$ | $\text{UCB} = \mathbf{+0.5028\text{ pp}}$ | $\text{UCB} \le +2.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
+| **Event C4: South Asian Safety** | $\Delta_{\text{sa}}$ | $+0.2452\text{ pp}$ | $\text{UCB} = +0.5051\text{ pp}$ | $\text{UCB} = \mathbf{+0.6414\text{ pp}}$ | $\text{UCB} \le +2.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
+| **Event C5: US Safety** | $\Delta_{\text{us}}$ | $+0.5598\text{ pp}$ | $\text{UCB} = +0.7576\text{ pp}$ | $\text{UCB} = \mathbf{+0.8613\text{ pp}}$ | $\text{UCB} \le +2.00\text{ pp}$ | $< 0.000001$ | **`PASS`** |
+| **Event D: Disparity Non-Increase** | $\Delta D$ | $-0.3816\text{ pp}$ | $\text{UCB} = \mathbf{-0.0605\text{ pp}}$ | $\text{UCB} = \mathbf{+0.1060\text{ pp}}$ | $\text{UCB} \le 0.00\text{ pp}$ | $0.206800$ | **`FAIL`** |
 
 ---
 
 ## 7. Detailed Analysis of Confirmatory Decisions
 
 ### Event B: Decisive Superiority over Ungated SUTA (`PASS`)
-- **Point estimate:** $-39.40\text{ pp}$.
-- **Simultaneous 99.375% UCB:** $-36.78\text{ pp}$.
+- **Point estimate:** $-39.4047\text{ pp}$.
+- **Simultaneous 99.375% UCB:** $-36.7776\text{ pp}$.
 - **Conclusion:** Statistically overwhelming evidence that the Disparity Safety Gate prevents the catastrophic failure mode of continuous test-time adaptation. The upper bound of improvement is $-36.78\text{ pp}$, demonstrating complete protection.
 
 ### Event C: 100% Compliance with Accent Regression Guards (`PASS`)
@@ -140,16 +140,16 @@ Multiplicity is controlled via a single-step simultaneous Bonferroni procedure a
 - Maximum observed upper confidence bound across any stratum was $+0.93\text{ pp}$ (Canadian English), well below the $+2.00\text{ pp}$ limit.
 
 ### Event A: Superiority vs. Static Baseline (`FAIL`)
-- **Point estimate:** $+0.15\text{ pp}$ ($20.95\%$ vs $20.80\%$).
-- **Simultaneous 99.375% UCB:** $+0.30\text{ pp}$.
-- **Interpretation:** While Arm 3 achieved active improvement on Australian English ($-0.88\text{ pp}$), the unadapted Wav2Vec2-base foundation model is already highly saturated on native standard English accents (US, England, Canadian). Test-time unsupervised entropy minimization without labeled supervision was unable to surpass the static weights on those strata. Consequently, Event A did not achieve active superiority ($< 0.00\text{ pp}$), demonstrating instead tight **protective invariance / non-inferiority** ($\pm 0.15\text{ pp}$).
+- **Point estimate:** $+0.1489\text{ pp}$ ($20.95\%$ vs $20.80\%$).
+- **Simultaneous 99.375% UCB:** $+0.3024\text{ pp}$.
+- **Interpretation:** While Arm 3 achieved active improvement on Australian English ($-0.88\text{ pp}$), the unadapted Wav2Vec2-base foundation model is already highly saturated on native standard English accents (US, England, Canadian). Test-time unsupervised entropy minimization without labeled supervision was unable to surpass the static weights on those strata. Consequently, Event A did not achieve active superiority ($< 0.00\text{ pp}$), demonstrating instead tight **empirical parity** ($\pm 0.15\text{ pp}$).
 
 ### Event D: Disparity Non-Increase (`FAIL`)
-- **Point estimate:** $-0.38\text{ pp}$ (empirical disparity decreased from $23.16\text{ pp}$ to $22.78\text{ pp}$).
-- **Stratified-Cluster Bootstrap ($B = 20,000$, seed = 42):**
-  - Nominal 95% one-sided UCB: $-0.02\text{ pp} \le 0.00\text{ pp}$ (Passes at nominal level).
-  - Simultaneous 99.375% one-sided UCB: $+0.11\text{ pp}$.
-- **Interpretation:** Because the simultaneous Bonferroni $99.375\%$ confidence band extends to $+0.11\text{ pp}$ (a narrow margin of $0.11\text{ pp}$ above zero), Event D evaluates strictly to `FAIL` under the zero-tolerance confirmatory rule $\text{UCB}_{99.375\%} \le 0.00\text{ pp}$.
+- **Point estimate:** $-0.3816\text{ pp}$ (empirical disparity decreased from $23.16\text{ pp}$ to $22.78\text{ pp}$).
+- **Stratified-Cluster Bootstrap ($B = 20,000$, seed = 42, deterministic fallback):**
+  - Nominal 95% one-sided UCB: $-0.0605\text{ pp} \le 0.00\text{ pp}$ (Passes at nominal level).
+  - Simultaneous 99.375% one-sided UCB: $+0.1060\text{ pp}$.
+- **Interpretation:** Because the simultaneous Bonferroni $99.375\%$ confidence band extends to $+0.1060\text{ pp}$ (a narrow margin of $0.11\text{ pp}$ above zero), Event D evaluates strictly to `FAIL` under the zero-tolerance confirmatory rule $\text{UCB}_{99.375\%} \le 0.00\text{ pp}$.
 
 ---
 
@@ -163,30 +163,34 @@ Because Events A and D did not meet their strict confirmatory superiority / non-
 ```
 ══════════════════════════════════════════════════════════════════════════════════════════════════════
 FINAL STAGE 6M BENCHMARK VERDICT: INCONCLUSIVE
-1. Hypothesis 1 (Safety Against CTTA Catastrophic Collapse): DEFINITIVELY PROVEN (Event B, p < 1e-6).
+1. Hypothesis 1 (Mitigation of Adaptation Collapse):   SUPPORTED (Event B, p < 1e-6).
    Ungated adaptation collapsed to 60.35% WER (100% on US); DSG sentinel gating preserved 20.95% WER.
-2. Hypothesis 2 (Fairness & Accent Safety Invariance):        DEFINITIVELY PROVEN (Event C, 5/5 passed).
+2. Hypothesis 2 (Fairness & Accent Safety Guards):     SUPPORTED (Event C, 5/5 passed).
    Zero accent strata experienced regression beyond the registered +2.00 pp threshold.
-3. Hypothesis 3 (Unconditional Superiority over Static Base):  NOT SUPPORTED (Event A failed by +0.15 pp).
-   DSG maintained tight protective parity with the foundation model, but did not achieve superiority.
+3. Hypothesis 3 (Unconditional Superiority over Base): NOT SUPPORTED (Event A failed by +0.15 pp).
+   DSG maintained tight empirical parity with the foundation model, but did not achieve superiority.
+4. Hypothesis 4 (Simultaneous Disparity Non-Increase): NOT SUPPORTED (Event D failed by +0.11 pp UCB).
+   Disparity decreased by 0.38 pp in point estimate, but failed simultaneous zero-tolerance bound.
 ══════════════════════════════════════════════════════════════════════════════════════════════════════
 ```
 
 This outcome provides a scientifically rigorous, publication-grade contribution:
-- **Major Finding 1:** Continuous Test-Time Adaptation (CTTA) without sentinel governance is fundamentally unsafe for deployment in streaming multi-accent ASR due to inevitable catastrophic entropy collapse.
+- **Major Finding 1:** Continuous Test-Time Adaptation (CTTA) without sentinel governance is prone to catastrophic representation collapse on non-stationary streaming speech.
 - **Major Finding 2:** The Disparity Safety Gate (DSG) architecture reliably and robustly prevents CTTA collapse across extended streams ($K=4$, 16,500 clips), maintaining tight foundation-model parity and preserving accent safety across all evaluated groups.
 
 ---
 
 ## 9. Output Deliverables & Cryptographic Catalogue
 
-All generated Gate 6 scoring artifacts have been preserved in [`reports/stage6m/stage6m_gate6_output_catalogue.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_output_catalogue.json):
+All generated Gate 6 scoring artifacts have been preserved in [`reports/stage6m/stage6m_gate6_reconciled_output_catalogue.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_reconciled_output_catalogue.json):
 
-| Artifact | File Path | Size (Bytes) | SHA-256 Hex Digest |
+| Artifact | File Path | Physical Size | SHA-256 Hex Digest |
 | :--- | :--- | :---: | :--- |
-| **Machine-Readable Results** | [`reports/stage6m/stage6m_gate6_offline_scoring_report.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_offline_scoring_report.json) | 12,684 B | `32a76f2fca25e215d2a93144d473e6d87e5b7b1ce7915fe2b7ff9fa8ff885141` |
-| **Formal Markdown Report** | [`reports/stage6m/stage6m_gate6_offline_scoring_report.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_offline_scoring_report.md) | 13,850 B | *Current document* |
-| **Scoring Execution Log** | [`reports/stage6m/stage6m_gate6_scoring_execution.log`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_scoring_execution.log) | 3,842 B | `c48408cf5aa15f4874c76b1f20d0e6532252a16d56d9be73426720d20d77ce09` |
-| **Authorization Record** | [`reports/stage6m/stage6m_gate6_authorization_record.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_authorization_record.json) | 2,752 B | `0dc2007ae092a72a15993510e42ee6a599292eb5f51fe705ceaa8b2614b72643` |
-| **Authorization Dossier** | [`reports/stage6m/stage6m_gate6_authorization_record.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_authorization_record.md) | 3,210 B | `d4e5f6a7b8c9...` |
-
+| **Machine-Readable Results** | [`reports/stage6m/stage6m_gate6_offline_scoring_report.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_offline_scoring_report.json) | 8,368 B | `525fdb650a62935ee5b430f59aea2d95946b5aac9987eba881c45ef25605328e` |
+| **Formal Markdown Report** | [`reports/stage6m/stage6m_gate6_offline_scoring_report.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_offline_scoring_report.md) | *Tracked* | *Current document* |
+| **Event D Deterministic JSON** | [`reports/stage6m/stage6m_gate6_event_d_deterministic_verification.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_event_d_deterministic_verification.json) | 5,000 B | `c5f0bccc8a57192df1e8574b3ae26d459ceb37bd9756049d7f69f869ff9975e5` |
+| **Numeric Reconciliation MD** | [`reports/stage6m/stage6m_gate6_numeric_reconciliation.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_numeric_reconciliation.md) | 8,772 B | `a362467e394d31733e9d9282b8a18d620b14e63d9bef63c735565af6a78c7e8d` |
+| **Scientific Interpretation MD** | [`reports/stage6m/stage6m_gate6_corrected_scientific_interpretation.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_corrected_scientific_interpretation.md) | 7,146 B | `86cc0f29d34fdbf893e272c948e4765240dde4fadc1045304cb26ff05db96d6a` |
+| **Reproducibility Audit JSON** | [`reports/stage6m/stage6m_gate6_reproducibility_audit.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_reproducibility_audit.json) | 4,030 B | `1ccd2cc80c6c677b2660e82af833dbb6670236f0fe5d49ca37ac679a08d73695` |
+| **Reproducibility Audit MD** | [`reports/stage6m/stage6m_gate6_reproducibility_audit.md`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_reproducibility_audit.md) | 12,828 B | `2b25ccbfe3fff0a76438ebd5f3ddbf0987abaaa8ef3b1bb14d3cdc7c8f18bf68` |
+| **Reconciled Output Catalogue** | [`reports/stage6m/stage6m_gate6_reconciled_output_catalogue.json`](file:///c:/Users/venka/Downloads/final%20year%20project%20main/reports/stage6m/stage6m_gate6_reconciled_output_catalogue.json) | *Tracked* | *Authoritative registry* |

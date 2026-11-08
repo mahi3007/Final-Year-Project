@@ -1,31 +1,11 @@
 {
   "catalogue_id": "STAGE6M-GATE6-OUTPUT-CATALOGUE",
-  "generated_at_utc": "2026-11-08T13:21:29.363709+00:00",
+  "generated_at_utc": "2026-11-08T13:50:46.031510+00:00",
   "artifacts": {
     "stage6m_gate6_offline_scoring_report.json": {
       "rel_path": "reports/stage6m/stage6m_gate6_offline_scoring_report.json",
-      "bytes": 8369,
-      "sha256": "5703a38a90c4f272c4b1bebffbed82c5e2f8aba37ccdf8c3a781553059da64e2"
-    },
-    "stage6m_gate6_offline_scoring_report.md": {
-      "rel_path": "reports/stage6m/stage6m_gate6_offline_scoring_report.md",
-      "bytes": 17679,
-      "sha256": "81056bc8945834f4ae6cb43951de1456e44f68a1d3fef3f3ebce2715272ab2e3"
-    },
-    "stage6m_gate6_scoring_execution.log": {
-      "rel_path": "reports/stage6m/stage6m_gate6_scoring_execution.log",
-      "bytes": 8270,
-      "sha256": "b0c6d6de39c666af7b5ba47022c4f0562b0f4664c893d04e407c1cf0777028ef"
-    },
-    "stage6m_gate6_authorization_record.json": {
-      "rel_path": "reports/stage6m/stage6m_gate6_authorization_record.json",
-      "bytes": 2481,
-      "sha256": "d43b9b30e6680404f00d25e0257de90a0ed27fd8dab29566981b72ee5bc0baac"
-    },
-    "stage6m_gate6_authorization_record.md": {
-      "rel_path": "reports/stage6m/stage6m_gate6_authorization_record.md",
-      "bytes": 4535,
-      "sha256": "d16b84db00e311917480600bd1389c055a60481ad45dbd0721f520dfe57ef873"
+      "bytes": 8368,
+      "sha256": "525fdb650a62935ee5b430f59aea2d95946b5aac9987eba881c45ef25605328e"
     }
   }
 }
